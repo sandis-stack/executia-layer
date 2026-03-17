@@ -51,6 +51,79 @@
     </div>
   </section>
 
+  <!-- INTERACTIVE SCROLL DEMO -->
+  <section class="execution-demo">
+    <div class="demo-flow">
+
+      <!-- WITHOUT EXECUTIA -->
+      <div class="demo-world demo-world-bad" id="worldBad">
+        <div class="demo-label mono">Without EXECUTIA</div>
+        <div class="demo-nodes">
+          <div class="demo-node node-decision" id="nodeDecision1">
+            <span class="mono demo-node-label">Decision</span>
+            <span class="mono demo-node-sub">Registered</span>
+          </div>
+          <div class="demo-connector" id="conn1">
+            <div class="demo-conn-line"></div>
+            <div class="demo-conn-arrow mono">↓</div>
+          </div>
+          <div class="demo-node node-execution-bad" id="nodeExecBad">
+            <span class="mono demo-node-label">Execution</span>
+            <span class="mono demo-node-sub">No verification</span>
+          </div>
+          <div class="demo-connector" id="conn2">
+            <div class="demo-conn-line demo-conn-red"></div>
+            <div class="demo-conn-arrow mono" style="color:#ff3b30">↓</div>
+          </div>
+          <div class="demo-node node-error" id="nodeError">
+            <span class="demo-error-sym">✕</span>
+            <span class="mono demo-node-label">ERROR</span>
+            <span class="mono demo-node-sub">Discovered too late</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-vs mono">vs</div>
+
+      <!-- WITH EXECUTIA -->
+      <div class="demo-world demo-world-good" id="worldGood">
+        <div class="demo-label mono">With EXECUTIA</div>
+        <div class="demo-nodes">
+          <div class="demo-node node-decision" id="nodeDecision2">
+            <span class="mono demo-node-label">Decision</span>
+            <span class="mono demo-node-sub">Registered</span>
+          </div>
+          <div class="demo-connector" id="conn3">
+            <div class="demo-conn-line"></div>
+            <div class="demo-conn-arrow mono">↓</div>
+          </div>
+          <div class="demo-node node-executia" id="nodeExecutia">
+            <span class="demo-executia-sym">◎</span>
+            <span class="mono demo-node-label text-execution">EXECUTIA</span>
+            <span class="mono demo-node-sub">Verification Layer</span>
+            <div class="demo-checks" id="demoChecks">
+              <span class="mono demo-check" id="check1">✓ Authorization</span>
+              <span class="mono demo-check" id="check2">✓ Compliance</span>
+              <span class="mono demo-check" id="check3">✓ Responsibility</span>
+              <span class="mono demo-check" id="check4">✓ Resources</span>
+            </div>
+          </div>
+          <div class="demo-connector" id="conn4">
+            <div class="demo-conn-line demo-conn-green"></div>
+            <div class="demo-conn-arrow mono" style="color:#00FFB2">↓</div>
+          </div>
+          <div class="demo-node node-success" id="nodeSuccess">
+            <span class="demo-success-sym">◎</span>
+            <span class="mono demo-node-label">VALID EXECUTION</span>
+            <span class="mono demo-node-sub">Signal emitted · Ledger written</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
   <!-- 2. CIVILIZATION MODEL -->
   <section id="civilization" class="section section-dark section-civilization">
     <div class="container-main">
@@ -245,6 +318,41 @@
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
     }, { threshold: 0.1 });
     reveals.forEach(r => observer.observe(r));
+
+    // Demo animation — trigger when section is in view
+    const demoSection = document.querySelector('.execution-demo');
+    if (demoSection) {
+      const demoObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          runDemo();
+          demoObserver.disconnect();
+        }
+      }, { threshold: 0.3 });
+      demoObserver.observe(demoSection);
+    }
+
+    function runDemo() {
+      const seq = [
+        // Bad world
+        { el: '#nodeDecision1', delay: 0 },
+        { el: '#nodeExecBad',   delay: 600 },
+        { el: '#nodeError',     delay: 1200 },
+        // Good world
+        { el: '#nodeDecision2', delay: 1800 },
+        { el: '#nodeExecutia',  delay: 2400 },
+        { el: '#check1',        delay: 2800 },
+        { el: '#check2',        delay: 2950 },
+        { el: '#check3',        delay: 3100 },
+        { el: '#check4',        delay: 3250 },
+        { el: '#nodeSuccess',   delay: 3600 },
+      ];
+      seq.forEach(({ el, delay }) => {
+        setTimeout(() => {
+          const node = document.querySelector(el);
+          if (node) node.classList.add('active');
+        }, delay);
+      });
+    }
   </script>
 
 </body>
