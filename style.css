@@ -668,3 +668,20 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 /* Operational Impact section */
 .op-impact { border-top: 1px solid var(--border); }
 .op-impact .card { background: rgba(255,255,255,.03); }
+
+/* Institutional Direction */
+.inst-direction { border-top: 1px solid var(--border); }
+.inst-direction-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+.inst-direction-body { max-width: 600px; margin: 0 auto 24px; }
+.inst-direction-signal {
+  font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,.28);
+}
+
+/* Hero title max-width */
+.hero-title { max-width: 900px; }
+
+.cta-phase {
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(255,255,255,.22); margin-top: 8px; display: block;
+}
