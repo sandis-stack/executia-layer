@@ -27,30 +27,32 @@
     <div class="nav-links mono">
       <a href="/">Home</a>
       <a href="https://execution.executia.io">Execution</a>
-      <a href="/institutional">Institutional</a>
+      <a href="/institutional" class="nav-active">Institutional</a>
       <a href="#contact">Contact</a>
     </div>
     <a href="#contact" class="btn btn-primary btn-sm">Request Briefing</a>
   </div>
 </nav>
+<div class="nav-system mono">Concept → Execution → Institutional</div>
 
 <main>
 
 <!-- HERO -->
 <section class="inst-hero">
   <div class="container">
-    <div class="mono inst-badge">Institutional Deployment · EXECUTIA Protocol · PCT/IB2026/050141</div>
-    <h1 class="inst-title">
+    <div class="mono inst-badge fade-in">Institutional Deployment · EXECUTIA Protocol · PCT/IB2026/050141</div>
+    <h1 class="inst-title fade-in" style="transition-delay:.1s">
       Institutional execution must be<br>
       <span class="accent">verified before it occurs.</span>
     </h1>
-    <p class="inst-sub">
+    <p class="inst-sub fade-in" style="transition-delay:.2s">
       EXECUTIA is a verification layer for governments and institutions that ensures every execution meets authorization, compliance, and accountability requirements before action occurs.
     </p>
+    <div class="trust-line">EU-level scenario validated · Patent filed · Pilot-ready</div>
     <div class="mono inst-signals">
       Pilot integration available · EU-level execution scenario validated · Patent filed
     </div>
-    <div class="mono inst-applicable">Applicable to: Government finance · Infrastructure funds · Regulatory systems</div>
+    <p class="inst-applicable-body">If you manage public funds, infrastructure, or regulatory systems — this applies directly to your execution risk.</p>
     <div class="inst-actions">
       <a href="#contact" class="btn btn-primary">Request Pilot Integration Briefing</a>
       <a href="https://execution.executia.io" class="btn btn-ghost" target="_blank" rel="noopener">View Execution Layer ↗</a>
@@ -180,7 +182,7 @@
       </div>
     </div>
     <div class="mono integration-note">Compatible with existing ERP · financial infrastructure · government systems · enterprise applications</div>
-    <div class="mono integration-ttv">Typical pilot deployment: 4–8 weeks</div>
+    <div class="mono integration-ttv">From concept to live pilot: 4–8 weeks · No infrastructure replacement required.</div>
   </div>
 </section>
 
@@ -270,5 +272,13 @@
   </div>
 </footer>
 
+<script>
+const fadeEls = document.querySelectorAll('.fade-in');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.1});
+fadeEls.forEach(el => obs.observe(el));
+setTimeout(()=>{document.querySelectorAll('.inst-hero .fade-in').forEach(el=>el.classList.add('visible'))},50);
+</script>
 </body>
 </html>

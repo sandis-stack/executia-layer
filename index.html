@@ -24,28 +24,29 @@
       </a>
       <div class="el-nav-links">
         <a href="https://www.executia.io">Home</a>
-        <a href="#demo">Simulation</a>
+        <a href="https://execution.executia.io" class="nav-active">Execution</a>
         <a href="/institutional">Institutional</a>
-        <a href="#cta">Contact</a>
+        <a href="#contact">Contact</a>
       </div>
       <a href="/institutional#contact" class="el-nav-cta mono">Request Briefing</a>
     </div>
   </nav>
+  <div class="nav-system mono">Concept → Execution → Institutional</div>
 
   <!-- 1. HERO (CLEAN) -->
   <section class="section section-dark section-hero">
     <div class="container-main">
-      <span class="hero-standard-claim mono">EXECUTION INTEGRITY PROTOCOL</span>
-      <h1 class="text-h1 hero-title">
-        The layer where incorrect execution<br>becomes <span class="text-execution">impossible.</span>
+      <span class="hero-standard-claim mono fade-in">EXECUTION INTEGRITY PROTOCOL</span>
+      <h1 class="text-h1 hero-title fade-in" style="transition-delay:.1s">
+        Decision → Execution → <span class="text-execution">Error.</span><br>
+        <span style="font-size:.6em;opacity:.7;">EXECUTIA inserts verification.</span>
       </h1>
-      <p class="text-body hero-subtext">Execution is verified before it is allowed to occur.</p>
-      <span class="hero-proof mono">REFERENCE IMPLEMENTATION IN PROGRESS · PCT/IB2026/050141</span>
-      <div class="hero-buttons">
+      <p class="text-body hero-subtext fade-in" style="transition-delay:.2s">Execution is verified before it is allowed to occur.</p>
+      <span class="hero-proof mono fade-in" style="transition-delay:.3s">REFERENCE IMPLEMENTATION IN PROGRESS · PCT/IB2026/050141</span>
+      <div class="hero-buttons fade-in" style="transition-delay:.4s">
         <a href="#real-sim" class="btn-primary">View Execution</a>
         <a href="/institutional" class="btn-secondary btn-institutional">Institutional Layer ↗</a>
       </div>
-      <div class="mono hero-flow-hint">Simulation → Verification → Institutional deployment</div>
     </div>
   </section>
 
@@ -225,6 +226,14 @@
   </section>
 
   <!-- CTA -->
+  <!-- FLOW LOCK -->
+  <div class="flow-lock">
+    <div class="container-main flow-lock-inner">
+      <p class="mono flow-lock-text">Without verification — execution fails.<br>With EXECUTIA — invalid execution does not occur.</p>
+      <a href="/institutional" class="btn-primary flow-lock-btn">See Institutional Layer ↗</a>
+    </div>
+  </div>
+
   <section id="cta" class="section section-dark section-cta">
     <div class="container-main cta-inner">
       <div class="section-eyebrow mono">Institutional Access</div>
@@ -473,6 +482,18 @@
     loadScenario('budget');
     </script>
 
+
+<script>
+const fadeEls = document.querySelectorAll('.fade-in');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+fadeEls.forEach(el => obs.observe(el));
+// Trigger hero immediately
+setTimeout(() => {
+  document.querySelectorAll('.section-hero .fade-in').forEach(el => el.classList.add('visible'));
+}, 50);
+</script>
 </body>
 
 
