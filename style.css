@@ -664,3 +664,7 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
   font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
   color: rgba(255,255,255,.22); display: block; margin-top: 6px;
 }
+
+/* Operational Impact section */
+.op-impact { border-top: 1px solid var(--border); }
+.op-impact .card { background: rgba(255,255,255,.03); }
