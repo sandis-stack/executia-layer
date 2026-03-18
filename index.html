@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EXECUTIA — The Execution Layer</title>
-  <meta name="description" content="A decision is valid only if its execution is defined. The execution layer of civilization." />
+  <title>EXECUTIA — Execution Verification Layer for Governments &amp; Financial Systems</title>
+  <meta name="description" content="EXECUTIA is a verification layer that prevents invalid execution in financial systems, governments, and infrastructure before it occurs." />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,192 +19,110 @@
       <a href="https://www.executia.io" class="el-nav-logo">
         <div class="el-nav-logo-text">
           <span class="logo-main">EXECUTIA<span class="tm">™</span></span>
-          <span class="logo-sub mono">Execution Integrity Protocol</span>
+          <span class="logo-sub mono">Execution Layer</span>
         </div>
       </a>
       <div class="el-nav-links">
-        <a href="#civilization">Civilization</a>
-        <a href="#gap">The Gap</a>
-        <a href="#principle">Principle</a>
-        <a href="#flow">Flow</a>
-        <a href="#systems">Systems</a>
+        <a href="#demo">Simulation</a>
+        <a href="#real-sim">Real Scenario</a>
       </div>
-      <a href="https://www.executia.io" class="el-nav-back">← Return to Institutional Layer</a>
+      <a href="#cta" class="el-nav-cta-link mono">Briefing</a>
+      <a href="https://www.executia.io" class="el-nav-back">← Institutional Layer</a>
     </div>
   </nav>
 
-  <!-- 1. HERO -->
+  <!-- 1. HERO (CLEAN) -->
   <section class="section section-dark section-hero">
     <div class="container-main">
-      <div class="hero-label mono">The Execution Layer</div>
+      <span class="hero-standard-claim mono">EXECUTION INTEGRITY PROTOCOL</span>
       <h1 class="text-h1 hero-title">
-        The standard that makes<br><span class="text-execution">incorrect execution impossible.</span>
+        The layer where incorrect execution<br>becomes <span class="text-execution">impossible.</span>
       </h1>
-      <p class="text-body hero-subtext">
-        Energy defines what is possible.<br>
-        Information defines what is known.<br>
-        Execution defines what becomes real.<br>
-        <strong class="text-execution">Without it — nothing happens.</strong>
-      </p>
-      <p class="hero-proof mono">Patent pending · EU pilot in progress · Institutional integration underway.</p>
-      <p class="hero-cold-line mono">Not software. Not a platform. Not another control system.<br>A protocol layer for execution integrity — at institutional scale.<br>Defining the execution standard for complex systems.</p>
-      <p class="cta-audience mono">For governments · financial systems · critical infrastructure</p>
-      <p class="cta-pilot-signal mono">Reference implementation underway · first institutional pilot (EU region)</p>
-      <p class="hero-eu-signal mono">In active discussion with EU-level digital governance partners</p>
+      <p class="text-body hero-subtext">Execution is verified before it is allowed to occur.</p>
+      <span class="hero-proof mono">REFERENCE IMPLEMENTATION IN PROGRESS · PCT/IB2026/050141</span>
       <div class="hero-buttons">
-        <a href="#cta" class="btn-primary">Request Institutional Briefing</a>
-        <a href="#real-sim" class="btn-secondary">View Real Scenario</a>
+        <a href="#real-sim" class="btn-primary">View Execution</a>
+        <a href="#cta" class="btn-secondary">Request Briefing</a>
       </div>
     </div>
   </section>
 
-  <!-- Entry hook -->
-  <div class="demo-entry-hook">
-    <p class="mono demo-hook-text">Every system executes.<br>The question is whether execution is verified.</p>
-  </div>
 
-  <!-- INTERACTIVE SCROLL DEMO -->
+  <!-- DEMO -->
+  <section id="demo" class="section section-dark">
+    <div class="container-main">
+      <div class="section-eyebrow mono">Interactive Demonstration</div>
+      <h2 class="text-h2">Two systems. One fails.</h2>
+      </div>
+  </section>
+
+  <!-- DEMO ANIMATION (preserved) -->
   <section class="execution-demo">
     <div class="demo-flow">
-
-      <!-- WITHOUT EXECUTIA -->
       <div class="demo-world demo-world-bad" id="worldBad">
         <div class="demo-label mono">Without EXECUTIA</div>
         <div class="demo-nodes">
-          <div class="demo-node node-decision" id="nodeDecision1">
-            <span class="mono demo-node-label">Decision</span>
-            <span class="mono demo-node-sub">Registered</span>
-          </div>
-          <div class="demo-connector" id="conn1">
-            <div class="demo-conn-line"></div>
-            <div class="demo-conn-arrow mono">↓</div>
-          </div>
-          <div class="demo-node node-execution-bad" id="nodeExecBad">
-            <span class="mono demo-node-label">Execution</span>
-            <span class="mono demo-node-sub">No verification</span>
-          </div>
-          <div class="demo-connector" id="conn2">
-            <div class="demo-conn-line demo-conn-red"></div>
-            <div class="demo-conn-arrow mono" style="color:#ff3b30">↓</div>
-          </div>
-          <div class="demo-node node-error" id="nodeError">
-            <span class="demo-error-sym">✕</span>
-            <span class="mono demo-node-label">ERROR</span>
-            <span class="mono demo-node-sub">Discovered too late</span>
-          </div>
+          <div class="demo-node node-decision" id="nodeDecision1"><span class="mono demo-node-label">Decision</span><span class="mono demo-node-sub">Registered</span></div>
+          <div class="demo-connector"><div class="demo-conn-line"></div><div class="demo-conn-arrow mono">↓</div></div>
+          <div class="demo-node node-execution-bad" id="nodeExecBad"><span class="mono demo-node-label">Execution</span><span class="mono demo-node-sub">No verification</span></div>
+          <div class="demo-connector"><div class="demo-conn-line demo-conn-red"></div><div class="demo-conn-arrow mono" style="color:#ff3b30">↓</div></div>
+          <div class="demo-node node-error" id="nodeError"><span class="demo-error-sym">✕</span><span class="mono demo-node-label">ERROR</span><span class="mono demo-node-sub">Discovered too late · €4.2M loss</span></div>
         </div>
       </div>
-
       <div class="demo-vs mono">vs</div>
-
-      <!-- WITH EXECUTIA -->
       <div class="demo-world demo-world-good" id="worldGood">
         <div class="demo-label mono">With EXECUTIA</div>
         <div class="demo-nodes">
-          <div class="demo-node node-decision" id="nodeDecision2">
-            <span class="mono demo-node-label">Decision</span>
-            <span class="mono demo-node-sub">Registered</span>
-          </div>
-          <div class="demo-connector" id="conn3">
-            <div class="demo-conn-line"></div>
-            <div class="demo-conn-arrow mono">↓</div>
-          </div>
-          <div class="demo-node node-executia" id="nodeExecutia">
-            <span class="demo-executia-sym">◎</span>
-            <span class="mono demo-node-label text-execution">EXECUTIA</span>
-            <span class="mono demo-node-sub">Verification Layer</span>
-            <div class="demo-checks" id="demoChecks">
-              <span class="mono demo-check" id="check1">✓ Authorization</span>
-              <span class="mono demo-check" id="check2">✓ Compliance</span>
-              <span class="mono demo-check" id="check3">✓ Responsibility</span>
-              <span class="mono demo-check" id="check4">✓ Resources</span>
-            </div>
-          </div>
-          <div class="demo-connector" id="conn4">
-            <div class="demo-conn-line demo-conn-green"></div>
-            <div class="demo-conn-arrow mono" style="color:#00FFB2">↓</div>
-          </div>
-          <div class="demo-node node-success" id="nodeSuccess">
-            <span class="demo-success-sym">◎</span>
-            <span class="mono demo-node-label">VALID EXECUTION</span>
-            <span class="mono demo-node-sub">Signal emitted · Ledger written</span>
-          </div>
+          <div class="demo-node node-decision" id="nodeDecision2"><span class="mono demo-node-label">Decision</span><span class="mono demo-node-sub">Registered</span></div>
+          <div class="demo-connector"><div class="demo-conn-line"></div><div class="demo-conn-arrow mono">↓</div></div>
+          <div class="demo-node node-executia" id="nodeExecutia"><span class="demo-executia-sym">◎</span><span class="mono demo-node-label text-execution">EXECUTIA</span><span class="mono demo-node-sub">Verification Layer</span><div class="demo-checks" id="demoChecks"><span class="mono demo-check" id="check1">✓ Authorization</span><span class="mono demo-check" id="check2">✓ Compliance</span><span class="mono demo-check" id="check3">✓ Responsibility</span><span class="mono demo-check" id="check4">✓ Resources</span></div></div>
+          <div class="demo-connector"><div class="demo-conn-line demo-conn-green"></div><div class="demo-conn-arrow mono" style="color:#00FFB2">↓</div></div>
+          <div class="demo-node node-success" id="nodeSuccess"><span class="demo-success-sym">◎</span><span class="mono demo-node-label">VALID EXECUTION</span><span class="mono demo-node-sub">Signal emitted · Ledger written</span></div>
         </div>
       </div>
-
     </div>
   </section>
 
 
-  <!-- SIMULATION MODE -->
-  <section class="simulation section section-dark">
+  <!-- WHERE IT LIVES -->
+  <section id="how-executia-lives" class="section section-dark where-section">
     <div class="container-main">
-      <div class="section-eyebrow mono">Interactive Simulation</div>
-      <h2 class="text-h2">Experience the verification layer.</h2>
-      <p class="text-body sim-intro">Press Execute — see what EXECUTIA does before any action proceeds.</p>
-      <p class="protocol-rfc mono">A system MUST verify execution conditions before emitting any execution signal.</p>
-
-      <div class="sim-box">
-        <div class="sim-decision">
-          <span class="mono sim-block-label">Decision</span>
-          <div class="sim-decision-detail mono">
-            <span>Ministry procurement · €4.2M</span>
-            <div class="sim-status mono" id="simStatus">Pending</div>
-          </div>
+      <div class="section-eyebrow mono">System Position</div>
+      <h2 class="text-h2">Where EXECUTIA lives.</h2>
+      <p class="mono where-rule">No system executes without verification.</p>
+      <p class="text-body where-body">EXECUTIA sits between decision systems and execution systems. It does not replace infrastructure — it verifies it.</p>
+      <div class="flow-wrapper where-flow">
+        <div class="flow-step">
+          <div class="flow-step-num mono">Input</div>
+          <div class="flow-step-title">Decision Systems</div>
+          <div class="flow-step-desc mono">ERP · Government · Finance</div>
         </div>
-
-        <div class="sim-arrow-down mono">↓</div>
-
-        <div class="sim-executia" id="simExecutia">
-          <span class="mono sim-block-label text-execution">◎ EXECUTIA Verification</span>
-          <div class="sim-checks">
-            <div class="sim-check-row" id="s1">
-              <span class="sim-check-dot"></span>
-              <span class="mono">Authorization</span>
-              <span class="sim-check-result mono" id="r1"></span>
-            </div>
-            <div class="sim-check-row" id="s2">
-              <span class="sim-check-dot"></span>
-              <span class="mono">Compliance rules</span>
-              <span class="sim-check-result mono" id="r2"></span>
-            </div>
-            <div class="sim-check-row" id="s3">
-              <span class="sim-check-dot"></span>
-              <span class="mono">Responsibility assignment</span>
-              <span class="sim-check-result mono" id="r3"></span>
-            </div>
-            <div class="sim-check-row" id="s4">
-              <span class="sim-check-dot"></span>
-              <span class="mono">Budget threshold</span>
-              <span class="sim-check-result mono" id="r4"></span>
-            </div>
-          </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step flow-step-core">
+          <div class="flow-step-num mono">◎ Verification</div>
+          <div class="flow-step-title text-execution">EXECUTIA</div>
+          <div class="flow-step-desc mono">Verification Layer</div>
         </div>
-
-        <div class="sim-arrow-down mono">↓</div>
-
-        <div class="sim-result" id="simResult">
-          <span class="mono sim-result-text" id="simResultText">—</span>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num mono">Output</div>
+          <div class="flow-step-title">Execution Systems</div>
+          <div class="flow-step-desc mono">Payments · Contracts · Infrastructure</div>
         </div>
-
-        <button class="btn-primary sim-btn" id="runSim">Run Verification</button>
-        <p class="mono sim-hint" id="simHint">Each run simulates a real verification scenario</p>
       </div>
+      <p class="mono where-zero">No system replacement required · API-level integration</p>
     </div>
   </section>
-
 
   <!-- REAL USE CASE: EU PAYMENT -->
   <section class="real-sim section section-dark">
     <div class="container-main">
       <div class="section-eyebrow mono">Reference Implementation</div>
-      <h2 class="text-h2">Fuel Distribution System · Reference Pilot (EU region)</h2>
-      <p class="mono rs-reference-note">Reference pilot · based on real operational structure · measurable risk prevention</p>
-      <p class="mono rs-proof-signal">Live operational structure · real-world constraints · measurable outcomes</p>
-      <p class="mono rs-proof-second">Based on real operational workflow · adapted for demonstration</p>
-      <p class="text-body real-sim-intro">EU cross-border fuel distribution settlement scenario. Supplier submits payment request exceeding approved threshold. Watch what EXECUTIA does before funds move.</p>
+      <h2 class="text-h2">Reference Execution Scenario · EU Fuel System</h2>
+      <p class="mono rs-authority-anchor">Based on real EU-level operational patterns.</p>
+      <p class="text-body real-sim-intro">Execution scenario: EU fuel settlement system.</p>
 
-      <p class="rs-proof-hook mono">This is not a concept. This is how execution changes when verification becomes structural.</p>
+      <p class="rs-proof-hook mono">This is not a concept. This is a reference execution model.</p>
       <!-- Scenario tabs -->
       <div class="rs-tabs">
         <button class="rs-tab rs-tab-active" data-scenario="budget">Budget Overflow</button>
@@ -284,183 +202,10 @@
     <div class="container-main exec-shift-inner">
       <div class="section-eyebrow mono">Execution Shift</div>
       <h2 class="text-h2">From control to structure.</h2>
-      <p class="text-body exec-shift-body">
-        Before EXECUTIA — execution errors are detected after damage occurs.<br><br>
-        With EXECUTIA — invalid execution is structurally impossible.
-      </p>
+      <p class="text-body exec-shift-body">Execution has always been the weakest layer of every system.<br><br><span class="text-execution">EXECUTIA makes failure structurally impossible.</span></p>
       <p class="mono exec-shift-sub">No delay · No ambiguity · No post-fact correction</p>
     </div>
   </section>
-
-  <!-- OPERATIONAL IMPACT -->
-  <section class="section section-dark op-impact">
-    <div class="container-main">
-      <div class="section-eyebrow mono">Operational Impact</div>
-      <h2 class="text-h2">What EXECUTIA changes.</h2>
-      <div class="impact-numbers">
-        <div class="in-item">
-          <span class="in-num text-execution">€4.2M</span>
-          <span class="mono in-label">Fraud prevented before payment</span>
-        </div>
-        <div class="in-item">
-          <span class="in-num text-execution">22%</span>
-          <span class="mono in-label">Budget overflow blocked at execution</span>
-        </div>
-        <div class="in-item">
-          <span class="in-num text-execution">0</span>
-          <span class="mono in-label">Post-execution corrections required</span>
-        </div>
-      </div>
-      <div class="grid-3">
-        <div class="card">
-          <h3 class="text-h3">Before EXECUTIA</h3>
-          <p class="text-body">Errors discovered after execution. Financial and legal consequences already active. Responsibility impossible to assign.</p>
-        </div>
-        <div class="card">
-          <h3 class="text-h3">With EXECUTIA</h3>
-          <p class="text-body">Invalid execution blocked before it occurs. No damage, no rollback, no post-fact correction needed.</p>
-        </div>
-        <div class="card card-execution">
-          <h3 class="text-h3 text-execution">Result</h3>
-          <p class="text-body">Execution becomes structurally reliable across all institutional systems. Permanently recorded. Auditable at any point.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- 2. CIVILIZATION MODEL -->
-  <section id="civilization" class="section section-dark section-civilization">
-    <div class="container-main">
-      <h2 class="text-h2">Every system operates on three layers.</h2>
-      <div class="grid-3 civilization-grid">
-        <div class="card">
-          <div class="card-num mono">01</div>
-          <h3 class="text-h3">Energy</h3>
-          <p class="text-body">What we can do. The raw capacity of a system — resources, infrastructure, potential.</p>
-          <div class="card-tag mono">Capacity</div>
-        </div>
-        <div class="card">
-          <div class="card-num mono">02</div>
-          <h3 class="text-h3">Information</h3>
-          <p class="text-body">What we know. Data, signals, intelligence — the knowledge layer that guides decisions.</p>
-          <div class="card-tag mono">Knowledge</div>
-        </div>
-        <div class="card card-execution">
-          <div class="card-num mono">03</div>
-          <h3 class="text-h3 text-execution">Execution</h3>
-          <p class="text-body">What becomes real. The layer where decisions are converted into outcomes — or lost.</p>
-          <div class="card-tag card-tag-execution mono">The Missing Layer ◆</div>
-        </div>
-      </div>
-      <div class="formula-wrap">
-        <p class="formula-text mono">Civilization = Energy × Information × <span class="text-execution">Execution</span></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. THE GAP -->
-  <section id="gap" class="section section-grey section-gap">
-    <div class="container-main">
-      <div class="gap-layout">
-        <div class="gap-left">
-          <div class="section-eyebrow mono">The Missing Standard</div>
-          <h2 class="text-h2">Modern systems have no<br>execution standard.</h2>
-          <p class="text-body">Every institution has systems for making decisions. Every institution has systems for storing records. No institution has a verified standard for what happens between the two.</p>
-        </div>
-        <div class="gap-right">
-          <div class="problem-list">
-            <div class="problem-item">
-              <span class="problem-x">✕</span>
-              <span>Decisions executed without verified authority</span>
-            </div>
-            <div class="problem-item">
-              <span class="problem-x">✕</span>
-              <span>No coordination protocol between systems</span>
-            </div>
-            <div class="problem-item">
-              <span class="problem-x">✕</span>
-              <span>Fragmented accountability across institutions</span>
-            </div>
-            <div class="problem-item">
-              <span class="problem-x">✕</span>
-              <span>Inconsistent results from identical decisions</span>
-            </div>
-          </div>
-          <p class="gap-inevitability mono">Systems have scaled. Execution has not.</p>
-          <p class="gap-inevitability-sub mono">As systems scale, execution failure becomes systemic.</p>
-          <p class="gap-why-now mono">As systems scale, unverified execution becomes systemic risk.</p>
-          <p class="gap-conclusion text-body">The problem is not intelligence.<br>The problem is <span class="text-execution">execution.</span></p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. PRINCIPLE -->
-  <section id="principle" class="section section-dark section-principle">
-    <div class="container-main">
-      <div class="section-eyebrow mono">The EXECUTIA Principle</div>
-      <h2 class="text-h2">A decision is valid only if its<br><span class="text-execution">execution is defined.</span></h2>
-      <div class="grid-3 principle-grid">
-        <div class="solution-item">
-          <div class="si-num mono">I</div>
-          <h3 class="text-h3">Defined execution chain</h3>
-          <p class="text-body">Every decision must produce a complete, verifiable chain from authorization to outcome. No chain — no execution.</p>
-        </div>
-        <div class="solution-item">
-          <div class="si-num mono">II</div>
-          <h3 class="text-h3">Assigned responsibility</h3>
-          <p class="text-body">A responsible actor must be identified and confirmed before execution begins. Responsibility is permanent and cannot dissolve.</p>
-        </div>
-        <div class="solution-item">
-          <div class="si-num mono">III</div>
-          <h3 class="text-h3">Measurable result</h3>
-          <p class="text-body">Every execution event must produce a verifiable, immutable record. The outcome is written once and cannot be altered.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. FLOW -->
-  <section id="flow" class="section section-dark section-flow">
-    <div class="container-main">
-      <div class="section-eyebrow mono">Execution Flow</div>
-      <h2 class="text-h2">How execution becomes real.</h2>
-      <div class="flow-wrapper">
-        <div class="flow-step">
-          <div class="flow-step-num mono">01</div>
-          <div class="flow-step-title">Decision</div>
-          <div class="flow-step-desc mono">Registered and verified</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-step-num mono">02</div>
-          <div class="flow-step-title">Structure</div>
-          <div class="flow-step-desc mono">Execution chain defined</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step flow-step-core">
-          <div class="flow-step-num mono">03</div>
-          <div class="flow-step-title text-execution">◎ EXECUTIA</div>
-          <div class="flow-step-desc mono">Verification layer</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-step-num mono">04</div>
-          <div class="flow-step-title">Responsibility</div>
-          <div class="flow-step-desc mono">Actor assigned + confirmed</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-step-num mono">05</div>
-          <div class="flow-step-title">Result</div>
-          <div class="flow-step-desc mono">Immutable record written</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6. SYSTEMS -->
 
   <!-- INEVITABILITY -->
   <section class="section section-dark inev-section">
@@ -477,117 +222,23 @@
     </div>
   </section>
 
-  <section id="systems" class="section section-grey section-systems">
-    <div class="container-main">
-      <div class="section-eyebrow mono">Systems Approaching Execution Standard</div>
-      <h2 class="text-h2">Where execution is<br>becoming structured.</h2>
-      <div class="grid-3 systems-grid">
-        <div class="system-card">
-          <div class="system-signal"></div>
-          <h3 class="text-h3">Estonia</h3>
-          <p class="text-body">Digital execution model. X-Road infrastructure connecting state decisions to verified system actions.</p>
-          <div class="system-tag mono">Digital governance</div>
-        </div>
-        <div class="system-card">
-          <div class="system-signal"></div>
-          <h3 class="text-h3">Singapore</h3>
-          <p class="text-body">GovTech-led digital execution framework. One of the most structurally precise institutional systems globally.</p>
-          <div class="system-tag mono">Digital execution</div>
-        </div>
-        <div class="system-card system-card-executia">
-          <div class="system-signal system-signal-active"></div>
-          <h3 class="text-h3 text-execution">EXECUTIA</h3>
-          <p class="text-body">The protocol layer. Verification infrastructure designed to sit above institutional systems globally.</p>
-          <div class="system-tag system-tag-active mono">PCT/IB2026/050141</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROOF BLOCK -->
-  <section class="section section-dark proof-block-section">
-    <div class="container-main">
-      <div class="section-eyebrow mono">Institutional Signals</div>
-      <div class="pb-grid">
-        <div class="pb-item">
-          <span class="pb-dot"></span>
-          <div>
-            <span class="mono pb-label">Implementation</span>
-            <span class="pb-val">EU-region pilot in progress</span>
-          </div>
-        </div>
-        <div class="pb-item">
-          <span class="pb-dot"></span>
-          <div>
-            <span class="mono pb-label">Patent</span>
-            <span class="pb-val">PCT/IB2026/050141 · Filed</span>
-          </div>
-        </div>
-        <div class="pb-item">
-          <span class="pb-dot"></span>
-          <div>
-            <span class="mono pb-label">Architecture</span>
-            <span class="pb-val">Defined · Reference implementation underway</span>
-          </div>
-        </div>
-        <div class="pb-item">
-          <span class="pb-dot"></span>
-          <div>
-            <span class="mono pb-label">In discussion with</span>
-            <span class="pb-val">Digital governance entities · Financial infrastructure operators · Public sector systems</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. CTA -->
+  <!-- CTA -->
   <section id="cta" class="section section-dark section-cta">
     <div class="container-main cta-inner">
-      <div class="section-eyebrow mono">Build systems that execute.</div>
-      <p class="cta-global mono">The first global execution standard is being defined.</p>
+      <div class="section-eyebrow mono">Institutional Access</div>
       <h2 class="text-h2 cta-title">The execution standard<br>is being defined <span class="text-execution">now.</span></h2>
-      <p class="text-body cta-sub">EXECUTIA is open to governments, institutions, and infrastructure partners who are ready to operate at the execution layer.</p>
-      <div class="cta-buttons">
-        <p class="cta-pressure mono">Early participants define how execution will operate at scale.</p>
-        <div class="cta-split">
-          <a href="/#contact" class="btn-primary cta-split-btn">For Governments</a>
-          <a href="/#contact" class="btn-secondary cta-split-btn">For Financial Systems</a>
-          <a href="/#contact" class="btn-secondary cta-split-btn">For Infrastructure</a>
-        </div>
-        <a href="/" class="btn-secondary">Institutional Overview →</a>
-        <a href="#real-sim" class="btn-secondary">View Real Scenario</a>
+      <p class="text-body cta-sub">Institutions that move first define the execution standard.</p>
+      <p class="mono cta-note">Private briefing · 30 min · response within 24h</p>
+      <div class="cta-buttons-clean">
+        <a href="https://www.executia.io/#contact" class="btn-primary">Request Private Briefing</a>
+        <a href="#real-sim" class="btn-secondary">View Real Scenario →</a>
       </div>
-      <p class="cta-briefing-note mono">Private briefing · 30 min · response within 24h</p>
-      <p class="cta-trigger">The execution layer will exist.<br><span class="text-execution">It will become a global standard.</span><br><span class="cta-trigger-final">The only question is who defines it — first.</span></p>
-      <div class="cta-patent mono">Patent Pending · PCT/IB2026/050141</div>
-    </div>
-  </section>
-
-  <!-- FOUNDER BLOCK -->
-  <section class="section section-dark founder-block">
-    <div class="container-main founder-inner">
-      <div class="section-eyebrow mono">Protocol Origin</div>
-      <h2 class="text-h2">Defined by execution.</h2>
-      <p class="text-body founder-body">EXECUTIA is a protocol initiative led by Sandis Boiko — focused on establishing execution as a structural standard across institutional systems.</p>
-      <p class="mono founder-cred">25+ years in business systems · real estate · infrastructure execution · cross-border operations</p>
-      <a href="https://www.linkedin.com/in/sandis-boiko-189405281" target="_blank" rel="noopener" class="founder-li mono">Sandis Boiko · LinkedIn ↗</a>
-    </div>
-  </section>
-
-  <!-- INSTITUTIONAL DIRECTION -->
-  <section class="section section-dark inst-direction">
-    <div class="container-main inst-direction-inner">
-      <div class="section-eyebrow mono">Institutional Direction</div>
-      <h2 class="text-h2">Built for systems that cannot fail.</h2>
-      <p class="text-body inst-direction-body">Designed for governments, financial infrastructure, and critical systems where execution errors create systemic risk.</p>
-      <p class="mono inst-direction-signal">EU region · digital governance · infrastructure-level integration</p>
     </div>
   </section>
 
   <!-- FOOTER -->
+  <div class="footer-inevitability mono">Execution will become a standard layer of all institutional systems.</div>
   <footer class="el-footer">
-    <div class="footer-inevitability mono">Execution will become a standard layer of all institutional systems.</div>
     <div class="container-main el-footer-inner">
       <div>
         <div class="el-footer-name mono">EXECUTIA</div>
@@ -595,7 +246,7 @@
       </div>
       <div class="el-footer-founder mono">Founder-led protocol initiative · Europe-based · Open for institutional pilots</div>
       <div class="el-footer-links mono">
-        <a href="https://www.executia.io">← Return to Institutional Layer</a>
+        <a href="https://www.executia.io">← Institutional Layer</a>
         <a href="mailto:info@executia.io">info@executia.io</a>
         <span>© 2026 EXECUTIA</span>
       </div>
@@ -820,4 +471,6 @@
     </script>
 
 </body>
+
+
 </html>
