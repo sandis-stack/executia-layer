@@ -50,11 +50,11 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 /* NAV */
 .el-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,10,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);height:72px}
 .el-nav-inner{height:72px;display:flex;align-items:center;justify-content:space-between}
-.el-nav-logo{display:flex;align-items:center;gap:12px}
+.el-nav-logo{display:flex;align-items:center;gap:8px}
 .el-nav-logo-text{display:flex;flex-direction:column;line-height:1.1}
-.logo-main{font-size:16px;font-weight:600;color:#ffffff;letter-spacing:.04em;font-family:'Inter',-apple-system,sans-serif}
+.logo-main{font-size:20px;font-weight:700;color:#ffffff;letter-spacing:.06em;font-family:'Inter',-apple-system,sans-serif}
 .logo-main .tm{font-size:9px;vertical-align:super;margin-left:2px;opacity:.7}
-.logo-sub{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.08em;font-family:'DM Mono',monospace}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.12em;font-family:'DM Mono',monospace;text-transform:uppercase}
 .el-nav-mark{width:28px;height:28px;background:var(--execution);color:#000;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:2px}
 .el-nav-name{font-size:.875rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--white)}
 .el-nav-links{display:flex;gap:32px}
