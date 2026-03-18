@@ -759,3 +759,27 @@ button{cursor:pointer;border:none;background:none;font-family:inherit}
 .in-num { display: block; font-size: 2.5rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
 .in-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
 @media(max-width:640px){.impact-numbers{grid-template-columns:1fr}.in-item{border-right:none;border-bottom:1px solid var(--border)}.in-item:last-child{border-bottom:none}}
+
+/* Founder block */
+.founder-block { border-top: 1px solid var(--border); }
+.founder-inner { max-width: 680px; }
+.founder-body { margin-bottom: 16px; max-width: 100%; }
+.founder-cred {
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(255,255,255,.35); display: block; margin-bottom: 20px;
+}
+.founder-li {
+  font-size: 13px; letter-spacing: .06em;
+  color: var(--execution); transition: opacity .2s;
+}
+.founder-li:hover { opacity: .7; }
+
+/* CTA global + pressure */
+.cta-global {
+  font-size: 14px; letter-spacing: .06em; text-transform: uppercase;
+  color: rgba(255,255,255,.5); margin-bottom: 8px; display: block;
+}
+.cta-pressure {
+  font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(255,255,255,.3); margin-bottom: 20px; display: block;
+}
