@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXECUTIA — Institutional Overview</title>
+  <meta name="description" content="EXECUTIA introduces a structural verification layer between institutional decisions and execution systems. For governments, financial institutions, and infrastructure operators." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="institutional.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="inst-nav">
+    <div class="container inst-nav-inner">
+      <a href="https://www.executia.io" class="inst-nav-logo">
+        <span class="inst-logo-name">EXECUTIA<span class="inst-tm">™</span></span>
+        <span class="mono inst-logo-sub">Execution Integrity Protocol</span>
+      </a>
+      <div class="inst-nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#model">System Model</a>
+        <a href="#logic">Verification</a>
+        <a href="#case">Reference Case</a>
+        <a href="#cta">Access</a>
+      </div>
+      <a href="#cta" class="inst-nav-cta mono">Request Briefing</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- 1. HERO -->
+    <section class="section section-dark section-hero">
+      <div class="container">
+        <span class="mono inst-eyebrow">Execution Integrity Protocol · PCT/IB2026/050141</span>
+        <h1 class="inst-h1">
+          Execution becomes a<br>
+          <span class="accent">verifiable system layer.</span>
+        </h1>
+        <p class="inst-body hero-body">A structural verification layer between decision and execution systems.</p>
+        <div class="inst-buttons">
+          <a href="#model" class="btn-primary">View System Model</a>
+          <a href="#cta" class="btn-outline">Request Briefing</a>
+        </div>
+        <div class="hero-signals">
+          <span class="mono sig-item">EU pilot in progress</span>
+          <span class="sig-sep">·</span>
+          <span class="mono sig-item">Patent filed</span>
+          <span class="sig-sep">·</span>
+          <span class="mono sig-item">Institutional integration underway</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. PROBLEM -->
+    <section id="problem" class="section section-light">
+      <div class="container">
+        <span class="mono inst-label">§ 01 — The Structural Gap</span>
+        <h2 class="inst-h2">Execution is the weakest layer<br>of institutional systems.</h2>
+        <div class="prob-layout">
+          <div class="prob-text">
+            <p class="inst-body">No system enforces execution correctness before action occurs. Decisions are verified legally — not operationally. Execution systems act without structural validation.</p>
+          </div>
+          <div class="prob-list">
+            <div class="prob-item mono">
+              <span class="prob-mark">—</span>
+              Decisions are verified legally, not operationally
+            </div>
+            <div class="prob-item mono">
+              <span class="prob-mark">—</span>
+              Execution systems act without structural validation
+            </div>
+            <div class="prob-item mono">
+              <span class="prob-mark">—</span>
+              Errors are detected after execution — not before
+            </div>
+            <div class="prob-item mono">
+              <span class="prob-mark">—</span>
+              Responsibility is assigned retroactively
+            </div>
+          </div>
+        </div>
+        <div class="prob-stat-row">
+          <div class="prob-stat">
+            <span class="prob-stat-num">$30T+</span>
+            <span class="mono prob-stat-label">Global public spending annually</span>
+          </div>
+          <div class="prob-stat">
+            <span class="prob-stat-num">0</span>
+            <span class="mono prob-stat-label">Systems that verify execution before it occurs</span>
+          </div>
+          <div class="prob-stat">
+            <span class="prob-stat-num">PCT/IB2026/050141</span>
+            <span class="mono prob-stat-label">Patent filed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SYSTEM MODEL -->
+    <section id="model" class="section section-dark">
+      <div class="container">
+        <span class="mono inst-label">§ 02 — System Model</span>
+        <h2 class="inst-h2">The verification layer.</h2>
+        <p class="inst-body" style="max-width:600px;margin-bottom:56px;">EXECUTIA sits between decision systems and execution systems. It does not replace existing infrastructure — it verifies execution before actions reach it.</p>
+        <div class="sys-diagram">
+          <div class="sys-node sys-node-top">
+            <span class="mono sys-label">Decision Systems</span>
+            <div class="sys-tags">
+              <span class="mono sys-tag">Government</span>
+              <span class="mono sys-tag">Finance</span>
+              <span class="mono sys-tag">Enterprise</span>
+            </div>
+          </div>
+          <div class="sys-conn">
+            <div class="sys-line"></div>
+            <span class="mono sys-arr">↓</span>
+          </div>
+          <div class="sys-node sys-node-core">
+            <span class="mono sys-core-sym">◎</span>
+            <span class="mono sys-core-name accent">EXECUTIA</span>
+            <span class="mono sys-core-sub">Execution Integrity Layer</span>
+          </div>
+          <div class="sys-conn">
+            <div class="sys-line sys-line-accent"></div>
+            <span class="mono sys-arr">↓</span>
+          </div>
+          <div class="sys-node sys-node-bot">
+            <span class="mono sys-label">Execution Systems</span>
+            <div class="sys-tags">
+              <span class="mono sys-tag">Payments</span>
+              <span class="mono sys-tag">Contracts</span>
+              <span class="mono sys-tag">Infrastructure</span>
+            </div>
+          </div>
+        </div>
+        <p class="mono sys-rule">No execution occurs without verification.</p>
+      </div>
+    </section>
+
+    <!-- 4. VERIFICATION LOGIC -->
+    <section id="logic" class="section section-light">
+      <div class="container">
+        <span class="mono inst-label">§ 03 — Verification Logic</span>
+        <h2 class="inst-h2">Execution verification logic.</h2>
+        <div class="logic-layout">
+          <div class="logic-checks">
+            <div class="logic-check">
+              <span class="mono check-num">01</span>
+              <div>
+                <div class="logic-check-title">Authorization</div>
+                <div class="inst-body-sm">The requesting authority holds the mandate to execute the specified action within defined scope.</div>
+              </div>
+            </div>
+            <div class="logic-check">
+              <span class="mono check-num">02</span>
+              <div>
+                <div class="logic-check-title">Compliance</div>
+                <div class="inst-body-sm">Institutional policy, regulatory constraints, and budget parameters are enforced at execution time — not post-audit.</div>
+              </div>
+            </div>
+            <div class="logic-check">
+              <span class="mono check-num">03</span>
+              <div>
+                <div class="logic-check-title">Responsibility</div>
+                <div class="inst-body-sm">A confirmed, accountable actor is assigned before execution proceeds. Responsibility cannot be dissolved after the fact.</div>
+              </div>
+            </div>
+            <div class="logic-check">
+              <span class="mono check-num">04</span>
+              <div>
+                <div class="logic-check-title">Resource availability</div>
+                <div class="inst-body-sm">Required resources, budget envelope, and operational conditions are confirmed prior to execution signal emission.</div>
+              </div>
+            </div>
+          </div>
+          <div class="logic-rule">
+            <p class="inst-body">All conditions must be satisfied simultaneously. Otherwise, execution is structurally blocked — not flagged, not logged.</p>
+            <div class="logic-rule-box mono">
+              All conditions verified → Execution signal emitted<br>
+              Any condition fails → Execution does not occur
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. REFERENCE CASE -->
+    <section id="case" class="section section-dark">
+      <div class="container">
+        <span class="mono inst-label">§ 04 — Reference Execution Case</span>
+        <h2 class="inst-h2">EU-level infrastructure payment scenario.</h2>
+        <p class="mono case-note">Based on real EU-level operational patterns · anonymized institutional data</p>
+        <div class="case-table">
+          <div class="case-row case-row-head">
+            <span class="mono">Step</span>
+            <span class="mono">Action</span>
+            <span class="mono">Without EXECUTIA</span>
+            <span class="mono">With EXECUTIA</span>
+          </div>
+          <div class="case-row">
+            <span class="mono case-n">01</span>
+            <span class="case-action">Decision approved<br><small>EC · €200M infrastructure</small></span>
+            <span class="mono case-bad">Recorded. No verification.</span>
+            <span class="mono case-good">Registered. Authority confirmed.</span>
+          </div>
+          <div class="case-row">
+            <span class="mono case-n">02</span>
+            <span class="case-action">Payment request<br><small>€180M — 18% over threshold</small></span>
+            <span class="mono case-bad">Proceeds undetected.</span>
+            <span class="mono case-good">Threshold violation detected.</span>
+          </div>
+          <div class="case-row case-row-core">
+            <span class="mono case-n">03</span>
+            <span class="case-action">◎ EXECUTIA<br><small>Verification check</small></span>
+            <span class="mono case-bad">Does not exist.</span>
+            <span class="mono case-good">Execution blocked.</span>
+          </div>
+          <div class="case-row">
+            <span class="mono case-n">04</span>
+            <span class="case-action">Payment execution<br><small>Treasury release</small></span>
+            <span class="mono case-bad">Released. €30M exposure.</span>
+            <span class="mono case-good">Blocked pending correction.</span>
+          </div>
+          <div class="case-row">
+            <span class="mono case-n">05</span>
+            <span class="case-action">Record<br><small>Audit trail</small></span>
+            <span class="mono case-bad">Discovered 6 months later.</span>
+            <span class="mono case-good">◼ Immutable ledger written.</span>
+          </div>
+        </div>
+        <p class="mono case-conclusion">Invalid execution is structurally prevented before funds are released.</p>
+      </div>
+    </section>
+
+    <!-- 6. INEVITABILITY -->
+    <section class="section section-light">
+      <div class="container">
+        <span class="mono inst-label">§ 05 — The Standard</span>
+        <h2 class="inst-h2">Execution verification will become standard.</h2>
+        <div class="inev-layout">
+          <div class="inev-points">
+            <div class="inev-point mono">
+              <span class="inev-dash">—</span>
+              Financial systems require pre-execution validation
+            </div>
+            <div class="inev-point mono">
+              <span class="inev-dash">—</span>
+              Governments require traceable execution chains
+            </div>
+            <div class="inev-point mono">
+              <span class="inev-dash">—</span>
+              Infrastructure requires accountable actions at execution time
+            </div>
+            <div class="inev-point mono">
+              <span class="inev-dash">—</span>
+              AI-driven systems require human-verified execution gates
+            </div>
+          </div>
+          <div class="inev-statement">
+            <p class="inst-body">Systems without execution verification will not scale to institutional requirements. The question is not whether this layer will exist — only who defines it.</p>
+            <div class="mono inev-rule">Systems without execution verification will not scale.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CTA -->
+    <section id="cta" class="section section-dark">
+      <div class="container cta-container">
+        <span class="mono inst-label">§ 06 — Institutional Access</span>
+        <h2 class="inst-h2">Access to the execution verification layer.</h2>
+        <p class="inst-body" style="max-width:520px;margin:0 auto 40px;">EXECUTIA is currently available for selected pilot integrations with governments, financial institutions, and infrastructure operators.</p>
+        <a href="https://www.executia.io/#contact" class="btn-primary btn-lg">Request Private Briefing</a>
+        <div class="mono cta-meta">Private briefing · 30 min · response within 24h</div>
+        <div class="cta-signals">
+          <div class="cta-sig">
+            <span class="mono cta-sig-label">Patent</span>
+            <span class="cta-sig-val">PCT/IB2026/050141</span>
+          </div>
+          <div class="cta-sig">
+            <span class="mono cta-sig-label">Status</span>
+            <span class="cta-sig-val">Patent Pending</span>
+          </div>
+          <div class="cta-sig">
+            <span class="mono cta-sig-label">Deployment</span>
+            <span class="cta-sig-val">Structured — select partners</span>
+          </div>
+          <div class="cta-sig">
+            <span class="mono cta-sig-label">Contact</span>
+            <a href="mailto:info@executia.io" class="cta-sig-val cta-sig-link">info@executia.io</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="inst-footer">
+    <div class="container inst-footer-inner">
+      <div>
+        <div class="mono inst-footer-name">EXECUTIA</div>
+        <div class="mono inst-footer-tag">Execution Integrity Protocol</div>
+      </div>
+      <div class="mono inst-footer-links">
+        <a href="https://execution.executia.io">← Execution Layer</a>
+        <a href="mailto:info@executia.io">info@executia.io</a>
+        <span>© 2026 EXECUTIA</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
