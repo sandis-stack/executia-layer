@@ -3,498 +3,281 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EXECUTIA — Execution Verification Layer for Governments &amp; Financial Systems</title>
-  <meta name="description" content="EXECUTIA is a verification layer that prevents invalid execution in financial systems, governments, and infrastructure before it occurs." />
-  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <title>EXECUTIA — Execution Verification System</title>
+  <meta name="description" content="EXECUTIA is the execution verification layer. This is not a demonstration — this is how execution behaves when verification is enforced." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/global.css" />
+  <link rel="stylesheet" href="/css/execution-page.css" />
 </head>
-<body class="page-wrapper">
+<body>
 
-  <!-- NAV -->
-  <nav class="el-nav">
-    <div class="container-main el-nav-inner">
-      <a href="https://www.executia.io" class="el-nav-logo">
-        <div class="el-nav-logo-text">
-          <span class="logo-main">EXECUTIA<span class="tm">™</span></span>
-          <span class="logo-sub mono">Execution Layer</span>
-        </div>
-      </a>
-      <div class="el-nav-links">
-        <a href="https://www.executia.io">Home</a>
-        <a href="https://execution.executia.io" class="nav-active">Execution</a>
-        <a href="/institutional">Institutional</a>
-        <a href="#contact">Contact</a>
-      </div>
-      <a href="/institutional#contact" class="el-nav-cta mono">Request Briefing</a>
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="https://www.executia.io" class="nav-logo">
+      <span class="nav-logo-name">EXECUTIA<span class="nav-tm">™</span></span>
+      <span class="nav-logo-sub">Execution Integrity Protocol</span>
+    </a>
+    <div class="nav-links">
+      <a href="https://www.executia.io">Home</a>
+      <a href="https://execution.executia.io" class="active">Execution</a>
+      <a href="https://www.executia.io/institutional">Institutional</a>
+      <a href="https://www.executia.io/#contact">Contact</a>
     </div>
-  </nav>
-  <div class="nav-system mono">Concept → Execution → Institutional</div>
+    <a href="https://www.executia.io/institutional#contact" class="nav-cta">Request Briefing</a>
+  </div>
+</nav>
+<div class="nav-bar mono">Concept → Execution Verified → Institutional Deployment</div>
 
-  <!-- 1. HERO (CLEAN) -->
-  <section class="section section-dark section-hero">
-    <div class="container-main">
-      <span class="hero-standard-claim mono fade-in">EXECUTION INTEGRITY PROTOCOL</span>
-      <h1 class="text-h1 hero-title fade-in" style="transition-delay:.1s">
-        Decision → Execution → <span class="text-execution">Error.</span><br>
-        <span style="font-size:.6em;opacity:.7;">EXECUTIA inserts verification.</span>
+<main>
+
+<!-- HERO -->
+<section class="ex-hero">
+  <div class="container">
+    <div class="ex-hero-inner">
+      <div class="mono ex-hero-badge fade-in">Execution Verification System · Live Model</div>
+      <h1 class="h1 ex-hero-title fade-in fade-delay-1">
+        Execution is verified before it happens.<br>
+        Or it does not happen at all.
       </h1>
-      <p class="text-body hero-subtext fade-in" style="transition-delay:.2s">Execution is verified before it is allowed to occur.</p>
-      <span class="hero-proof mono fade-in" style="transition-delay:.3s">REFERENCE IMPLEMENTATION IN PROGRESS · PCT/IB2026/050141</span>
-      <div class="hero-buttons fade-in" style="transition-delay:.4s">
-        <a href="#real-sim" class="btn-primary">View Execution</a>
-        <a href="/institutional" class="btn-secondary btn-institutional">Institutional Layer ↗</a>
+      <p class="ex-hero-def fade-in fade-delay-2">
+        This is not a simulation.<br>
+        This is execution under enforced verification — at system level.
+      </p>
+      <p class="mono ex-category fade-in fade-delay-3">EXECUTIA is the execution integrity protocol layer.</p>
+      <div class="mono ex-proof fade-in fade-delay-4">This is a deterministic execution model.</div>
+      <div class="system-state mono fade-in fade-delay-4">
+        <span>STATUS: VERIFICATION ACTIVE</span>
+        <span>MODE: PRE-EXECUTION CONTROL</span>
+        <span>SYSTEM: EXECUTIA CORE</span>
+        <span>ENFORCEMENT: MANDATORY</span>
+        <span>STATE: DETERMINISTIC</span>
       </div>
-    </div>
-  </section>
-
-
-  <!-- DEMO -->
-  <section id="demo" class="section section-dark">
-    <div class="container-main">
-      <div class="section-eyebrow mono">Interactive Demonstration</div>
-      <h2 class="text-h2">Two systems. One fails.</h2>
-      </div>
-  </section>
-
-  <!-- DEMO ANIMATION (preserved) -->
-  <section class="execution-demo">
-    <div class="demo-flow">
-      <div class="demo-world demo-world-bad" id="worldBad">
-        <div class="demo-label mono">Without EXECUTIA</div>
-        <div class="demo-nodes">
-          <div class="demo-node node-decision" id="nodeDecision1"><span class="mono demo-node-label">Decision</span><span class="mono demo-node-sub">Registered</span></div>
-          <div class="demo-connector"><div class="demo-conn-line"></div><div class="demo-conn-arrow mono">↓</div></div>
-          <div class="demo-node node-execution-bad" id="nodeExecBad"><span class="mono demo-node-label">Execution</span><span class="mono demo-node-sub">No verification</span></div>
-          <div class="demo-connector"><div class="demo-conn-line demo-conn-red"></div><div class="demo-conn-arrow mono" style="color:#ff3b30">↓</div></div>
-          <div class="demo-node node-error" id="nodeError"><span class="demo-error-sym">✕</span><span class="mono demo-node-label">ERROR</span><span class="mono demo-node-sub">Discovered too late · €4.2M loss</span></div>
-        </div>
-      </div>
-      <div class="demo-vs mono">vs</div>
-      <div class="demo-world demo-world-good" id="worldGood">
-        <div class="demo-label mono">With EXECUTIA</div>
-        <div class="demo-nodes">
-          <div class="demo-node node-decision" id="nodeDecision2"><span class="mono demo-node-label">Decision</span><span class="mono demo-node-sub">Registered</span></div>
-          <div class="demo-connector"><div class="demo-conn-line"></div><div class="demo-conn-arrow mono">↓</div></div>
-          <div class="demo-node node-executia" id="nodeExecutia"><span class="demo-executia-sym">◎</span><span class="mono demo-node-label text-execution">EXECUTIA</span><span class="mono demo-node-sub">Verification Layer</span><div class="demo-checks" id="demoChecks"><span class="mono demo-check" id="check1">✓ Authorization</span><span class="mono demo-check" id="check2">✓ Compliance</span><span class="mono demo-check" id="check3">✓ Responsibility</span><span class="mono demo-check" id="check4">✓ Resources</span></div></div>
-          <div class="demo-connector"><div class="demo-conn-line demo-conn-green"></div><div class="demo-conn-arrow mono" style="color:#00FFB2">↓</div></div>
-          <div class="demo-node node-success" id="nodeSuccess"><span class="demo-success-sym">◎</span><span class="mono demo-node-label">VALID EXECUTION</span><span class="mono demo-node-sub">Signal emitted · Ledger written</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- WHERE IT LIVES -->
-  <section id="how-executia-lives" class="section section-dark where-section">
-    <div class="container-main">
-      <div class="section-eyebrow mono">System Position</div>
-      <h2 class="text-h2">Where EXECUTIA lives.</h2>
-      <p class="mono where-rule">No system executes without verification.</p>
-      <p class="text-body where-body">EXECUTIA sits between decision systems and execution systems. It does not replace infrastructure — it verifies it.</p>
-      <div class="flow-wrapper where-flow">
-        <div class="flow-step">
-          <div class="flow-step-num mono">Input</div>
-          <div class="flow-step-title">Decision Systems</div>
-          <div class="flow-step-desc mono">ERP · Government · Finance</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step flow-step-core">
-          <div class="flow-step-num mono">◎ Verification</div>
-          <div class="flow-step-title text-execution">EXECUTIA</div>
-          <div class="flow-step-desc mono">Verification Layer</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-step-num mono">Output</div>
-          <div class="flow-step-title">Execution Systems</div>
-          <div class="flow-step-desc mono">Payments · Contracts · Infrastructure</div>
-        </div>
-      </div>
-      <p class="mono where-zero">No system replacement required · API-level integration</p>
-    </div>
-  </section>
-
-  <!-- REAL USE CASE: EU PAYMENT -->
-  <section class="real-sim section section-dark">
-    <div class="container-main">
-      <div class="section-eyebrow mono">Reference Implementation</div>
-      <h2 class="text-h2">Reference Execution Scenario · EU Fuel System</h2>
-      <p class="mono rs-authority-anchor">Based on real EU-level operational patterns.</p>
-      <p class="text-body real-sim-intro">Execution scenario: EU fuel settlement system.</p>
-
-      <p class="rs-proof-hook mono">This is not a concept. This is a reference execution model.</p>
-      <!-- Scenario tabs -->
-      <div class="rs-tabs">
-        <button class="rs-tab rs-tab-active" data-scenario="budget">Budget Overflow</button>
-        <button class="rs-tab" data-scenario="actor">Unauthorized Actor</button>
-        <button class="rs-tab" data-scenario="fraud">Fake Supplier</button>
-      </div>
-
-      <div class="rs-box">
-
-        <!-- Scenario context — changes per tab -->
-        <div class="rs-decision-block" id="rsDecisionBlock">
-          <div class="rs-row">
-            <span class="mono rs-label" id="rsCtxLabel1">EC Decision</span>
-            <span class="mono rs-value" id="rsCtxVal1">European Commission approves €200M</span>
-          </div>
-          <div class="rs-row">
-            <span class="mono rs-label" id="rsCtxLabel2">Contract value</span>
-            <span class="mono rs-value" id="contractValue">€180M <span class="rs-tag rs-tag-bad mono">18% over threshold</span></span>
-          </div>
-          <div class="rs-row">
-            <span class="mono rs-label" id="rsCtxLabel3">Responsible authority</span>
-            <span class="mono rs-value" id="rsCtxVal3">National Infrastructure Agency</span>
-          </div>
-        </div>
-
-        <div class="rs-arrow mono">↓</div>
-
-        <div class="rs-executia">
-          <span class="mono rs-executia-label text-execution">◎ EXECUTIA Verification</span>
-          <div class="rs-checks">
-            <div class="rs-check-row" id="rc1">
-              <span class="rs-check-dot"></span>
-              <span class="mono" id="rcLabel1">Authorization confirmed</span>
-              <span class="rs-check-res mono" id="rr1"></span>
-            </div>
-            <div class="rs-check-row" id="rc2">
-              <span class="rs-check-dot"></span>
-              <span class="mono" id="rcLabel2">Compliance rules</span>
-              <span class="rs-check-res mono" id="rr2"></span>
-            </div>
-            <div class="rs-check-row" id="rc3">
-              <span class="rs-check-dot"></span>
-              <span class="mono" id="rcLabel3">Responsibility assigned</span>
-              <span class="rs-check-res mono" id="rr3"></span>
-            </div>
-            <div class="rs-check-row" id="rc4">
-              <span class="rs-check-dot"></span>
-              <span class="mono" id="rcLabel4">Budget threshold</span>
-              <span class="rs-check-res mono" id="rr4"></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="rs-arrow mono">↓</div>
-
-        <div class="rs-result" id="rsResult">
-          <span class="mono rs-result-text" id="rsResultText">—</span>
-          <span class="mono rs-result-sub" id="rsResultSub"></span>
-          <span class="rs-impact mono" id="rsImpact"></span>
-        </div>
-
-        <div class="rs-buttons">
-          <button class="btn-primary rs-run-btn" id="runReal">Run Scenario</button>
-          <button class="btn-secondary rs-fix-btn" id="fixReal" style="display:none">Fix &amp; Re-run →</button>
-        </div>
-
-        <p class="mono rs-hint" id="rsHint">Select a scenario and run</p>
-        <p class="rs-outcome-punch mono">Before EXECUTIA: errors are discovered after execution.<br>With EXECUTIA: invalid execution never occurs.</p>
-
-      </div>
-    </div>
-  </section>
-
-
-  <!-- EXECUTION SHIFT — before/after -->
-  <section class="section exec-shift">
-    <div class="container-main exec-shift-inner">
-      <div class="section-eyebrow mono">Execution Shift</div>
-      <h2 class="text-h2">From control to structure.</h2>
-      <p class="text-body exec-shift-body">Execution has always been the weakest layer of every system.<br><br><span class="text-execution">EXECUTIA makes failure structurally impossible.</span></p>
-      <p class="mono exec-shift-sub">No delay · No ambiguity · No post-fact correction</p>
-    </div>
-  </section>
-
-  <!-- INEVITABILITY -->
-  <section class="section section-dark inev-section">
-    <div class="container-main inev-inner">
-      <div class="section-eyebrow mono">The Execution Standard</div>
-      <h2 class="text-h2">This layer will exist.</h2>
-      <div class="inev-grid">
-        <div class="inev-item"><span class="inev-dot"></span><span>All financial systems require verified execution</span></div>
-        <div class="inev-item"><span class="inev-dot"></span><span>All governments require traceable decisions</span></div>
-        <div class="inev-item"><span class="inev-dot"></span><span>All infrastructure requires accountability at execution time</span></div>
-        <div class="inev-item"><span class="inev-dot"></span><span>All institutions face execution risk without a verification layer</span></div>
-      </div>
-      <p class="inev-conclusion mono">Execution standard is not optional. It is inevitable.</p>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <!-- FLOW LOCK -->
-  <div class="flow-lock">
-    <div class="container-main flow-lock-inner">
-      <p class="mono flow-lock-text">Without verification — execution fails.<br>With EXECUTIA — invalid execution does not occur.</p>
-      <a href="/institutional" class="btn-primary flow-lock-btn">See Institutional Layer ↗</a>
     </div>
   </div>
+</section>
 
-  <section id="cta" class="section section-dark section-cta">
-    <div class="container-main cta-inner">
-      <div class="section-eyebrow mono">Institutional Access</div>
-      <h2 class="text-h2 cta-title">The execution standard<br>is being defined <span class="text-execution">now.</span></h2>
-      <p class="text-body cta-sub">Institutions that move first define the execution standard.</p>
-      <p class="mono cta-note">Private briefing · 30 min · response within 24h</p>
-      <div class="cta-buttons-clean">
-        <a href="https://www.executia.io/#contact" class="btn-primary">Request Private Briefing</a>
-        <a href="#real-sim" class="btn-secondary">View Real Scenario →</a>
+<!-- CONTEXT -->
+<section class="section ex-context-section">
+  <div class="container">
+    <div class="ex-label mono">Active Execution Scenario</div>
+    <div class="context-box">
+      <div class="ctx-row">
+        <span class="mono ctx-label">Project</span>
+        <span class="ctx-val">EU Infrastructure Procurement</span>
+      </div>
+      <div class="ctx-row">
+        <span class="mono ctx-label">Volume</span>
+        <span class="ctx-val">€200,000,000 · Cross-border funding</span>
+      </div>
+      <div class="ctx-row">
+        <span class="mono ctx-label">Authority</span>
+        <span class="ctx-val">European Commission</span>
+      </div>
+      <div class="ctx-row">
+        <span class="mono ctx-label">Basis</span>
+        <span class="ctx-val">Real EU-level operational patterns · anonymized</span>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FOOTER -->
-  <div class="footer-inevitability mono">Execution will become a standard layer of all institutional systems.</div>
-  <footer class="el-footer">
-    <div class="container-main el-footer-inner">
-      <div>
-        <div class="el-footer-name mono">EXECUTIA</div>
-        <div class="el-footer-tag mono">Execution Layer</div>
+<!-- EXECUTION FLOW -->
+<section class="section ex-flow-section">
+  <div class="container">
+    <div class="ex-label mono">Execution Chain</div>
+    <h2 class="h2">What happens when EXECUTIA verifies.</h2>
+    <div class="exec-flow">
+      <div class="exec-step">
+        <span class="mono exec-n">01</span>
+        <div>
+          <div class="exec-step-title">Decision registered</div>
+          <div class="mono exec-step-detail">Authority: European Commission · Amount: €200M approved</div>
+        </div>
+        <span class="mono exec-status exec-ok">◎ RECORDED</span>
       </div>
-      <div class="el-footer-founder mono">Founder-led protocol initiative · Europe-based · Open for institutional pilots</div>
-      <div class="el-footer-links mono">
-        <a href="https://www.executia.io">← Institutional Layer</a>
-        <a href="/institutional">Institutional</a>
-        <a href="mailto:info@executia.io">info@executia.io</a>
+      <div class="exec-step">
+        <span class="mono exec-n">02</span>
+        <div>
+          <div class="exec-step-title">Responsibility assigned</div>
+          <div class="mono exec-step-detail">Executing agency confirmed · Authority chain verified</div>
+        </div>
+        <span class="mono exec-status exec-ok">◎ VERIFIED</span>
+      </div>
+      <div class="exec-step exec-step-critical">
+        <span class="mono exec-n">03</span>
+        <div>
+          <div class="exec-step-title">Contract issued: €180M</div>
+          <div class="mono exec-step-detail">Deviation: +18% above approved threshold</div>
+        </div>
+        <span class="mono exec-status exec-warn">⚠ DEVIATION DETECTED</span>
+      </div>
+      <div class="exec-step exec-step-core">
+        <span class="mono exec-n">04</span>
+        <div>
+          <div class="exec-step-title">◎ EXECUTIA verification engine</div>
+          <div class="mono exec-step-detail">All conditions checked simultaneously — threshold breach confirmed</div>
+        </div>
+        <span class="mono exec-status exec-blocked">✕ EXECUTION BLOCKED</span>
+      </div>
+      <div class="exec-step">
+        <span class="mono exec-n">05</span>
+        <div>
+          <div class="exec-step-title">Execution signal</div>
+          <div class="mono exec-step-detail">Execution signal not emitted — conditions not satisfied</div>
+        </div>
+        <span class="mono exec-status exec-blocked">EXECUTION NOT EMITTED</span>
+      </div>
+      <div class="exec-step">
+        <span class="mono exec-n">06</span>
+        <div>
+          <div class="exec-step-title">Ledger entry</div>
+          <div class="mono exec-step-detail">Complete chain recorded · immutable · timestamped</div>
+        </div>
+        <span class="mono exec-status exec-ok">◼ WRITTEN</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section class="ex-compare-section">
+  <div class="container">
+    <div class="compare">
+      <div class="compare-col compare-bad">
+        <div class="mono compare-label">Without EXECUTIA</div>
+        <div class="compare-item">Execution proceeds unverified</div>
+        <div class="compare-item">Threshold violation undetected</div>
+        <div class="compare-item">Audit discovers damage 6 months later</div>
+        <div class="compare-item">Recovery no longer possible</div>
+        <div class="mono compare-result compare-result-bad">€30M+ exposure · no recourse</div>
+      </div>
+      <div class="compare-col compare-good">
+        <div class="mono compare-label">With EXECUTIA</div>
+        <div class="compare-item">Execution blocked before funds released</div>
+        <div class="compare-item">Violation detected at execution point</div>
+        <div class="compare-item">No damage occurs — correction required first</div>
+        <div class="compare-item">Immutable record written permanently</div>
+        <div class="mono compare-result compare-result-good">Structural compliance maintained</div>
+      </div>
+    <div class="mono compare-core">EXECUTIA introduces structural execution control — not post-execution correction.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CORE RULE -->
+<section class="section ex-rule-section">
+  <div class="container">
+    <div class="core-rule mono">
+      Execution occurs only when all conditions are verified simultaneously.<br>
+      Otherwise, it does not occur.
+    </div>
+    <div class="conditions">
+      <div class="cond-item">
+        <span class="mono cond-check">✓</span>
+        <div>
+          <div class="cond-title">Authorization</div>
+          <div class="mono cond-desc">Mandate and scope confirmed before execution proceeds</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <span class="mono cond-check">✓</span>
+        <div>
+          <div class="cond-title">Compliance</div>
+          <div class="mono cond-desc">Regulatory constraints and budget parameters enforced at execution time</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <span class="mono cond-check">✓</span>
+        <div>
+          <div class="cond-title">Responsibility</div>
+          <div class="mono cond-desc">Accountable actor assigned and confirmed prior to signal emission</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <span class="mono cond-check">✓</span>
+        <div>
+          <div class="cond-title">Resources</div>
+          <div class="mono cond-desc">Budget envelope and operational conditions validated</div>
+        </div>
+      </div>
+    </div>
+    <div class="system-note mono">
+      EXECUTIA does not observe execution.<br>
+      It controls whether execution can occur — at system level.
+    </div>
+  </div>
+</section>
+
+<!-- MULTI-SCENARIO -->
+<section class="section ex-scenario-section" id="scenarios">
+  <div class="container">
+    <div class="ex-label mono">Additional Execution Scenarios</div>
+    <h2 class="h2">Three execution failure patterns — structurally impossible.</h2>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="mono sc-num">01</div>
+        <div class="sc-title">Budget Overflow</div>
+        <div class="mono sc-desc">Payment request 22% above approved limit detected before settlement proceeds.</div>
+        <div class="mono sc-result sc-blocked">€440K execution prevented</div>
+      </div>
+      <div class="scenario-card">
+        <div class="mono sc-num">02</div>
+        <div class="sc-title">Unauthorized Actor</div>
+        <div class="mono sc-desc">Executing officer lacks required authority level — contract blocked pending authorized signatory.</div>
+        <div class="mono sc-result sc-blocked">Unauthorized execution stopped</div>
+      </div>
+      <div class="scenario-card">
+        <div class="mono sc-num">03</div>
+        <div class="sc-title">Fraudulent Supplier</div>
+        <div class="mono sc-desc">Supplier not found in procurement registry — €4.2M payment blocked before release.</div>
+        <div class="mono sc-result sc-blocked">€4.2M execution blocked</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEXT LAYER -->
+<section class="ex-next-section">
+  <div class="container">
+    <h2 class="h2">Execution is now verifiable.</h2>
+    <p class="ex-next-body">The next step is institutional deployment.</p>
+    <a href="https://www.executia.io/institutional" class="btn btn-primary btn-lg">Proceed to Institutional Layer →</a>
+    <div class="mono ex-next-note">See how execution verification is deployed in institutional systems</div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <div class="footer-brand-name">EXECUTIA<span class="nav-tm">™</span></div>
+      <div class="footer-brand-sub">Execution Integrity Protocol · PCT/IB2026/050141</div>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-col">
+        <div class="footer-col-title">System</div>
+        <a href="https://www.executia.io">Homepage</a>
+        <a href="https://www.executia.io/institutional">Institutional</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Contact</div>
+        <a href="/cdn-cgi/l/email-protection#620b0c040d22071a070117160b034c0b0d"><span class="__cf_email__" data-cfemail="d3babdb5bc93b6abb6b0a6a7bab2fdbabc">[email&#160;protected]</span></a>
+        <a href="/cdn-cgi/l/email-protection#d6a6a4b3a5a596b3aeb3b5a3a2bfb7f8bfb9"><span class="__cf_email__" data-cfemail="93e3e1f6e0e0d3f6ebf6f0e6e7faf2bdfafc">[email&#160;protected]</span></a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Legal</div>
         <span>© 2026 EXECUTIA</span>
+        <a href="https://www.linkedin.com/in/sandis-boiko-189405281" target="_blank" rel="noopener">LinkedIn ↗</a>
       </div>
     </div>
-  </footer>
+  </div>
+</footer>
 
-  <script>
-    // Reveal on scroll
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-    }, { threshold: 0.1 });
-    reveals.forEach(r => observer.observe(r));
-
-    // Demo animation — trigger when section is in view
-    const demoSection = document.querySelector('.execution-demo');
-    if (demoSection) {
-      const demoObserver = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          runDemo();
-          demoObserver.disconnect();
-        }
-      }, { threshold: 0.3 });
-      demoObserver.observe(demoSection);
-    }
-
-    function runDemo() {
-      // Bad world — decision → unverified execution → error
-      setTimeout(() => activate('#nodeDecision1'), 0);
-      setTimeout(() => activate('#nodeExecBad'), 700);
-      setTimeout(() => activate('#nodeError'), 1400);
-
-      // Error fades, good world begins
-      setTimeout(() => {
-        const err = document.querySelector('#nodeError');
-        if (err) err.classList.add('fade-out');
-      }, 2200);
-
-      // Good world — decision → EXECUTIA → checks → valid
-      setTimeout(() => activate('#nodeDecision2'), 2400);
-      setTimeout(() => activate('#nodeExecutia'), 3100);
-
-      // Checks — cinematic sequence
-      ['#check1','#check2','#check3','#check4'].forEach((id, i) => {
-        setTimeout(() => activate(id), 3600 + i * 280);
-      });
-
-      // Valid execution
-      setTimeout(() => activate('#nodeSuccess'), 4800);
-    }
-
-    function activate(selector) {
-      const el = document.querySelector(selector);
-      if (el) el.classList.add('active');
-    }
-
-    // MULTI-SCENARIO SIMULATION
-    const scenarios = {
-      budget: {
-        ctx: [
-          { label: 'Settlement decision',   val: 'Board approves fuel distribution contract' },
-          { label: 'Payment request',       val: '€2.4M <span class="rs-tag rs-tag-bad mono">22% over approved limit</span>' },
-          { label: 'Responsible officer',   val: 'Regional Distribution Director' }
-        ],
-        checks: ['Authorization confirmed','Compliance rules','Responsibility assigned','Budget threshold'],
-        failIndex: 3, failMsg: '✕ EXCEEDED',
-        blockedSub: 'Payment exceeds approved limit by 22% — settlement cannot proceed',
-        impact: '€440K risk prevented before execution',
-        fixLabel: 'Restructure payment',
-        fixCtxVal: '€1.96M <span class="rs-tag rs-tag-good mono">Within approved limit</span>',
-        validSub: '€1.96M settlement approved · Immutable ledger written · Responsibility confirmed',
-        validImpact: 'Execution verified before funds released'
-      },
-      actor: {
-        ctx: [
-          { label: 'Decision',           val: 'Ministry approves infrastructure contract' },
-          { label: 'Executing officer',   val: 'J. Kowalski <span class="rs-tag rs-tag-bad mono">Not authorized</span>' },
-          { label: 'Required authority',  val: 'Deputy Minister level or above' }
-        ],
-        checks: ['Decision registered','Compliance rules','Budget confirmed','Authority verification'],
-        failIndex: 3, failMsg: '✕ NOT AUTHORIZED',
-        blockedSub: 'Executing officer lacks required authority level — action blocked',
-        impact: 'Unauthorized actor stopped before contract execution',
-        fixLabel: 'Assign authorized officer',
-        fixCtxVal: 'A. Nowak <span class="rs-tag rs-tag-good mono">Deputy Minister — Authorized</span>',
-        validSub: 'Authorized officer confirmed · Contract proceeds · Full chain recorded',
-        validImpact: 'Verified authority linked to execution permanently'
-      },
-      fraud: {
-        ctx: [
-          { label: 'Decision',             val: 'Ministry approves €4.2M vendor contract' },
-          { label: 'Supplier',              val: 'TechBuild Ltd. <span class="rs-tag rs-tag-bad mono">Registry mismatch</span>' },
-          { label: 'Procurement registry', val: 'No active registration found' }
-        ],
-        checks: ['Authorization confirmed','Responsibility assigned','Compliance rules','Supplier registry'],
-        failIndex: 3, failMsg: '✕ SUPPLIER INVALID',
-        blockedSub: 'Supplier not found in procurement registry — possible fraudulent entity',
-        impact: '€4.2M fraud prevented before payment',
-        fixLabel: 'Submit valid supplier',
-        fixCtxVal: 'BuildTech Solutions <span class="rs-tag rs-tag-good mono">Registry verified</span>',
-        validSub: 'Verified supplier confirmed · Payment authorised · Ledger written',
-        validImpact: 'Corrupt execution chain structurally blocked'
-      }
-    };
-
-    let activeScenario = 'budget';
-    let rsFixed = false;
-
-    document.querySelectorAll('.rs-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.rs-tab').forEach(t => t.classList.remove('rs-tab-active'));
-        tab.classList.add('rs-tab-active');
-        activeScenario = tab.dataset.scenario;
-        rsFixed = false;
-        loadScenario(activeScenario);
-        resetResult();
-      });
-    });
-
-    function loadScenario(key) {
-      const s = scenarios[key];
-      s.ctx.forEach((row, i) => {
-        const labels = ['rsCtxLabel1','rsCtxLabel2','rsCtxLabel3'];
-        const vals   = ['rsCtxVal1','contractValue','rsCtxVal3'];
-        const lEl = document.getElementById(labels[i]);
-        const vEl = document.getElementById(vals[i]);
-        if (lEl) lEl.textContent = row.label;
-        if (vEl) vEl.innerHTML = row.val;
-      });
-      s.checks.forEach((label, i) => {
-        const el = document.getElementById('rcLabel'+(i+1));
-        if (el) el.textContent = label;
-      });
-      document.getElementById('fixReal').style.display = 'none';
-      document.getElementById('rsHint').textContent = 'Press Run Scenario to begin';
-      document.getElementById('runReal').textContent = 'Run Scenario';
-    }
-
-    function resetResult() {
-      const resultBox = document.getElementById('rsResult');
-      resultBox.className = 'rs-result';
-      document.getElementById('rsResultText').textContent = '—';
-      document.getElementById('rsResultSub').textContent = '';
-      document.getElementById('rsImpact').textContent = '';
-      ['rc1','rc2','rc3','rc4'].forEach((id,i) => {
-        document.getElementById(id).classList.remove('rs-pass','rs-fail','active');
-        document.getElementById('rr'+(i+1)).textContent = '';
-      });
-    }
-
-    const runRealBtn = document.getElementById('runReal');
-    const fixRealBtn = document.getElementById('fixReal');
-    if (runRealBtn) runRealBtn.addEventListener('click', () => runRealScenario());
-    if (fixRealBtn) {
-      fixRealBtn.addEventListener('click', () => {
-        rsFixed = true;
-        fixRealBtn.style.display = 'none';
-        document.getElementById('contractValue').innerHTML = scenarios[activeScenario].fixCtxVal;
-        runRealScenario();
-      });
-    }
-
-    function runRealScenario() {
-      const s = scenarios[activeScenario];
-      const resultBox  = document.getElementById('rsResult');
-      const resultText = document.getElementById('rsResultText');
-      const resultSub  = document.getElementById('rsResultSub');
-      const impact     = document.getElementById('rsImpact');
-      const hint       = document.getElementById('rsHint');
-
-      runRealBtn.disabled = true;
-      runRealBtn.textContent = 'Verifying...';
-      resultText.textContent = '—';
-      resultSub.textContent = '';
-      impact.textContent = '';
-      resultBox.className = 'rs-result';
-      ['rc1','rc2','rc3','rc4'].forEach((id,i) => {
-        document.getElementById(id).classList.remove('rs-pass','rs-fail','active');
-        document.getElementById('rr'+(i+1)).textContent = '';
-      });
-
-      let blocked = false;
-      ['rc1','rc2','rc3','rc4'].forEach((id,i) => {
-        setTimeout(() => {
-          if (blocked) return;
-          const row = document.getElementById(id);
-          const res = document.getElementById('rr'+(i+1));
-          row.classList.add('active');
-          if (!rsFixed && i === s.failIndex) {
-            blocked = true;
-            row.classList.add('rs-fail');
-            res.textContent = s.failMsg; res.style.color = '#ff3b30';
-            resultText.textContent = '✕ EXECUTION BLOCKED';
-            resultSub.textContent = s.blockedSub;
-            impact.textContent = s.impact;
-            resultBox.classList.add('rs-result-blocked');
-            hint.textContent = 'Press Fix & Re-run to resolve';
-            fixRealBtn.style.display = 'inline-flex';
-            fixRealBtn.textContent = s.fixLabel + ' →';
-            runRealBtn.disabled = false;
-            runRealBtn.textContent = 'Run Scenario';
-          } else {
-            row.classList.add('rs-pass');
-            res.textContent = '✓'; res.style.color = 'var(--execution)';
-            if (i === 3) {
-              resultText.textContent = '✓ VALID EXECUTION';
-              resultSub.textContent = s.validSub;
-              impact.textContent = s.validImpact;
-              resultBox.classList.add('rs-result-valid');
-              hint.textContent = 'Complete chain recorded — decision · verification · execution · ledger';
-              runRealBtn.disabled = false;
-              runRealBtn.textContent = 'Run Again';
-              rsFixed = false;
-              loadScenario(activeScenario);
-            }
-          }
-        }, i * 600);
-      });
-    }
-
-    loadScenario('budget');
-    </script>
-
-
-<script>
-const fadeEls = document.querySelectorAll('.fade-in');
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-fadeEls.forEach(el => obs.observe(el));
-// Trigger hero immediately
-setTimeout(() => {
-  document.querySelectorAll('.section-hero .fade-in').forEach(el => el.classList.add('visible'));
-}, 50);
-</script>
-</body>
-
-
-</html>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const _fi=document.querySelectorAll('.fade-in');
+const _ob=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersec
