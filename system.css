@@ -1,0 +1,13 @@
+:root {
+--bg:#0A0A0A;
+--text:#B8B8B8;
+--heading:#fff;
+--accent:#00FFB2;
+--border:rgba(255,255,255,0.08);
+}
+body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;margin:0;}
+.container{max-width:1000px;margin:auto;padding:40px;}
+.t-h1{color:var(--heading);}
+.mono{font-family:monospace;}
+.btn{padding:10px 20px;border:1px solid var(--border);cursor:pointer;}
+.btn--primary{background:var(--accent);color:#000;}
