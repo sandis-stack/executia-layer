@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXECUTIA — Execution Engine · Live Verification Layer</title>
+  <meta name="description" content="Live execution verification engine. See how EXECUTIA prevents unauthorized payments, budget breaches, and fraud before execution occurs." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="system.css" />
+  <link rel="stylesheet" href="system.demo.css" />
+</head>
+<body data-mode="dark">
+
+  <!-- NAV -->
+  <nav class="sys-nav" role="navigation" aria-label="Main navigation">
+    <div class="sys-nav-inner">
+      <a href="https://executia.io" class="sys-nav-logo">
+        <span class="sys-logo-name">EXECUTIA<span class="sys-logo-tm">™</span></span>
+        <span class="mono sys-logo-sub">Execution Integrity Protocol</span>
+      </a>
+      <div class="sys-nav-links">
+        <a href="https://execution.executia.io" class="sys-nav-active">Engine</a>
+        <a href="https://executia.io/institutional.html">For Governments</a>
+      </div>
+      <a href="https://executia.io/institutional.html#cta" class="btn btn--primary btn--sm">Request Briefing</a>
+    </div>
+  </nav>
+
+  <main role="main">
+
+  <!-- HERO — Engine layer -->
+  <section class="section section--hero section--dark">
+    <div class="container">
+      <span class="hero-standard-claim mono">EXECUTION ENGINE · EIF V7 · LIVE</span>
+      <h1 class="t-h1 hero-title">
+        The verification layer.<br><span class="t-accent">Running now.</span>
+      </h1>
+      <p class="t-body hero-subtext">Engine.run(checks, ctx) → ExecutionResult → SHA-256 → Ledger</p>
+      <p class="mono hero-claim">Deterministic · Verifiable · Immutable</p>
+      <span class="hero-proof mono">LIVE IN BROWSER · NO BACKEND REQUIRED · PCT/IB2026/050141</span>
+      <div class="live-signal mono"><span class="live-dot"></span>Engine running · EIF V7 · SHA-256 ready</div>
+      <div class="hero-buttons">
+        <a href="#demo" class="btn btn--primary">Start Engine</a>
+        <a href="#real-sim" class="btn btn--outline">Run Scenario</a>
+        <a href="https://executia.io" class="btn btn--outline">← Homepage</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CINEMATIC DEMO -->
+  <section id="demo" class="execution-demo">
+    <div class="container">
+      <div class="section-eyebrow mono">Live Execution Proof</div>
+      <div class="demo-scenario-label mono">Real scenario: €4.2M fraud attempt · Blocked before execution</div>
+    </div>
+    <div class="demo-flow">
+      <div class="demo-world demo-world-bad" id="worldBad">
+        <div class="demo-label mono">Without EXECUTIA</div>
+        <div class="demo-nodes">
+          <div class="demo-node node-decision" id="nodeDecision1"><span class="mono demo-node-label">Decision</span><span class="mono demo-node-sub">Registered</span></div>
+          <div class="demo-connector"><div class="demo-conn-line"></div><div class="demo-conn-arrow mono">↓</div></div>
+          <div class="demo-node node-execution-bad" id="nodeExecBad"><span class="mono demo-node-label">Execution</span><span class="mono demo-node-sub">No verification</span></div>
+          <div class="demo-connector"><div class="demo-conn-line demo-conn-red"></div><div class="demo-conn-arrow mono t-error">↓</div></div>
+          <div class="demo-node node-error" id="nodeError"><span class="demo-error-sym">✕</span><span class="mono demo-node-label">ERROR</span><span class="mono demo-node-sub">Discovered too late · €4.2M loss</span></div>
+        </div>
+      </div>
+      <div class="demo-vs mono">vs</div>
+      <div class="demo-world demo-world-good" id="worldGood">
+        <div class="demo-label mono">With EXECUTIA</div>
+        <div class="demo-nodes">
+          <div class="demo-node node-decision" id="nodeDecision2"><span class="mono demo-node-label">Decision</span><span class="mono demo-node-sub">Registered</span></div>
+          <div class="demo-connector"><div class="demo-conn-line"></div><div class="demo-conn-arrow mono">↓</div></div>
+          <div class="demo-engine-note mono">Deterministic rule engine</div>
+          <div class="demo-node node-executia" id="nodeExecutia"><span class="demo-executia-sym">◎</span><span class="mono demo-node-label">EXECUTIA</span><span class="mono demo-node-sub">Verification Layer</span><div class="demo-checks" id="demoChecks"><span class="mono demo-check" id="check1">Authorization</span><span class="mono demo-check" id="check2">Compliance</span><span class="mono demo-check" id="check3">Responsibility</span><span class="mono demo-check" id="check4">Resources</span></div></div>
+          <div class="demo-connector"><div class="demo-conn-line demo-conn-green"></div><div class="demo-conn-arrow mono">↓</div></div>
+          <div class="demo-node node-success" id="nodeSuccess"><span class="demo-success-sym">◎</span><span class="mono demo-node-label">VALID EXECUTION</span><span class="mono demo-node-sub">Signal emitted · Ledger written</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHERE IT LIVES -->
+  <section id="system" class="section section--dark where-section">
+    <div class="container">
+      <div class="section-eyebrow mono">System Position</div>
+      <h2 class="t-h2">Where EXECUTIA lives.</h2>
+      <p class="mono where-rule">No system executes without verification.</p>
+      <p class="t-body where-body">EXECUTIA sits between decision systems and execution systems. It does not replace infrastructure — it verifies it before actions reach it.</p>
+      <div class="flow-wrapper where-flow">
+        <div class="flow-step">
+          <div class="flow-step-num mono">Input</div>
+          <div class="flow-step-title">Decision Systems</div>
+          <div class="flow-step-desc mono">ERP · Government · Finance</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step flow-step-core">
+          <div class="flow-step-num mono">◎ Verification</div>
+          <div class="flow-step-title">EXECUTIA</div>
+          <div class="flow-step-desc mono">Verification Layer</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-step-num mono">Output</div>
+          <div class="flow-step-title">Execution Systems</div>
+          <div class="flow-step-desc mono">Payments · Contracts · Infrastructure</div>
+        </div>
+      </div>
+      <p class="mono where-zero">No system replacement required · API-level integration</p>
+    </div>
+  </section>
+
+  <!-- SIMULATION ENGINE -->
+  <section id="real-sim" class="real-sim section section--dark">
+    <div class="container">
+      <div class="section-eyebrow mono">Execution Simulation · EIF V7 Engine</div>
+      <h2 class="t-h2">Run a verification scenario.</h2>
+      <p class="mono rs-authority-anchor">Based on real EU-level operational patterns.</p>
+      <p class="rs-proof-hook mono">Engine.run() evaluates rules against real context data. Results are hashed with SHA-256.</p>
+
+      <p class="rs-expand-hint mono">Run scenario to unlock full simulation</p>
+      <div class="rs-tabs">
+        <button class="rs-tab rs-tab-active" data-role="scenario-tab" data-scenario="budget">Budget Overflow</button>
+        <button class="rs-tab" data-role="scenario-tab" data-scenario="actor">Unauthorized Actor</button>
+        <button class="rs-tab" data-role="scenario-tab" data-scenario="fraud">Fake Supplier</button>
+      </div>
+
+      <div class="rs-box" id="rsBox">
+        <div class="rs-decision-block" id="rsDecisionBlock">
+          <div class="rs-row">
+            <span class="mono rs-label" id="rsCtxLabel1" data-role="ctx-label" data-index="0">EC Decision</span>
+            <span class="mono rs-value" id="rsCtxVal1" data-role="ctx-value" data-index="0">European Commission approves €200M</span>
+          </div>
+          <div class="rs-row">
+            <span class="mono rs-label" id="rsCtxLabel2" data-role="ctx-label" data-index="1">Contract value</span>
+            <span class="mono rs-value" id="contractValue" data-role="ctx-value" data-index="1">€180M <span class="rs-tag rs-tag-bad mono">18% over threshold</span></span>
+          </div>
+          <div class="rs-row">
+            <span class="mono rs-label" id="rsCtxLabel3" data-role="ctx-label" data-index="2">Responsible authority</span>
+            <span class="mono rs-value" id="rsCtxVal3" data-role="ctx-value" data-index="2">National Infrastructure Agency</span>
+          </div>
+        </div>
+
+        <div class="rs-arrow mono">↓</div>
+
+        <div class="rs-executia">
+          <span class="mono rs-executia-label">◎ EXECUTIA — Rule Engine</span>
+          <div class="rs-checks">
+            <div class="rs-check-row" id="rc1" data-role="check-row">
+              <span class="rs-check-dot"></span>
+              <span class="mono" id="rcLabel1" data-role="check-label">Authorization confirmed</span>
+              <span class="rs-check-res mono" id="rr1" data-role="check-result"></span>
+            </div>
+            <div class="rs-check-row" id="rc2" data-role="check-row">
+              <span class="rs-check-dot"></span>
+              <span class="mono" id="rcLabel2" data-role="check-label">Compliance rules</span>
+              <span class="rs-check-res mono" id="rr2" data-role="check-result"></span>
+            </div>
+            <div class="rs-check-row" id="rc3" data-role="check-row">
+              <span class="rs-check-dot"></span>
+              <span class="mono" id="rcLabel3" data-role="check-label">Responsibility assigned</span>
+              <span class="rs-check-res mono" id="rr3" data-role="check-result"></span>
+            </div>
+            <div class="rs-check-row" id="rc4" data-role="check-row">
+              <span class="rs-check-dot"></span>
+              <span class="mono" id="rcLabel4" data-role="check-label">Budget threshold</span>
+              <span class="rs-check-res mono" id="rr4" data-role="check-result"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rs-arrow mono">↓</div>
+
+        <div class="rs-result" id="rsResult" data-role="result-box" data-state="idle">
+          <span class="mono rs-result-text" id="rsResultText" data-role="result-text">—</span>
+          <span class="mono rs-result-sub" id="rsResultSub" data-role="result-sub"></span>
+          <span class="rs-impact mono" id="rsImpact" data-role="result-impact"></span>
+        </div>
+
+        <div class="rs-buttons">
+          <button class="btn btn--primary rs-run-btn" id="runReal" data-role="run-btn" aria-label="Run verification scenario">Run Scenario</button>
+          <button class="btn btn--outline rs-fix-btn" id="fixReal" data-role="fix-btn" hidden aria-label="Apply fix and re-run scenario">Fix &amp; Re-run →</button>
+        </div>
+
+        <p class="mono rs-hint" id="rsHint" data-role="sim-hint">Select a scenario and run</p>
+
+        <div class="rs-trust-note mono">
+          SHA-256.<br>
+          Immutable.<br>
+          Auditable.
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ENGINE SPEC -->
+  <section class="section section--dark inev-section">
+    <div class="container inev-inner">
+      <div class="section-eyebrow mono">Engine Properties</div>
+      <h2 class="t-h2">Engine Properties</h2>
+      <div class="inev-grid">
+        <div class="inev-item"><span class="inev-dot"></span><span>Rules are typed, versioned objects with validate(ctx) and error(ctx) methods</span></div>
+        <div class="inev-item"><span class="inev-dot"></span><span>Engine is pure — no UI hooks, no DOM, no side effects outside EventBus</span></div>
+        <div class="inev-item"><span class="inev-dot"></span><span>Every result is hashed with SHA-256 and written to an immutable Ledger</span></div>
+        <div class="inev-item"><span class="inev-dot"></span><span>ApiClient stub is ready — one line to activate backend submission</span></div>
+      </div>
+      <p class="inev-conclusion mono">Engine.run(checks, ctx) → Promise&lt;ExecutionResult&gt; → Ledger.hash() → Ledger.store()</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta" class="section section--dark">
+    <div class="container cta-inner">
+      <div class="section-eyebrow mono">Institutional Access</div>
+      <h2 class="t-h2 cta-title">Ready to verify your<br>execution layer?</h2>
+      <p class="t-body cta-sub">EXECUTIA is available for selected institutional pilot integrations.</p>
+      <p class="mono cta-note">Private briefing · 30 min · response within 24h</p>
+      <div class="cta-buttons-clean">
+        <a href="https://executia.io/institutional.html" class="btn btn--outline">Institutional Overview</a>
+        <a href="https://executia.io/institutional.html#cta" class="btn btn--primary">Request Private Briefing ↗</a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="sys-footer" role="contentinfo">
+    <div class="sys-footer-inner">
+      <div class="sys-footer-brand">
+        <div class="mono sys-footer-name">EXECUTIA<span class="sys-logo-tm">™</span></div>
+        <span class="sys-footer-protocol">Execution Integrity Protocol</span>
+        <span class="sys-footer-patent">PCT/IB2026/050141 · Patent Pending</span>
+      </div>
+      <div class="sys-footer-layers">
+        <span class="sys-footer-layers-label">System layers</span>
+        <a href="https://executia.io">Homepage</a>
+        <a href="https://execution.executia.io" class="sys-layer-active">Execution Engine</a>
+        <a href="https://executia.io/institutional.html">Institutional Layer</a>
+      </div>
+      <div class="sys-footer-links">
+        <a href="mailto:info@executia.io">info@executia.io</a>
+        <a href="https://executia.io/institutional.html#cta">Request Briefing</a>
+        <a href="https://www.linkedin.com/in/sandis-boiko-189405281" target="_blank" rel="noopener">Sandis Boiko ↗</a>
+        <span class="sys-footer-copyright">© 2026 EXECUTIA · EIF V7</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="executia.js" defer></script>
+
+</body>
+</html>
