@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXECUTIA — Execution Layer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --blue:  #1E3A8A;
+      --blue-b:#2563EB;
+      --red:   #DC2626;
+      --text:  #e5e7eb;
+      --dim:   rgba(229,231,235,0.42);
+      --mono:  'JetBrains Mono', monospace;
+    }
+
+    html { background:radial-gradient(circle at center, #0A1F44 0%, #05070f 100%); background-attachment:fixed; scroll-behavior:smooth; scroll-snap-type:y proximity; }
+    body { min-height:100%; color:var(--text); font-family:var(--mono); overflow-x:hidden; }
+
+    canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; opacity:0.2; }
+    #overlay { position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; opacity:0; transition:opacity 0.6s ease; pointer-events:none; }
+
+    /* NAV */
+    #nav {
+      position:fixed; top:0; left:0; right:0; z-index:20;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:20px 40px;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      backdrop-filter:blur(6px);
+      background:rgba(5,7,15,0.4);
+    }
+    #nav a {
+      font-size:15px;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,0.75);
+      text-shadow:0 0 6px rgba(255,255,255,0.08);
+      text-decoration:none;
+      transition:color 0.2s ease;
+    }
+    #nav a:hover { color:rgba(255,255,255,0.8); }
+    #nav .brand { font-size:17px; letter-spacing:0.2em; color:rgba(255,255,255,0.9); }
+    #nav .active { color:rgba(255,255,255,0.98); }
+    #nav-links { display:flex; gap:28px; }
+
+    /* MAIN WRAP */
+    #wrap {
+      position:relative; z-index:10;
+      min-height:110vh; flex-shrink:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:flex-start;
+      padding:120px 24px 40px;
+    }
+
+    #system { text-align:center; width:100%; max-width:580px; margin-top:120px; position:relative; }
+    #system::before {
+      content:"";
+      position:absolute;
+      width:420px; height:420px;
+      left:50%; top:50%;
+      transform:translate(-50%,-40%);
+      background:radial-gradient(circle, rgba(37,99,235,0.08), transparent 70%);
+      pointer-events:none; z-index:-1;
+    }
+
+    /* STATUS */
+    #status {
+      font-size:13px; letter-spacing:0.2em; text-transform:uppercase;
+      color:rgba(255,255,255,0.45); margin-bottom:36px; min-height:18px;
+      transition:color 0.4s, opacity 0.4s ease;
+    }
+    /* SCENARIO LABEL */
+    #scenario-label {
+      font-size:10px; letter-spacing:0.3em; text-transform:uppercase;
+      color:rgba(255,255,255,0.2); margin-bottom:24px; min-height:14px;
+    }
+
+    /* INPUTS */
+    #inputs { text-align:left; display:inline-block; margin-bottom:32px; min-height:92px; }
+    .input-row { font-size:15px; letter-spacing:0.08em; color:rgba(255,255,255,0.65); margin-bottom:12px; opacity:0; transition:opacity 0.3s; }
+    .input-row.show { opacity:1; }
+    .input-val { color:rgba(255,255,255,0.85); margin-left:8px; }
+
+    /* RESULT */
+    #result { min-height:90px; font-size:14px; letter-spacing:0.06em; line-height:2.2; }
+    .r-blocked  { color:var(--red); font-size:18px; letter-spacing:0.14em; }
+    .r-verified { color:var(--blue-b); font-size:18px; letter-spacing:0.14em; }
+    .r-reason   { font-size:14px; color:rgba(255,255,255,0.65); letter-spacing:0.06em; }
+    .r-risk     { font-size:13px; color:rgba(255,255,255,0.45); margin-top:12px; letter-spacing:0.1em; }
+
+    /* AWARENESS */
+    #awareness { margin-top:28px; font-size:14px; letter-spacing:0.08em; color:rgba(255,255,255,0.45); line-height:2.2; min-height:56px; }
+
+    /* RESET */
+    #reset-btn {
+      display:none;
+      margin-top:32px;
+      font-family:var(--mono); font-size:10px; letter-spacing:0.2em; text-transform:uppercase;
+      padding:10px 24px;
+      border:1px solid rgba(255,255,255,0.1);
+      background:transparent; color:rgba(255,255,255,0.3);
+      cursor:pointer;
+      transition:border-color 0.15s, color 0.15s;
+    }
+    #reset-btn:hover { border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.6); }
+
+    
+    /* STATUS LINE */
+
+    /* ── SCROLL LAYER ────────────────────────────────────── */
+    #scroll-layer {
+      position: relative;
+      z-index: 10;
+    }
+    .scroll-sec {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 180px 48px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+      scroll-snap-align: start;
+    }
+    .scroll-sec.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .scroll-content {
+      text-align: center;
+      max-width: 760px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scroll-content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .scroll-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 24px;
+    }
+    .scroll-text {
+      font-size: clamp(40px, 4.5vw, 64px);
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.5;
+    }
+    .scroll-list {
+      font-size: 18px;
+      color: rgba(255,255,255,0.55);
+      line-height: 2.4;
+      display: block;
+      margin-top: 16px;
+    }
+    .scroll-sub {
+      margin-top: 40px;
+    }
+    .scroll-cta {
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      padding-bottom: 4px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .scroll-sec--inst { border-top: 1px solid rgba(255,255,255,0.07); }
+
+    .scroll-text--dim { color: rgba(255,59,48,0.65); }
+    .scroll-text--bright { color: rgba(59,130,246,0.85); }
+
+    .scroll-text--key { font-weight: 500; color: rgba(255,255,255,0.95) !important; }
+    .scroll-sec:last-child .scroll-text { font-weight: 500; color: rgba(255,255,255,0.95); }
+    .scroll-inst-grid {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center; margin-top: 28px;
+    }
+    .scroll-inst-item {
+      font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      padding: 8px 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .scroll-cta:hover {
+      color: rgba(255,255,255,0.8);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+
+    /* ── SCROLL HINT ─────────────────────────────────────── */
+    #scroll-hint {
+      position: absolute;
+      bottom: 80px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      z-index: 11; pointer-events: none;
+      opacity: 0; transition: opacity 0.6s ease;
+    }
+    @keyframes float {
+      0%,100% { transform: translate(-50%, 0); opacity:0.2; }
+      50% { transform: translate(-50%, 8px); opacity:0.4; }
+    }
+
+    /* ── WRAP GRADIENT ───────────────────────────────────── */
+    #wrap::after {
+      content: "";
+      position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 120px;
+      background: linear-gradient(to bottom, transparent, rgba(5,7,15,0.9));
+      pointer-events: none; z-index: 2;
+    }
+
+    /* ── SIDE LABEL ──────────────────────────────────────── */
+    #side-label {
+      position: fixed;
+      left: 24px; top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      transform-origin: left center;
+      font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      pointer-events: none; user-select: none;
+      z-index: 15;
+      opacity: 0; transition: opacity 0.6s ease;
+      background: linear-gradient(to right, rgba(255,255,255,0.40), rgba(255,255,255,0.20));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    body.scrolled #side-label { opacity: 0.5; }
+
+
+    /* ── ENGINE → SCROLL TRANSITION ─────────────────────── */
+    #system {
+      transition: opacity 1.2s ease, transform 1.2s ease, filter 1.2s ease;
+    }
+    body.transitioning #system {
+      opacity: 0.25;
+      transform: scale(0.98);
+      filter: blur(2px);
+    }
+    .scroll-content {
+      transition: transform 1s ease, opacity 1s ease;
+    }
+    .scroll-sec:nth-child(1) { transition-delay: 0.05s; }
+    .scroll-sec:nth-child(2) { transition-delay: 0.12s; }
+    .scroll-sec:nth-child(3) { transition-delay: 0.19s; }
+    .scroll-sec:nth-child(4) { transition-delay: 0.26s; }
+    .scroll-sec:nth-child(5) { transition-delay: 0.33s; }
+
+  </style>
+</head>
+<body>
+
+  <canvas id="gridCanvas"></canvas>
+  <div id="overlay"></div>
+
+  <nav id="nav">
+    <a href="https://executia.io" class="brand">EXECUTIA</a>
+    <div id="nav-links">
+      <a href="https://executia.io">Entry</a>
+      <a href="https://execution.executia.io" class="active">Execution</a>
+      <a href="https://executia.io/institutional.html">Institutional</a>
+    </div>
+  </nav>
+
+  <div id="side-label">EXECUTIA · EXECUTION LAYER</div>
+  <div id="wrap">
+    <div id="system">
+
+      <div id="status"></div>
+      <!-- ENGINE OUTPUT (shown during run) -->
+      <div id="scenario-label"></div>
+      <div id="inputs" style="display:none">
+        <div class="input-row" id="f0">BUDGET:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="input-val" id="v0">—</span></div>
+        <div class="input-row" id="f1">TIME:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="input-val" id="v1">—</span></div>
+        <div class="input-row" id="f2">RESOURCES:&nbsp;<span class="input-val" id="v2">—</span></div>
+        <div class="input-row" id="f3">COMPLEXITY:&nbsp;<span class="input-val" id="v3">—</span></div>
+      </div>
+      <div id="result"></div>
+      <div id="awareness"></div>
+      
+
+    </div>
+    <div id="scroll-hint">↓ Read the protocol</div>
+  </div>
+
+
+  <script>
+  /* ── CANVAS GRID + PARTICLES ─────────────────────────── */
+  const canvas=document.getElementById("gridCanvas");
+  const ctx=canvas.getContext("2d");
+  let W,H,systemState="idle",constraints=[],particles=[];
+  const G=40;
+
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  window.addEventListener("resize",resize); resize();
+
+  function drawGrid(){
+    ctx.strokeStyle="rgba(30,58,138,0.10)"; ctx.lineWidth=1;
+    for(let x=0;x<=W;x+=G){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<=H;y+=G){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  }
+
+  function drawConstraints(){
+    constraints.forEach(c=>{
+      const g=ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,c.r);
+      g.addColorStop(0,"rgba(220,38,38,0.3)"); g.addColorStop(1,"rgba(220,38,38,0)");
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle="rgba(220,38,38,0.85)"; ctx.beginPath(); ctx.arc(c.x,c.y,3,0,Math.PI*2); ctx.fill();
+    });
+  }
+
+  let time=0;
+  class Particle{
+    constructor(idx){this.idx=idx;this.reset();}
+    reset(){
+      this.x=Math.random()*W; this.y=Math.random()*H;
+      this.tx=this.x; this.ty=this.y;
+      if(Math.random()>0.5){this.vx=(Math.random()>0.5?1:-1)*1.8;this.vy=0;}
+      else{this.vx=0;this.vy=(Math.random()>0.5?1:-1)*1.8;}
+      this.life=0; this.maxLife=90+Math.random()*130;
+    }
+    update(){
+      if(systemState==="error"){
+        this.vx*=0.93; this.vy*=0.93; this.x+=this.vx; this.y+=this.vy;
+        for(let c of constraints){
+          const dx=this.x-c.x,dy=this.y-c.y;
+          if(Math.sqrt(dx*dx+dy*dy)<c.r){this.vx=0;this.vy=0;return;}
+        }
+        return;
+      }
+      const baseSpeed = systemState==="calm" ? 1.1 : 1.8;
+      const variance = Math.sin(time*0.001+this.idx)*0.4;
+      const s = (systemState==="success"?2.0:systemState==="calm"?0.6:1)*(baseSpeed+variance)/baseSpeed;
+      // organic drift
+      const driftX=Math.sin(time*0.0008+this.idx*0.7)*0.12;
+      const driftY=Math.cos(time*0.0008+this.idx*0.5)*0.12;
+      this.tx+=this.vx*s+driftX;
+      this.ty+=this.vy*s+driftY;
+      // smooth interpolation
+      this.x+=(this.tx-this.x)*0.16;
+      this.y+=(this.ty-this.y)*0.16;
+      this.x=Math.round(this.x/G)*G; this.y=Math.round(this.y/G)*G;
+      this.life++;
+      if(this.x<0||this.x>W||this.y<0||this.y>H||this.life>this.maxLife)this.reset();
+    }
+    draw(){
+      const alpha=systemState==="error"?0.8:
+                  systemState==="success"?(0.7+Math.sin(time*0.002+this.idx)*0.2):
+                  (0.35+Math.sin(time*0.0015+this.idx)*0.12);
+      ctx.fillStyle=systemState==="error"?`rgba(220,38,38,${alpha})`:
+                    `rgba(59,130,246,${alpha})`;
+      ctx.beginPath();ctx.arc(this.x,this.y,2,0,Math.PI*2);ctx.fill();
+    }
+  }
+  for(let i=0;i<80;i++)particles.push(new Particle());
+  (function loop(){
+    time++;
+    ctx.fillStyle="rgba(5,7,15,0.18)"; ctx.fillRect(0,0,W,H); drawGrid();
+    if(systemState==="error")drawConstraints();
+    particles.forEach(p=>{p.update();p.draw();});
+    requestAnimationFrame(loop);
+  })();
+
+  /* ── SCENARIOS ───────────────────────────────────────── */
+  const SCENARIOS=[
+    {key:"authorized",  label:"STATE-LEVEL PAYMENT SYSTEM",       B:200,T:90,R:100,C:70,  layers:[]},
+    {key:"unauthorized",label:"UNAUTHORIZED ACTION DETECTED",        B:200,T:90,R:100,C:70,  layers:["Authorization not confirmed","No mandate for execution scope"]},
+    {key:"budget",      label:"BUDGET THRESHOLD EXCEEDED",  B:60, T:90,R:100,C:95,  layers:["Budget insufficient","Execution capacity exceeded"]},
+  ];
+
+  /* ── UI REFS ─────────────────────────────────────────── */
+  const $status=document.getElementById("status");
+  const $sl=document.getElementById("scenario-label");
+  const $inp=document.getElementById("inputs");
+  const $re=document.getElementById("result");
+  const $aw=document.getElementById("awareness");
+  const vEls=[0,1,2,3].map(i=>document.getElementById("v"+i));
+  const fEls=[0,1,2,3].map(i=>document.getElementById("f"+i));
+
+  const delay=ms=>new Promise(r=>setTimeout(r,ms));
+  function setStatus(t,c){$status.textContent=t;$status.style.color=c||"rgba(255,255,255,0.28)";}
+
+  /* ── RUN SCENARIO ────────────────────────────────────── */
+  async function runScenario(s){
+    systemState="idle"; constraints=[]; $re.innerHTML=""; $aw.innerHTML="";
+    $sl.textContent=s.label;
+    $inp.style.display="block";
+    fEls.forEach(f=>f.classList.remove("show")); vEls.forEach(v=>v.textContent="—");
+
+    setStatus("INPUT REGISTERED");
+    const keys=["B","T","R","C"];
+    for(let i=0;i<4;i++){await delay(220);fEls[i].classList.add("show");vEls[i].textContent=s[keys[i]];}
+
+    await delay(600);
+    setStatus("VALIDATION IN PROGRESS");
+    await delay(900);
+
+    const failed=s.layers;
+    const risk=(s.C/(s.R*s.T||1)*100).toFixed(1);
+
+    if(failed.length>0){
+      systemState="error";
+      failed.forEach((f,i)=>constraints.push({
+        x:Math.round((0.2+Math.random()*0.6)*W/G)*G,
+        y:Math.round((0.2+Math.random()*0.6)*H/G)*G, r:55+i*25
+      }));
+      await delay(200);
+      $re.innerHTML=`<div class="r-blocked">SYSTEM BLOCKED</div>`
+        +failed.map(f=>`<div class="r-reason">${f}</div>`).join("")
+        +`<div class="r-reason">Execution denied</div>`;
+      setStatus("BLOCKED","rgba(220,38,38,0.6)");
+    } else {
+      systemState="success";
+      await delay(200);
+      $re.innerHTML=`<div class="r-verified">EXECUTION VERIFIED</div>
+        <div class="r-reason">All conditions satisfied</div>
+        <div class="r-reason">Proceed</div>`;
+      setStatus("VERIFIED","rgba(59,130,246,0.7)");
+    }
+
+    await delay(1600);
+    const riskLevel = parseFloat(risk) > 60 ? 'HIGH' : parseFloat(risk) > 30 ? 'ELEVATED' : 'LOW';
+    $re.innerHTML+=`<div class="r-risk">RISK LEVEL: ${riskLevel}</div>`;
+    await delay(3200);
+
+    systemState="calm";
+    $aw.innerHTML="Execution without verification<br>will not be permitted";
+    await delay(2400);
+
+    // Keep result visible — never clear the proof
+    systemState="calm";
+    constraints=[];
+    $aw.innerHTML="Execution model complete";
+    $inp.style.opacity="0.3";
+
+    setStatus("EXECUTION MODEL COMPLETE");
+    await delay(800);
+
+    document.body.classList.add("transitioning");
+    await delay(500);
+    window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+  }
+
+  /* ── AUTO-RUN LOOP ───────────────────────────────────── */
+  let idx=0;
+  async function runOnce(){
+    await runScenario(SCENARIOS[1]); // unauthorized — strongest
+    const hint=document.getElementById("scroll-hint");
+    if(hint){ hint.style.opacity="1"; hint.innerHTML="↓ Read the protocol"; }
+  }
+
+  /* ── BOOT ────────────────────────────────────────────── */
+  async function boot(){
+    setStatus("SYSTEM INITIALIZING..."); await delay(1100);
+    setStatus("EXECUTION LAYER INITIALIZED"); await delay(900);
+    setStatus(""); await delay(500);
+    runOnce();
+  }
+  // Soft pause on attention
+  let hoverTimeout;
+  document.addEventListener("mousemove", () => {
+    if(systemState==="idle"||systemState==="processing") return;
+    if(systemState!=="calm") {
+      systemState="calm";
+    }
+    clearTimeout(hoverTimeout);
+    hoverTimeout=setTimeout(()=>{
+      if(systemState==="calm") systemState="idle";
+    }, 2500);
+  });
+
+  window.addEventListener('scroll', () => {
+    document.body.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  boot();
+
+  /* ── SCROLL REVEAL ───────────────────────────────────── */
+  function checkScroll() {
+    document.querySelectorAll('.scroll-sec').forEach(sec => {
+      const rect = sec.getBoundingClientRect();
+      const progress = 1 - (rect.top / window.innerHeight);
+      if (progress > 0.25) {
+        sec.classList.add('visible');
+      }
+    });
+  }
+  window.addEventListener('scroll', checkScroll, { passive: true });
+  checkScroll();
+
+  </script>
+
+  <!-- SCROLL EXPLANATION LAYER -->
+  <div id="scroll-layer">
+
+    <!-- 1. HOOK -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-text">
+          Execution is broken.<br>
+          This is the fix.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PROBLEM -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">The problem</div>
+        <div class="scroll-text">
+          Systems assume execution is correct.<br>
+          That assumption is wrong.
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CONSEQUENCE -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">The consequence</div>
+        <div class="scroll-text">
+          Failures happen after execution.<br>
+          When correction is costly or impossible.
+        </div>
+      </div>
+    </div>
+
+    <!-- 3b. REALITY SNAP -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">In reality</div>
+        <div class="scroll-text">
+          Payments execute without verification.<br>
+          Decisions are made without validation.
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SCALE -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">The scale</div>
+        <div class="scroll-text">
+          Unvalidated execution<br>leads to irreversible failure.
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. WITHOUT -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">Without EXECUTIA</div>
+        <div class="scroll-text scroll-text--dim">
+          Execution is assumed.<br><br>
+          No validation.<br>
+          No guarantees.<br>
+          Failure comes too late.
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. WITH -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">With EXECUTIA</div>
+        <div class="scroll-text scroll-text--bright">
+          Execution is verified.<br><br>
+          Validation happens before action.<br>
+          Invalid execution is blocked.<br>
+          Outcomes become predictable.
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. MECHANISM -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">How it works</div>
+        <div class="scroll-text">
+          No action is executed<br>without validation against:<br>
+          <span class="scroll-list">— authorization<br>— resources<br>— time<br>— complexity</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. ENFORCEMENT -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">The rule</div>
+        <div class="scroll-text">
+          If conditions are not met,<br>execution is not permitted.
+        </div>
+      </div>
+    </div>
+
+    <!-- 8b. INEVITABILITY -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-text">
+          This shift is not optional.<br>
+          It is necessary.
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. DEFINITION -->
+    <div class="scroll-sec scroll-sec--def">
+      <div class="scroll-content">
+        <div class="scroll-label">EXECUTIA</div>
+        <div class="scroll-text scroll-text--key">
+          EXECUTIA is an execution validation standard<br>
+          that ensures actions are verified before they occur.
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. FOR WHOM -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-label">Designed for</div>
+        <div class="scroll-text scroll-text--list">
+          — governments<br>
+          — financial systems<br>
+          — infrastructure operators<br>
+          — enterprise execution environments
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. CLOSURE -->
+    <div class="scroll-sec">
+      <div class="scroll-content">
+        <div class="scroll-text">
+          If execution is not verified,<br>
+          it must not happen.
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. INSTITUTIONAL -->
+    <div class="scroll-sec scroll-sec--inst">
+      <div class="scroll-content">
+        <div class="scroll-label">EXECUTIA · EXECUTION VALIDATION STANDARD</div>
+        <div class="scroll-text" style="font-size:18px;margin-bottom:32px">
+          It ensures that execution is verified<br>before it occurs.
+        </div>
+        <div class="scroll-inst-grid">
+          <div class="scroll-inst-item">Payment systems</div>
+          <div class="scroll-inst-item">State infrastructure</div>
+          <div class="scroll-inst-item">Regulatory execution</div>
+          <div class="scroll-inst-item">Enterprise operations</div>
+        </div>
+        <div class="scroll-text" style="font-size:14px;color:rgba(255,255,255,0.45);margin-top:32px;line-height:1.8">
+          It prevents unauthorized, unverified,<br>or resource-incompatible actions.
+        </div>
+        <div class="scroll-text" style="font-size:13px;color:rgba(255,255,255,0.3);margin-top:20px;letter-spacing:0.08em">
+          Designed for systems where execution must be controlled, not assumed.
+        </div>
+        <div class="scroll-text" style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:24px;">
+          Built for systems where failure is not acceptable.
+        </div>
+        <div class="scroll-sub" style="margin-top:48px">
+          <a href="https://executia.io/institutional.html" class="scroll-cta">Access the EXECUTIA protocol ↗</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
