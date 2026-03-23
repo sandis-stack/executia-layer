@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXECUTIA — Execution Layer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-white:             #ffffff;
+  --bg-main:              #0b1426;
+  --bg-deep:              #0e1a33;
+  --bg-elev:              #14213d;
+  --bg-graphite:          #1a1f2b;
+  --text-dark:            #0b0f1a;
+  --text-primary:         rgba(255,255,255,0.88);
+  --text-secondary:       rgba(255,255,255,0.55);
+  --text-muted:           rgba(255,255,255,0.25);
+  --text-light-primary:   #0b0f1a;
+  --text-light-secondary: rgba(0,0,0,0.6);
+  --text-light-muted:     rgba(0,0,0,0.3);
+  --border-light:         rgba(0,0,0,0.08);
+  --border-soft:          rgba(255,255,255,0.05);
+  --border-medium:        rgba(255,255,255,0.1);
+  --signal-blue:          rgba(120,180,255,0.5);
+  --signal-green:         rgba(120,255,180,0.65);
+  --signal-yellow:        rgba(234,179,8,0.7);
+  --signal-red:           rgba(220,60,60,0.85);
+  --mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--mono);
+  background: linear-gradient(180deg, var(--bg-main), var(--bg-deep));
+  color: var(--text-primary);
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(120,180,255,0.08), transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ===== FLASH ===== */
+.flash {
+  position: fixed; inset: 0; background: #ffffff;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.08s linear; z-index: 9999;
+}
+.flash.active { opacity: 1; }
+
+/* ===== HEADER ===== */
+.exec-header {
+  position: fixed; top: 0; width: 100%; height: 56px;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 0 32px;
+  background: rgba(11,20,38,0.75);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border-soft);
+  z-index: 1000;
+}
+.exec-logo {
+  font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+  cursor: pointer; opacity: 0.8; color: var(--text-primary);
+}
+.exec-logo:hover { opacity: 1; }
+.exec-protocol { display: flex; align-items: center; gap: 14px; }
+.exec-protocol span {
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  cursor: pointer; opacity: 0.4; color: var(--text-primary); transition: opacity 0.2s;
+}
+.exec-protocol span:hover { opacity: 0.8; }
+.exec-protocol span.active { opacity: 1; }
+.exec-protocol .line { width: 40px; height: 1px; background: rgba(255,255,255,0.08); }
+.exec-right { display: flex; justify-self: end; gap: 20px; align-items: center; }
+.exec-risk { font-size: 11px; letter-spacing: 0.15em; color: var(--signal-yellow); }
+.exec-risk.high { color: var(--signal-red); }
+.exec-status { font-size: 11px; letter-spacing: 0.18em; color: var(--signal-green); }
+.exec-status.blocked { color: var(--signal-red); }
+
+/* ===== MAP ===== */
+#map {
+  position: fixed; inset: 0;
+  background: radial-gradient(circle at center, var(--bg-deep), var(--bg-main));
+  z-index: 1;
+}
+
+.node {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--signal-blue);
+  opacity: 0.5;
+  transition: background 0.3s, opacity 0.3s;
+}
+.node.active { background: var(--signal-green); opacity: 1; }
+.node.fail   { background: var(--signal-red);   opacity: 1; }
+
+.node-label {
+  position: absolute;
+  font-size: 10px; letter-spacing: 0.12em;
+  color: var(--text-muted);
+  transform: translate(-50%, 10px);
+}
+
+/* ===== FEED ===== */
+#feed {
+  position: fixed; right: 40px; top: 80px;
+  width: 300px; font-size: 11px; z-index: 2;
+}
+.feed-item {
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+}
+.feed-item .result-ok  { color: var(--signal-green); }
+.feed-item .result-fail { color: var(--signal-red); }
+.explain { margin-top: 6px; font-size: 10px; color: var(--text-muted); }
+
+/* ===== CONTROL ===== */
+#control {
+  position: fixed; left: 40px; bottom: 40px;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-muted); cursor: pointer; z-index: 2;
+  transition: color 0.2s;
+}
+#control:hover { color: var(--text-primary); }
+
+/* ===== CONSENSUS ===== */
+#consensus {
+  position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+  font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-muted); z-index: 2;
+  transition: color 0.3s;
+}
+#consensus.ok     { color: var(--signal-green); }
+#consensus.failed { color: var(--signal-red); }
+
+/* ===== FOOTER ===== */
+.exec-footer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  border-top: 1px solid var(--border-soft);
+  padding: 16px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(11,20,38,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+.footer-left {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-muted);
+}
+.footer-right { display: flex; gap: 28px; }
+.footer-right a {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  text-decoration: none; color: var(--text-muted); transition: color 0.2s linear;
+}
+.footer-right a:hover { color: var(--text-primary); }
+
+@media (max-width: 768px) {
+  .exec-header { padding: 0 24px; }
+  .exec-protocol .line { width: 20px; }
+  #feed { width: 220px; right: 16px; }
+  #control { left: 16px; }
+  .exec-footer { padding: 16px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- FLASH -->
+<div class="flash"></div>
+
+<!-- HEADER -->
+<header class="exec-header">
+  <div class="exec-logo" onclick="navigate('https://executia.io')">EXECUTIA</div>
+  <nav class="exec-protocol">
+    <span data-layer="entry" onclick="navigate('https://executia.io')">ENTRY</span>
+    <span class="line"></span>
+    <span data-layer="execution" onclick="navigate('https://execution.executia.io')">EXECUTION</span>
+    <span class="line"></span>
+    <span data-layer="institutional" onclick="navigate('https://executia.io/institutional.html')">INSTITUTIONAL</span>
+  </nav>
+  <div class="exec-right">
+    <div class="exec-risk" id="riskIndicator">RISK: 0%</div>
+    <div class="exec-status" id="systemStatus">● ACTIVE</div>
+  </div>
+</header>
+
+<div id="map"></div>
+<div id="feed"></div>
+<div id="consensus"></div>
+<div id="control" onclick="cycleLevel()">ACCESS: CLIENT</div>
+
+<!-- FOOTER -->
+<footer class="exec-footer">
+  <div class="footer-left">EXECUTIA™ · EP-1 · © 2026</div>
+  <div class="footer-right">
+    <a href="https://www.linkedin.com/in/sandis-boiko-189405281" target="_blank">Institutional profile</a>
+    <a href="mailto:info@executia.io">info@executia.io</a>
+  </div>
+</footer>
+
+<script>
+/* ===== NAVIGATION ===== */
+function navigate(url) {
+  const flash = document.querySelector('.flash');
+  flash.classList.add('active');
+  setTimeout(() => { window.location.href = url; }, url.includes('execution.executia.io') ? 120 : 100);
+}
+
+/* ===== ACTIVE LAYER ===== */
+function setActiveLayer() {
+  const items = document.querySelectorAll('[data-layer]');
+  const path = window.location.pathname;
+  const host = window.location.hostname;
+  items.forEach(el => {
+    const layer = el.dataset.layer;
+    if (layer === "entry" && (path === "/" || path.includes("index"))) el.classList.add("active");
+    if (layer === "institutional" && path.includes("institutional")) el.classList.add("active");
+    if (layer === "execution" && host.includes("execution")) el.classList.add("active");
+  });
+}
+
+/* ===== SYSTEM STATE ===== */
+let currentRisk = 12;
+
+function updateSystem(result) {
+  const riskEl = document.getElementById("riskIndicator");
+  const statusEl = document.getElementById("systemStatus");
+  currentRisk = result.risk;
+  riskEl.textContent = "RISK: " + result.risk + "%";
+  if (result.risk > 40) { riskEl.classList.add("high"); } else { riskEl.classList.remove("high"); }
+  if (result.blocked) { statusEl.textContent = "● BLOCKED"; statusEl.classList.add("blocked"); }
+  else { statusEl.textContent = "● ACTIVE"; statusEl.classList.remove("blocked"); }
+}
+
+/* ===== LEVEL CONTROL ===== */
+let level = 0;
+const levels = ["CLIENT", "EXPLAIN", "INTERNAL"];
+
+function cycleLevel() {
+  level = (level + 1) % 3;
+  document.getElementById("control").innerText = "ACCESS: " + levels[level];
+}
+
+/* ===== NODES ===== */
+const nodes = [
+  { id: "A", name: "Frankfurt", x: 55, y: 40 },
+  { id: "B", name: "New York",  x: 30, y: 45 },
+  { id: "C", name: "Singapore", x: 75, y: 65 }
+];
+
+function renderMap() {
+  document.getElementById("map").innerHTML = nodes.map(n => `
+    <div class="node" id="node-${n.id}" style="left:${n.x}%;top:${n.y}%"></div>
+    <div class="node-label" style="left:${n.x}%;top:${n.y}%">${n.name}</div>
+  `).join("");
+}
+
+/* ===== EXECUTION GENERATOR ===== */
+function generate() {
+  return {
+    id: Date.now(),
+    budget: Math.random() > 0.5 ? 120000 : 50000,
+    time: "valid",
+    complexity: Math.random() > 0.5 ? "high" : "low"
+  };
+}
+
+/* ===== VALIDATE (with fallback) ===== */
+async function run(exec) {
+  let data;
+  try {
+    const res = await fetch("/api/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(exec)
+    });
+    data = await res.json();
+  } catch (e) {
+    // Local validation fallback — no backend required
+    const pass = exec.budget >= 80000 && exec.complexity !== "high";
+    data = {
+      decision: pass ? "APPROVED" : "BLOCKED",
+      nodes: {
+        A: pass,
+        B: pass || Math.random() > 0.4,
+        C: pass
+      }
+    };
+  }
+
+  updateMap(data);
+  addFeed(exec, data);
+  showConsensus(data.decision, data);
+
+  // Update risk indicator based on recent decisions
+  const risk = data.decision === "BLOCKED" ? Math.min(currentRisk + 8, 85) : Math.max(currentRisk - 3, 6);
+  updateSystem({ risk: Math.round(risk), blocked: data.decision === "BLOCKED" });
+}
+
+/* ===== MAP UPDATE ===== */
+function updateMap(data) {
+  for (let k in data.nodes) {
+    const el = document.getElementById("node-" + k);
+    if (!el) continue;
+    el.classList.remove("active", "fail");
+    el.classList.add(data.nodes[k] ? "active" : "fail");
+  }
+}
+
+/* ===== FEED ===== */
+function addFeed(exec, data) {
+  const el = document.createElement("div");
+  el.className = "feed-item";
+  const ok = data.decision === "APPROVED";
+  const nodeCount = Object.values(data.nodes).filter(Boolean).length;
+
+  let html = `EXEC ${String(exec.id).slice(-6)}<br>
+BUDGET: ${exec.budget.toLocaleString()}<br>
+COMPLEXITY: ${exec.complexity.toUpperCase()}<br>
+<span class="${ok ? 'result-ok' : 'result-fail'}">${data.decision}</span>`;
+
+  if (level >= 1) {
+    html += `<div class="explain">VALIDATION MATRIX: APPLIED<br>CONSTRAINT STATUS: ${ok ? 'SATISFIED' : 'BREACH DETECTED'}</div>`;
+  }
+  if (level === 2) {
+    html += `<div class="explain">TRACE: VALIDATION_MATRIX_V2<br>NODE CONSENSUS: ${nodeCount}/3</div>`;
+  }
+
+  el.innerHTML = html;
+  const feed = document.getElementById("feed");
+  feed.prepend(el);
+  if (feed.children.length > 12) feed.removeChild(feed.lastChild);
+}
+
+/* ===== CONSENSUS ===== */
+function showConsensus(decision, data) {
+  const el = document.getElementById("consensus");
+  const nodeCount = data ? Object.values(data.nodes).filter(Boolean).length : 3;
+  el.textContent = "CONSENSUS: " + decision + " (" + nodeCount + "/3)";
+  el.classList.remove("ok", "failed");
+  el.classList.add(decision === "APPROVED" ? "ok" : "failed");
+}
+
+/* ===== INIT ===== */
+renderMap();
+setActiveLayer();
+updateSystem({ risk: 12, blocked: false });
+
+setInterval(() => { run(generate()); }, 1500);
+</script>
+
+</body>
+</html>
