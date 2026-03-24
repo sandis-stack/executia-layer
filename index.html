@@ -1,340 +1,253 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-mode="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EXECUTIA — Execution Layer</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>EXECUTIA™ | Execution System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg-main:       #0b1426;
-  --bg-deep:       #0e1a33;
-  --text-primary:  rgba(255,255,255,0.88);
-  --text-secondary:rgba(255,255,255,0.55);
-  --text-muted:    rgba(255,255,255,0.25);
-  --border-soft:   rgba(255,255,255,0.05);
-  --signal-green:  rgba(120,255,180,0.65);
-  --signal-yellow: rgba(234,179,8,0.7);
-  --signal-red:    rgba(220,60,60,0.85);
-  --mono: 'JetBrains Mono', monospace;
+body {
+    background: #0A1F44;
+    color: #e5e7eb;
+    font-family: 'Inter', system-ui, sans-serif;
 }
 
-body { font-family: var(--mono); background: var(--bg-main); color: var(--text-primary); min-height: 100vh; }
-
-.flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: opacity 0.08s linear; z-index: 9999; }
-.flash.active { opacity: 1; }
-
-/* HEADER */
-.exec-header { position: fixed; top: 0; width: 100%; height: 56px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 32px; background: rgba(11,20,38,0.75); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-soft); z-index: 1000; }
-.exec-logo { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; opacity: 0.8; color: var(--text-primary); }
-.exec-logo:hover { opacity: 1; }
-.exec-protocol { display: flex; align-items: center; gap: 14px; }
-.exec-protocol span { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer; opacity: 0.4; color: var(--text-primary); transition: opacity 0.2s; }
-.exec-protocol span:hover { opacity: 0.8; }
-.exec-protocol span.active { opacity: 1; }
-.exec-protocol .line { width: 40px; height: 1px; background: rgba(255,255,255,0.08); }
-.exec-right { display: flex; justify-self: end; gap: 20px; align-items: center; }
-.exec-risk { font-size: 11px; letter-spacing: 0.15em; color: var(--signal-yellow); }
-.exec-risk.high { color: var(--signal-red); }
-.exec-status { font-size: 11px; letter-spacing: 0.18em; color: var(--signal-green); }
-.exec-status.blocked { color: var(--signal-red); }
-
-/* NOTICE — top left */
-.notice {
-  position: fixed; top: 80px; left: 40px;
-  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--text-muted); line-height: 1.9;
+.system-box {
+    border: 1px solid #374151;
+    background: rgba(255,255,255,0.02);
+    padding: 24px;
 }
 
-/* AHA TRIGGERS — below notice */
-#triggers {
-  position: fixed; top: 220px; left: 40px;
-  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-  line-height: 2.4; color: var(--text-muted);
+.input {
+    border-bottom: 1px solid #4b5563;
+    background: transparent;
+    padding: 8px 4px;
+    width: 100%;
 }
-.trig-q { color: rgba(255,255,255,0.18); display: block; }
-.trig-a { color: rgba(120,255,180,0.5); display: block; margin-bottom: 4px; }
 
-/* NODE AUTHORITY — below triggers */
-#nodeAuth {
-  position: fixed; top: 410px; left: 40px;
-  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--text-muted); line-height: 2;
+.label {
+    font-size: 11px;
+    color: #9ca3af;
+    letter-spacing: 0.15em;
 }
-.node-title { color: rgba(255,255,255,0.2); margin-bottom: 4px; display: block; }
-.node-list  { color: rgba(120,180,255,0.45); display: block; }
-.node-req   { color: rgba(255,255,255,0.15); display: block; margin-top: 4px; }
 
-/* FEED */
-.feed { position: fixed; right: 40px; top: 80px; width: 260px; font-size: 11px; color: var(--text-secondary); letter-spacing: 0.08em; line-height: 1.8; }
-.item { margin-bottom: 16px; border-bottom: 1px solid var(--border-soft); padding-bottom: 12px; }
-.item .ok   { color: rgba(120,255,180,0.9); }
-.item .fail { color: rgba(220,60,60,0.9); }
-
-/* CORE */
-.core { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; min-width: 400px; }
-.core-title { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
-.result { font-size: 34px; letter-spacing: 0.2em; text-transform: uppercase; transition: color 0.2s linear; color: rgba(255,255,255,0.12); }
-.result.ok   { color: rgba(120,255,180,0.92); }
-.result.fail { color: rgba(220,60,60,0.92); }
-.sys { margin-top: 14px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); min-height: 18px; }
-
-/* PROCESS STAGE */
-#stage { margin-top: 10px; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(120,180,255,0.4); min-height: 16px; }
-
-/* SUBMISSION */
-.submission { position: fixed; bottom: 52px; left: 40px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
-.sub-title { color: var(--text-muted); margin-bottom: 14px; }
-.cmd { color: var(--text-secondary); margin-bottom: 6px; line-height: 1.8; }
-.cmd span { color: var(--text-primary); }
-.sub-btn { margin-top: 14px; display: block; background: none; border: none; border-bottom: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; padding-bottom: 4px; transition: color 0.2s linear, border-color 0.2s linear; }
-.sub-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.4); }
-.sub-btn.locked { color: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.06); cursor: default; pointer-events: none; }
-
-/* VISIBLE RULE */
-#rule { position: fixed; bottom: 52px; right: 40px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); line-height: 2; text-align: right; }
-.rule-title { color: rgba(255,255,255,0.2); margin-bottom: 4px; display: block; }
-.rule-item { display: block; color: rgba(255,255,255,0.18); }
-.rule-item.violated { color: rgba(220,60,60,0.7); }
-.rule-item.satisfied { color: rgba(120,255,180,0.5); }
-
-/* FOOTER */
-.exec-footer { position: fixed; bottom: 0; left: 0; right: 0; border-top: 1px solid var(--border-soft); padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(11,20,38,0.6); backdrop-filter: blur(4px); z-index: 2; }
-.footer-left { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
-.footer-right { display: flex; gap: 28px; }
-.footer-right a { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; color: var(--text-muted); transition: color 0.2s linear; }
-.footer-right a:hover { color: var(--text-primary); }
-
-@media (max-width: 900px) {
-  .exec-header { padding: 0 24px; }
-  .exec-protocol .line { width: 20px; }
-  .notice, #triggers, #nodeAuth, #rule { display: none; }
-  .feed { width: 180px; right: 16px; }
-  .submission { left: 16px; }
-  .exec-footer { padding: 12px 24px; }
+.divider {
+    border-top: 1px solid #374151;
+    margin: 24px 0;
 }
+
+.red { color: #dc2626; }
+.green { color: #16a34a; }
 </style>
 </head>
+
 <body>
 
-<div class="flash"></div>
+<!-- HEADER -->
+<header class="border-b border-gray-700">
+  <div class="max-w-6xl mx-auto px-6 flex justify-between items-center h-[70px]">
 
-<header class="exec-header">
-  <div class="exec-logo" onclick="navigate('https://executia.io')">EXECUTIA</div>
-  <nav class="exec-protocol">
-    <span data-layer="entry" onclick="navigate('https://executia.io')">ENTRY</span>
-    <span class="line"></span>
-    <span data-layer="execution" onclick="navigate('https://execution.executia.io')">EXECUTION</span>
-    <span class="line"></span>
-    <span data-layer="institutional" onclick="navigate('https://executia.io/institutional.html')">INSTITUTIONAL</span>
-  </nav>
-  <div class="exec-right">
-    <div class="exec-risk" id="riskIndicator">RISK: 0%</div>
-    <div class="exec-status" id="systemStatus">● ACTIVE</div>
+    <div class="text-[13px] tracking-[0.14em] text-gray-300">
+      EXECUTIA™
+    </div>
+
+    <nav class="flex gap-8 text-[12px] tracking-widest text-gray-400">
+      <a href="/">ENTRY</a>
+      <a href="/institutional">INSTITUTIONAL</a>
+    </nav>
+
   </div>
 </header>
 
-<!-- NOTICE -->
-<div class="notice">
-  THIS IS NOT AN INTERFACE<br>
-  THIS IS A PROTOCOL LAYER<br><br>
-  USER DOES NOT CONTROL EXECUTION<br>
-  SYSTEM DETERMINES OUTCOME<br><br>
-  <span style="color:rgba(255,255,255,0.15)">USER AUTHORITY: NONE<br>SYSTEM AUTHORITY: ABSOLUTE</span>
+<!-- CONTENT -->
+<div class="max-w-6xl mx-auto px-6 py-20">
+
+<h1 class="text-2xl mb-2">Execution System Session</h1>
+<p class="text-gray-400 mb-12 text-sm">
+System-level validation and enforcement
+</p>
+
+<div class="system-box mb-16">
+
+<!-- SESSION -->
+<div class="flex justify-between text-xs text-gray-400 mb-6">
+  <span id="session">SESSION: —</span>
+  <span id="timestamp">TIME: —</span>
+  <span id="state">STATE: IDLE</span>
 </div>
 
-<!-- AHA TRIGGERS -->
-<div id="triggers">
-  <span class="trig-q">&gt; Can this be bypassed?</span>
-  <span class="trig-a">NO</span>
-  <span class="trig-q">&gt; Is execution pre-validated?</span>
-  <span class="trig-a">YES</span>
-  <span class="trig-q">&gt; Control layer active?</span>
-  <span class="trig-a">CONFIRMED</span>
+<div class="grid md:grid-cols-2 gap-12">
+
+<!-- INPUT -->
+<div>
+<p class="label mb-6">INPUT</p>
+
+<input id="budget" placeholder="Budget" class="input mb-5">
+<input id="time" placeholder="Time" class="input mb-5">
+<input id="resources" placeholder="Resources" class="input mb-5">
+<input id="complexity" placeholder="Complexity" class="input mb-5">
+<input id="dependency" placeholder="Dependency" class="input mb-5">
+
+<button onclick="runSystem()" class="text-xs tracking-widest mt-6">
+SUBMIT
+</button>
 </div>
 
-<!-- NODE AUTHORITY -->
-<div id="nodeAuth">
-  <span class="node-title">Validation Nodes</span>
-  <span class="node-list">Frankfurt · New York · Singapore</span>
-  <span class="node-req">Consensus Required</span>
+<!-- OUTPUT -->
+<div>
+<p class="label mb-6">SYSTEM LOG</p>
+
+<div id="log" class="text-sm space-y-2 text-gray-300"></div>
+
+<div class="divider"></div>
+
+<p class="label mb-2">RESULT</p>
+<div id="result" class="text-lg"></div>
+
+<div class="divider"></div>
+
+<p class="label mb-4">SCENARIO</p>
+<div id="comparison" class="text-sm text-gray-300 space-y-4"></div>
+
 </div>
 
-<!-- FEED -->
-<div class="feed" id="feed"></div>
-
-<!-- CORE -->
-<div class="core">
-  <div class="core-title">Execution Decision</div>
-  <div id="result" class="result">WAITING</div>
-  <div id="explain" class="sys">—</div>
-  <div id="stage"></div>
-  <div id="final" class="sys" style="margin-top:20px;opacity:0;transition:opacity 0.4s linear;letter-spacing:0.22em;">SYSTEM DECISION IS FINAL</div>
+</div>
 </div>
 
-<!-- SUBMISSION -->
-<div class="submission">
-  <div class="sub-title">Submit Execution Parameters</div>
-  <div class="cmd">BUDGET: <span id="b">—</span></div>
-  <div class="cmd">TIME: <span id="t">—</span></div>
-  <div class="cmd">RESOURCES: <span id="r">—</span></div>
-  <button class="sub-btn" id="subBtn" onclick="submit()">SUBMIT TO SYSTEM</button>
+<!-- LOGS -->
+<div class="system-box mt-16">
+  <p class="label mb-6">EXECUTION RECORDS</p>
+  <div id="records" class="text-xs text-gray-300 space-y-4"></div>
 </div>
 
-<!-- VISIBLE RULE ENGINE -->
-<div id="rule">
-  <span class="rule-title">Constraint Engine</span>
-  <span class="rule-item" id="rBudget">BUDGET ≥ 80,000</span>
-  <span class="rule-item" id="rTime">TIME: ALIGNED</span>
-  <span class="rule-item" id="rResources">RESOURCES: SUFFICIENT</span>
 </div>
-
-<footer class="exec-footer">
-  <div class="footer-left">EXECUTIA™ · EP-1 · © 2026</div>
-  <div class="footer-right">
-    <a href="https://www.linkedin.com/in/sandis-boiko-189405281" target="_blank">Institutional profile</a>
-    <a href="mailto:info@executia.io">info@executia.io</a>
-  </div>
-</footer>
 
 <script>
-function navigate(url) {
-  const flash = document.querySelector('.flash');
-  flash.classList.add('active');
-  setTimeout(() => { window.location.href = url; }, url.includes('execution.executia.io') ? 120 : 100);
+function generateSession() {
+    return "EXE-" + Math.floor(10000 + Math.random() * 90000);
 }
 
-function setActiveLayer() {
-  const items = document.querySelectorAll('[data-layer]');
-  const path = window.location.pathname;
-  const host = window.location.hostname;
-  items.forEach(el => {
-    const layer = el.dataset.layer;
-    if (layer === "entry" && (path === "/" || path.includes("index"))) el.classList.add("active");
-    if (layer === "institutional" && path.includes("institutional")) el.classList.add("active");
-    if (layer === "execution" && host.includes("execution")) el.classList.add("active");
-  });
+function getTimestamp() {
+    const now = new Date();
+    return now.toISOString().replace("T", " ").substring(0, 19);
 }
 
-let currentRisk = 12;
-function updateSystem(ok) {
-  const riskEl   = document.getElementById("riskIndicator");
-  const statusEl = document.getElementById("systemStatus");
-  currentRisk = ok ? Math.max(currentRisk - 3, 6) : Math.min(currentRisk + 8, 85);
-  riskEl.textContent = "RISK: " + currentRisk + "%";
-  if (currentRisk > 40) { riskEl.classList.add("high"); } else { riskEl.classList.remove("high"); }
-  if (!ok) { statusEl.textContent = "● BLOCKED"; statusEl.classList.add("blocked"); }
-  else { statusEl.textContent = "● ACTIVE"; statusEl.classList.remove("blocked"); }
+async function loadLogs() {
+    const res = await fetch("http://localhost:3000/logs");
+    const data = await res.json();
+
+    const container = document.getElementById("records");
+    container.innerHTML = "";
+
+    data.forEach(s => {
+        container.innerHTML += `
+        <div class="border-b border-gray-700 pb-3">
+            <div>SESSION: ${s.id}</div>
+            <div>STATUS: ${s.result.status}</div>
+        </div>`;
+    });
 }
 
-function generate() {
-  return {
-    budget:    Math.random() > 0.5 ? 120000 : 50000,
-    time:      Math.random() > 0.5 ? "ALIGNED" : "DELAYED",
-    resources: Math.random() > 0.5 ? "SUFFICIENT" : "LIMITED"
-  };
-}
+async function runSystem() {
 
-function validate(x) {
-  return x.budget >= 80000 && x.resources !== "LIMITED" && x.time !== "DELAYED";
-}
+    const log = document.getElementById("log");
+    const result = document.getElementById("result");
+    const state = document.getElementById("state");
+    const comp = document.getElementById("comparison");
 
-function setStage(text) {
-  document.getElementById("stage").innerText = text;
-}
+    const sessionEl = document.getElementById("session");
+    const timeEl = document.getElementById("timestamp");
 
-function submit() {
-  const btn = document.getElementById("subBtn");
+    log.innerHTML = "";
+    result.innerHTML = "";
+    comp.innerHTML = "";
 
-  /* 1. IRREVERSIBILITY — lock immediately */
-  btn.innerText = "PROCESS LOCKED";
-  btn.classList.add("locked");
+    const sessionId = generateSession();
+    const timestamp = getTimestamp();
 
-  const exec = generate();
+    sessionEl.innerHTML = "SESSION: " + sessionId;
+    timeEl.innerHTML = "TIME: " + timestamp;
+    state.innerHTML = "STATE: PROCESSING";
 
-  document.getElementById("b").innerText = exec.budget.toLocaleString();
-  document.getElementById("t").innerText = exec.time;
-  document.getElementById("r").innerText = exec.resources;
+    const payload = {
+        budget: Number(budget.value || 0),
+        time: Number(time.value || 0),
+        resources: Number(resources.value || 0),
+        complexity: Number(complexity.value || 0),
+        dependency: Number(dependency.value || 0)
+    };
 
-  /* Reset */
-  const result  = document.getElementById("result");
-  const explain = document.getElementById("explain");
-  result.className = "result";
-  result.innerText = "—";
-  explain.innerText = "—";
-  document.getElementById("rBudget").className   = "rule-item";
-  document.getElementById("rTime").className     = "rule-item";
-  document.getElementById("rResources").className= "rule-item";
-
-  triggerFlash();
-
-  /* 5. ENGINE DEPTH — staged processing */
-  setTimeout(() => { setStage("CHECKING CONSTRAINTS"); },  80);
-  setTimeout(() => { setStage("RUNNING VALIDATION MATRIX"); }, 200);
-  setTimeout(() => { setStage("SYNCING CONSENSUS: Frankfurt · NY · SG"); }, 340);
-
-  const delay = 400 + Math.random() * 200;
-
-  setTimeout(() => {
-    setStage("");
-
-    const ok = validate(exec);
-
-    /* 3. VISIBLE LOGIC — show which rules fired */
-    document.getElementById("rBudget").className    = "rule-item " + (exec.budget >= 80000       ? "satisfied" : "violated");
-    document.getElementById("rTime").className      = "rule-item " + (exec.time !== "DELAYED"    ? "satisfied" : "violated");
-    document.getElementById("rResources").className = "rule-item " + (exec.resources !== "LIMITED" ? "satisfied" : "violated");
-
-    if (ok) {
-      result.innerText  = "EXECUTION VERIFIED";
-      result.className  = "result ok";
-      explain.innerText = "CONSTRAINT SET SATISFIED";
-    } else {
-      result.innerText  = "SYSTEM BLOCKED";
-      result.className  = "result fail";
-
-      /* 3. EXPLAIN MODE — show which rule caused block */
-      if (exec.budget < 80000)          explain.innerText = "RULE: BUDGET THRESHOLD NOT MET";
-      else if (exec.time === "DELAYED") explain.innerText = "RULE: TIME CONSTRAINT VIOLATED";
-      else                              explain.innerText = "RULE: RESOURCE CONSTRAINT VIOLATED";
+    function logLine(text, delay) {
+        setTimeout(() => {
+            log.innerHTML += "<div>" + text + "</div>";
+        }, delay);
     }
 
-    /* SYSTEM OWNERSHIP FINAL STATEMENT */
-    const finalEl = document.getElementById("final");
-    finalEl.style.opacity = "1";
+    logLine("INPUT RECEIVED", 200);
+    logLine("VALIDATION REQUEST SENT", 600);
 
-    log(exec, ok);
-    updateSystem(ok);
+    try {
+        const response = await fetch("http://localhost:3000/validate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        });
 
-    /* 1. IRREVERSIBILITY — unlock after 2.5s */
-    setTimeout(() => {
-      btn.innerText = "SUBMIT TO SYSTEM";
-      btn.classList.remove("locked");
-      finalEl.style.opacity = "0";
-    }, 2500);
+        const data = await response.json();
 
-  }, delay);
+        logLine("SYSTEM RESPONSE RECEIVED", 1000);
+        logLine("RISK LEVEL: " + data.result.risk + "%", 1200);
+        logLine("FAILURE COST: €" + data.result.cost, 1400);
+
+        setTimeout(() => {
+
+            if (data.result.status === "SYSTEM BLOCKED") {
+                result.innerHTML = '<span class="red">SYSTEM BLOCKED</span>';
+            } else {
+                result.innerHTML = '<span class="green">EXECUTION VERIFIED</span>';
+            }
+
+            state.innerHTML = "STATE: ENFORCED";
+
+            // COMPARISON
+            const rawRisk = Math.min(
+                95,
+                (payload.complexity * 8) +
+                (payload.dependency * 6) +
+                (1000 / (payload.resources + 1))
+            );
+
+            const rawCost = Math.round(rawRisk * payload.budget * 0.2);
+
+            comp.innerHTML = `
+            <div>
+              <div class="text-gray-500">WITHOUT EXECUTION CONTROL</div>
+              <div>RISK: ${Math.round(rawRisk)}%</div>
+              <div>LOSS: €${rawCost}</div>
+            </div>
+
+            <div class="pt-2 border-t border-gray-700">
+              <div class="text-gray-500">WITH EXECUTIA</div>
+              <div>RISK: 0%</div>
+              <div>LOSS: €0</div>
+            </div>
+            `;
+
+            loadLogs();
+
+        }, 1600);
+
+    } catch (e) {
+        result.innerHTML = '<span class="red">SYSTEM BLOCKED</span>';
+        state.innerHTML = "STATE: FAILURE";
+    }
 }
 
-function triggerFlash() {
-  const flash = document.querySelector('.flash');
-  flash.classList.add('active');
-  setTimeout(() => { flash.classList.remove('active'); }, 80);
-}
-
-function log(exec, ok) {
-  const el = document.createElement("div");
-  el.className = "item";
-  el.innerHTML = `EXECUTION<br>B: ${exec.budget.toLocaleString()}<br>T: ${exec.time}<br>R: ${exec.resources}<br><span class="${ok ? 'ok' : 'fail'}">${ok ? 'EXECUTION VERIFIED' : 'SYSTEM BLOCKED'}</span>`;
-  const feed = document.getElementById("feed");
-  feed.prepend(el);
-  if (feed.children.length > 8) feed.removeChild(feed.lastChild);
-}
-
-setActiveLayer();
-updateSystem(true);
+// load logs on start
+loadLogs();
 </script>
 
 </body>
