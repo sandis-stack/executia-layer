@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-mode="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,8 +55,17 @@ body {
     </div>
 
     <nav class="flex gap-8 text-[12px] tracking-widest text-gray-400">
-      <a href="/">ENTRY</a>
-      <a href="/institutional">INSTITUTIONAL</a>
+
+      <a href="https://executia.io">ENTRY</a>
+
+      <a href="https://execution.executia.io" class="text-white">
+        EXECUTION
+      </a>
+
+      <a href="https://executia.io/institutional">
+        INSTITUTIONAL
+      </a>
+
     </nav>
 
   </div>
@@ -65,14 +74,13 @@ body {
 <!-- CONTENT -->
 <div class="max-w-6xl mx-auto px-6 py-20">
 
-<h1 class="text-2xl mb-2">Execution System Session</h1>
+<h1 class="text-2xl mb-2">Execution System</h1>
 <p class="text-gray-400 mb-12 text-sm">
 System-level validation and enforcement
 </p>
 
 <div class="system-box mb-16">
 
-<!-- SESSION -->
 <div class="flex justify-between text-xs text-gray-400 mb-6">
   <span id="session">SESSION: —</span>
   <span id="timestamp">TIME: —</span>
@@ -92,7 +100,7 @@ System-level validation and enforcement
 <input id="dependency" placeholder="Dependency" class="input mb-5">
 
 <button onclick="runSystem()" class="text-xs tracking-widest mt-6">
-SUBMIT
+EXECUTE
 </button>
 </div>
 
@@ -117,11 +125,10 @@ SUBMIT
 </div>
 </div>
 
-<!-- LOGS -->
-<div class="system-box mt-16">
-  <p class="label mb-6">EXECUTION RECORDS</p>
-  <div id="records" class="text-xs text-gray-300 space-y-4"></div>
-</div>
+<!-- FOOTER -->
+<p class="text-gray-500 text-xs tracking-wide">
+STATUS: NON-OPTIONAL
+</p>
 
 </div>
 
@@ -133,22 +140,6 @@ function generateSession() {
 function getTimestamp() {
     const now = new Date();
     return now.toISOString().replace("T", " ").substring(0, 19);
-}
-
-async function loadLogs() {
-    const res = await fetch("http://localhost:3000/logs");
-    const data = await res.json();
-
-    const container = document.getElementById("records");
-    container.innerHTML = "";
-
-    data.forEach(s => {
-        container.innerHTML += `
-        <div class="border-b border-gray-700 pb-3">
-            <div>SESSION: ${s.id}</div>
-            <div>STATUS: ${s.result.status}</div>
-        </div>`;
-    });
 }
 
 async function runSystem() {
@@ -187,10 +178,10 @@ async function runSystem() {
     }
 
     logLine("INPUT RECEIVED", 200);
-    logLine("VALIDATION REQUEST SENT", 600);
+    logLine("VALIDATION RUNNING", 600);
 
     try {
-        const response = await fetch("http://localhost:3000/validate", {
+        const response = await fetch("/api/validate", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
@@ -201,6 +192,7 @@ async function runSystem() {
         logLine("SYSTEM RESPONSE RECEIVED", 1000);
         logLine("RISK LEVEL: " + data.result.risk + "%", 1200);
         logLine("FAILURE COST: €" + data.result.cost, 1400);
+        logLine("VALIDATION COMPLETE", 1600);
 
         setTimeout(() => {
 
@@ -212,7 +204,6 @@ async function runSystem() {
 
             state.innerHTML = "STATE: ENFORCED";
 
-            // COMPARISON
             const rawRisk = Math.min(
                 95,
                 (payload.complexity * 8) +
@@ -226,28 +217,23 @@ async function runSystem() {
             <div>
               <div class="text-gray-500">WITHOUT EXECUTION CONTROL</div>
               <div>RISK: ${Math.round(rawRisk)}%</div>
-              <div>LOSS: €${rawCost}</div>
+              <div>SYSTEM LOSS: €${rawCost}</div>
             </div>
 
             <div class="pt-2 border-t border-gray-700">
               <div class="text-gray-500">WITH EXECUTIA</div>
-              <div>RISK: 0%</div>
-              <div>LOSS: €0</div>
+              <div>RISK: ~0%</div>
+              <div>SYSTEM LOSS: €0</div>
             </div>
             `;
 
-            loadLogs();
-
-        }, 1600);
+        }, 1700);
 
     } catch (e) {
         result.innerHTML = '<span class="red">SYSTEM BLOCKED</span>';
         state.innerHTML = "STATE: FAILURE";
     }
 }
-
-// load logs on start
-loadLogs();
 </script>
 
 </body>
