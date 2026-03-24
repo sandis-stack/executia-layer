@@ -3,69 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EXECUTIA™ | Execution System</title>
+<title>EXECUTIA™ | Execution Layer</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
 body {
-    background: #0A1F44;
-    color: #e5e7eb;
-    font-family: 'Inter', system-ui, sans-serif;
-}
-
-.system-box {
-    border: 1px solid #374151;
-    background: rgba(255,255,255,0.02);
-    padding: 24px;
+  background: #0A1F44;
+  color: #e5e7eb;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .input {
-    border-bottom: 1px solid #4b5563;
-    background: transparent;
-    padding: 8px 4px;
-    width: 100%;
+  background: transparent;
+  border-bottom: 1px solid #374151;
+  padding: 10px 0;
+  width: 100%;
+  outline: none;
 }
 
-.label {
-    font-size: 11px;
-    color: #9ca3af;
-    letter-spacing: 0.15em;
+.input:focus {
+  border-color: #9ca3af;
 }
 
-.divider {
-    border-top: 1px solid #374151;
-    margin: 24px 0;
+/* SMART VALIDATION */
+.input-error {
+  border-color: #dc2626 !important;
 }
 
-.red { color: #dc2626; }
-.green { color: #16a34a; }
+.input-ok {
+  border-color: #16a34a !important;
+}
+
+.validation-msg {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
 </style>
 </head>
 
 <body>
 
 <!-- HEADER -->
-<header class="border-b border-gray-700">
+<header class="border-b border-gray-700 backdrop-blur-sm">
   <div class="max-w-6xl mx-auto px-6 flex justify-between items-center h-[70px]">
 
-    <div class="text-[13px] tracking-[0.14em] text-gray-300">
+    <div class="text-[12px] tracking-[0.32em] text-white">
       EXECUTIA™
     </div>
 
     <nav class="flex gap-8 text-[12px] tracking-widest text-gray-400">
-
       <a href="https://executia.io">ENTRY</a>
-
-      <a href="https://execution.executia.io" class="text-white">
-        EXECUTION
-      </a>
-
-      <a href="https://executia.io/institutional">
-        INSTITUTIONAL
-      </a>
-
+      <a href="https://execution.executia.io" class="text-white">EXECUTION</a>
+      <a href="https://executia.io/institutional">INSTITUTIONAL</a>
     </nav>
 
   </div>
@@ -74,169 +66,202 @@ body {
 <!-- CONTENT -->
 <div class="max-w-6xl mx-auto px-6 py-20">
 
-<h1 class="text-2xl mb-2">Execution System</h1>
-<p class="text-gray-400 mb-12 text-sm">
-System-level validation and enforcement
-</p>
+<h1 class="text-3xl mb-2">Execution System</h1>
+<p class="text-gray-400 mb-12">System-level validation and enforcement</p>
 
-<div class="system-box mb-16">
+<div class="border border-gray-700 p-10 grid grid-cols-2 gap-16">
 
-<!-- SESSION -->
-<div class="flex justify-between text-xs text-gray-400 mb-6">
-  <span id="session">SESSION: —</span>
-  <span id="timestamp">TIME: —</span>
-  <span id="state">STATE: IDLE</span>
+  <!-- LEFT -->
+  <div>
+
+    <!-- SYSTEM GUIDANCE -->
+    <div class="mb-10 max-w-md">
+      <div class="text-[11px] text-gray-500 tracking-widest mb-3">
+        SYSTEM INPUT
+      </div>
+      <div class="text-sm text-gray-300 leading-relaxed">
+        Define execution parameters.
+        Incomplete or inconsistent input prevents validation.
+      </div>
+    </div>
+
+    <div class="space-y-8">
+
+      <div>
+        <label class="text-gray-400 text-sm">Input</label>
+        <input id="input" class="input" placeholder="Define execution scope">
+        <div id="input-msg" class="validation-msg"></div>
+      </div>
+
+      <div>
+        <label class="text-gray-400 text-sm">Time</label>
+        <input id="time" class="input" placeholder="Define time constraint">
+        <div id="time-msg" class="validation-msg"></div>
+      </div>
+
+      <div>
+        <label class="text-gray-400 text-sm">Resources</label>
+        <input id="resources" class="input" placeholder="Define available resources">
+        <div id="resources-msg" class="validation-msg"></div>
+      </div>
+
+      <div>
+        <label class="text-gray-400 text-sm">Complexity</label>
+        <input id="complexity" class="input" placeholder="Define system complexity (1–10)">
+        <div id="complexity-msg" class="validation-msg"></div>
+      </div>
+
+      <div>
+        <label class="text-gray-400 text-sm">Dependency</label>
+        <input id="dependency" class="input" placeholder="Define dependency level (1–10)">
+        <div id="dependency-msg" class="validation-msg"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div>
+
+    <div class="flex justify-between text-sm text-gray-400 mb-6">
+      <div>SESSION: —</div>
+      <div>TIME: —</div>
+      <div id="state">STATE: IDLE</div>
+    </div>
+
+    <div class="border-t border-gray-700 pt-6 mb-6">
+      <div class="text-gray-400 text-sm mb-4">RESULT</div>
+      <div id="result" class="text-gray-300"></div>
+      <div id="badge" class="mt-4 hidden"></div>
+    </div>
+
+    <div class="border-t border-gray-700 pt-6">
+      <div class="text-gray-400 text-sm mb-4">SCENARIO</div>
+      <div id="scenario" class="text-gray-300"></div>
+    </div>
+
+  </div>
+
 </div>
 
-<div class="grid md:grid-cols-2 gap-12">
-
-<!-- INPUT -->
-<div>
-<p class="label mb-6">INPUT</p>
-
-<input id="budget" placeholder="Budget" class="input mb-5">
-<input id="time" placeholder="Time" class="input mb-5">
-<input id="resources" placeholder="Resources" class="input mb-5">
-<input id="complexity" placeholder="Complexity" class="input mb-5">
-<input id="dependency" placeholder="Dependency" class="input mb-5">
-
-<button onclick="runSystem()" class="text-xs tracking-widest mt-6">
-EXECUTE
-</button>
-</div>
-
-<!-- OUTPUT -->
-<div>
-<p class="label mb-6">SYSTEM LOG</p>
-
-<div id="log" class="text-sm space-y-2 text-gray-300"></div>
-
-<div class="divider"></div>
-
-<p class="label mb-2">RESULT</p>
-<div id="result" class="text-lg"></div>
-
-<div class="divider"></div>
-
-<p class="label mb-4">SCENARIO</p>
-<div id="comparison" class="text-sm text-gray-300 space-y-4"></div>
+<p class="mt-16 text-gray-500 text-sm">STATUS: NON-OPTIONAL</p>
 
 </div>
 
-</div>
-</div>
-
-<!-- FINAL STATUS -->
-<div class="max-w-6xl mx-auto px-6 pb-16">
-  <p class="text-gray-500 text-xs tracking-wide">
-    STATUS: NON-OPTIONAL
-  </p>
-</div>
-
-</div>
-
+<!-- ENGINE -->
 <script>
-function generateSession() {
-    return "EXE-" + Math.floor(10000 + Math.random() * 90000);
+
+function validateField(id, condition, message) {
+  const input = document.getElementById(id);
+  const msg = document.getElementById(id + "-msg");
+
+  if (!input.value) {
+    input.classList.remove("input-error", "input-ok");
+    msg.innerHTML = "";
+    return false;
+  }
+
+  if (!condition) {
+    input.classList.add("input-error");
+    input.classList.remove("input-ok");
+    msg.innerHTML = message;
+    return false;
+  } else {
+    input.classList.remove("input-error");
+    input.classList.add("input-ok");
+    msg.innerHTML = "";
+    return true;
+  }
 }
 
-function getTimestamp() {
-    const now = new Date();
-    return now.toISOString().replace("T", " ").substring(0, 19);
+function calculateSystem() {
+
+  const input = parseFloat(document.getElementById("input").value);
+  const time = parseFloat(document.getElementById("time").value);
+  const resources = parseFloat(document.getElementById("resources").value);
+  const complexity = parseFloat(document.getElementById("complexity").value);
+  const dependency = parseFloat(document.getElementById("dependency").value);
+
+  const result = document.getElementById("result");
+  const badge = document.getElementById("badge");
+  const scenarioBox = document.getElementById("scenario");
+  const state = document.getElementById("state");
+
+  // FIELD VALIDATION
+  const v1 = validateField("input", input > 0, "Execution scope must be > 0");
+  const v2 = validateField("time", time > 0, "Time must be defined");
+  const v3 = validateField("resources", resources > 0, "Resources required");
+  const v4 = validateField("complexity", complexity >= 1 && complexity <= 10, "1–10 scale required");
+  const v5 = validateField("dependency", dependency >= 1 && dependency <= 10, "1–10 scale required");
+
+  if (!(v1 && v2 && v3 && v4 && v5)) {
+    result.innerHTML = "SYSTEM: INVALID INPUT";
+    scenarioBox.innerHTML = "";
+    badge.classList.add("hidden");
+    state.innerHTML = "STATE: VALIDATION ERROR";
+    return;
+  }
+
+  // CORE ENGINE
+  const load = complexity * dependency;
+  const capacity = resources * time;
+  const executionRatio = input / capacity;
+  const risk = load / resources;
+
+  let status = "";
+  let scenario = "";
+
+  if (executionRatio > 1.2 || risk > 2) {
+    status = "BLOCKED";
+    scenario = "System overload. Execution cannot be validated.";
+    state.innerHTML = "STATE: BLOCKED";
+  } else if (executionRatio > 0.9) {
+    status = "CONSTRAINED";
+    scenario = "Execution possible under tight conditions.";
+    state.innerHTML = "STATE: CONSTRAINED";
+  } else {
+    status = "VALID";
+    scenario = "Execution validated within system capacity.";
+    state.innerHTML = "STATE: VALID";
+  }
+
+  const estimatedTime = (input / resources) * (1 + complexity / 10);
+
+  result.innerHTML = `
+    STATUS: ${status}<br><br>
+    TIME ESTIMATE: ${estimatedTime.toFixed(2)}<br>
+    LOAD: ${load.toFixed(2)}<br>
+    RISK: ${risk.toFixed(2)}
+  `;
+
+  scenarioBox.innerHTML = scenario;
+
+  // BADGE
+  if (status === "VALID") {
+    badge.innerHTML = `
+      <div class="inline-flex items-center gap-2 border border-gray-600 px-3 py-1 text-[10px] tracking-widest text-gray-300">
+        <span class="w-2 h-2 bg-green-500"></span>
+        VALIDATED BY EXECUTIA
+      </div>
+    `;
+  } else {
+    badge.innerHTML = `
+      <div class="inline-flex items-center gap-2 border border-gray-600 px-3 py-1 text-[10px] tracking-widest text-gray-400">
+        <span class="w-2 h-2 bg-red-500"></span>
+        EXECUTION BLOCKED
+      </div>
+    `;
+  }
+
+  badge.classList.remove("hidden");
 }
 
-async function runSystem() {
+// REALTIME
+document.querySelectorAll("input").forEach(el => {
+  el.addEventListener("input", calculateSystem);
+});
 
-    const log = document.getElementById("log");
-    const result = document.getElementById("result");
-    const state = document.getElementById("state");
-    const comp = document.getElementById("comparison");
-
-    const sessionEl = document.getElementById("session");
-    const timeEl = document.getElementById("timestamp");
-
-    log.innerHTML = "";
-    result.innerHTML = "";
-    comp.innerHTML = "";
-
-    const sessionId = generateSession();
-    const timestamp = getTimestamp();
-
-    sessionEl.innerHTML = "SESSION: " + sessionId;
-    timeEl.innerHTML = "TIME: " + timestamp;
-    state.innerHTML = "STATE: PROCESSING";
-
-    const payload = {
-        budget: Number(budget.value || 0),
-        time: Number(time.value || 0),
-        resources: Number(resources.value || 0),
-        complexity: Number(complexity.value || 0),
-        dependency: Number(dependency.value || 0)
-    };
-
-    function logLine(text, delay) {
-        setTimeout(() => {
-            log.innerHTML += "<div>" + text + "</div>";
-        }, delay);
-    }
-
-    logLine("INPUT RECEIVED", 200);
-    logLine("VALIDATION RUNNING", 600);
-
-    try {
-        const response = await fetch("/api/validate", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-
-        logLine("SYSTEM RESPONSE RECEIVED", 1000);
-        logLine("RISK LEVEL: " + data.result.risk + "%", 1200);
-        logLine("FAILURE COST: €" + data.result.cost, 1400);
-        logLine("VALIDATION COMPLETE", 1600);
-
-        setTimeout(() => {
-
-            if (data.result.status === "SYSTEM BLOCKED") {
-                result.innerHTML = '<span class="red">SYSTEM BLOCKED</span>';
-            } else {
-                result.innerHTML = '<span class="green">EXECUTION VERIFIED</span>';
-            }
-
-            state.innerHTML = "STATE: ENFORCED";
-
-            const rawRisk = Math.min(
-                95,
-                (payload.complexity * 8) +
-                (payload.dependency * 6) +
-                (1000 / (payload.resources + 1))
-            );
-
-            const rawCost = Math.round(rawRisk * payload.budget * 0.2);
-
-            comp.innerHTML = `
-            <div>
-              <div class="text-gray-500">WITHOUT EXECUTION CONTROL</div>
-              <div>RISK: ${Math.round(rawRisk)}%</div>
-              <div>SYSTEM LOSS: €${rawCost}</div>
-            </div>
-
-            <div class="pt-2 border-t border-gray-700">
-              <div class="text-gray-500">WITH EXECUTIA</div>
-              <div>RISK: ~0%</div>
-              <div>SYSTEM LOSS: €0</div>
-            </div>
-            `;
-
-        }, 1700);
-
-    } catch (e) {
-        result.innerHTML = '<span class="red">SYSTEM BLOCKED</span>';
-        state.innerHTML = "STATE: FAILURE";
-    }
-}
 </script>
 
 </body>
