@@ -57,9 +57,19 @@ body {
 <div class="max-w-6xl mx-auto px-6 py-20">
 
 <h1 class="text-3xl mb-2">Execution System</h1>
-<p class="text-gray-400 mb-6">System-level validation and enforcement</p>
 
-<!-- SYSTEM BUTTON -->
+<!-- 🔥 SYSTEM MODE -->
+<div class="text-[11px] text-gray-500 mb-4">
+SYSTEM MODE: VALIDATION SIMULATION
+</div>
+
+<!-- 🔥 NOT CALCULATOR -->
+<p class="text-gray-400 mb-10">
+Execution is not calculated.<br>
+It is either allowed or blocked.
+</p>
+
+<!-- SYSTEM INSTRUCTION -->
 <button onclick="openPanel()" class="text-xs tracking-widest text-gray-400 hover:text-white mb-10">
 SYSTEM INSTRUCTION
 </button>
@@ -67,7 +77,7 @@ SYSTEM INSTRUCTION
 <!-- SYSTEM -->
 <div class="relative border border-gray-700 p-10 grid grid-cols-2 gap-16">
 
-<!-- LOCK MODE -->
+<!-- LOCK -->
 <div id="lock" class="absolute inset-0 bg-[#0A1F44]/95 flex items-center justify-center z-30">
 <div class="text-center max-w-sm">
 <div class="text-[11px] tracking-widest text-gray-500 mb-4">SYSTEM LOCKED</div>
@@ -78,13 +88,13 @@ REVIEW PROTOCOL
 </div>
 </div>
 
-<!-- LEFT -->
+<!-- INPUT -->
 <div>
 
 <div class="mb-10 max-w-md">
 <div class="text-[11px] text-gray-500 tracking-widest mb-3">SYSTEM INPUT</div>
 <div class="text-sm text-gray-300">
-Define execution parameters. Incomplete or inconsistent input prevents validation.
+Define execution parameters. Invalid input prevents execution.
 </div>
 </div>
 
@@ -92,31 +102,31 @@ Define execution parameters. Incomplete or inconsistent input prevents validatio
 
 <div>
 <label class="text-gray-400 text-sm">Input</label>
-<input id="input" class="input" placeholder="Define execution scope">
+<input id="input" class="input">
 <div id="input-msg" class="validation-msg"></div>
 </div>
 
 <div>
 <label class="text-gray-400 text-sm">Time</label>
-<input id="time" class="input" placeholder="Define time constraint">
+<input id="time" class="input">
 <div id="time-msg" class="validation-msg"></div>
 </div>
 
 <div>
 <label class="text-gray-400 text-sm">Resources</label>
-<input id="resources" class="input" placeholder="Define available resources">
+<input id="resources" class="input">
 <div id="resources-msg" class="validation-msg"></div>
 </div>
 
 <div>
 <label class="text-gray-400 text-sm">Complexity</label>
-<input id="complexity" class="input" placeholder="Define system complexity (1–10)">
+<input id="complexity" class="input">
 <div id="complexity-msg" class="validation-msg"></div>
 </div>
 
 <div>
 <label class="text-gray-400 text-sm">Dependency</label>
-<input id="dependency" class="input" placeholder="Define dependency level (1–10)">
+<input id="dependency" class="input">
 <div id="dependency-msg" class="validation-msg"></div>
 </div>
 
@@ -124,7 +134,7 @@ Define execution parameters. Incomplete or inconsistent input prevents validatio
 
 </div>
 
-<!-- RIGHT -->
+<!-- OUTPUT -->
 <div>
 
 <div class="flex justify-between text-sm text-gray-400 mb-6">
@@ -142,6 +152,10 @@ Define execution parameters. Incomplete or inconsistent input prevents validatio
 <div class="border-t border-gray-700 pt-6">
 <div class="text-gray-400 text-sm mb-4">SCENARIO</div>
 <div id="scenario"></div>
+
+<!-- 🔥 REASON -->
+<div id="reason" class="mt-4 text-xs text-gray-500"></div>
+
 </div>
 
 </div>
@@ -163,9 +177,9 @@ Define execution parameters. Incomplete or inconsistent input prevents validatio
 
 <div class="space-y-6 text-sm text-gray-300">
 <p>Define all execution parameters before validation.</p>
-<p>The system evaluates structural capacity, not intention.</p>
-<p>Incomplete input results in rejection.</p>
-<p>Execution allowed only within system limits.</p>
+<p>The system evaluates constraints, not intention.</p>
+<p>Invalid structures are rejected.</p>
+<p>Execution occurs only within validated limits.</p>
 </div>
 
 <button onclick="unlockSystem()" class="mt-10 border border-gray-600 px-6 py-3 text-xs tracking-widest w-full">
@@ -181,13 +195,13 @@ ACKNOWLEDGE PROTOCOL
 <script>
 
 function openPanel(){
-document.getElementById("panel").classList.remove("translate-x-full");
-document.getElementById("panel-bg").classList.remove("hidden");
+panel.classList.remove("translate-x-full");
+panelBg.classList.remove("hidden");
 }
 
 function closePanel(){
-document.getElementById("panel").classList.add("translate-x-full");
-document.getElementById("panel-bg").classList.add("hidden");
+panel.classList.add("translate-x-full");
+panelBg.classList.add("hidden");
 }
 
 function unlockSystem(){
@@ -197,18 +211,18 @@ closePanel();
 }
 
 function validateField(id, condition, message){
-const input=document.getElementById(id);
+const el=document.getElementById(id);
 const msg=document.getElementById(id+"-msg");
 
-if(!input.value){input.classList.remove("input-error","input-ok");msg.innerHTML="";return false;}
+if(!el.value){msg.innerHTML=""; return false;}
 
 if(!condition){
-input.classList.add("input-error");
+el.classList.add("input-error");
 msg.innerHTML=message;
 return false;
 }else{
-input.classList.remove("input-error");
-input.classList.add("input-ok");
+el.classList.remove("input-error");
+el.classList.add("input-ok");
 msg.innerHTML="";
 return true;
 }
@@ -216,58 +230,72 @@ return true;
 
 function calculateSystem(){
 
-const input=parseFloat(inputEl.value);
-const time=parseFloat(timeEl.value);
-const resources=parseFloat(resourcesEl.value);
-const complexity=parseFloat(complexityEl.value);
-const dependency=parseFloat(dependencyEl.value);
+const i=parseFloat(input.value);
+const t=parseFloat(time.value);
+const r=parseFloat(resources.value);
+const c=parseFloat(complexity.value);
+const d=parseFloat(dependency.value);
 
 const result=document.getElementById("result");
-const badge=document.getElementById("badge");
-const scenarioBox=document.getElementById("scenario");
+const scenario=document.getElementById("scenario");
+const reason=document.getElementById("reason");
 const state=document.getElementById("state");
+const badge=document.getElementById("badge");
 
-const v1=validateField("input",input>0,"Must be >0");
-const v2=validateField("time",time>0,"Required");
-const v3=validateField("resources",resources>0,"Required");
-const v4=validateField("complexity",complexity>=1&&complexity<=10,"1–10");
-const v5=validateField("dependency",dependency>=1&&dependency<=10,"1–10");
+const v1=validateField("input",i>0,"Must be >0");
+const v2=validateField("time",t>0,"Required");
+const v3=validateField("resources",r>0,"Required");
+const v4=validateField("complexity",c>=1&&c<=10,"1–10");
+const v5=validateField("dependency",d>=1&&d<=10,"1–10");
 
 if(!(v1&&v2&&v3&&v4&&v5)){
-result.innerHTML="SYSTEM: INVALID INPUT";
 state.innerHTML="STATE: VALIDATION ERROR";
+result.innerHTML="SYSTEM: INVALID INPUT";
+reason.innerHTML="Constraint validation failed";
 return;
 }
 
-const load=complexity*dependency;
-const capacity=resources*time;
-const ratio=input/capacity;
-const risk=load/resources;
+const load=c*d;
+const cap=r*t;
+const ratio=i/cap;
+const risk=load/r;
 
-let status=""; let scenario="";
+let status="";
+let reasonText="";
 
-if(ratio>1.2||risk>2){
-status="BLOCKED"; scenario="System overload.";
+if(ratio>1.2){
+status="BLOCKED";
+reasonText="Execution exceeds system capacity";
 state.innerHTML="STATE: BLOCKED";
-}else if(ratio>0.9){
-status="CONSTRAINED"; scenario="Tight conditions.";
+}
+else if(risk>2){
+status="BLOCKED";
+reasonText="Dependency load too high";
+state.innerHTML="STATE: BLOCKED";
+}
+else if(ratio>0.9){
+status="CONSTRAINED";
+reasonText="Execution at system limits";
 state.innerHTML="STATE: CONSTRAINED";
-}else{
-status="VALID"; scenario="Execution validated.";
+}
+else{
+status="VALID";
+reasonText="Execution within system constraints";
 state.innerHTML="STATE: VALID";
 }
 
-result.innerHTML=`STATUS: ${status}<br>RISK: ${risk.toFixed(2)}`;
-scenarioBox.innerHTML=scenario;
+result.innerHTML=`STATUS: ${status}`;
+scenario.innerHTML=reasonText;
+reason.innerHTML="REASON: "+reasonText;
 
-badge.innerHTML=status==="VALID"
-?`<div class="text-green-400 text-xs mt-4">VALIDATED</div>`
-:`<div class="text-red-400 text-xs mt-4">BLOCKED</div>`;
+badge.innerHTML = status==="VALID"
+? `<div class="text-green-400 text-xs mt-4">VALIDATED BY EXECUTIA</div>`
+: `<div class="text-red-400 text-xs mt-4">EXECUTION BLOCKED</div>`;
 
 badge.classList.remove("hidden");
+
 }
 
-// realtime
 document.querySelectorAll("input").forEach(el=>{
 el.addEventListener("input",calculateSystem);
 });
