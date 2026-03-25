@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXECUTIA | Execution Layer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap');
+  body { font-family: 'IBM Plex Mono', monospace; }
+  a { text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .fade-in { animation: fadeIn 0.4s ease-in; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+
+<body class="bg-[#0A1F44] text-white">
+<div class="max-w-4xl mx-auto px-6 py-10 space-y-10">
+
+<!-- NAV -->
+<nav class="text-sm border-b border-white/20 pb-4 space-y-2">
+  <div class="font-bold tracking-widest">EXECUTIA</div>
+  <div class="flex flex-col md:flex-row md:gap-6 gap-1 text-xs">
+    <span>EXECUTION LAYER ACTIVE</span>
+    <a href="https://www.executia.io">ENTRY →</a>
+    <a href="https://www.executia.io/institutional">INSTITUTIONAL LAYER →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="space-y-3">
+  <h1 class="text-2xl font-bold tracking-tight">REAL-TIME VERIFICATION ENGINE</h1>
+  <p class="text-base md:text-sm">VALIDATION PRECEDES EXECUTION</p>
+  <p class="text-sm border-t border-white/20 pt-3">
+    EXECUTION = DECISION → RESULT.<br>
+    EXECUTIA CONTROLS THE GAP.
+  </p>
+</section>
+
+<!-- WHAT IT IS -->
+<section class="border-t border-white/20 pt-5 space-y-2 text-base md:text-sm">
+  <p>THIS LAYER ENFORCES REAL-TIME CONSTRAINT VALIDATION BEFORE ANY EXECUTION IS PERMITTED.</p>
+  <p>NO UNVERIFIED COMMAND PASSES THROUGH.</p>
+  <p class="text-xs pt-2 text-white/50">
+    DECISIONS ARE VALIDATED AGAINST DEFINED CONSTRAINTS AND STORED IN AN IMMUTABLE EXECUTION LOG.
+  </p>
+</section>
+
+<!-- EXECUTION FLOW -->
+<section class="border-t border-white/20 pt-6 text-sm">
+  <p class="font-bold mb-4">EXECUTION FLOW</p>
+  <div class="flex flex-col md:flex-row md:items-center gap-3">
+    <div class="border border-white/30 px-3 py-2 text-center text-xs">DECISION<br>SUBMITTED</div>
+    <div class="text-center font-bold">→</div>
+    <div class="border border-white/30 px-3 py-2 text-center text-xs">SYSTEM<br>VALIDATION</div>
+    <div class="text-center font-bold">→</div>
+    <div class="border border-white/30 px-3 py-2 text-center text-xs">CONSTRAINT<br>CHECK</div>
+    <div class="text-center font-bold">→</div>
+    <div class="border border-white/30 px-3 py-2 text-center text-xs font-bold">APPROVED /<br>BLOCKED</div>
+  </div>
+</section>
+
+<!-- ENGINE -->
+<section class="border border-white/30 p-5 space-y-4">
+  <div>
+    <p class="font-bold text-sm">VERIFICATION ENGINE</p>
+    <p class="text-xs text-white/50 mt-1">SIMULATION MODE ACTIVE</p>
+  </div>
+  <p id="status" class="text-base md:text-sm">STATUS: AWAITING COMMAND</p>
+  <button id="execBtn" onclick="exec()"
+    class="border border-white px-4 py-3 w-full font-bold tracking-widest hover:bg-white hover:text-[#0A1F44] transition-colors">
+    INITIATE
+  </button>
+</section>
+
+<!-- SPEC -->
+<section class="border-t border-white/20 pt-6 text-base md:text-sm space-y-1">
+  <p class="font-bold">ENFORCEMENT LAYER</p>
+  <p>NOT AN INTERFACE</p>
+  <p>NOT A DASHBOARD</p>
+  <p>STRUCTURAL EXECUTION CONTROL</p>
+</section>
+
+<!-- DEPLOYMENT STATUS -->
+<section class="border-t border-white/20 pt-6 text-base md:text-sm space-y-2">
+  <p class="font-bold">DEPLOYMENT STATUS</p>
+  <p>PILOT PROGRAM: ACCEPTING APPLICATIONS</p>
+  <p>FIRST EXECUTION AUDIT: NO COST</p>
+</section>
+
+<!-- IP -->
+<section class="border-t border-white/20 pt-6 text-base md:text-sm space-y-2">
+  <p class="font-bold">INTELLECTUAL PROPERTY</p>
+  <p>PCT PATENT APPLICATION: PCT/IB2026/050141</p>
+  <p>STATUS: PENDING</p>
+  <p class="pt-1">EXECUTION INTEGRITY LAYER — FILED 2026</p>
+</section>
+
+<!-- OPERATOR -->
+<section class="border-t border-white/20 pt-6 text-base md:text-sm space-y-2">
+  <p class="font-bold">SYSTEM OPERATOR</p>
+  <p>Sandis Boiko</p>
+  <p class="pt-1">
+    25+ YEARS IN REAL ESTATE, ENERGY, AND PROJECT EXECUTION.<br>
+    600+ TRANSACTIONS. MULTI-COUNTRY OPERATIONS.
+  </p>
+</section>
+
+<!-- CTA -->
+<section class="border-t border-white/20 pt-6 flex flex-col md:flex-row gap-3 text-base md:text-sm">
+  <a href="https://www.executia.io" class="border border-white px-4 py-3 text-center hover:bg-white hover:text-[#0A1F44] transition-colors">ENTRY</a>
+  <a href="https://www.executia.io/institutional" class="border border-white px-4 py-3 text-center hover:bg-white hover:text-[#0A1F44] transition-colors">INSTITUTIONAL LAYER</a>
+</section>
+
+<!-- CONTACT -->
+<section class="border-t border-white/20 pt-6 text-base md:text-sm space-y-3">
+  <p class="font-bold">REQUEST EXECUTION BRIEFING</p>
+  <p>30-MINUTE EXECUTION AUDIT OF YOUR CURRENT PROJECT.</p>
+  <div class="space-y-2 pt-1">
+    <div>
+      <a href="mailto:info@executia.io" class="underline font-bold">info@executia.io</a>
+    </div>
+    <div>
+      <a href="https://www.linkedin.com/in/sandis-boiko-189405281" class="underline font-bold">LINKEDIN: SANDIS BOIKO →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="border-t border-white/20 pt-6 text-sm space-y-1">
+  <p>EXECUTION WITHOUT EXECUTIA IS UNCONTROLLED</p>
+  <p>STATUS: NON-OPTIONAL</p>
+  <p>EXECUTIA IS A PROTOCOL STANDARD</p>
+</section>
+
+</div>
+
+<script>
+function exec(){
+  let s   = document.getElementById("status")
+  let btn = document.getElementById("execBtn")
+
+  btn.disabled = true
+  btn.innerHTML = "LOCKED"
+  s.style.color = "white"
+  s.innerHTML = "COMMAND ACCEPTED"
+
+  setTimeout(() => {
+    s.innerHTML = "SYSTEM VALIDATING"
+    setTimeout(() => {
+      s.innerHTML = "COMMAND LOCKED"
+      setTimeout(() => {
+        s.classList.add("fade-in")
+        s.innerHTML = "STATUS: EXECUTION VERIFIED"
+        s.style.color = "lime"
+        btn.disabled = false
+        btn.innerHTML = "RE-INITIATE"
+      }, 700)
+    }, 600)
+  }, 400)
+}
+</script>
+</body>
+</html>
