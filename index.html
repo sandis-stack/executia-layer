@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- email-obfuscation: off -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXECUTION LAYER | EXECUTIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --black:    #000000;
+    --white:    #ffffff;
+    --g500:     #888888;
+    --g700:     #444444;
+    --green:    #006b08;
+    --yellow:   #9a6e00;
+    --red:      #bb0000;
+    --control:  #0A1F44;
+    --border:   1px solid #000;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--white);
+    color: var(--black);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  a { color: inherit; text-decoration: none; }
+
+  /* OVERLAY */
+  #transition-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--white);
+    z-index: 200;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+  }
+  #transition-overlay p { opacity: 0; transition: opacity 0.35s ease; }
+  #transition-overlay p.vis { opacity: 1; }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    border-bottom: var(--border);
+    z-index: 100;
+  }
+  .h-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .h-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.22em;
+    color: var(--black);
+  }
+  nav { display: flex; align-items: center; gap: 28px; }
+  .nav-state {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--g500);
+    letter-spacing: 0.12em;
+  }
+  .nav-state.active {
+    color: var(--control);
+    font-weight: 700;
+  }
+  .nav-link {
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .nav-link:hover { text-decoration: underline; }
+  .nav-link.active {
+    font-weight: 700;
+    border-bottom: 2px solid var(--black);
+    padding-bottom: 2px;
+    cursor: default;
+  }
+
+  /* PAGE */
+  .page { max-width: 960px; margin: 0 auto; padding: 0 24px 80px; }
+  .block { border-top: var(--border); padding: 52px 0; }
+  .block:first-child { border-top: none; padding-top: 60px; }
+
+  /* LABELS */
+  .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--g500);
+    margin-bottom: 20px;
+  }
+
+  /* TYPE */
+  h1 {
+    font-size: clamp(26px, 4vw, 42px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .lead {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--g700);
+    max-width: 680px;
+  }
+  .sm { font-size: 13px; color: var(--g500); line-height: 1.6; }
+  strong { font-weight: 600; color: var(--black); }
+
+  .signal {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--g500);
+    letter-spacing: 0.1em;
+    margin-top: 12px;
+  }
+
+  /* ARCH */
+  .arch {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 24px 0 16px;
+  }
+  .anode {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border: var(--border);
+    padding: 8px 14px;
+    letter-spacing: 0.06em;
+  }
+  .anode.hi {
+    background: var(--control);
+    color: var(--white);
+    font-weight: 700;
+    box-shadow: 0 0 0 1px rgba(10,31,68,0.2);
+  }
+  .arr { color: var(--g500); font-size: 16px; }
+
+  /* GRIDS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--g500);
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+  }
+
+  /* ENGINE */
+  .engine-wrap {
+    border: var(--border);
+    padding: 24px;
+    margin-top: 8px;
+  }
+  .payload {
+    border: var(--border);
+    padding: 16px;
+    font-size: 13px;
+    line-height: 2.2;
+    margin-bottom: 14px;
+    white-space: pre;
+  }
+  .payload input {
+    border: none;
+    border-bottom: 1px solid #000;
+    width: 120px;
+    margin-left: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: transparent;
+    outline: none;
+    color: var(--black);
+  }
+  .payload input:focus { border-bottom: 2px solid #000; }
+
+  .flbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--g500);
+    margin-bottom: 12px;
+  }
+
+  .payload input:focus {
+    border-bottom: 2px solid #000;
+    background: rgba(0,0,0,0.02);
+  }
+
+  #execBtn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    width: 100%;
+    padding: 14px;
+    border: var(--border);
+    background: var(--control);
+    color: var(--white);
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: all 0.15s ease;
+  }
+  #execBtn:hover:not(:disabled) { background: #071733; }
+  #execBtn:active { transform: scale(0.98); }
+  #execBtn:disabled { opacity: 0.45; cursor: default; }
+
+  #ledgerTrace::after {
+    content: "▌";
+    animation: blink 1s infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .flash { animation: flashBg 0.4s ease; }
+  @keyframes flashBg {
+    0%   { background: rgba(0,0,0,0.05); }
+    100% { background: transparent; }
+  }
+
+  .fail-out { transition: all 0.2s ease; }
+  .fail-out.blocked { transform: scale(0.98); }
+
+  .nav-state.active { transition: all 0.4s ease; }
+
+  #ledgerOut {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    border: var(--border);
+    padding: 20px;
+    line-height: 1.9;
+    white-space: pre-line;
+  }
+  #ledgerTrace {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border: var(--border);
+    border-top: none;
+    padding: 16px 20px;
+    color: var(--g700);
+    display: none;
+    line-height: 1.8;
+    white-space: pre-line;
+    height: 180px;
+    overflow-y: auto;
+  }
+  #ledgerCta {
+    display: none;
+    border-top: var(--border);
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+
+  .api-box {
+    border: var(--border);
+    padding: 16px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    line-height: 1.9;
+    white-space: pre;
+  }
+
+  .fail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 8px;
+  }
+  .fail-card {
+    border: var(--border);
+    padding: 16px;
+  }
+  .fail-title {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--g500);
+    margin-bottom: 12px;
+  }
+  .fail-out {
+    min-height: 120px;
+    margin-bottom: 10px;
+  }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 12px 20px;
+    border: var(--border);
+    background: var(--white);
+    color: var(--black);
+    cursor: pointer;
+    display: inline-block;
+  }
+  .btn-inv { background: var(--control); color: var(--white); }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
+  /* CONTACT */
+  .c-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: underline;
+    display: block;
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  /* BOOT SEQUENCE */
+  .boot-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--g500);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    margin-bottom: 4px;
+  }
+  .boot-line.vis { opacity: 1; }
+
+  /* FOOTER */
+  footer { border-top: var(--border); padding: 32px 24px; max-width: 960px; margin: 0 auto; }
+  .foot-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+  .foot-col p, .foot-col a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--g500);
+    line-height: 1.9;
+    display: block;
+  }
+  .foot-col a { color: var(--black); text-decoration: underline; }
+
+  .fade { animation: fi 0.4s ease; }
+  @keyframes fi { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 600px) {
+    .nav-state { display: none; }
+    nav { gap: 16px; }
+    .g2, .g3, .inputs, .fail-grid { grid-template-columns: 1fr; }
+    .arch { flex-direction: column; align-items: flex-start; }
+  }
+
+  .sys-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #000;
+    padding: 8px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: transparent;
+    outline: none;
+  }
+  .sys-input:focus { border-bottom: 2px solid #0A1F44; }
+  .sys-btn {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #000;
+    background: #0A1F44;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .sys-btn:hover { background: #071733; }
+  .sys-btn:disabled { opacity: 0.5; cursor: default; }
+  .sys-btn-outline {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #000;
+    background: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+</style>
+<script>
+function openEmail() {
+  var u='info',d='executia.io'; window.location.href='mailto:'+u+'@'+d+'?subject=EXECUTIA%20REQUEST';
+}
+// EXECUTIA CORE NAVIGATION
+// Fill email spans dynamically - Cloudflare cannot intercept this
+window.addEventListener('DOMContentLoaded', function(){
+  var e = atob('aW5mb0BleGVjdXRpYS5pbw==');
+  var spans = ['footer-email-1','footer-email-2'];
+  spans.forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=e; });
+});
+
+window.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeConsultation();
+});
+window.addEventListener('click', function(e){
+  var m = document.getElementById('consultation-modal');
+  if(e.target === m) closeConsultation();
+});
+
+window.addEventListener('DOMContentLoaded', function(){
+  var delays = [200, 500, 800, 1100];
+  ['b1','b2','b3','b4'].forEach(function(id, i){
+    setTimeout(function(){ 
+      var el = document.getElementById(id);
+      if(el) el.classList.add('vis');
+    }, delays[i]);
+  });
+});
+window.addEventListener('DOMContentLoaded', function(){
+  if(window.location.hash === '#consultation'){ openConsultation(); }
+});
+function openConsultation(){
+  var m = document.getElementById('consultation-modal');
+  if(m){ m.style.display='block'; document.body.style.overflow='hidden'; history.pushState(null, null, '#consultation'); }
+  else { window.location.href='https://execution.executia.io/#consultation'; }
+}
+function closeConsultation(){
+  var m = document.getElementById('consultation-modal');
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+  if(window.location.hash === '#consultation') history.back();
+}
+</script>
+</head>
+
+<body>
+
+<!-- OVERLAY -->
+<div id="transition-overlay">
+  <p id="t1">RETURNING TO ENTRY LAYER</p>
+  <p id="t2">SYSTEM TRANSFER ACTIVE</p>
+  <p id="t3">REDIRECTING</p>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="h-inner">
+    <a href="https://www.executia.io/" class="h-logo">EXECUTIA</a>
+    <nav>
+      <span class="nav-state active mono" id="exec-state" style="opacity:0; transition: opacity 0.4s ease 0.3s;">STATE: EXECUTION</span>
+      <a href="https://www.executia.io/"
+         onclick="go(event,'https://www.executia.io/')"
+         class="nav-link">ENTRY</a>
+      <span class="nav-link active mono">EXECUTION</span>
+      <a href="https://www.executia.io/institutional"
+         class="nav-link">INSTITUTIONAL</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- HERO -->
+  <div class="block">
+    <div class="lbl">EXECUTION LAYER — ACTIVE</div>
+
+    <!-- BOOT SEQUENCE -->
+    <div id="boot" style="margin-bottom:28px;">
+      <div class="boot-line" id="b1">SYSTEM: INITIALIZING</div>
+      <div class="boot-line" id="b2">CONSTRAINT ENGINE: LOADED</div>
+      <div class="boot-line" id="b3">VALIDATION LAYER: READY</div>
+      <div class="boot-line" id="b4">EXECUTION CONTROL: ACTIVE</div>
+    </div>
+
+    <h1>Execution is not decided.<br>It is validated.</h1>
+    <p class="lead">
+      Every action submitted to this layer is checked against defined constraints
+      before execution is permitted or blocked.
+    </p>
+    <p class="sm" style="margin-top:10px;">
+      This interface represents a constrained validation model. Core system operates in controlled environments.
+    </p>
+    <p class="signal" style="margin-top:14px;">
+      MANUAL OVERRIDE: DISABLED &nbsp;·&nbsp; USER INPUT IS NOT CONTROL &nbsp;·&nbsp; SYSTEM VALIDATION IS FINAL &nbsp;·&nbsp; SYSTEM ACCEPTS ONLY VALID STRUCTURES
+    </p>
+    <p class="signal" style="margin-top:6px; font-weight:700; color:var(--black);">
+      UNVALIDATED EXECUTION IS NOT PERMITTED — VALIDATION LAYER ACTIVE
+    </p>
+  </div>
+
+  <!-- EXECUTION FLOW -->
+  <div class="block">
+    <div class="lbl">EXECUTION FLOW</div>
+    <div class="arch">
+      <div class="anode">REQUEST SUBMITTED</div>
+      <div class="arr">→</div>
+      <div class="anode">CONSTRAINT LOAD</div>
+      <div class="arr">→</div>
+      <div class="anode">VALIDATION ENGINE</div>
+      <div class="arr">→</div>
+      <div class="anode hi">AUTHORIZED / RESTRICTED / REJECTED</div>
+      <div class="arr">→</div>
+      <div class="anode">LOG STORED</div>
+    </div>
+    <p class="sm mono" style="margin-top:12px; line-height:2.1;">
+      Latency: &nbsp;<strong style="color:var(--black);">&lt; 50ms</strong> &nbsp;·&nbsp;
+      Enforcement: &nbsp;<strong style="color:var(--black);">deterministic</strong> &nbsp;·&nbsp;
+      Override: &nbsp;<strong style="color:var(--red);">NOT AVAILABLE</strong>
+    </p>
+    <p class="sm" style="margin-top:16px; line-height:2.1;">
+      <strong style="color:var(--green);">Permitted:</strong> execution proceeds. Result logged. Audit trail created.<br>
+      <strong style="color:var(--red);">Blocked:</strong> execution halted. Incident recorded. System notified.
+    </p>
+  </div>
+
+  <!-- WITHOUT VALIDATION -->
+  <div class="block">
+    <div class="lbl">WITHOUT EXECUTION VALIDATION</div>
+    <p class="sm" style="line-height:2.2;">
+      — decisions are executed without constraint control<br>
+      — resource allocation becomes probabilistic<br>
+      — system failure becomes inevitable at scale
+    </p>
+    <p class="lead" style="margin-top:20px; font-weight:600;">
+      EXECUTIA reduces this condition through validation.
+    </p>
+    <p class="sm" style="margin-top:10px;">
+      Execution errors are not logical failures.<br>
+      They are financial losses.
+    </p>
+    <p class="sm" style="margin-top:8px; font-weight:600;">
+      At scale, this results in irreversible financial loss.
+    </p>
+  </div>
+
+  <!-- ENGINE -->
+  <div class="block">
+    <div class="lbl">EXECUTION ENGINE — REQUEST INTERFACE</div>
+    <p class="sm" style="margin-bottom:4px;">
+      This interface is a constrained access point to the EXECUTIA validation engine.
+      The underlying system operates in production-grade environments.
+    </p>
+    <p class="sm" style="margin-bottom:4px; font-weight:600;">
+      This interface reflects real validation logic used in live systems.
+    </p>
+    <p class="signal" style="margin-bottom:8px; margin-top:8px;">
+      AVERAGE LOSS PREVENTED: 5–20% PER EXECUTION &nbsp;·&nbsp; VALIDATION MODEL &nbsp;·&nbsp; CORE SYSTEM OPERATES IN CONTROLLED ENVIRONMENTS
+    </p>
+    <p class="signal" style="margin-bottom:24px; margin-top:4px;">
+      USER INPUT IS NOT CONTROL &nbsp;·&nbsp; SYSTEM VALIDATION IS FINAL &nbsp;·&nbsp; SYSTEM ACCEPTS ONLY VALID STRUCTURES
+    </p>
+
+    <div class="engine-wrap">
+      <div class="flbl">REQUEST PAYLOAD</div>
+      <div class="payload mono">budget:            <input id="lb" placeholder="500000"> <span style="color:var(--g500);">// EUR</span>
+timeline_months:   <input id="lt" placeholder="12"> <span style="color:var(--g500);">// months</span>
+resources:         <input id="lr" placeholder="8"> <span style="color:var(--g500);">// team size</span>
+complexity_index:  <input id="lc" placeholder="3"> <span style="color:var(--g500);">// scale 1–5</span></div>
+
+      <button id="execBtn" onclick="ledgerRun()">&gt; SUBMIT FOR VALIDATION</button>
+      <div id="ledgerOut" class="mono">SYSTEM STATUS: IDLE</div>
+      <div id="ledgerTrace"></div>
+      <div id="ledgerCta">
+        <p class="sm">To discuss this result or request a full execution audit:</p>
+        <a href="#" onclick="return false">info&#64;executia.io</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROL PANEL -->
+  <div class="block">
+    <div class="lbl">EXECUTION CONTROL PANEL</div>
+    <p class="sm" style="margin-bottom:20px;">Real-time metrics from validation requests submitted in this session.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;">
+      <div style="border:var(--border); padding:16px 20px;">
+        <div class="mono" style="font-size:10px; letter-spacing:0.12em; color:var(--g500); margin-bottom:8px;">TOTAL</div>
+        <div id="m_total" style="font-size:28px; font-weight:700;">0</div>
+      </div>
+      <div style="border:var(--border); padding:16px 20px;">
+        <div class="mono" style="font-size:10px; letter-spacing:0.12em; color:var(--g500); margin-bottom:8px;">AUTHORIZED</div>
+        <div id="m_allowed" style="font-size:28px; font-weight:700; color:var(--green);">0</div>
+      </div>
+      <div style="border:var(--border); padding:16px 20px;">
+        <div class="mono" style="font-size:10px; letter-spacing:0.12em; color:var(--g500); margin-bottom:8px;">BLOCKED</div>
+        <div id="m_blocked" style="font-size:28px; font-weight:700; color:var(--red);">0</div>
+      </div>
+      <div style="border:var(--border); padding:16px 20px;">
+        <div class="mono" style="font-size:10px; letter-spacing:0.12em; color:var(--g500); margin-bottom:8px;">AVG RISK</div>
+        <div id="m_risk" style="font-size:28px; font-weight:700;">—</div>
+      </div>
+    </div>
+
+    <div style="border:var(--border); padding:16px 20px;">
+      <div class="mono" style="font-size:10px; letter-spacing:0.12em; color:var(--g500); margin-bottom:12px;">LIVE EXECUTION FEED</div>
+      <div id="feed" style="font-family:'JetBrains Mono',monospace; font-size:12px; max-height:200px; overflow-y:auto; line-height:1.9;">
+        <span style="color:var(--g500);">AWAITING REQUESTS...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- API MODE -->
+  <div class="block">
+    <div class="lbl">API MODE</div>
+    <h2>Execution Validation Endpoint</h2>
+    <p class="sm" style="margin-bottom:20px;">
+      EXECUTIA operates as an API validation layer.
+      All execution requests are submitted and validated before execution.
+    </p>
+
+    <div class="api-box mono">POST /v1/execution/validate
+Host: api.executia.io
+Authorization: Bearer ***
+Content-Type: application/json</div>
+
+    <div class="api-box mono">{
+  "budget": 500000,
+  "timeline_months": 12,
+  "resources": 8,
+  "complexity_index": 3
+}</div>
+
+    <button class="btn btn-inv" onclick="runApiSimulation()" style="margin-bottom:12px;">&gt; EXECUTE API REQUEST</button>
+
+    <div class="api-box mono" id="apiResponse">STATUS: AWAITING REQUEST</div>
+  </div>
+
+  <!-- FAILURE SCENARIOS -->
+  <div class="block">
+    <div class="lbl">FAILURE SCENARIOS</div>
+    <h2>Execution is Blocked When Conditions Fail</h2>
+    <p class="sm" style="margin-bottom:28px;">
+      The system does not interpret intent.
+      It enforces constraints. When conditions are not met, execution is stopped.
+    </p>
+
+    <div class="fail-grid">
+
+      <div class="fail-card">
+        <div class="mono fail-title">SCENARIO 01 — RESOURCE OVERLOAD</div>
+        <div class="api-box mono">REQUEST:
+budget: 200000
+resources: 2
+timeline: 6
+complexity: 4</div>
+        <div class="api-box mono fail-out" id="f1">STATUS: NOT EXECUTED</div>
+        <button class="btn" onclick="runFailure(1)">&gt; RUN SCENARIO</button>
+      </div>
+
+      <div class="fail-card">
+        <div class="mono fail-title">SCENARIO 02 — TIME CONSTRAINT VIOLATION</div>
+        <div class="api-box mono">REQUEST:
+budget: 800000
+resources: 10
+timeline: 2
+complexity: 5</div>
+        <div class="api-box mono fail-out" id="f2">STATUS: NOT EXECUTED</div>
+        <button class="btn" onclick="runFailure(2)">&gt; RUN SCENARIO</button>
+      </div>
+
+      <div class="fail-card">
+        <div class="mono fail-title">SCENARIO 03 — INVALID STRUCTURE</div>
+        <div class="api-box mono">REQUEST:
+budget: null
+resources: 5
+timeline: 12
+complexity: 3</div>
+        <div class="api-box mono fail-out" id="f3">STATUS: NOT EXECUTED</div>
+        <button class="btn" onclick="runFailure(3)">&gt; RUN SCENARIO</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHAT THIS REPRESENTS -->
+  <div class="block">
+    <div class="lbl">WHAT THIS REPRESENTS</div>
+    <p class="sm" style="margin-bottom:14px;">
+      This simulation reflects real execution failures observed in:
+    </p>
+    <p class="sm" style="line-height:2.2;">
+      — Infrastructure systems<br>
+      — Financial allocation environments<br>
+      — Multi-party execution workflows
+    </p>
+    <p class="sm" style="margin-top:14px; font-weight:600;">
+      Execution errors result in measurable financial loss.<br>
+      EXECUTIA prevents this at the validation layer.
+    </p>
+  </div>
+
+  <!-- SYSTEM LOGIC -->
+  <div class="block">
+    <div class="lbl">VALIDATION LOGIC</div>
+    <h2>Three Conditions. No Exceptions.</h2>
+    <div class="g3" style="margin-top:8px;">
+      <div>
+        <p class="num">01</p>
+        <p style="font-weight:600; margin-bottom:6px;">Constraints validated</p>
+        <p class="sm">Defined boundaries checked against the proposed action.</p>
+      </div>
+      <div>
+        <p class="num">02</p>
+        <p style="font-weight:600; margin-bottom:6px;">Resources verified</p>
+        <p class="sm">Budget, capacity, and timeline confirmed as available.</p>
+      </div>
+      <div>
+        <p class="num">03</p>
+        <p style="font-weight:600; margin-bottom:6px;">Conditions enforced</p>
+        <p class="sm">Authorization and preconditions must be satisfied.</p>
+      </div>
+    </div>
+    <div style="border-top:var(--border); margin-top:28px; padding-top:20px;">
+      <p class="lead">
+        Conditions not met &nbsp;→&nbsp; <strong style="color:var(--red);">execution is blocked</strong><br>
+        Conditions met &nbsp;→&nbsp; <strong style="color:var(--green);">execution is verified and logged</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- SYSTEM POSITION -->
+  <div class="block">
+    <div class="lbl">SYSTEM POSITION</div>
+    <div class="arch">
+      <div class="anode">ERP / PLANNING SYSTEMS</div>
+      <div class="arr">→</div>
+      <div class="anode hi">EXECUTIA VALIDATION</div>
+      <div class="arr">→</div>
+      <div class="anode">EXECUTION SYSTEMS / APIs</div>
+    </div>
+    <p class="sm" style="margin-top:12px;">
+      Integration requires no system replacement — only insertion at the execution boundary.
+    </p>
+  </div>
+
+  <!-- INITIAL DEPLOYMENT -->
+  <div class="block" id="consultation">
+    <div class="lbl">INITIAL DEPLOYMENT</div>
+    <h2>EXECUTIA can be deployed in 3 steps</h2>
+    <div class="flow-list" style="margin-top:8px;">
+      1. &nbsp;Define execution constraints &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— scope and boundaries<br>
+      2. &nbsp;Connect validation layer &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— to decision flow<br>
+      3. &nbsp;Enforce execution authorization &nbsp;— system goes live
+    </div>
+    <div style="border-top:var(--border); margin-top:24px; padding-top:16px;">
+      <p class="sm mono" style="line-height:2.2;">
+        Deployment time: &nbsp;<strong style="color:var(--black);">7–30 days</strong><br>
+        System impact: &nbsp;<strong style="color:var(--black);">minimal (non-invasive integration)</strong><br>
+        Replacement required: &nbsp;<strong style="color:var(--black);">none</strong>
+      </p>
+    </div>
+    <div class="cta-row">
+      <button class="btn btn-inv" onclick="openConsultation()">&gt; REQUEST EXECUTION CONTROL ACCESS &rarr;</button>
+    </div>
+    <p class="sm" style="margin-top:14px;">
+      Used in infrastructure, construction, and capital-intensive operations.
+    </p>
+  </div>
+
+  <!-- REAL CASE SNAPSHOT -->
+  <div class="block">
+    <div class="lbl">REAL CASE SNAPSHOT</div>
+    <h2>Infrastructure Budget Validation — Controlled Execution</h2>
+    <p class="sm" style="margin-bottom:24px;">
+      In a multi-phase infrastructure project, execution requests were validated
+      before budget allocation and contractor activation.
+    </p>
+
+    <div class="api-box mono">SYSTEM: INFRASTRUCTURE PLANNING ENVIRONMENT
+REGION: CONFIDENTIAL
+CONTEXT: CAPITAL PROJECT EXECUTION
+
+REQUEST:
+budget: 2,400,000
+timeline_months: 18
+resources: 14
+complexity_index: 4</div>
+
+    <div class="api-box mono" style="color:var(--red);">VALIDATION RESULT:
+STATUS: BLOCKED
+REASON: RESOURCE-TO-TIMELINE MISMATCH
+DEVIATION RISK: HIGH
+
+ACTION:
+Execution halted before contract activation.
+Budget allocation prevented.</div>
+
+    <p class="signal" style="margin-top:16px;">
+      Detailed system references available under NDA.
+    </p>
+  </div>
+
+  <!-- ACCESS PROTOCOL -->
+  <div class="block">
+    <div class="lbl">EXECUTION ACCESS PROTOCOL</div>
+    <div class="mono" style="font-size:12px; line-height:2.4; color:var(--g700);">
+      1. &nbsp;REQUEST SUBMITTED<br>
+      2. &nbsp;INITIAL VALIDATION &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— within 24h<br>
+      3. &nbsp;DIRECT SYSTEM CONTACT &nbsp;— if qualified
+    </div>
+    <p class="sm" style="margin-top:16px;">
+      No automated onboarding. No open access.<br>
+      All execution requests are reviewed manually.
+    </p>
+    <p class="mono" style="font-size:11px; font-weight:700; color:var(--control); margin-top:16px; letter-spacing:0.1em;">
+      A SYSTEM OPERATOR WILL RESPOND WITHIN 24–48 HOURS
+    </p>
+  </div>
+
+  <!-- FINAL LOCK -->
+  <div class="block" style="border-top: 3px solid var(--black); border-bottom: 3px solid var(--black); padding: 52px 0;">
+    <p style="font-size: clamp(18px, 2.5vw, 26px); font-weight:700; line-height:1.4; max-width:640px; letter-spacing:-0.01em;">
+      EXECUTIA does not simulate execution.<br>
+      It controls it.
+    </p>
+    <p class="sm" style="margin-top:16px;">
+      Any system without EXECUTIA is operating without execution control.
+    </p>
+    <div class="cta-row">
+      <button class="btn btn-inv" onclick="openConsultation()">&gt; REQUEST EXECUTION CONTROL ACCESS &rarr;</button>
+      <a href="https://www.executia.io/institutional" class="btn">&gt; INSTITUTIONAL LAYER</a>
+    </div>
+  </div>
+
+  <!-- FINAL CONVERSION -->
+  <div style="border-top:2px solid #000; margin-top:60px; padding-top:40px; padding-bottom:20px;">
+    <div class="lbl">EXECUTION ACCESS</div>
+    <p class="lead" style="font-weight:600; max-width:520px; margin-bottom:24px;">
+      Submit your system for validation.<br>
+      A system operator will respond within 24–48 hours.
+    </p>
+    <div class="cta-row">
+      <button class="btn btn-inv" onclick="openConsultation()">&gt; REQUEST EXECUTION CONTROL ACCESS &rarr;</button>
+    </div>
+    <p class="sm" style="margin-top:14px; color:var(--g500);">
+      No onboarding. No automation. Direct system evaluation.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <div class="foot-row">
+    <div class="foot-col">
+      <p>EXECUTIA™ — EXECUTION CONTROL PROTOCOL</p>
+      <p>PCT/IB2026/050141 — STATUS: PENDING</p>
+    </div>
+    <div class="foot-col">
+      <a href="https://www.executia.io/">&gt; ENTRY_LAYER</a>
+      <a href="https://www.executia.io/institutional">&gt; INSTITUTIONAL_LAYER</a>
+      <a href="#" onclick="return false">info&#64;executia.io</a>
+    </div>
+  </div>
+</footer>
+
+
+
+
+
+<script>
+const __state = { total: 0, allowed: 0, blocked: 0, risks: [] }
+
+function updateDashboard(result) {
+  __state.total++
+  if (result.status === 'AUTHORIZED') {
+    __state.allowed++
+    if (result.risk_score) __state.risks.push(result.risk_score)
+  } else {
+    __state.blocked++
+  }
+  document.getElementById('m_total').textContent   = __state.total
+  document.getElementById('m_allowed').textContent = __state.allowed
+  document.getElementById('m_blocked').textContent = __state.blocked
+  const avg = __state.risks.length
+    ? Math.round(__state.risks.reduce((a,b)=>a+b,0) / __state.risks.length)
+    : '—'
+  document.getElementById('m_risk').textContent = avg
+  addFeed(result)
+}
+
+function addFeed(result) {
+  const feed = document.getElementById('feed')
+  const first = feed.querySelector('span[style]')
+  if (first) first.remove()
+  const row = document.createElement('div')
+  const time = new Date().toLocaleTimeString('en-GB')
+  if (result.status === 'AUTHORIZED') {
+    row.textContent = '[' + time + '] AUTHORIZED | risk=' + result.risk_score
+    row.style.color = 'var(--green)'
+  } else {
+    row.textContent = '[' + time + '] ' + result.status + ' | ' + result.reason
+    row.style.color = 'var(--red)'
+  }
+  feed.prepend(row)
+}
+
+function getEmail(){return atob('aW5mb0BleGVjdXRpYS5pbw==')}
+
+// Auto-open consultation if URL has #consultation
+if (window.location.hash === '#consultation') {
+  window.addEventListener('load', function() {
+    setTimeout(openConsultation, 500);
+  });
+}
+
+function go(e, url) {
+  e.preventDefault()
+  const ov = document.getElementById('transition-overlay')
+  if (!ov) { window.location.href = url; return; }
+  ov.style.opacity = '1'
+  setTimeout(() => { window.location.href = url }, 300)
+}
+
+function validateExecution({budget, timeline, resources, complexity}) {
+  budget = Number(budget);
+  timeline = Number(timeline);
+  resources = Number(resources);
+  complexity = Number(complexity);
+
+  if (!budget || !timeline || !resources || !complexity) {
+    return {status: "REJECTED", reason: "INVALID_STRUCTURE"};
+  }
+  if (complexity < 1 || complexity > 5) {
+    return {status: "REJECTED", reason: "INVALID_COMPLEXITY"};
+  }
+
+  const capacity = resources * timeline * 10000;
+  if (budget > capacity) {
+    return {status: "BLOCKED", reason: "RESOURCE_CAPACITY_EXCEEDED"};
+  }
+
+  if (timeline < complexity * 2) {
+    return {status: "BLOCKED", reason: "TIME_CONSTRAINT_VIOLATION"};
+  }
+
+  const risk = (budget / (resources * timeline)) * complexity;
+  if (risk > 8000) {
+    return {status: "BLOCKED", reason: "RISK_INDEX_EXCEEDED"};
+  }
+
+  return {status: "AUTHORIZED", risk_score: Math.round(risk)};
+}
+
+function ledgerRun() {
+  const out   = document.getElementById('ledgerOut')
+  const trace = document.getElementById('ledgerTrace')
+  const btn   = document.getElementById('execBtn')
+  const cta   = document.getElementById('ledgerCta')
+  const id    = 'REQ-' + Date.now().toString().slice(-6)
+
+  const b  = document.getElementById('lb').value
+  const t  = document.getElementById('lt').value
+  const r  = document.getElementById('lr').value
+  const cv = document.getElementById('lc').value
+
+  out.textContent = '[SYSTEM]\nINITIALIZING VALIDATION...'
+  out.style.color = 'inherit'
+  btn.disabled = true
+  btn.textContent = 'PROCESS LOCKED'
+  out.style.color = 'inherit'
+  trace.style.display = 'block'
+  trace.textContent = '> connecting to validation node...\n'
+  if (cta) cta.style.display = 'none'
+
+  const result = validateExecution({budget:b, timeline:t, resources:r, complexity:cv})
+
+  const log = (line, delay) => new Promise(res => {
+    setTimeout(() => { trace.textContent += line + '\n'; trace.scrollTop = trace.scrollHeight; res() }, delay)
+  })
+
+  ;(async () => {
+    out.textContent = '[REQUEST RECEIVED]\nID: ' + id + '\nSTATUS: QUEUED'
+
+    await log('> request received', 200)
+    await log('> assigning validation node', 350)
+    await log('> loading constraint set', 350)
+    await log('> structure check: ' + (result.reason === 'INVALID_STRUCTURE' || result.reason === 'INVALID_COMPLEXITY' ? 'FAILED' : 'passed'), 400)
+
+    if (result.status === 'REJECTED') {
+      await log('> payload rejected', 300)
+      out.textContent = '[REJECTED]\nID:      ' + id + '\nSTATUS:  REJECTED\nREASON:  ' + result.reason + '\nOVERRIDE: DISABLED'
+      out.style.color = 'var(--red)'
+      btn.textContent = '> SUBMIT FOR VALIDATION'
+      btn.disabled = false
+      return
+    }
+
+    await log('> payload accepted', 300)
+    await log('> running constraint checks', 450)
+    await log('> resource capacity: ' + (result.reason === 'RESOURCE_CAPACITY_EXCEEDED' ? 'FAILED' : 'passed'), 450)
+    await log('> time constraint: ' + (result.reason === 'TIME_CONSTRAINT_VIOLATION' ? 'FAILED' : 'passed'), 450)
+    await log('> risk index: ' + (result.reason === 'RISK_INDEX_EXCEEDED' ? 'FAILED' : 'passed'), 450)
+
+    if (result.status === 'BLOCKED') {
+      await log('> execution halted', 300)
+      const estimatedLoss = Math.round(Number(b) * 0.12).toLocaleString();
+      out.textContent = '[VALIDATION RESULT]\nID:         ' + id + '\nSTATUS:     BLOCKED\nREASON:     ' + result.reason + '\nLOSS PREVENTED: €' + estimatedLoss + '\nSYSTEM VALUE:   €' + estimatedLoss + ' secured\nNOTE:       This execution would have failed in your system.\nIMPACT:     Financial loss prevented\nACTION:     Execution blocked before damage\nAUTHORITY:  SYSTEM\nOVERRIDE:   DISABLED\nCONFIDENCE: SYSTEM VERIFIED\n\nBUSINESS IMPACT:\n— Financial loss prevented\n— Execution risk eliminated\n— Capital preserved before deployment
+DECISION: EXECUTION CONTROL REQUIRED'
+      out.style.color = 'var(--red)'
+    } else {
+      await log('> committing result to ledger', 400)
+      await log('> generating audit record', 350)
+      const estimatedProtected = Math.round(Number(b) * 0.05).toLocaleString();
+      out.textContent = '[VALIDATION RESULT]\nID:         ' + id + '\nSTATUS:     AUTHORIZED\nRISK SCORE: ' + result.risk_score + '\nVALUE PROTECTED: \u20ac' + estimatedProtected + '\nSYSTEM VALUE:    \u20ac' + estimatedProtected + ' secured\nAUTHORITY:  SYSTEM\nOVERRIDE:   DISABLED\nCONFIDENCE: SYSTEM VERIFIED'
+      out.style.color = 'var(--green)'
+    }
+
+    out.classList.remove('flash')
+    void out.offsetWidth
+    out.classList.add('flash')
+
+    await log('> timestamp: ' + new Date().toISOString(), 350)
+    await log('> validation complete', 250)
+
+    if (cta) cta.style.display = 'block'
+    updateDashboard(result)
+  })()
+}
+
+function runFailure(n) {
+  const el = document.getElementById('f' + n)
+  el.style.color = 'inherit'
+  el.textContent = '[REQUEST SUBMITTED]\nVALIDATING...'
+
+  setTimeout(() => {
+    if (n === 1) {
+      el.textContent = '[BLOCKED]\nREASON: RESOURCE CAPACITY EXCEEDED\nLOAD FACTOR: CRITICAL\nEXECUTION: HALTED\nSYSTEM AUTHORITY: ACTIVE'
+    } else if (n === 2) {
+      el.textContent = '[BLOCKED]\nREASON: TIMELINE INSUFFICIENT\nCONSTRAINT: TIME VIOLATION\nEXECUTION: HALTED\nSYSTEM AUTHORITY: ACTIVE'
+    } else {
+      el.textContent = '[REJECTED]\nREASON: INVALID REQUEST STRUCTURE\nMISSING REQUIRED PARAMETERS\nEXECUTION: NOT PERMITTED'
+    }
+    el.style.color = 'var(--red)'
+    el.classList.add('blocked')
+    setTimeout(() => el.classList.remove('blocked'), 200)
+  }, 700)
+}
+
+function runApiSimulation() {
+  const res = document.getElementById('apiResponse')
+  res.style.color = 'inherit'
+  res.textContent = '[REQUEST SENT]\nSTATUS: PROCESSING...'
+  setTimeout(() => {
+    const risk = Math.floor(Math.random() * 120)
+    const id   = 'REQ-' + Date.now().toString().slice(-6)
+    let status, color
+    if (risk < 50) { status = 'AUTHORIZED'; color = 'var(--green)' }
+    else if (risk < 100) { status = 'RESTRICTED'; color = 'var(--yellow)' }
+    else { status = 'REJECTED'; color = 'var(--red)' }
+    res.textContent =
+      'HTTP/1.1 200 OK\n' +
+      'Content-Type: application/json\n\n' +
+      '{\n' +
+      '  "request_id": "' + id + '",\n' +
+      '  "status": "' + status + '",\n' +
+      '  "risk_score": ' + risk + ',\n' +
+      '  "authority": "EXECUTIA",\n' +
+      '  "override": "DISABLED",\n' +
+      '  "timestamp": "' + new Date().toISOString() + '"\n' +
+      '}'
+    res.style.color = color
+  }, 900)
+}
+
+// openConsultation defined in <head>
+
+async function sendExecutionEmail(email, name, executionId, status) {
+  try {
+    await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: email,
+        subject: 'EXECUTIA // REQUEST RECEIVED',
+        html: `<div style="font-family:monospace;padding:40px;max-width:500px;letter-spacing:0.08em;line-height:2;">
+          <p style="font-size:11px;color:#888;letter-spacing:0.2em;">EXECUTIA EXECUTION CONTROL PROTOCOL</p>
+          <br>
+          <p style="font-size:16px;font-weight:bold;">YOUR REQUEST HAS BEEN REGISTERED</p>
+          <br>
+          <p><b>ENTITY:</b> ${name}</p>
+          <p><b>EXECUTION ID:</b> ${executionId}</p>
+          <p><b>STATUS:</b> ${status}</p>
+          <br>
+          <p style="color:#888;font-size:12px;">System will respond within 48 hours.<br>Reference this ID in all correspondence.</p><br><p><a href="https://www.executia.io/status.html?id=${executionId}" style="color:#0A1F44;font-weight:bold;">VIEW STATUS → executia.io/status.html?id=${executionId}</a></p>
+          <br>
+          <p style="font-size:11px;color:#888;letter-spacing:0.14em;">PCT/IB2026/050141 — EXECUTIA™</p>
+        </div>`
+      })
+    });
+  } catch(e) { console.warn('Email send failed:', e); }
+}
+
+async function submitConsultation(){
+  var co=document.getElementById('c_company').value;
+  var pe=document.getElementById('c_person').value;
+  var em=document.getElementById('c_email').value;
+  var pr=document.getElementById('c_project').value;
+  var bu=document.getElementById('c_budget').value;
+  var ti=document.getElementById('c_timeline').value;
+
+  const status   = document.getElementById('c_status');
+  const btn      = document.getElementById('consultSubmitBtn');
+  const respBox  = document.getElementById('system-response');
+  const respText = document.getElementById('response-text');
+  const respSub  = document.getElementById('response-sub');
+
+  if(!co||!em||!pr||!bu){
+    status.textContent = 'STATUS: REJECTED — INCOMPLETE SUBMISSION';
+    status.style.color = 'var(--red)';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '> PROCESSING...';
+  status.textContent = 'STATUS: VALIDATING REQUEST...';
+  status.style.color = '#666';
+  respBox.style.display = 'none';
+
+    // EXECUTIA LEAD VALIDATION
+  function validateLead(company, email, budget) {
+    if (!company || company.length < 3) return {status:'REJECTED', reason:'INVALID_ENTITY'};
+    if (!email || !email.includes('@') || !email.includes('.')) return {status:'REJECTED', reason:'INVALID_EMAIL'};
+    if (!budget) return {status:'REJECTED', reason:'MISSING_VOLUME'}; // all volumes accepted
+    return {status:'AUTHORIZED'};
+  }
+
+  var v = validateLead(co, em, bu);
+  if (v.status !== 'AUTHORIZED') {
+    status.textContent = 'STATUS: ' + v.status + ' — ' + v.reason;
+    status.style.color = 'var(--red)';
+    btn.disabled = false;
+    btn.textContent = '> SUBMIT FOR VALIDATION →';
+    return;
+  }
+
+  const execId = 'EX-' + Math.random().toString(36).substring(2,8).toUpperCase();
+
+  try {
+    await window.__fbAddDoc(window.__fbCollection(window.__fbDb,'leads'),{
+      company:co, person:pe, email:em, system_type:pr, volume:bu, risk_description:ti,
+      protectedValue: Math.round(parseBudgetRange(bu) * 0.08),
+      status:'NEW', timestamp:new Date().toISOString(), source:'execution.executia.io',
+      executionId: execId
+    });
+
+    status.textContent = 'STATUS: REQUEST COMMITTED — ' + execId;
+    status.style.color = 'var(--control)';
+
+    setTimeout(() => {
+      respBox.style.display = 'block';
+      setTimeout(function(){ respBox.scrollIntoView({behavior:'smooth'}); }, 50);
+      function parseBudgetRange(s) {
+      if (!s) return 0;
+      if (s.includes('1B')) return 1000000000;
+      if (s.includes('100M')) return 100000000;
+      if (s.includes('10M')) return 10000000;
+      if (s.includes('1M')) return 1000000;
+      return 0;
+    }
+    const budget = parseBudgetRange(bu);
+
+      if (budget >= 1000000) {
+        respText.textContent = 'EXECUTION CHANNEL OPENED';
+        respText.style.color = 'var(--green)';
+        respSub.textContent =
+          'EXECUTION ID: ' + execId + '\n' +
+          'PRIORITY:     ELEVATED\n' +
+          'NEXT STEP:\n' +
+          '  — Direct system audit call (30–60 min)\n' +
+          '  — Constraint mapping\n' +
+          '  — Execution risk identification\n' +
+          'REFERENCE:    ' + execId + ' — keep for records\n' +
+          'STATUS PAGE:  executia.io/status.html?id=' + execId + '&outcome=granted';
+        status.textContent = 'STATUS: AUTHORIZED';
+        status.style.color = 'var(--green)';
+        sendExecutionEmail(em, co, execId, 'AUTHORIZED');
+      } else {
+        respText.textContent = 'SYSTEM VALIDATION IN PROGRESS';
+        respText.style.color = 'var(--control)';
+        respSub.textContent =
+          'EXECUTION ID: ' + execId + '\n' +
+          'PRIORITY:     STANDARD\n' +
+          'NEXT STEP:    System validation in progress (24–48h)\n' +
+          'REFERENCE:    ' + execId + ' — keep for records\n' +
+          'STATUS PAGE:  executia.io/status.html?id=' + execId + '&outcome=review';
+        status.textContent = 'STATUS: QUEUED';
+        status.style.color = 'var(--g500)';
+        sendExecutionEmail(em, co, execId, 'UNDER REVIEW');
+      }
+    }, 1200);
+
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = '> INITIATE VALIDATION →';
+      ['c_company','c_project','c_budget','c_timeline','c_email'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+    }, 4000);
+
+  } catch(e){
+    console.error(e);
+    status.textContent = 'STATUS: SYSTEM ERROR';
+    status.style.color = 'var(--red)';
+    btn.disabled = false;
+    btn.textContent = '> INITIATE VALIDATION →';
+  }
+}
+</script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBsKJ3U49P0vtaLIRz3aTlZ8l4vg-lm3Ec",
+  authDomain: "executia-system.firebaseapp.com",
+  projectId: "executia-system",
+  storageBucket: "executia-system.firebasestorage.app",
+  messagingSenderId: "846608294000",
+  appId: "1:846608294000:web:45cc89730a7282e68994b5"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+window.__fbDb = db;
+window.__fbAddDoc = addDoc;
+window.__fbCollection = collection;
+</script>
+
+
+<div id="consultation-modal" style="display:none;position:fixed;inset:0;background:#ffffff;z-index:999;padding:60px 20px;overflow-y:auto;">
+  <div style="max-width:580px;margin:0 auto;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="mono" style="font-size:11px;letter-spacing:0.18em;color:#888;">EXECUTION ACCESS REQUEST</div>
+      <button onclick="closeConsultation()" style="border:none;background:none;font-size:20px;cursor:pointer;color:#888;line-height:1;padding:4px 8px;" title="Close">&times;</button>
+    </div>
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:12px;letter-spacing:-0.01em;">Submit system for validation</h2>
+    <p style="font-size:14px;color:#444;margin-bottom:16px;line-height:1.7;">
+      Only qualified systems are accepted.<br>
+      All submissions are reviewed manually.
+    </p>
+    <div class="mono" style="font-size:11px;color:#888;line-height:2;margin-bottom:28px;border-left:2px solid #000;padding-left:12px;">
+      QUALIFICATION CRITERIA<br>
+      — €1M+ annual execution volume<br>
+      — multi-step execution systems<br>
+      — measurable financial exposure
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:20px;margin-bottom:24px;">
+      <div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.14em;color:#888;margin-bottom:6px;">COMPANY / ENTITY NAME *</div>
+        <input id="c_company" class="sys-input" placeholder="Legal entity name">
+      </div>
+      <div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.14em;color:#888;margin-bottom:6px;">RESPONSIBLE PERSON *</div>
+        <input id="c_person" class="sys-input" placeholder="Full name + role">
+      </div>
+      <div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.14em;color:#888;margin-bottom:6px;">WORK EMAIL *</div>
+        <input id="c_email" type="email" class="sys-input" placeholder="name@company.com">
+      </div>
+      <div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.14em;color:#888;margin-bottom:6px;">SYSTEM TYPE *</div>
+        <select id="c_project" class="sys-input" style="cursor:pointer;">
+          <option value="">— SELECT —</option>
+          <option>Infrastructure / Construction</option>
+          <option>Financial / Budget Control</option>
+          <option>Government / Institutional</option>
+          <option>Enterprise Operations</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.14em;color:#888;margin-bottom:6px;">ANNUAL EXECUTION VOLUME *</div>
+        <select id="c_budget" class="sys-input" style="cursor:pointer;">
+          <option value="">— SELECT —</option>
+          <option>€1M – €10M</option>
+          <option>€10M – €100M</option>
+          <option>€100M – €1B</option>
+          <option>€1B+</option>
+        </select>
+      </div>
+      <div>
+        <div class="mono" style="font-size:10px;letter-spacing:0.14em;color:#888;margin-bottom:6px;">EXECUTION FAILURE RISK (brief)</div>
+        <textarea id="c_timeline" class="sys-input" rows="3" placeholder="Describe current execution risk or failure pattern" style="resize:vertical;padding-top:8px;"></textarea>
+      </div>
+    </div>
+
+    <div id="c_status" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;color:#888;margin-bottom:16px;">STATUS: AWAITING REQUEST</div>
+    <button onclick="submitConsultation()" id="consultSubmitBtn" class="sys-btn">&gt; SUBMIT FOR VALIDATION &rarr;</button>
+    <button onclick="closeConsultation()" class="sys-btn-outline" style="margin-top:10px;">&larr; BACK TO EXECUTION</button>
+
+    <div id="system-response" style="margin-top:30px;display:none;border-top:1px solid #eee;padding-top:24px;">
+      <div class="mono" style="font-size:10px;letter-spacing:0.14em;color:#888;margin-bottom:12px;">EXECUTION RESPONSE</div>
+      <div id="response-text" style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weigh
+</body>
+</html>
