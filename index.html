@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXECUTIA — Execution Layer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F8FA;
+    --surface: #FFFFFF;
+    --surface-2: #F0F5FF;
+    --border: #D0D5DD;
+    --border-strong: #98A2B3;
+    --text-primary: #0A1F44;
+    --text-secondary: #475467;
+    --text-muted: #98A2B3;
+    --signal-green: #0D7A4E;
+    --signal-green-dim: rgba(13, 122, 78, 0.08);
+    --signal-red: #C01048;
+    --signal-red-dim: rgba(192, 16, 72, 0.07);
+    --signal-yellow: #B54708;
+    --signal-yellow-dim: rgba(181, 71, 8, 0.08);
+    --signal-blue: #1849A9;
+    --signal-blue-dim: rgba(24, 73, 169, 0.08);
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    justify-content: space-between;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  .nav {
+    display: flex;
+    border-left: 1px solid var(--border);
+    margin-left: 16px;
+    padding-left: 16px;
+  }
+
+  .nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 6px 14px;
+    border: 1px solid transparent;
+  }
+
+  .nav a:hover, .nav a.active {
+    color: var(--text-primary);
+    border-color: var(--border);
+    background: var(--surface-2);
+  }
+
+  .header-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--signal-green);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header-status::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal-green);
+  }
+
+  /* ── MAIN ── */
+  main { padding-top: 52px; }
+
+  /* ── EXECUTION TITLE BAR ── */
+  .exec-titlebar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .exec-titlebar-left {}
+
+  .exec-path {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .exec-title {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+  }
+
+  .exec-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── GRID LAYOUT ── */
+  .exec-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 52px - 89px);
+  }
+
+  /* ── INPUT PANEL ── */
+  .input-panel {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .panel-section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .field-group {
+    margin-bottom: 24px;
+  }
+
+  .field-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .field-label span {
+    color: var(--text-muted);
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 11px;
+  }
+
+  .field-input {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 12px;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .field-input:focus {
+    border-color: var(--border-strong);
+  }
+
+  select.field-input {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%233D5266'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  .range-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .field-range {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2px;
+    background: var(--border-strong);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .field-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--text-primary);
+    cursor: pointer;
+    border: none;
+  }
+
+  .range-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-primary);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 8px 0 24px; }
+
+  .execute-btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    border: 1px solid var(--text-primary);
+    background: var(--text-primary);
+    color: var(--bg);
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    margin-top: auto;
+  }
+
+  .execute-btn:hover {
+    background: var(--signal-blue);
+    border-color: var(--signal-blue);
+    color: #fff;
+  }
+
+  .execute-btn:active {
+    transform: scale(0.99);
+  }
+
+  /* ── OUTPUT PANEL ── */
+  .output-panel {
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── RESULT BLOCK ── */
+  .result-block {
+    border: 1px solid var(--border);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    background: var(--surface);
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-block.idle {
+    border-color: var(--border);
+  }
+
+  .result-block.valid {
+    border-color: var(--signal-green);
+    background: var(--signal-green-dim);
+  }
+
+  .result-block.blocked {
+    border-color: var(--signal-red);
+    background: var(--signal-red-dim);
+  }
+
+  .result-block.processing {
+    border-color: var(--signal-blue);
+    background: var(--signal-blue-dim);
+  }
+
+  .result-status-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .result-status-label.idle { color: var(--text-muted); }
+  .result-status-label.valid { color: var(--signal-green); }
+  .result-status-label.blocked { color: var(--signal-red); }
+  .result-status-label.processing { color: var(--signal-blue); }
+
+  .result-main {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  .result-main.idle { color: var(--text-muted); }
+  .result-main.valid { color: var(--signal-green); }
+  .result-main.blocked { color: var(--signal-red); }
+  .result-main.processing { color: var(--signal-blue); }
+
+  .result-sub {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+  }
+
+  /* ── METRICS ROW ── */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+
+  .metric-cell {
+    padding: 20px 24px;
+    border-right: 1px solid var(--border);
+  }
+
+  .metric-cell:last-child { border-right: none; }
+
+  .metric-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .metric-value {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .metric-value.risk-low { color: var(--signal-green); }
+  .metric-value.risk-med { color: var(--signal-yellow); }
+  .metric-value.risk-high { color: var(--signal-red); }
+
+  .metric-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ── WITH / WITHOUT COMPARISON ── */
+  .comparison-block {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .comp-row {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    align-items: stretch;
+  }
+
+  .comp-cell {
+    padding: 24px 28px;
+  }
+
+  .comp-without {
+    background: rgba(192,16,72,0.04);
+    border-right: 1px solid var(--border);
+  }
+
+  .comp-with {
+    background: rgba(13,122,78,0.05);
+  }
+
+  .comp-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border-right: 1px solid var(--border);
+  }
+
+  .comp-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .comp-without .comp-label { color: var(--signal-red); }
+  .comp-with .comp-label { color: var(--signal-green); }
+
+  .comp-value {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .comp-without .comp-value { color: var(--signal-red); }
+  .comp-with .comp-value { color: var(--signal-green); }
+
+  .comp-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+  }
+  .log-block {
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .log-header {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .log-header-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .log-entries {
+    padding: 16px;
+    min-height: 120px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .log-entry {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 12px;
+    line-height: 1.6;
+  }
+
+  .log-time {
+    color: var(--text-muted);
+    min-width: 60px;
+  }
+
+  .log-entry.ok .log-msg { color: var(--signal-green); }
+  .log-entry.err .log-msg { color: var(--signal-red); }
+  .log-entry.warn .log-msg { color: var(--signal-yellow); }
+  .log-entry.info .log-msg { color: var(--signal-blue); }
+
+  /* ── WHAT THIS MEANS ── */
+  .insight-block {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 24px;
+  }
+
+  .insight-q {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    padding-left: 12px;
+    border-left: 2px solid var(--border-strong);
+  }
+
+  .insight-a {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    padding-left: 12px;
+    border-left: 2px solid transparent;
+    margin-bottom: 16px;
+  }
+
+  .insight-a.revealed {
+    color: var(--text-primary);
+    border-left-color: var(--signal-green);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    background: var(--surface);
+  }
+
+  .footer-left {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .footer-right a {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+
+  .footer-right a:hover { color: var(--text-secondary); }
+
+  /* ── PROCESSING ANIMATION ── */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .blink { animation: blink 0.8s step-end infinite; }
+
+  @media (max-width: 900px) {
+    .exec-grid { grid-template-columns: 1fr; }
+    .input-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .metrics-row { grid-template-columns: 1fr 1fr; }
+    header, .exec-titlebar, .output-panel, footer { padding-left: 20px; padding-right: 20px; }
+    .input-panel { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a class="logo" href="index.html">EXECUTIA</a>
+    <nav class="nav">
+      <a href="index.html">Overview</a>
+      <a href="execution.html" class="active">Execution Layer</a>
+      <a href="institutional.html">Institutional</a>
+    </nav>
+  </div>
+  <div class="header-status" id="hdrStatus">SYSTEM READY</div>
+</header>
+
+<main>
+
+  <div class="exec-titlebar">
+    <div class="exec-titlebar-left">
+      <div class="exec-path">executia.io / execution-layer</div>
+      <div class="exec-title">Execution Validator</div>
+    </div>
+    <div class="exec-meta">
+      PROTOCOL v1.0<br>
+      SESSION ACTIVE<br>
+      <span id="clockDisplay">—</span>
+    </div>
+  </div>
+
+  <div class="exec-grid">
+
+    <!-- INPUT PANEL -->
+    <div class="input-panel">
+      <div class="panel-section-label">Input Parameters</div>
+
+      <div class="field-group">
+        <div class="field-label">Budget Allocated <span id="budgetDisplay">€500,000</span></div>
+        <div class="range-row">
+          <input type="range" class="field-range" id="budgetRange" min="10" max="500" value="500" step="10" oninput="updateBudget(this.value)">
+          <span class="range-value" id="budgetVal">500</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Timeline <span id="timelineDisplay">12 months</span></div>
+        <div class="range-row">
+          <input type="range" class="field-range" id="timelineRange" min="1" max="60" value="12" step="1" oninput="updateTimeline(this.value)">
+          <span class="range-value" id="timelineVal">12</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Execution Complexity</div>
+        <select class="field-input" id="complexitySelect">
+          <option value="low">LOW — Single system, defined scope</option>
+          <option value="medium" selected>MEDIUM — Multi-layer, cross-department</option>
+          <option value="high">HIGH — Multi-agency, critical infrastructure</option>
+          <option value="critical">CRITICAL — National / defense level</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Regulatory Alignment</div>
+        <select class="field-input" id="regulatorySelect">
+          <option value="none">NONE — No formal framework</option>
+          <option value="partial">PARTIAL — Informal compliance</option>
+          <option value="iso">ISO 9001 / 27001</option>
+          <option value="full" selected>FULL — Enforced standard</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Human Override Allowed</div>
+        <select class="field-input" id="overrideSelect">
+          <option value="yes">YES — Manual intervention possible</option>
+          <option value="no" selected>NO — Protocol enforced</option>
+        </select>
+      </div>
+
+      <hr class="divider">
+
+      <button class="execute-btn" onclick="runExecution()">
+        ▶ RUN EXECUTION CHECK
+      </button>
+    </div>
+
+    <!-- OUTPUT PANEL -->
+    <div class="output-panel">
+
+      <!-- RESULT -->
+      <div class="result-block idle" id="resultBlock">
+        <div class="result-status-label idle" id="resultLabel">AWAITING INPUT</div>
+        <div class="result-main idle" id="resultMain">—</div>
+        <div class="result-sub" id="resultSub">Configure parameters and run execution check</div>
+      </div>
+
+      <!-- METRICS -->
+      <div class="metrics-row">
+        <div class="metric-cell" style="border-right:none;">
+          <div class="metric-label">Uncontrolled Execution Risk</div>
+          <div class="metric-value" id="metricRisk">—</div>
+          <div class="metric-note" id="metricRiskNote">not calculated</div>
+        </div>
+      </div>
+
+      <!-- LOG -->
+      <div class="log-block">
+        <div class="log-header">
+          <div class="log-header-label">Execution Log</div>
+          <div class="log-header-label" id="logCount">0 events</div>
+        </div>
+        <div class="log-entries" id="logEntries">
+          <div class="log-entry info">
+            <span class="log-time">00:00:00</span>
+            <span class="log-msg">System initialized. Awaiting execution parameters.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSIGHT -->
+      <div class="insight-block">
+        <div class="panel-section-label" style="margin-bottom:16px;">System Implications</div>
+        <div class="insight-q">Does this prevent errors before they occur?</div>
+        <div class="insight-a" id="ins1">—</div>
+        <div class="insight-q">Does this replace human control?</div>
+        <div class="insight-a" id="ins2">—</div>
+        <div class="insight-q">Is this enforceable at system level?</div>
+        <div class="insight-a" id="ins3">—</div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-left">EXECUTIA EXECUTION LAYER · executia.io</div>
+  <div class="footer-right"><a href="mailto:info@executia.io">info@executia.io</a></div>
+</footer>
+
+<script>
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clockDisplay').textContent =
+      now.toISOString().replace('T',' ').substring(0,19) + ' UTC';
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Range displays
+  function updateBudget(v) {
+    document.getElementById('budgetVal').textContent = v;
+    document.getElementById('budgetDisplay').textContent = '€' + (parseInt(v) * 1000).toLocaleString();
+  }
+  function updateTimeline(v) {
+    document.getElementById('timelineVal').textContent = v;
+    document.getElementById('timelineDisplay').textContent = v + ' month' + (v == 1 ? '' : 's');
+  }
+
+  // Log state
+  let logLines = [];
+  let logCount = 0;
+
+  function addLog(type, msg) {
+    logCount++;
+    const now = new Date();
+    const t = now.toTimeString().substring(0,8);
+    logLines.push({ type, msg, t });
+    renderLog();
+  }
+
+  function renderLog() {
+    const el = document.getElementById('logEntries');
+    el.innerHTML = logLines.map(l =>
+      `<div class="log-entry ${l.type}">
+        <span class="log-time">${l.t}</span>
+        <span class="log-msg">${l.msg}</span>
+      </div>`
+    ).join('');
+    el.scrollTop = el.scrollHeight;
+    document.getElementById('logCount').textContent = logLines.length + ' events';
+  }
+
+  function setResult(state, label, main, sub) {
+    const rb = document.getElementById('resultBlock');
+    rb.className = 'result-block ' + state;
+    document.getElementById('resultLabel').className = 'result-status-label ' + state;
+    document.getElementById('resultLabel').textContent = label;
+    document.getElementById('resultMain').className = 'result-main ' + state;
+    document.getElementById('resultMain').textContent = main;
+    document.getElementById('resultSub').textContent = sub;
+  }
+
+  function setMetrics(risk, riskClass) {
+    document.getElementById('metricRisk').textContent = risk;
+    document.getElementById('metricRisk').className = 'metric-value ' + riskClass;
+    document.getElementById('metricRiskNote').textContent = 'calculated';
+  }
+
+  function setInsights(revealed) {
+    if (!revealed) {
+      ['ins1','ins2','ins3'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+        document.getElementById(id).className = 'insight-a';
+      });
+      return;
+    }
+    const i1 = document.getElementById('ins1');
+    const i2 = document.getElementById('ins2');
+    const i3 = document.getElementById('ins3');
+    i1.textContent = 'Yes. Validation occurs before execution commits. Not after.';
+    i2.textContent = 'It constrains it. Decisions still require authority. Execution does not.';
+    i3.textContent = 'Yes. At system level. Not policy level.';
+    [i1,i2,i3].forEach(el => el.className = 'insight-a revealed');
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  async function runExecution() {
+    const budget = parseInt(document.getElementById('budgetRange').value);
+    const timeline = parseInt(document.getElementById('timelineRange').value);
+    const complexity = document.getElementById('complexitySelect').value;
+    const regulatory = document.getElementById('regulatorySelect').value;
+    const override = document.getElementById('overrideSelect').value;
+
+    // Reset
+    logLines = [];
+    setInsights(false);
+    document.getElementById('metricRisk').textContent = '—';
+    document.getElementById('metricRisk').className = 'metric-value';
+
+    // Processing state
+    setResult('processing', 'PROCESSING', '...', 'Validating execution parameters');
+    document.getElementById('hdrStatus').textContent = 'PROCESSING';
+    document.getElementById('hdrStatus').style.color = 'var(--signal-blue)';
+
+    addLog('info', 'Command received');
+    await sleep(350);
+    addLog('info', `Budget: €${(budget*1000).toLocaleString()} · Timeline: ${timeline}mo · Complexity: ${complexity.toUpperCase()}`);
+    await sleep(300);
+    addLog('info', `Regulatory alignment: ${regulatory.toUpperCase()} · Override: ${override.toUpperCase()}`);
+    await sleep(400);
+    addLog('info', 'Running constraint validation...');
+    await sleep(500);
+
+    // Determine result
+    let blocked = false;
+    let blockReasons = [];
+    let riskScore = 0;
+
+    if (override === 'yes') {
+      blocked = true;
+      blockReasons.push('Human override permitted — execution integrity not guaranteed');
+      riskScore += 40;
+    }
+    if (regulatory === 'none') {
+      blocked = true;
+      blockReasons.push('No regulatory framework — constraint enforcement impossible');
+      riskScore += 35;
+    }
+    if (complexity === 'critical' && timeline < 24) {
+      blocked = true;
+      blockReasons.push('Critical complexity requires minimum 24-month timeline');
+      riskScore += 25;
+    }
+    if (complexity === 'high' && regulatory === 'partial') {
+      blocked = true;
+      blockReasons.push('High complexity with partial compliance — deviation risk exceeds threshold');
+      riskScore += 20;
+    }
+    if (budget < 50 && complexity !== 'low') {
+      blocked = true;
+      blockReasons.push('Insufficient budget for declared complexity level');
+      riskScore += 30;
+    }
+    if (regulatory === 'partial') riskScore += 15;
+    if (complexity === 'high') riskScore += 10;
+    if (complexity === 'critical') riskScore += 15;
+
+    riskScore = Math.min(riskScore, 97);
+    if (!blocked && riskScore < 5) riskScore = 4;
+
+    // Failure cost
+    const budgetEur = budget * 1000;
+    const failureMultiplier = complexity === 'critical' ? 8 : complexity === 'high' ? 4 : complexity === 'medium' ? 2 : 1.2;
+    const failureCost = Math.round(budgetEur * failureMultiplier * (riskScore / 100));
+
+    await sleep(200);
+
+    if (blocked) {
+      blockReasons.forEach(r => addLog('err', r));
+      await sleep(300);
+      addLog('err', 'EXECUTION BLOCKED — constraints not satisfied');
+
+      setResult('blocked',
+        'CONSTRAINT VIOLATION',
+        'SYSTEM BLOCKED',
+        blockReasons[0]
+      );
+
+      const riskClass = riskScore > 60 ? 'risk-high' : riskScore > 30 ? 'risk-med' : 'risk-low';
+      setMetrics(riskScore + '%', riskClass);
+
+      document.getElementById('hdrStatus').textContent = 'BLOCKED';
+      document.getElementById('hdrStatus').style.color = 'var(--signal-red)';
+    } else {
+      addLog('ok', 'Constraint check passed');
+      addLog('ok', 'Regulatory alignment confirmed');
+      addLog('ok', 'Timeline within protocol bounds');
+      addLog('ok', 'EXECUTION VERIFIED — all parameters valid');
+
+      setResult('valid',
+        'VALIDATION COMPLETE',
+        'EXECUTION VERIFIED',
+        'All parameters satisfy execution protocol'
+      );
+
+      const riskClass = riskScore > 20 ? 'risk-med' : 'risk-low';
+      setMetrics(riskScore + '%', riskClass);
+
+      document.getElementById('hdrStatus').textContent = 'VERIFIED';
+      document.getElementById('hdrStatus').style.color = 'var(--signal-green)';
+    }
+
+    setInsights(true);
+  }
+</script>
+</body>
+</html>
