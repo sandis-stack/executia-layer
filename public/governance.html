@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXECUTIA — Governance</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:      #060D1A;
+  --surface: #0D1829;
+  --line:    rgba(255,255,255,0.07);
+  --green:   #16A34A;
+  --red:     #DC2626;
+  --amber:   #D97706;
+  --blue:    #2563EB;
+  --dim:     rgba(255,255,255,0.25);
+  --mid:     rgba(255,255,255,0.55);
+  --full:    rgba(255,255,255,0.92);
+  --mono:    'JetBrains Mono', monospace;
+  --sans:    'Syne', sans-serif;
+}
+html, body { height: 100%; background: var(--bg); color: var(--full); font-family: var(--mono); -webkit-font-smoothing: antialiased; }
+
+/* ── HEADER ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 52px; border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; background: var(--bg); z-index: 10;
+}
+.brand { font-family: var(--sans); font-size: 15px; font-weight: 800; letter-spacing: -.02em; color: var(--full); text-decoration: none; }
+.brand-sub { font-family: var(--mono); font-size: 9px; letter-spacing: .18em; color: var(--dim); margin-left: 10px; }
+.header-links { display: flex; gap: 6px; }
+.hlink { font-size: 9px; letter-spacing: .1em; color: var(--dim); text-decoration: none; padding: 5px 10px; border: 1px solid var(--line); border-radius: 4px; transition: color .12s; }
+.hlink:hover { color: var(--full); }
+.hlink.active { color: var(--full); border-color: rgba(255,255,255,.2); }
+
+/* ── LAYOUT ── */
+.layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 52px); }
+.sidebar { border-right: 1px solid var(--line); padding: 24px 0; }
+.nav-section { margin-bottom: 24px; }
+.nav-label { font-size: 8px; letter-spacing: .18em; color: var(--dim); padding: 0 20px 8px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 20px; font-size: 10px; letter-spacing: .1em; color: var(--dim); cursor: pointer; transition: all .12s; border-left: 2px solid transparent; }
+.nav-item:hover { color: var(--mid); background: rgba(255,255,255,.03); }
+.nav-item.active { color: var(--full); border-left-color: var(--green); background: rgba(22,163,74,.06); }
+.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--dim); flex-shrink: 0; }
+.nav-dot.green { background: var(--green); box-shadow: 0 0 5px var(--green); }
+.nav-dot.red   { background: var(--red); }
+.nav-dot.amber { background: var(--amber); }
+
+.main { padding: 32px; overflow-y: auto; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── PAGE HEADERS ── */
+.page-title { font-family: var(--sans); font-size: 24px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 4px; }
+.page-sub { font-size: 10px; letter-spacing: .1em; color: var(--dim); margin-bottom: 28px; }
+
+/* ── STAT GRID ── */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat-card { background: var(--surface); border: 1px solid var(--line); padding: 18px 20px; }
+.stat-label { font-size: 8px; letter-spacing: .16em; color: var(--dim); margin-bottom: 10px; }
+.stat-value { font-family: var(--sans); font-size: 28px; font-weight: 800; line-height: 1; }
+.stat-sub   { font-size: 9px; color: var(--dim); margin-top: 4px; }
+.stat-green { color: var(--green); }
+.stat-red   { color: var(--red); }
+.stat-amber { color: var(--amber); }
+.stat-white { color: var(--full); }
+
+/* ── TABLES ── */
+.section { margin-bottom: 28px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.section-title { font-size: 9px; letter-spacing: .18em; color: var(--dim); }
+.section-badge { font-size: 9px; letter-spacing: .1em; padding: 2px 8px; border-radius: 2px; }
+.badge-amber { background: rgba(217,119,6,.15); color: var(--amber); }
+.badge-green { background: rgba(22,163,74,.15); color: var(--green); }
+.badge-red   { background: rgba(220,38,38,.15); color: var(--red); }
+
+table { width: 100%; border-collapse: collapse; }
+th { font-size: 8px; letter-spacing: .16em; color: var(--dim); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+td { font-size: 10px; color: var(--mid); padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.03); vertical-align: middle; }
+tr:hover td { background: rgba(255,255,255,.02); }
+.td-mono { font-family: var(--mono); }
+.td-name { color: var(--full); font-weight: 500; }
+
+/* ── CONFIDENCE BAR ── */
+.conf-bar { height: 3px; background: rgba(255,255,255,.1); border-radius: 2px; width: 80px; }
+.conf-fill { height: 100%; border-radius: 2px; }
+
+/* ── ACTION BUTTONS ── */
+.btn-approve { font-size: 9px; letter-spacing: .1em; padding: 4px 10px; border: 1px solid var(--green); background: transparent; color: var(--green); cursor: pointer; transition: all .12s; border-radius: 2px; }
+.btn-approve:hover { background: rgba(22,163,74,.15); }
+.btn-reject { font-size: 9px; letter-spacing: .1em; padding: 4px 10px; border: 1px solid rgba(255,255,255,.15); background: transparent; color: var(--dim); cursor: pointer; transition: all .12s; border-radius: 2px; margin-left: 4px; }
+.btn-reject:hover { border-color: var(--red); color: var(--red); }
+.btn-run { font-size: 9px; letter-spacing: .12em; padding: 6px 14px; border: 1px solid var(--line); background: transparent; color: var(--dim); cursor: pointer; transition: all .12s; border-radius: 2px; }
+.btn-run:hover { border-color: rgba(255,255,255,.3); color: var(--full); }
+
+/* ── RULE CARDS ── */
+.rule-card { border: 1px solid var(--line); padding: 16px; margin-bottom: 10px; }
+.rule-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.rule-key  { font-size: 10px; font-weight: 700; color: var(--full); }
+.rule-type { font-size: 9px; color: var(--dim); }
+.rule-body { font-size: 9px; color: var(--dim); line-height: 1.6; }
+.rule-active   { border-left: 3px solid var(--green); }
+.rule-inactive { border-left: 3px solid rgba(255,255,255,.1); opacity: .6; }
+
+/* ── HEALTH INDICATORS ── */
+.health-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.health-name { font-size: 10px; color: var(--mid); flex: 1; }
+.health-status { font-size: 9px; font-weight: 700; letter-spacing: .1em; }
+.health-ms   { font-size: 9px; color: var(--dim); }
+.status-ok   { color: var(--green); }
+.status-warn { color: var(--amber); }
+.status-err  { color: var(--red); }
+
+/* ── LOADING ── */
+.loading { font-size: 9px; letter-spacing: .16em; color: var(--dim); padding: 20px 0; }
+
+/* ── API URL ── */
+.api-url-note { font-size: 9px; color: var(--dim); margin-top: 8px; }
+.api-url-note span { color: var(--mid); }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;">
+    <a href="https://www.executia.io" class="brand">EXECUTIA</a>
+    <span class="brand-sub">GOVERNANCE</span>
+  </div>
+  <div class="header-links">
+    <a href="https://execution.executia.io" class="hlink">&larr; COMMAND CENTER</a>
+    <a href="https://www.executia.io" class="hlink">EXECUTIA.IO</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">OVERVIEW</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="nav-dot green"></span>DASHBOARD
+      </div>
+      <div class="nav-item" onclick="showPage('health')">
+        <span class="nav-dot" id="healthDot"></span>HEALTH
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">GOVERNANCE</div>
+      <div class="nav-item" onclick="showPage('proposals')">
+        <span class="nav-dot amber"></span>RULE PROPOSALS
+        <span id="proposalCount" style="margin-left:auto;font-size:9px;background:rgba(217,119,6,.2);color:var(--amber);padding:1px 5px;border-radius:2px;">...</span>
+      </div>
+      <div class="nav-item" onclick="showPage('rules')">
+        <span class="nav-dot green"></span>ACTIVE RULES
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">AI TOOLS</div>
+      <div class="nav-item" onclick="showPage('generate')">
+        <span class="nav-dot"></span>GENERATE RULE
+      </div>
+      <div class="nav-item" onclick="showPage('optimize')">
+        <span class="nav-dot"></span>OPTIMIZER
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">MONITORING</div>
+      <div class="nav-item" onclick="showPage('metrics')">
+        <span class="nav-dot"></span>PERFORMANCE
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- DASHBOARD PAGE -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-title">Governance Dashboard</div>
+      <div class="page-sub">SYSTEM STATUS · REAL TIME</div>
+
+      <div class="stat-grid" id="dashStats">
+        <div class="stat-card"><div class="stat-label">PENDING PROPOSALS</div><div class="stat-value stat-amber" id="s-pending">—</div><div class="stat-sub">Awaiting review</div></div>
+        <div class="stat-card"><div class="stat-label">ACTIVE RULES</div><div class="stat-value stat-green" id="s-rules">—</div><div class="stat-sub">In execution</div></div>
+        <div class="stat-card"><div class="stat-label">EVENTS 24H</div><div class="stat-value stat-white" id="s-events">—</div><div class="stat-sub">Decisions made</div></div>
+        <div class="stat-card"><div class="stat-label">COMPLIANCE FAIL 24H</div><div class="stat-value stat-red" id="s-compliance">—</div><div class="stat-sub">Blocked executions</div></div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">MONEY IMPACT 24H</div><div class="stat-value" id="s-money" style="font-size:20px;">—</div><div class="stat-sub">Net execution value</div></div>
+        <div class="stat-card"><div class="stat-label">API CALLS 1H</div><div class="stat-value stat-white" id="s-calls">—</div><div class="stat-sub">Engine invocations</div></div>
+        <div class="stat-card"><div class="stat-label">AVG RESPONSE</div><div class="stat-value" id="s-avgms" style="font-size:20px;">—</div><div class="stat-sub">Engine latency</div></div>
+        <div class="stat-card"><div class="stat-label">ERROR RATE 1H</div><div class="stat-value" id="s-errors" style="font-size:20px;">—</div><div class="stat-sub">% failed requests</div></div>
+      </div>
+    </div>
+
+    <!-- PROPOSALS PAGE -->
+    <div id="page-proposals" class="page">
+      <div class="page-title">Rule Proposals</div>
+      <div class="page-sub">AI-GENERATED · REQUIRES HUMAN APPROVAL</div>
+      <div id="proposalsList"><div class="loading">// LOADING PROPOSALS...</div></div>
+    </div>
+
+    <!-- ACTIVE RULES PAGE -->
+    <div id="page-rules" class="page">
+      <div class="page-title">Active Rules</div>
+      <div class="page-sub">EXECUTION RULES · DB-DRIVEN</div>
+      <div id="rulesList"><div class="loading">// LOADING RULES...</div></div>
+    </div>
+
+    <!-- GENERATE RULE PAGE -->
+    <div id="page-generate" class="page">
+      <div class="page-title">AI Rule Generator</div>
+      <div class="page-sub">NATURAL LANGUAGE → EXECUTION RULE</div>
+
+      <div style="border:1px solid var(--line);padding:24px;margin-bottom:20px;">
+        <div style="font-size:9px;letter-spacing:.16em;color:var(--dim);margin-bottom:12px;">DESCRIBE THE RULE IN PLAIN LANGUAGE</div>
+        <textarea id="rulePrompt" placeholder="e.g. If material is delayed and no alternative tasks exist, pause all active work and create a supplier follow-up task with P1 priority"
+          style="width:100%;height:100px;background:transparent;border:none;border-bottom:1px solid var(--line);color:var(--full);font-family:var(--mono);font-size:12px;outline:none;resize:none;padding-bottom:8px;"></textarea>
+        <div style="margin-top:16px;display:flex;gap:10px;align-items:center;">
+          <button class="btn-run" onclick="generateRule()" style="padding:8px 20px;font-size:10px;">&rarr; GENERATE RULE</button>
+          <span id="genStatus" style="font-size:9px;color:var(--dim);"></span>
+        </div>
+      </div>
+
+      <div id="generatedRule" style="display:none;">
+        <div style="font-size:9px;letter-spacing:.16em;color:var(--dim);margin-bottom:12px;">GENERATED RULE (review before saving)</div>
+        <pre id="generatedRuleJson" style="background:var(--surface);border:1px solid var(--line);padding:20px;font-size:10px;color:var(--mid);overflow-x:auto;line-height:1.6;"></pre>
+        <div style="margin-top:12px;display:flex;gap:10px;">
+          <button class="btn-approve" onclick="saveGeneratedRule()">SAVE AS PROPOSAL →</button>
+          <span style="font-size:9px;color:var(--dim);padding-top:6px;">Rule saved inactive — requires approval</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTIMIZER PAGE -->
+    <div id="page-optimize" class="page">
+      <div class="page-title">Rule Optimizer</div>
+      <div class="page-sub">AI ANALYSIS · SELF-LEARNING SYSTEM</div>
+      <div style="border:1px solid var(--line);padding:24px;margin-bottom:20px;">
+        <div style="font-size:11px;color:var(--mid);line-height:1.8;margin-bottom:16px;">
+          Analyzes recent execution events against current rules.<br>
+          Identifies low-performing rules and proposes improvements.<br>
+          All proposals require human approval before activation.
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn-run" onclick="runOptimizer()" style="padding:8px 20px;font-size:10px;">&rarr; RUN OPTIMIZER</button>
+          <span id="optStatus" style="font-size:9px;color:var(--dim);"></span>
+        </div>
+      </div>
+      <div id="optimizerResult"></div>
+    </div>
+
+    <!-- METRICS PAGE -->
+    <div id="page-metrics" class="page">
+      <div class="page-title">Performance</div>
+      <div class="page-sub">ENGINE METRICS · LAST 60 MIN</div>
+      <div id="metricsList"><div class="loading">// LOADING METRICS...</div></div>
+    </div>
+
+    <!-- HEALTH PAGE -->
+    <div id="page-health" class="page">
+      <div class="page-title">System Health</div>
+      <div class="page-sub">INFRASTRUCTURE STATUS</div>
+      <div id="healthList"><div class="loading">// LOADING...</div></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+"use strict";
+
+const API_BASE = "https://execution.executia.io/api";
+let generatedRuleData = null;
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document.getElementById("page-" + name).classList.add("active");
+  event?.currentTarget?.classList.add("active");
+
+  // Load data for page
+  if (name === "proposals") loadProposals();
+  if (name === "rules")     loadRules();
+  if (name === "metrics")   loadMetrics();
+  if (name === "health")    loadHealth();
+}
+
+// ── DASHBOARD DATA ────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const res = await fetch(API_BASE + "/governance?action=stats");
+    if (!res.ok) return;
+    const d = await res.json();
+
+    set("s-pending",    d.pending_proposals  ?? "—");
+    set("s-rules",      d.active_rules       ?? "—");
+    set("s-events",     d.events_24h         ?? "—");
+    set("s-compliance", d.compliance_failures_24h ?? "—");
+
+    const money = d.money_impact_24h || 0;
+    const mEl   = document.getElementById("s-money");
+    mEl.textContent = (money >= 0 ? "+" : "") + "€" + Math.abs(money).toLocaleString();
+    mEl.style.color = money >= 0 ? "var(--green)" : "var(--red)";
+
+    set("s-calls",  d.calls_1h  ?? "—");
+    set("s-avgms",  (d.avg_ms_1h ? d.avg_ms_1h + "ms" : "—"));
+
+    const errEl = document.getElementById("s-errors");
+    const errPct = d.calls_1h > 0 ? Math.round((d.errors_1h / d.calls_1h) * 100) : 0;
+    errEl.textContent = errPct + "%";
+    errEl.style.color = errPct > 5 ? "var(--red)" : errPct > 1 ? "var(--amber)" : "var(--green)";
+
+    set("proposalCount", d.pending_proposals ?? 0);
+  } catch {}
+}
+
+// ── PROPOSALS ────────────────────────────────────────────────
+async function loadProposals() {
+  const el = document.getElementById("proposalsList");
+  el.innerHTML = '<div class="loading">// LOADING...</div>';
+
+  try {
+    const res  = await fetch(API_BASE + "/governance?action=proposals");
+    const data = await res.json();
+    const list = data.proposals || [];
+
+    if (!list.length) {
+      el.innerHTML = '<div class="loading">// NO PENDING PROPOSALS</div>';
+      return;
+    }
+
+    el.innerHTML = `<table>
+      <thead><tr>
+        <th>RULE</th><th>REASON</th><th>CONFIDENCE</th><th>EXPECTED IMPROVEMENT</th><th>ACTIONS</th>
+      </tr></thead>
+      <tbody>${list.map(p => `
+        <tr>
+          <td class="td-mono td-name">${p.rule_key || "—"}</td>
+          <td>${p.reason || "—"}</td>
+          <td>
+            <div class="conf-bar"><div class="conf-fill" style="width:${(p.confidence||0)*100}%;background:${p.confidence>0.8?"var(--green)":p.confidence>0.6?"var(--amber)":"var(--red)"}"></div></div>
+            <span style="font-size:9px;color:var(--dim);">${Math.round((p.confidence||0)*100)}%</span>
+          </td>
+          <td style="font-size:9px;color:var(--dim);">${p.expected_improvement || "—"}</td>
+          <td>
+            <button class="btn-approve" onclick="approveProposal(${p.id})">APPROVE</button>
+            <button class="btn-reject"  onclick="rejectProposal(${p.id})">REJECT</button>
+          </td>
+        </tr>`).join("")}
+      </tbody></table>`;
+  } catch (e) {
+    el.innerHTML = `<div class="loading">// ERROR: ${e.message}</div>`;
+  }
+}
+
+async function approveProposal(id) {
+  if (!confirm("Approve and apply this rule change?")) return;
+  await fetch(API_BASE + "/governance", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "approve", proposalId: id })
+  });
+  loadProposals();
+  loadDashboard();
+}
+
+async function rejectProposal(id) {
+  await fetch(API_BASE + "/governance", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "reject", proposalId: id })
+  });
+  loadProposals();
+}
+
+// ── ACTIVE RULES ─────────────────────────────────────────────
+async function loadRules() {
+  const el = document.getElementById("rulesList");
+  el.innerHTML = '<div class="loading">// LOADING...</div>';
+
+  try {
+    const res  = await fetch(API_BASE + "/governance?action=rules");
+    const data = await res.json();
+    const list = data.rules || [];
+
+    el.innerHTML = list.map(r => `
+      <div class="rule-card ${r.active ? "rule-active" : "rule-inactive"}">
+        <div class="rule-header">
+          <div>
+            <div class="rule-key">${r.rule_key}</div>
+            <div class="rule-type">${r.event_type} · priority ${r.priority}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="section-badge ${r.active ? "badge-green" : "badge-amber"}">${r.active ? "ACTIVE" : "INACTIVE"}</span>
+            <button class="btn-reject" onclick="toggleRule(${r.id}, ${!r.active})">${r.active ? "DISABLE" : "ENABLE"}</button>
+          </div>
+        </div>
+        <div class="rule-body">
+          ${r.label || ""}<br>
+          <span style="color:var(--mid);">Updates: ${(r.action_json?.updates||[]).length} · Creates: ${(r.action_json?.create||[]).length}</span>
+          ${r.condition_json ? `<br><span>Condition: ${JSON.stringify(r.condition_json)}</span>` : ""}
+        </div>
+      </div>`).join("");
+  } catch (e) {
+    el.innerHTML = `<div class="loading">// ERROR: ${e.message}</div>`;
+  }
+}
+
+async function toggleRule(id, active) {
+  await fetch(API_BASE + "/governance", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "toggle-rule", ruleId: id, active })
+  });
+  loadRules();
+}
+
+// ── GENERATE RULE ────────────────────────────────────────────
+async function generateRule() {
+  const prompt = document.getElementById("rulePrompt").value.trim();
+  if (!prompt) return;
+  const status = document.getElementById("genStatus");
+  status.textContent = "// GENERATING...";
+  document.getElementById("generatedRule").style.display = "none";
+
+  try {
+    const res  = await fetch(API_BASE + "/generate-rule", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt })
+    });
+    const data = await res.json();
+    if (data.rule) {
+      generatedRuleData = data.rule;
+      document.getElementById("generatedRuleJson").textContent = JSON.stringify(data.rule, null, 2);
+      document.getElementById("generatedRule").style.display = "block";
+      status.textContent = "// GENERATED";
+    } else {
+      status.textContent = "// ERROR: " + (data.error || "unknown");
+    }
+  } catch (e) {
+    status.textContent = "// ERROR: " + e.message;
+  }
+}
+
+async function saveGeneratedRule() {
+  if (!generatedRuleData) return;
+  await fetch(API_BASE + "/governance", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "save-rule", rule: generatedRuleData })
+  });
+  alert("Rule saved as proposal — activate in Rule Proposals.");
+}
+
+// ── OPTIMIZER ────────────────────────────────────────────────
+async function runOptimizer() {
+  const status = document.getElementById("optStatus");
+  const result = document.getElementById("optimizerResult");
+  status.textContent = "// ANALYZING...";
+  result.innerHTML   = "";
+
+  try {
+    const res  = await fetch(API_BASE + "/optimize-rules", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+    });
+    const data = await res.json();
+
+    status.textContent = `// DONE — ${data.proposals?.length || 0} proposals generated`;
+    result.innerHTML = `
+      <div style="font-size:9px;color:var(--dim);margin-bottom:12px;">${data.eventsAnalyzed || 0} events analyzed · ${data.lowPerformers?.length || 0} low-performing rules</div>
+      ${(data.proposals || []).map(p => `
+        <div class="rule-card" style="border-left-color:var(--amber);">
+          <div class="rule-header"><div class="rule-key">Rule #${p.rule_id}</div><span class="section-badge badge-amber">${Math.round(p.confidence*100)}% CONFIDENCE</span></div>
+          <div class="rule-body">${p.reason}<br><span style="color:var(--mid);">Expected: ${p.expected_improvement}</span></div>
+        </div>`).join("") || '<div class="loading">// ALL RULES PERFORMING WELL</div>'}`;
+  } catch (e) {
+    status.textContent = "// ERROR: " + e.message;
+  }
+}
+
+// ── METRICS ──────────────────────────────────────────────────
+async function loadMetrics() {
+  const el = document.getElementById("metricsList");
+  try {
+    const res  = await fetch(API_BASE + "/health");
+    const data = await res.json();
+    const m    = data.metrics || {};
+
+    el.innerHTML = `
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card"><div class="stat-label">CALLS 1H</div><div class="stat-value stat-white">${m.calls_1h || "—"}</div></div>
+        <div class="stat-card"><div class="stat-label">ERRORS 1H</div><div class="stat-value stat-red">${m.errors_1h || "0"}</div></div>
+        <div class="stat-card"><div class="stat-label">ERROR RATE</div><div class="stat-value ${(m.error_rate||"0%").replace("%","")*1 > 5 ? "stat-red" : "stat-green"}">${m.error_rate || "0%"}</div></div>
+        <div class="stat-card"><div class="stat-label">AVG RESPONSE</div><div class="stat-value stat-white">${m.avg_ms || "—"}ms</div></div>
+        <div class="stat-card"><div class="stat-label">P95 RESPONSE</div><div class="stat-value stat-white">${m.p95_ms || "—"}ms</div></div>
+        <div class="stat-card"><div class="stat-label">STATUS</div><div class="stat-value ${data.status==="healthy"?"stat-green":"stat-red"}" style="font-size:14px;">${(data.status||"—").toUpperCase()}</div></div>
+      </div>`;
+  } catch (e) {
+    el.innerHTML = `<div class="loading">// ERROR: ${e.message}</div>`;
+  }
+}
+
+// ── HEALTH ───────────────────────────────────────────────────
+async function loadHealth() {
+  const el = document.getElementById("healthList");
+  try {
+    const res  = await fetch(API_BASE + "/health");
+    const data = await res.json();
+
+    el.innerHTML = Object.entries(data.checks || {}).map(([name, check]) => `
+      <div class="health-row">
+        <div class="nav-dot ${check.ok ? "green" : ""}" style="${!check.ok ? "background:var(--red);" : ""}"></div>
+        <div class="health-name">${name.toUpperCase()}</div>
+        <div class="health-status ${check.ok ? "status-ok" : "status-err"}">${check.ok ? "OK" : "ERROR"}</div>
+        <div class="health-ms">${check.ms ? check.ms + "ms" : ""}</div>
+        <div style="font-size:9px;color:var(--red);">${check.error || ""}</div>
+      </div>`).join("") || '<div class="loading">// NO HEALTH DATA</div>';
+
+    // Update sidebar dot
+    const allOk = Object.values(data.checks || {}).every(c => c.ok);
+    const dot   = document.getElementById("healthDot");
+    if (dot) { dot.style.background = allOk ? "var(--green)" : "var(--red)"; if (allOk) dot.style.boxShadow = "0 0 5px var(--green)"; }
+  } catch (e) {
+    el.innerHTML = `<div class="loading">// ERROR: ${e.message}</div>`;
+  }
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+
+// ── INIT ─────────────────────────────────────────────────────
+loadDashboard();
+setInterval(loadDashboard, 30000); // refresh every 30s
+</script>
+</body>
+</html>
