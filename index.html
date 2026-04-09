@@ -160,8 +160,9 @@
     </div>
     <div style="display:flex;gap:6px;">
       <a href="https://www.executia.io/request" style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:4px;" onmouseover="this.style.color='var(--full)'" onmouseout="this.style.color='var(--dim)'">&gt; START AUDIT</a>
-      <a href="https://www.executia.io" style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:4px;" onmouseover="this.style.color='var(--full)'" onmouseout="this.style.color='var(--dim)'">ENTRY</a>
-      <a href="https://www.executia.io" style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:4px;" onmouseover="this.style.color='var(--full)'" onmouseout="this.style.color='var(--dim)'">&larr; EXECUTIA.IO</a>
+      <a href="https://www.executia.io/request" style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;font-weight:700;color:var(--green);text-decoration:none;padding:5px 14px;border:1px solid var(--green);border-radius:4px;" onmouseover="this.style.background='rgba(22,163,74,.15)'" onmouseout="this.style.background='transparent'">&rarr; CONNECT YOUR PROJECT</a>
+      <a href="https://www.executia.io/demo" style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:4px;" onmouseover="this.style.color='var(--full)'" onmouseout="this.style.color='var(--dim)'">&larr; BACK TO DEMO</a>
+      <a href="https://www.executia.io" style="font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:4px;" onmouseover="this.style.color='var(--full)'" onmouseout="this.style.color='var(--dim)'">EXECUTIA.IO</a>
     </div>
   </div>
 </header>
@@ -319,6 +320,8 @@ function getSiteContext() {
 }
 
 /* ── API CALL — the only engine ── */
+const API_URL = "https://execution.executia.io/api/v1/execute-event";
+
 async function callEngine(eventType) {
   const body = {
     sessionId:        SID,
@@ -329,7 +332,7 @@ async function callEngine(eventType) {
     contextOverrides: getSiteContext(),
   };
 
-  const res = await fetch("/api/v1/execute-event", {
+  const res = await fetch(API_URL, {
     method:  "POST",
     headers: { "Content-Type":"application/json" },
     body:    JSON.stringify(body),
@@ -436,6 +439,17 @@ async function fire(eventType) {
 
   replayLog.push({ eventType, ts: Date.now() });
   KPI.events++;
+  // Enterprise push after 5 actions
+  if (KPI.events === 3) {
+    var feed = document.getElementById("stream-feed");
+    var el = document.createElement("div");
+    el.className = "stream-entry";
+    el.style.cssText = "background:rgba(22,163,74,.06);border-left:3px solid var(--green);padding:16px 32px;flex-direction:column;align-items:flex-start;gap:10px;";
+    el.innerHTML = '<div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--green);letter-spacing:.1em;">THIS SYSTEM SHOULD CONTROL YOUR PROJECT.</div>' +
+      '<a href="https://www.executia.io/request" style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;padding:10px 20px;background:rgba(22,163,74,.2);color:var(--green);text-decoration:none;border:1px solid var(--green);border-radius:4px;">&rarr; START IMPLEMENTATION</a>';
+    feed.appendChild(el);
+    feed.scrollTop = feed.scrollHeight;
+  }
   KPI.value   += money?.impact  || 0;
   KPI.margin  += money?.margin  || 0;
   KPI.revenue += Math.max(money?.impact || 0, 0);
