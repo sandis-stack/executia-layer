@@ -1,17 +1,13 @@
-import { initializeApp, getApps, cert } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+/**
+ * EXECUTIA™ — /api/get-ledger.js
+ * Fetch ledger entries for a session from Supabase.
+ */
+import { createClient } from "@supabase/supabase-js";
 
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    }),
-  });
-}
-
-const db = getFirestore();
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -22,28 +18,20 @@ export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
   const { sessionId, limit = "50" } = req.query;
-
-  if (!sessionId) {
-    return res.status(400).json({ error: "sessionId is required" });
-  }
+  if (!sessionId) return res.status(400).json({ error: "sessionId is required" });
 
   try {
-    const snap = await db
-      .collection("execution_ledger")
-      .where("sessionId", "==", sessionId)
-      .orderBy("timestamp", "desc")
-      .limit(parseInt(limit, 10))
-      .get();
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: false })
+      .limit(parseInt(limit, 10));
 
-    const entries = snap.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-      timestamp: doc.data().timestamp?.toDate?.()?.toISOString() || doc.data().createdAt,
-    }));
-
-    return res.status(200).json({ entries, count: entries.length });
+    if (error) throw error;
+    return res.status(200).json({ entries: data || [], count: data?.length || 0 });
   } catch (err) {
-    console.error("Ledger fetch error:", err);
+    console.error("[EXECUTIA] get-ledger error:", err);
     return res.status(500).json({ error: "Failed to fetch ledger" });
   }
 }
