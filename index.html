@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EXECUTIA Live AI</title>
+  <style>
+    :root{--bg:#f6f8fc;--card:#fff;--ink:#0a1f44;--muted:#51627d;--border:#d8e1ef;}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+    main{max-width:980px;margin:0 auto;padding:48px 20px 72px} h1{font-size:44px;line-height:1.05;margin:0 0 10px}
+    p{line-height:1.65;color:var(--muted)} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:24px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px} h2{font-size:18px;margin:0 0 10px}
+    code{background:#eef3fb;padding:2px 6px;border-radius:8px} a{color:var(--ink);font-weight:600} ul{margin:0;padding-left:18px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>EXECUTIA Live AI</h1>
+    <p>Canonical live deployment package for the EXECUTIA engine, immutable ledger, live operator console, and AI-assisted rule governance.</p>
+    <div class="grid">
+      <section class="card">
+        <h2>Console</h2>
+        <p>Open the live operator console.</p>
+        <p><a href="/console/">/console/</a></p>
+      </section>
+      <section class="card">
+        <h2>Execution API</h2>
+        <ul>
+          <li><code>/api/v1/health</code></li>
+          <li><code>/api/v1/execute-event</code></li>
+          <li><code>/api/v1/execute-and-dispatch</code></li>
+          <li><code>/api/v1/ledger</code></li>
+          <li><code>/api/v1/executions</code></li>
+          <li><code>/api/v1/reconciliation</code></li>
+        </ul>
+      </section>
+      <section class="card">
+        <h2>AI Governance</h2>
+        <ul>
+          <li><code>/api/v1/generate-rule</code></li>
+          <li>AI never publishes directly</li>
+          <li>Generated → validated → human review → published</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

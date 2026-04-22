@@ -1,0 +1,7 @@
+{
+  "default": "webhook",
+  "providers": [
+    "webhook",
+    "mock_bank"
+  ]
+}

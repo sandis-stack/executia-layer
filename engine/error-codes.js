@@ -1,0 +1,31 @@
+/**
+ * EXECUTIA™ — /engine/error-codes.js
+ * All error code constants. Referenced by every engine module.
+ */
+
+export const ERROR_CODES = {
+  // Input errors
+  MISSING_REQUIRED_FIELD:  "MISSING_REQUIRED_FIELD",
+  INVALID_INPUT_TYPE:      "INVALID_INPUT_TYPE",
+
+  // Rule errors
+  INVALID_RULE_SCHEMA:     "INVALID_RULE_SCHEMA",
+  UNKNOWN_CONTEXT_FIELD:   "UNKNOWN_CONTEXT_FIELD",
+  UNSUPPORTED_OPERATOR:    "UNSUPPORTED_OPERATOR",
+  DEPRECATED_CONDITION:    "DEPRECATED_CONDITION_SYNTAX",
+  EVALUATION_ERROR:        "RULE_EVALUATION_ERROR",
+
+  // Scope errors
+  TENANT_SCOPE_ERROR:      "TENANT_SCOPE_ERROR",
+  RULE_NOT_PUBLISHED:      "RULE_NOT_PUBLISHED",
+
+  // Commit errors
+  LEDGER_COMMIT_FAILED:    "LEDGER_COMMIT_FAILED",
+
+  // Auth errors
+  INVALID_API_KEY:         "INVALID_API_KEY",
+  RATE_LIMIT_EXCEEDED:     "RATE_LIMIT_EXCEEDED",
+
+  // Engine errors
+  ENGINE_ERROR:            "ENGINE_ERROR",
+};

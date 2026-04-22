@@ -1,0 +1,561 @@
+openapi: "3.1.0"
+
+info:
+  title: EXECUTIA Core Engine API
+  version: "1.0.0"
+  description: |
+    Deterministic execution control engine.
+    Every action is evaluated against scoped published rules,
+    committed to an immutable ledger, and dispatched via a
+    permissioned gateway. No external action without APPROVE + COMMITTED.
+
+servers:
+  - url: https://your-project.vercel.app/api/v1
+    description: Production
+
+security:
+  - ApiKey: []
+
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+
+  headers:
+    XRequestId:
+      schema: { type: string, example: "req_a1b2c3d4e5f6" }
+      description: Unique request ID for tracing
+
+  schemas:
+
+    # ── CANONICAL CONTEXT ──────────────────────────────────────
+    CanonicalContext:
+      type: object
+      description: |
+        All fields the engine uses for rule evaluation.
+        Unknown fields are rejected with 400 UNKNOWN_CONTEXT_FIELD.
+      properties:
+        eventType:        { type: string }
+        organizationId:   { type: string }
+        projectId:        { type: ["string", "null"] }
+        amount:           { type: ["number", "null"] }
+        currency:         { type: ["string", "null"] }
+        budgetRemaining:  { type: ["number", "null"] }
+        budgetAllocated:  { type: ["number", "null"] }
+        workersAvailable: { type: ["number", "null"] }
+        hoursSinceRest:   { type: ["number", "null"] }
+        supplierVerified: { type: ["boolean", "null"] }
+        contractValid:    { type: ["boolean", "null"] }
+        weatherRisk:      { type: ["number", "null"] }
+        legalBlock:       { type: ["boolean", "null"] }
+        completedTasks:   { type: ["number", "null"] }
+        pendingTasks:     { type: ["number", "null"] }
+
+    # ── DECISION STATES ────────────────────────────────────────
+    Decision:
+      type: string
+      enum: [APPROVE, ESCALATE, BLOCK]
+
+    DecisionState:
+      type: string
+      enum: [DECIDED, SIMULATED]
+
+    CommitState:
+      type: string
+      enum: [COMMITTED, SIMULATED, FAILED_TO_COMMIT]
+
+    ExecutionStatus:
+      type: string
+      enum:
+        - NOT_STARTED
+        - DISPATCHED
+        - EXECUTED
+        - PROVIDER_REJECTED
+        - FAILED
+        - UNKNOWN_REQUIRES_RECONCILIATION
+
+    # ── RULE RESULT ────────────────────────────────────────────
+    RuleResult:
+      type: object
+      properties:
+        rule_id:   { type: string }
+        rule_name: { type: string }
+        effect:    { type: string, enum: [ALLOW, ESCALATE, BLOCK] }
+        priority:  { type: integer }
+        matched:   { type: boolean }
+
+    # ── ERROR RESPONSE ─────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      required: [ok, error_code, error_message]
+      properties:
+        ok:            { type: boolean, enum: [false] }
+        error_code:    { type: string }
+        error_message: { type: string }
+        error_detail:  { oneOf: [{type: string}, {type: object}], description: 'Additional error context — string for simple messages, object for structured data (e.g. invalid_rules array)' }
+        request_id:    { type: string }
+
+    # ── EXTENDED ERROR RESPONSES ──────────────────────────────
+    # Some errors carry additional fields beyond the base ErrorResponse.
+    # These match the actual payloads returned by the engine.
+
+    InvalidPublishedRuleError:
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+        - type: object
+          properties:
+            invalid_rules:
+              type: array
+              description: Rules that failed schema validation
+              items:
+                type: object
+                properties:
+                  rule_id:    { type: string }
+                  rule_name:  { type: string }
+                  error_code: { type: string }
+                  error:      { type: string }
+
+    LedgerFailedError:
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+        - type: object
+          description: Decision was made but not committed. Includes decision for caller awareness.
+          properties:
+            decision:       { $ref: "#/components/schemas/Decision" }
+            decision_state: { type: string, enum: [DECIDED] }
+            commit_state:   { type: string, enum: [FAILED_TO_COMMIT] }
+            reason_codes:   { type: array, items: { type: string } }
+
+    # ── EXECUTE EVENT RESPONSE ─────────────────────────────────
+    ExecuteEventResponse:
+      type: object
+      required: [ok, decision, decision_state, commit_state]
+      properties:
+        ok:             { type: boolean }
+        simulation:     { type: boolean }
+        request_id:     { type: string }
+        decision:       { $ref: "#/components/schemas/Decision" }
+        decision_state: { $ref: "#/components/schemas/DecisionState" }
+        commit_state:   { $ref: "#/components/schemas/CommitState" }
+        ledger_id:      { type: ["string", "null"] }
+        truth_hash:     { type: ["string", "null"] }
+        reason_codes:   { type: array, items: { type: string } }
+        rules_evaluated: { type: integer }
+        rules_matched:   { type: integer }
+        rules_used:      { type: array, items: { type: object } }
+        invalid_rules:   { type: array, items: { type: object } }
+        context_used:    { $ref: "#/components/schemas/CanonicalContext" }
+        error_code:     { type: ["string", "null"] }
+        error_message:  { type: ["string", "null"] }
+
+    # ── EXECUTE AND DISPATCH RESPONSE ─────────────────────────
+    ExecuteAndDispatchResponse:
+      allOf:
+        - $ref: "#/components/schemas/ExecuteEventResponse"
+        - type: object
+          properties:
+            ticket_id:               { type: ["string", "null"] }
+            idempotency_key:         { type: ["string", "null"] }
+            provider:                { type: ["string", "null"] }
+            execution_status:        { $ref: "#/components/schemas/ExecutionStatus" }
+            provider_transaction_id: { type: ["string", "null"] }
+            requires_reconciliation: { type: boolean }
+            execution_note:          { type: ["string", "null"], description: "Human note for non-dispatch branches (e.g. BLOCK, simulate)" }
+            execution_error:
+              type: ["object", "null"]
+              properties:
+                provider_status: { type: string }
+                details:         { type: object }
+
+
+paths:
+
+  # ── POST /execute-event ──────────────────────────────────────────
+  /execute-event:
+    post:
+      summary: Evaluate event and commit decision
+      description: |
+        Phase 1 only. Evaluates context against published rules,
+        commits decision to immutable ledger. Does NOT dispatch to any provider.
+        Use /execute-and-dispatch for Phase 1 + Phase 2.
+      operationId: executeEvent
+      parameters:
+        - in: header
+          name: x-organization-id
+          schema: { type: string }
+          description: Tenant scope (required unless in request body)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sessionId, eventType, organizationId]
+              properties:
+                sessionId:       { type: string, example: "sess_abc123" }
+                eventType:       { type: string, example: "payment" }
+                organizationId:  { type: string, example: "org_1" }
+                projectId:       { type: ["string", "null"], example: "prj_42" }
+                contextOverrides:
+                  $ref: "#/components/schemas/CanonicalContext"
+                  description: |
+                    Override or supply context fields.
+                    Unknown fields → 400 UNKNOWN_CONTEXT_FIELD.
+                simulate:
+                  type: boolean
+                  default: false
+                  description: |
+                    Dry-run mode (requires ALLOW_SIMULATE=true server-side).
+                    Returns decision without writing to ledger.
+            example:
+              sessionId: "sess_abc123"
+              eventType: "payment"
+              organizationId: "org_1"
+              projectId: "prj_42"
+              contextOverrides:
+                budgetRemaining: 8000
+                supplierVerified: true
+                contractValid: true
+                amount: 4200
+                currency: "EUR"
+      responses:
+        "200":
+          description: Decision committed (or simulated)
+          headers:
+            x-request-id: { $ref: "#/components/headers/XRequestId" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ExecuteEventResponse" }
+              examples:
+                approved:
+                  value:
+                    ok: true
+                    simulation: false
+                    request_id: "req_a1b2c3"
+                    decision: "APPROVE"
+                    decision_state: "DECIDED"
+                    commit_state: "COMMITTED"
+                    ledger_id: 1042
+                    truth_hash: "a3f9e2b1c4d8..."
+                    reason_codes: ["RULE_12"]
+                    rules_evaluated: 3
+                    rules_matched: 1
+                blocked:
+                  value:
+                    ok: true
+                    decision: "BLOCK"
+                    decision_state: "DECIDED"
+                    commit_state: "COMMITTED"
+                    reason_codes: ["RULE_7", "LEGAL_BLOCK"]
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+              examples:
+                unknown_field:
+                  value: { ok: false, error_code: "UNKNOWN_CONTEXT_FIELD", error_message: "UNKNOWN_CONTEXT_FIELD:monthlyLimit" }
+                missing_required:
+                  value: { ok: false, error_code: "MISSING_REQUIRED_CONTEXT", error_message: "MISSING_REQUIRED_CONTEXT:budgetRemaining (required for event \"payment\")" }
+        "401":
+          description: Invalid API key
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+              example: { ok: false, error_code: "INVALID_API_KEY", error_message: "Valid x-api-key header required" }
+        "422":
+          description: Required context field is null for this event type
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+              example:
+                ok: false
+                error_code: "MISSING_REQUIRED_CONTEXT"
+                error_message: "MISSING_REQUIRED_CONTEXT:budgetRemaining (required for event \"payment\")"
+                hint: "Provide missing fields via contextOverrides or ensure DB enrichment is available."
+                request_id: "req_a1b2c3d4e5f6"
+        "500":
+          description: Engine error (rule fetch, invalid published rule, ledger failure)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+              examples:
+                rule_fetch_failed:
+                  value:
+                    ok: false
+                    error_code: "RULE_FETCH_FAILED"
+                    error_message: "Cannot load execution rules — decision aborted."
+                    error_detail: "RULE_FETCH_FAILED (system rules): connection refused"
+                invalid_published_rule:
+                  summary: Published rule has invalid schema
+                  value:
+                    ok: false
+                    error_code: "INVALID_PUBLISHED_RULE"
+                    error_message: "1 published rule(s) failed schema validation. Execution aborted."
+                    error_detail: { invalid_rules: [{ rule_id: "42", rule_name: "payment_block", error_code: "INVALID_RULE_SCHEMA", error: "UNSUPPORTED_OPERATOR:AND at $.condition" }] }
+                ledger_failed:
+                  summary: Decision made but not committed to ledger
+                  value:
+                    ok: false
+                    error_code: "LEDGER_COMMIT_FAILED"
+                    error_message: "Ledger write failed — decision not committed. Retry required."
+                    decision: "APPROVE"
+                    decision_state: "DECIDED"
+                    commit_state: "FAILED_TO_COMMIT"
+                    reason_codes: ["RULE_12"]
+
+
+  # ── POST /execute-and-dispatch ───────────────────────────────────
+  /execute-and-dispatch:
+    post:
+      summary: Evaluate, commit, and dispatch to provider
+      description: |
+        Phase 1 (decision + commit) + Phase 2 (gateway dispatch).
+        Provider is only called if decision=APPROVE and commit_state=COMMITTED.
+        BLOCK or ESCALATE → returns Phase 1 result only, no dispatch.
+      operationId: executeAndDispatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/paths/~1execute-event/post/requestBody/content/application~1json/schema"
+                - type: object
+                  properties:
+                    targetProvider:
+                      type: string
+                      enum: [mock_bank, webhook]
+                      default: mock_bank
+                    executionPayload:
+                      type: object
+                      description: Provider-specific data merged with event payload
+            example:
+              sessionId: "sess_abc123"
+              eventType: "payment"
+              organizationId: "org_1"
+              contextOverrides:
+                budgetRemaining: 8000
+                supplierVerified: true
+                contractValid: true
+                amount: 4200
+                currency: "EUR"
+              targetProvider: "mock_bank"
+              executionPayload:
+                beneficiary: "Supplier AB"
+                reference: "INV-2026-042"
+      responses:
+        "200":
+          description: Approved and executed (or blocked/escalated — check execution_status)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ExecuteAndDispatchResponse" }
+              examples:
+                executed:
+                  value:
+                    ok: true
+                    decision: "APPROVE"
+                    commit_state: "COMMITTED"
+                    ledger_id: 1042
+                    ticket_id: "xt_a1b2c3d4e5f6g7h8"
+                    execution_status: "EXECUTED"
+                    provider_transaction_id: "mock_txn_1745000000"
+                    requires_reconciliation: false
+                blocked:
+                  value:
+                    ok: true
+                    decision: "BLOCK"
+                    commit_state: "COMMITTED"
+                    execution_status: "NOT_STARTED"
+                    execution_note: "Execution not dispatched — decision is \"BLOCK\""
+                simulated:
+                  value:
+                    ok: true
+                    simulation: true
+                    decision: "APPROVE"
+                    decision_state: "DECIDED"
+                    commit_state: "SIMULATED"
+                    ledger_id: null
+                    truth_hash: null
+                    execution_status: "NOT_STARTED"
+                    execution_note: "Simulation mode — no commit, no ticket, no provider call"
+        "422":
+          description: |
+            Provider rejected execution (PROVIDER_REJECTED).
+            Client should review payment data before retrying.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ExecuteAndDispatchResponse" }
+              example:
+                ok: false
+                decision: "APPROVE"
+                commit_state: "COMMITTED"
+                execution_status: "PROVIDER_REJECTED"
+                execution_error:
+                  provider_status: "payment_rejected"
+                  details: { reason: "INSUFFICIENT_FUNDS" }
+        "500":
+          description: |
+            Engine error, gateway failure, or ambiguous provider response.
+            FAILED = network/engine error (retry possible).
+            UNKNOWN_REQUIRES_RECONCILIATION = ambiguous provider response — use reconcile endpoint.
+            TICKET_ISSUE_FAILED = gateway could not create execution ticket after APPROVE.
+            EXECUTION_RESULT_UNRECORDED = critical: provider may have executed, no proof saved.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ExecuteAndDispatchResponse" }
+              examples:
+                failed:
+                  summary: Provider network/engine error
+                  value:
+                    ok: false
+                    decision: "APPROVE"
+                    commit_state: "COMMITTED"
+                    execution_status: "FAILED"
+                    requires_reconciliation: false
+                    error_code: null
+                    error_message: null
+                unknown:
+                  summary: Ambiguous provider response — needs reconciliation
+                  value:
+                    ok: false
+                    decision: "APPROVE"
+                    commit_state: "COMMITTED"
+                    execution_status: "UNKNOWN_REQUIRES_RECONCILIATION"
+                    requires_reconciliation: true
+                    ticket_id: "xt_a1b2c3d4e5f6g7h8"
+                ticket_failed:
+                  summary: Ticket could not be issued after APPROVE
+                  value:
+                    ok: false
+                    error_code: "TICKET_ISSUE_FAILED"
+                    error_message: "TICKET_ISSUE_FAILED: unique constraint violation"
+                    decision: "APPROVE"
+                    commit_state: "COMMITTED"
+                    execution_status: "FAILED"
+                    ticket_id: null
+
+
+  # ── POST /generate-rule ──────────────────────────────────────────
+  /generate-rule:
+    post:
+      summary: Generate execution rule from natural language
+      description: |
+        AI generates a rule using canonical grammar only.
+        Generated rules are NOT immediately active.
+        They enter the governance pipeline: generated → validated → pending_review → published.
+      operationId: generateRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt: { type: string, minLength: 5, example: "Block payment if budget is below 1000 EUR" }
+            example:
+              prompt: "Block payment if budget remaining is below 1000"
+      responses:
+        "200":
+          description: Rule generated and schema-validated
+          content:
+            application/json:
+              example:
+                ok: true
+                proposal_state: "validated"
+                rule:
+                  event_type: "payment"
+                  name: "Block payment — low budget"
+                  effect: "BLOCK"
+                  condition_json:
+                    field: "budgetRemaining"
+                    op: "lte"
+                    value: 1000
+                  status: "generated"
+                  created_by: "ai_generator"
+                note: "Schema valid. Requires human review → PENDING_REVIEW → PUBLISHED before engine use."
+        "422":
+          description: AI returned invalid schema
+          content:
+            application/json:
+              example:
+                ok: false
+                proposal_state: "invalid"
+                error_code: "INVALID_RULE_SCHEMA"
+                error_message: "INVALID_RULE_SCHEMA: $.condition — deprecated op \"AND\". Use \"all\" instead."
+
+
+  # ── GET /health ──────────────────────────────────────────────────
+  /health:
+    get:
+      summary: System health check
+      security: []
+      operationId: healthCheck
+      responses:
+        "200":
+          description: All systems healthy
+          content:
+            application/json:
+              example:
+                status: "healthy"
+                timestamp: "2026-04-18T10:00:00.000Z"
+                checks:
+                  database: { ok: true, ms: 12 }
+                  rules:    { ok: true, ms: 8 }
+                metrics:
+                  calls: 142
+                  errors: 0
+                  errorRate: 0
+                  avgMs: 87
+                version: "1.0.0"
+        "503":
+          description: Degraded
+          content:
+            application/json:
+              example:
+                status: "degraded"
+                checks:
+                  database: { ok: false, error: "connection refused" }
+
+
+# ── STATE TRANSITION REFERENCE ───────────────────────────────────
+# Decision states (per request):
+#   DECIDED     → decision made (always, before commit)
+#   SIMULATED   → dry-run, nothing written
+#
+# Commit states:
+#   COMMITTED        → written to execution_ledger with truth_hash
+#   SIMULATED        → dry-run, not written
+#   FAILED_TO_COMMIT → ledger write failed — decision did NOT happen
+#
+# Execution status (per ticket):
+#   NOT_STARTED                   → ticket issued, not yet dispatched
+#   DISPATCHED                    → sent to provider (in-flight)
+#   EXECUTED                      → provider confirmed
+#   PROVIDER_REJECTED             → provider refused
+#   FAILED                        → network or engine error
+#   UNKNOWN_REQUIRES_RECONCILIATION → ambiguous — needs manual check
+#
+# Rule proposal states:
+#   generated → validated → pending_review → published (active in engine)
+#                        → rejected (terminal)
+#   generated → invalid (terminal)
+#
+# Error codes:
+#   INVALID_API_KEY              401 — missing or wrong x-api-key
+#   TENANT_SCOPE_ERROR           400 — organizationId missing
+#   INVALID_EVENT                400 — sessionId or eventType missing/invalid
+#   UNKNOWN_CONTEXT_FIELD        400 — contextOverrides contains unknown field
+#   MISSING_REQUIRED_CONTEXT     422 — required field is null for this event type
+#   RULE_FETCH_FAILED            500 — DB unavailable, execution aborted
+#   INVALID_PUBLISHED_RULE       500 — published rule has invalid schema, execution aborted
+#   CANONICAL_CONTEXT_VIOLATION  500 — engine internal: unknown field reached evaluation
+#   LEDGER_COMMIT_FAILED         500 — truth not written, decision did not happen
+#   TICKET_ISSUE_FAILED          500 — ticket could not be created after APPROVE
+#   EXECUTION_RESULT_UNRECORDED  500 — critical: provider may have executed, no proof
+#   UNKNOWN_PROVIDER             400 — targetProvider not in registry
+#   INVALID_RULE_SCHEMA          422 — AI or governance: condition fails validation
+#   ENGINE_ERROR                 500 — unhandled internal error
