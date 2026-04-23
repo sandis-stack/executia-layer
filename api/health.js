@@ -4,7 +4,36 @@ import { getStats } from "../services/monitoring.js";
 import { listProviders } from "../gateway/provider-registry.js";
 import { getRuntimeControlReport } from "../services/runtime-control.js";
 
+function applyCors(req, res) {
+  const origin = req.headers.origin;
+
+  if (
+    origin &&
+    (
+      origin.includes("vercel.app") ||
+      origin === "https://executia.io" ||
+      origin === "https://execution.executia.io" ||
+      origin === "http://localhost:3000"
+    )
+  ) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-api-key");
+
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return true;
+  }
+
+  return false;
+}
+
 export default withEngine(async (req, res) => {
+  if (applyCors(req, res)) return;
+
   const supabase = createSupabaseAdmin();
   const started = Date.now();
   const defaultProvider = process.env.DEFAULT_PROVIDER || null;
