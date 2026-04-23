@@ -1,13 +1,12 @@
 {
   "version": 2,
   "functions": {
-    "api/**/*.js": { "maxDuration": 30 },
-    "governance/**/*.js": { "maxDuration": 30 }
+    "api/**/*.js": { "maxDuration": 30 }
   },
   "routes": [
     { "src": "/api/v1/execute-event",        "dest": "/api/execute-event" },
     { "src": "/api/v1/execute-and-dispatch", "dest": "/api/execute-and-dispatch" },
-    { "src": "/api/v1/generate-rule",        "dest": "/governance/generate-rule" },
+    { "src": "/api/v1/generate-rule",        "dest": "/api/generate-rule" },
     { "src": "/api/v1/health",               "dest": "/api/health" },
     { "src": "/api/v1/ledger",               "dest": "/api/ledger" },
     { "src": "/api/v1/executions",           "dest": "/api/executions" },
