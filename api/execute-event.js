@@ -1,25 +1,8 @@
 /**
  * EXECUTIA™ — /api/execute-event.js
- *
- * Phase 1: evaluate event, commit decision to immutable ledger.
- * Does NOT dispatch to any provider — use /execute-and-dispatch for that.
- *
- * All error responses use buildErrorResponse() — guaranteed consistent shape.
- * All success responses use buildExecutionResponse().
- *
- * FLOW:
- *   withEngine (request-id → auth → tenant → rate-limit)
- *   → normalize input                      [400 INVALID_EVENT]
- *   → build canonical context
- *   → enrich context (unknown fields = 400) [400 UNKNOWN_CONTEXT_FIELD]
- *   → assert canonical context             [500 CANONICAL_CONTEXT_VIOLATION]
- *   → assert required context              [422 MISSING_REQUIRED_CONTEXT]
- *   → load rules (fail-closed)             [500 RULE_FETCH_FAILED]
- *   → evaluate rules                       [500 INVALID_PUBLISHED_RULE]
- *   → make decision
- *   → commit truth (hard fail)             [500 LEDGER_COMMIT_FAILED]
- *   → respond                              [200]
  */
+
+import { assertRuntimeReady } from "../services/runtime-control.js"; // ✅ JAUNS
 
 import { normalizeEventInput,
          buildBaseContext,
@@ -40,11 +23,24 @@ import { createSupabaseAdmin }        from "../services/supabase-admin.js";
 import { logAudit }                   from "../services/audit.js";
 
 export default withEngine(async (req, res) => {
+
   const requestId = req.executia.requestId;
   const supabase  = createSupabaseAdmin();
 
   function err(status, code, message, detail = null) {
     return res.status(status).json(buildErrorResponse(code, message, detail, requestId));
+  }
+
+  // 🛑 ── RUNTIME CONTROL (KRITISKAIS BLOKS) ─────────────────────
+  try {
+    await assertRuntimeReady();
+  } catch (e) {
+    return res.status(503).json({
+      ok: false,
+      status: e.code || "RUNTIME_BLOCKED",
+      message: e.message,
+      report: e.report || null,
+    });
   }
 
   // ── 1. NORMALIZE ─────────────────────────────────────────────
@@ -130,6 +126,7 @@ export default withEngine(async (req, res) => {
       request_id: requestId,
       payload: { event_type: event.eventType, decision: decisionResult.decision, reason_codes: decisionResult.reason_codes, error: commitResult.error_message }
     });
+
     return res.status(500).json({
       ...buildErrorResponse(
         commitResult.error_code || "LEDGER_COMMIT_FAILED",
@@ -137,7 +134,6 @@ export default withEngine(async (req, res) => {
         null,
         requestId
       ),
-      // Include decision for caller awareness (not committed, but we know what was decided)
       decision:       decisionResult.decision,
       decision_state: DECISION_STATES.DECIDED,
       commit_state:   commitResult.commit_state,
