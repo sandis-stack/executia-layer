@@ -1,421 +1,559 @@
 -- ============================================================
--- EXECUTIA™ — COMPLETE DATABASE SCHEMA v1.0
--- Run order: this file is idempotent (safe to re-run)
+-- EXECUTIA™ — COMPLETE DATABASE SCHEMA v1.1
 -- PostgreSQL / Supabase
+-- Idempotent where practical; safe for clean installs.
 -- ============================================================
 
--- ── 0. USERS (identity anchor for RLS policies) ──────────────────
--- Required by RLS policies on execution_rules, execution_ledger, execution_results.
--- If you use Supabase Auth: this table maps auth.uid() → organization_id.
--- Adjust to match your identity model.
+-- ── Extensions ────────────────────────────────────────────────
+create extension if not exists pgcrypto;
 
-CREATE TABLE IF NOT EXISTS users (
-  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  organization_id TEXT NOT NULL,
-  email           TEXT UNIQUE NOT NULL,
-  role            TEXT NOT NULL DEFAULT 'member'
-                  CHECK (role IN ('owner', 'admin', 'member', 'viewer')),
-  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- ── 0. USERS ─────────────────────────────────────────────────
+create table if not exists users (
+  id              uuid primary key default gen_random_uuid(),
+  organization_id text not null,
+  email           text unique not null,
+  role            text not null default 'member'
+                  check (role in ('owner', 'admin', 'member', 'viewer')),
+  created_at      timestamptz not null default now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_users_org ON users (organization_id);
+create index if not exists idx_users_org on users (organization_id);
 
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
--- Users can read their own record only
-CREATE POLICY "users_read_own" ON users
-  FOR SELECT TO authenticated
-  USING (id = auth.uid());
--- Service role manages all users
-CREATE POLICY "service_manage_users" ON users
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
+alter table users enable row level security;
+
+drop policy if exists "users_read_own" on users;
+create policy "users_read_own" on users
+  for select to authenticated
+  using (id = auth.uid());
+
+drop policy if exists "service_manage_users" on users;
+create policy "service_manage_users" on users
+  for all to service_role
+  using (true)
+  with check (true);
 
 
--- ── 0.5 PROJECTS (execution budget / scope anchor) ───────────────
-CREATE TABLE IF NOT EXISTS projects (
-  id                TEXT PRIMARY KEY,
-  organization_id   TEXT NOT NULL,
-  name              TEXT NOT NULL,
-  budget_total      NUMERIC NOT NULL DEFAULT 0,
-  budget_remaining  NUMERIC NOT NULL DEFAULT 0,
-  status            TEXT NOT NULL DEFAULT 'active'
-                    CHECK (status IN ('active', 'paused', 'archived')),
-  created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- ── 0.5 PROJECTS ─────────────────────────────────────────────
+create table if not exists projects (
+  id                text primary key,
+  organization_id   text not null,
+  name              text not null,
+  budget_total      numeric not null default 0,
+  budget_remaining  numeric not null default 0,
+  status            text not null default 'active'
+                    check (status in ('active', 'paused', 'archived')),
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_projects_org ON projects (organization_id);
-CREATE INDEX IF NOT EXISTS idx_projects_status ON projects (organization_id, status);
+create index if not exists idx_projects_org on projects (organization_id);
+create index if not exists idx_projects_status on projects (organization_id, status);
 
-CREATE OR REPLACE FUNCTION set_projects_updated_at()
-RETURNS trigger AS $$
-BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
-$$ LANGUAGE plpgsql;
-DROP TRIGGER IF EXISTS projects_updated_at ON projects;
-CREATE TRIGGER projects_updated_at BEFORE UPDATE ON projects
-  FOR EACH ROW EXECUTE FUNCTION set_projects_updated_at();
+create or replace function set_projects_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
 
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_manage_projects" ON projects
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "auth_read_own_projects" ON projects
-  FOR SELECT TO authenticated
-  USING (organization_id IN (SELECT organization_id FROM users WHERE id = auth.uid()));
+drop trigger if exists projects_updated_at on projects;
+create trigger projects_updated_at
+before update on projects
+for each row execute function set_projects_updated_at();
+
+alter table projects enable row level security;
+
+drop policy if exists "service_manage_projects" on projects;
+create policy "service_manage_projects" on projects
+  for all to service_role
+  using (true)
+  with check (true);
+
+drop policy if exists "auth_read_own_projects" on projects;
+create policy "auth_read_own_projects" on projects
+  for select to authenticated
+  using (
+    organization_id in (
+      select organization_id from users where id = auth.uid()
+    )
+  );
 
 
--- ── 1. EXECUTION_RULES (core rule store) ─────────────────────────
--- Stores all rules. Only status='published' rules enter the engine.
--- AI generates rules → governance validates → human approves → published.
-
-CREATE TABLE IF NOT EXISTS execution_rules (
-  id               BIGSERIAL PRIMARY KEY,
-  organization_id  TEXT,                          -- null = system-level (all orgs)
-  project_id       TEXT,                          -- null = org-wide
-  rule_key         TEXT NOT NULL,                 -- unique slug, e.g. "payment_block_overlimit"
-  event_type       TEXT NOT NULL,                 -- snake_case or "*" wildcard
-  name             TEXT NOT NULL,                 -- human-readable label
-  effect           TEXT NOT NULL                  -- what engine does when rule matches
-                   CHECK (effect IN ('ALLOW', 'ESCALATE', 'BLOCK')),
-  condition_json   JSONB,                         -- null = always match; strict grammar only
-  priority         INT NOT NULL DEFAULT 100,      -- lower = higher priority (10=system, 50=org, 100=project)
-  status           TEXT NOT NULL DEFAULT 'generated'
-                   CHECK (status IN (
-                     'generated',       -- AI produced, not yet validated
-                     'validated',       -- schema valid, not yet reviewed
-                     'invalid',         -- failed validation — terminal
-                     'pending_review',  -- awaiting human decision
-                     'approved',        -- human approved, not yet activated
-                     'rejected',        -- human rejected — terminal
-                     'published'        -- active in engine
+-- ── 1. EXECUTION_RULES ───────────────────────────────────────
+create table if not exists execution_rules (
+  id               bigserial primary key,
+  organization_id  text,
+  project_id       text,
+  rule_key         text not null,
+  event_type       text not null,
+  name             text not null,
+  effect           text not null
+                   check (effect in ('ALLOW', 'ESCALATE', 'BLOCK')),
+  condition_json   jsonb,
+  priority         int not null default 100,
+  status           text not null default 'generated'
+                   check (status in (
+                     'generated',
+                     'validated',
+                     'invalid',
+                     'pending_review',
+                     'approved',
+                     'rejected',
+                     'published'
                    )),
-  created_by       TEXT NOT NULL DEFAULT 'system',
-  approved_by      TEXT,                          -- set when status→published
-  approved_at      TIMESTAMPTZ,
-  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_by       text not null default 'system',
+  approved_by      text,
+  approved_at      timestamptz,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_rules_key ON execution_rules (rule_key);
-CREATE INDEX IF NOT EXISTS idx_rules_org        ON execution_rules (organization_id);
-CREATE INDEX IF NOT EXISTS idx_rules_project    ON execution_rules (project_id);
-CREATE INDEX IF NOT EXISTS idx_rules_event      ON execution_rules (event_type);
-CREATE INDEX IF NOT EXISTS idx_rules_status     ON execution_rules (status);
-CREATE INDEX IF NOT EXISTS idx_rules_published  ON execution_rules (status, event_type)
-  WHERE status = 'published';
+create unique index if not exists idx_rules_key on execution_rules (rule_key);
+create index if not exists idx_rules_org on execution_rules (organization_id);
+create index if not exists idx_rules_project on execution_rules (project_id);
+create index if not exists idx_rules_event on execution_rules (event_type);
+create index if not exists idx_rules_status on execution_rules (status);
+create index if not exists idx_rules_published on execution_rules (status, event_type)
+  where status = 'published';
 
--- Auto-update updated_at
-CREATE OR REPLACE FUNCTION set_rules_updated_at()
-RETURNS trigger AS $$
-BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
-$$ LANGUAGE plpgsql;
-DROP TRIGGER IF EXISTS rules_updated_at ON execution_rules;
-CREATE TRIGGER rules_updated_at BEFORE UPDATE ON execution_rules
-  FOR EACH ROW EXECUTE FUNCTION set_rules_updated_at();
+create or replace function set_rules_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
 
--- Set approved_at when status transitions to published
-CREATE OR REPLACE FUNCTION set_rules_approved_at()
-RETURNS trigger AS $$
-BEGIN
-  IF NEW.status = 'published' AND OLD.status != 'published' THEN
-    NEW.approved_at = NOW();
-  END IF;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-DROP TRIGGER IF EXISTS rules_approved_at ON execution_rules;
-CREATE TRIGGER rules_approved_at BEFORE UPDATE ON execution_rules
-  FOR EACH ROW EXECUTE FUNCTION set_rules_approved_at();
+drop trigger if exists rules_updated_at on execution_rules;
+create trigger rules_updated_at
+before update on execution_rules
+for each row execute function set_rules_updated_at();
 
--- ── MIGRATION: active=true → status='published' ──────────────────
--- Run once if you have existing rules with active BOOLEAN column.
--- Safe to run on fresh install (no rows match, no-op).
-DO $$
-BEGIN
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_name = 'execution_rules' AND column_name = 'active'
-  ) THEN
-    UPDATE execution_rules SET status = 'published' WHERE active = TRUE AND status = 'generated';
-    UPDATE execution_rules SET status = 'rejected'  WHERE active = FALSE AND status = 'generated';
-    -- Remove old column after migration (comment out if you need rollback ability)
-    -- ALTER TABLE execution_rules DROP COLUMN IF EXISTS active;
-  END IF;
-END $$;
+create or replace function set_rules_approved_at()
+returns trigger as $$
+begin
+  if new.status = 'published' and old.status <> 'published' then
+    new.approved_at = now();
+  end if;
+  return new;
+end;
+$$ language plpgsql;
 
--- RLS
-ALTER TABLE execution_rules ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_manage_rules" ON execution_rules
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "auth_read_published_rules" ON execution_rules
-  FOR SELECT TO authenticated
-  USING (status = 'published' AND (
-    organization_id IS NULL OR
-    organization_id IN (SELECT organization_id FROM users WHERE id = auth.uid())
-  ));
+drop trigger if exists rules_approved_at on execution_rules;
+create trigger rules_approved_at
+before update on execution_rules
+for each row execute function set_rules_approved_at();
 
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'execution_rules'
+      and column_name = 'active'
+  ) then
+    update execution_rules
+      set status = 'published'
+    where active = true and status = 'generated';
 
--- ── 2. EXECUTION_LEDGER (decision truth — immutable) ─────────────
--- Every engine decision is recorded here before any execution.
--- Append-only. Never updated. Never deleted.
+    update execution_rules
+      set status = 'rejected'
+    where active = false and status = 'generated';
+  end if;
+end $$;
 
-CREATE TABLE IF NOT EXISTS execution_ledger (
-  id               BIGSERIAL PRIMARY KEY,
-  session_id       TEXT NOT NULL,
-  event_type       TEXT NOT NULL,
-  organization_id  TEXT NOT NULL,
-  project_id       TEXT,
-  decision         TEXT NOT NULL
-                   CHECK (decision IN ('APPROVE', 'ESCALATE', 'BLOCK')),
-  reason_codes     TEXT[]   NOT NULL DEFAULT '{}',
-  truth_hash       TEXT     NOT NULL UNIQUE,      -- SHA-256 of canonical payload
-  prev_hash        TEXT,                          -- previous ledger truth_hash for chain continuity
-  payload          JSONB    NOT NULL DEFAULT '{}', -- full snapshot: event, ctx, rules, decision
-  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+alter table execution_rules enable row level security;
 
-CREATE INDEX IF NOT EXISTS idx_ledger_org        ON execution_ledger (organization_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_ledger_session    ON execution_ledger (session_id);
-CREATE INDEX IF NOT EXISTS idx_ledger_decision   ON execution_ledger (decision, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_ledger_hash       ON execution_ledger (truth_hash);
-CREATE INDEX IF NOT EXISTS idx_ledger_prev_hash  ON execution_ledger (prev_hash);
-CREATE INDEX IF NOT EXISTS idx_ledger_created    ON execution_ledger (created_at DESC);
+drop policy if exists "service_manage_rules" on execution_rules;
+create policy "service_manage_rules" on execution_rules
+  for all to service_role
+  using (true)
+  with check (true);
 
--- Append-only enforcement
-CREATE OR REPLACE FUNCTION block_ledger_mutation()
-RETURNS trigger AS $$
-BEGIN
-  RAISE EXCEPTION 'EXECUTIA: execution_ledger is immutable. Entry %: cannot be updated or deleted.', OLD.id;
-END;
-$$ LANGUAGE plpgsql;
-DROP TRIGGER IF EXISTS no_update_ledger ON execution_ledger;
-DROP TRIGGER IF EXISTS no_delete_ledger ON execution_ledger;
-CREATE TRIGGER no_update_ledger BEFORE UPDATE ON execution_ledger
-  FOR EACH ROW EXECUTE FUNCTION block_ledger_mutation();
-CREATE TRIGGER no_delete_ledger BEFORE DELETE ON execution_ledger
-  FOR EACH ROW EXECUTE FUNCTION block_ledger_mutation();
-
-ALTER TABLE execution_ledger ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_write_ledger" ON execution_ledger
-  FOR INSERT TO service_role WITH CHECK (true);
-CREATE POLICY "service_read_ledger" ON execution_ledger
-  FOR SELECT TO service_role USING (true);
-CREATE POLICY "auth_read_own_ledger" ON execution_ledger
-  FOR SELECT TO authenticated
-  USING (organization_id IN (SELECT organization_id FROM users WHERE id = auth.uid()));
-
-
--- ── 3. EXECUTION_TICKETS (gateway authorization tokens) ──────────
--- One ticket per committed APPROVE decision.
--- Exactly one use. Expires after TTL.
--- status is a cache — execution_results is authoritative.
-
-CREATE TABLE IF NOT EXISTS execution_tickets (
-  id               TEXT PRIMARY KEY,              -- xt_{hex16}
-  ledger_id        BIGINT NOT NULL REFERENCES execution_ledger(id),
-  truth_hash       TEXT NOT NULL,                 -- mirrors ledger entry
-  organization_id  TEXT NOT NULL,
-  project_id       TEXT,
-  session_id       TEXT NOT NULL,
-  allowed_action   TEXT NOT NULL,                 -- event_type permitted by this ticket
-  payload          JSONB NOT NULL DEFAULT '{}',   -- action-specific data for provider
-  idempotency_key  TEXT NOT NULL UNIQUE,          -- SHA-256 derived — DB-level double-execution lock
-  status           TEXT NOT NULL DEFAULT 'NOT_STARTED'
-                   CHECK (status IN (
-                     'NOT_STARTED',                     -- issued, not yet dispatched
-                     'DISPATCHED',                      -- sent to provider, awaiting result
-                     'EXECUTED',                        -- provider confirmed execution
-                     'PROVIDER_REJECTED',               -- provider refused
-                     'FAILED',                          -- network/engine error
-                     'UNKNOWN_REQUIRES_RECONCILIATION'  -- ambiguous — needs manual check
-                   )),
-  expires_at       TIMESTAMPTZ NOT NULL,
-  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_tickets_ledger    ON execution_tickets (ledger_id);
-CREATE INDEX IF NOT EXISTS idx_tickets_org       ON execution_tickets (organization_id);
-CREATE INDEX IF NOT EXISTS idx_tickets_status    ON execution_tickets (status);
-CREATE INDEX IF NOT EXISTS idx_tickets_idem      ON execution_tickets (idempotency_key);
-CREATE INDEX IF NOT EXISTS idx_tickets_expires   ON execution_tickets (expires_at)
-  WHERE status = 'NOT_STARTED';  -- partial index for expiry cleanup
-
-ALTER TABLE execution_tickets ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_manage_tickets" ON execution_tickets
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
-
-
--- ── 4. EXECUTION_RESULTS (external execution truth — immutable) ───
--- Authoritative record of every provider interaction.
--- execution_tickets.status is a cache derived from this table.
--- Append-only. Multiple rows per ticket allowed (retries, reconciliation events).
-
-CREATE TABLE IF NOT EXISTS execution_results (
-  id                       TEXT PRIMARY KEY,      -- xr_{timestamp}_{ticket_suffix}
-  execution_ticket_id      TEXT NOT NULL REFERENCES execution_tickets(id),
-  ledger_id                BIGINT NOT NULL,       -- for direct audit queries without ticket join
-  organization_id          TEXT NOT NULL,
-  provider_name            TEXT NOT NULL,         -- "mock_bank", "webhook", "executia_internal"
-  provider_transaction_id  TEXT,                  -- from provider (null if failed/unknown)
-  provider_status          TEXT NOT NULL,         -- raw provider status string
-  response_payload         JSONB NOT NULL DEFAULT '{}',
-  final_status             TEXT NOT NULL
-                           CHECK (final_status IN (
-                             'EXECUTED',                        -- confirmed by provider
-                             'PROVIDER_REJECTED',               -- provider refused
-                             'FAILED',                          -- engine/network error
-                             'UNKNOWN_REQUIRES_RECONCILIATION'  -- ambiguous — formal recon event
-                           )),
-  -- Reconciliation metadata (populated for reconciliation events)
-  is_reconciliation_event  BOOLEAN NOT NULL DEFAULT FALSE,
-  reconciliation_of_id     TEXT REFERENCES execution_results(id),  -- which result this resolves
-  created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_results_ticket   ON execution_results (execution_ticket_id);
-CREATE INDEX IF NOT EXISTS idx_results_ledger   ON execution_results (ledger_id);
-CREATE INDEX IF NOT EXISTS idx_results_org      ON execution_results (organization_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_results_status   ON execution_results (final_status);
-CREATE INDEX IF NOT EXISTS idx_results_recon    ON execution_results (is_reconciliation_event)
-  WHERE is_reconciliation_event = TRUE;
-CREATE INDEX IF NOT EXISTS idx_results_created  ON execution_results (created_at DESC);
-
--- Append-only: no updates or deletes
-CREATE OR REPLACE FUNCTION block_results_mutation()
-RETURNS trigger AS $$
-BEGIN
-  RAISE EXCEPTION 'EXECUTIA: execution_results is immutable. Entry %: cannot be updated or deleted.', OLD.id;
-END;
-$$ LANGUAGE plpgsql;
-DROP TRIGGER IF EXISTS no_update_results ON execution_results;
-DROP TRIGGER IF EXISTS no_delete_results ON execution_results;
-CREATE TRIGGER no_update_results BEFORE UPDATE ON execution_results
-  FOR EACH ROW EXECUTE FUNCTION block_results_mutation();
-CREATE TRIGGER no_delete_results BEFORE DELETE ON execution_results
-  FOR EACH ROW EXECUTE FUNCTION block_results_mutation();
-
-ALTER TABLE execution_results ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_manage_results" ON execution_results
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
-CREATE POLICY "auth_read_own_results" ON execution_results
-  FOR SELECT TO authenticated
-  USING (organization_id IN (SELECT organization_id FROM users WHERE id = auth.uid()));
-
-
-
--- ── 4.5 ENGINE RATE LIMITS ───────────────────────────────────────
-CREATE TABLE IF NOT EXISTS engine_rate_limits (
-  bucket_key     TEXT PRIMARY KEY,
-  request_count  INT NOT NULL DEFAULT 0,
-  window_start   TIMESTAMPTZ NOT NULL,
-  updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_engine_rate_limits_updated ON engine_rate_limits (updated_at);
-
-ALTER TABLE engine_rate_limits ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_manage_rate_limits" ON engine_rate_limits
-  FOR ALL TO service_role USING (true) WITH CHECK (true);
-
--- ── 5. SCOPED RULES VIEW + RPC ────────────────────────────────────
--- Canonical rule loading path for production.
--- Replaces multi-.or() JS queries with a single auditable SQL call.
-
-CREATE OR REPLACE VIEW scoped_published_rules AS
-SELECT
-  r.*,
-  CASE
-    WHEN r.organization_id IS NOT NULL AND r.project_id IS NOT NULL AND r.event_type != '*' THEN 'PROJECT_EVENT'
-    WHEN r.organization_id IS NOT NULL AND r.project_id IS NOT NULL                         THEN 'PROJECT_WILDCARD'
-    WHEN r.organization_id IS NOT NULL AND r.project_id IS NULL AND r.event_type != '*'     THEN 'ORG_EVENT'
-    WHEN r.organization_id IS NOT NULL AND r.project_id IS NULL                             THEN 'ORG_WILDCARD'
-    WHEN r.organization_id IS NULL AND r.project_id IS NULL AND r.event_type != '*'         THEN 'GLOBAL_EVENT'
-    ELSE                                                                                         'GLOBAL_WILDCARD'
-  END AS scope_level,
-  CASE
-    WHEN r.organization_id IS NOT NULL AND r.project_id IS NOT NULL THEN 6
-    WHEN r.organization_id IS NOT NULL AND r.event_type != '*'      THEN 5
-    WHEN r.organization_id IS NOT NULL                              THEN 4
-    WHEN r.project_id IS NOT NULL AND r.event_type != '*'           THEN 3
-    WHEN r.event_type != '*'                                         THEN 2
-    ELSE                                                              1
-  END AS specificity_score
-FROM execution_rules r
-WHERE r.status = 'published';
-
--- Single-call rule loading RPC — use this in production
-CREATE OR REPLACE FUNCTION get_scoped_rules(
-  p_event_type      TEXT,
-  p_organization_id TEXT DEFAULT NULL,
-  p_project_id      TEXT DEFAULT NULL
-)
-RETURNS SETOF scoped_published_rules
-LANGUAGE sql STABLE AS $$
-  SELECT * FROM scoped_published_rules r
-  WHERE
-    (r.event_type = p_event_type OR r.event_type = '*')
-    AND (r.organization_id = p_organization_id OR r.organization_id IS NULL)
-    AND (
-      r.project_id IS NULL
-      OR (
-        r.project_id = p_project_id
-        AND (r.organization_id = p_organization_id OR r.organization_id IS NULL)
+drop policy if exists "auth_read_published_rules" on execution_rules;
+create policy "auth_read_published_rules" on execution_rules
+  for select to authenticated
+  using (
+    status = 'published'
+    and (
+      organization_id is null
+      or organization_id in (
+        select organization_id from users where id = auth.uid()
       )
     )
-  ORDER BY r.specificity_score DESC, r.priority ASC, r.id ASC
+  );
+
+
+-- ── 2. EXECUTION_LEDGER ──────────────────────────────────────
+create table if not exists execution_ledger (
+  id               bigserial primary key,
+  session_id       text not null,
+  event_type       text not null,
+  organization_id  text not null,
+  project_id       text,
+  decision         text not null
+                   check (decision in ('APPROVE', 'ESCALATE', 'BLOCK')),
+  reason_codes     text[] not null default '{}',
+  truth_hash       text not null unique,
+  prev_hash        text,
+  payload          jsonb not null default '{}',
+  created_at       timestamptz not null default now()
+);
+
+create index if not exists idx_ledger_org on execution_ledger (organization_id, created_at desc);
+create index if not exists idx_ledger_session on execution_ledger (session_id);
+create index if not exists idx_ledger_decision on execution_ledger (decision, created_at desc);
+create index if not exists idx_ledger_hash on execution_ledger (truth_hash);
+create index if not exists idx_ledger_prev_hash on execution_ledger (prev_hash);
+create index if not exists idx_ledger_created on execution_ledger (created_at desc);
+
+create or replace function block_ledger_mutation()
+returns trigger as $$
+begin
+  raise exception 'EXECUTIA: execution_ledger is immutable. Entry %: cannot be updated or deleted.', old.id;
+end;
+$$ language plpgsql;
+
+drop trigger if exists no_update_ledger on execution_ledger;
+drop trigger if exists no_delete_ledger on execution_ledger;
+
+create trigger no_update_ledger
+before update on execution_ledger
+for each row execute function block_ledger_mutation();
+
+create trigger no_delete_ledger
+before delete on execution_ledger
+for each row execute function block_ledger_mutation();
+
+alter table execution_ledger enable row level security;
+
+drop policy if exists "service_write_ledger" on execution_ledger;
+create policy "service_write_ledger" on execution_ledger
+  for insert to service_role
+  with check (true);
+
+drop policy if exists "service_read_ledger" on execution_ledger;
+create policy "service_read_ledger" on execution_ledger
+  for select to service_role
+  using (true);
+
+drop policy if exists "auth_read_own_ledger" on execution_ledger;
+create policy "auth_read_own_ledger" on execution_ledger
+  for select to authenticated
+  using (
+    organization_id in (
+      select organization_id from users where id = auth.uid()
+    )
+  );
+
+
+-- ── 3. EXECUTION_TICKETS ─────────────────────────────────────
+create table if not exists execution_tickets (
+  id               text primary key,
+  ledger_id        bigint not null references execution_ledger(id),
+  truth_hash       text not null,
+  organization_id  text not null,
+  project_id       text,
+  session_id       text not null,
+  allowed_action   text not null,
+  payload          jsonb not null default '{}',
+  idempotency_key  text not null unique,
+  status           text not null default 'NOT_STARTED'
+                   check (status in (
+                     'NOT_STARTED',
+                     'DISPATCHED',
+                     'EXECUTED',
+                     'PROVIDER_REJECTED',
+                     'FAILED',
+                     'UNKNOWN_REQUIRES_RECONCILIATION'
+                   )),
+  expires_at       timestamptz not null,
+  created_at       timestamptz not null default now()
+);
+
+create index if not exists idx_tickets_ledger on execution_tickets (ledger_id);
+create index if not exists idx_tickets_org on execution_tickets (organization_id);
+create index if not exists idx_tickets_status on execution_tickets (status);
+create index if not exists idx_tickets_idem on execution_tickets (idempotency_key);
+create index if not exists idx_tickets_expires on execution_tickets (expires_at)
+  where status = 'NOT_STARTED';
+
+alter table execution_tickets enable row level security;
+
+drop policy if exists "service_manage_tickets" on execution_tickets;
+create policy "service_manage_tickets" on execution_tickets
+  for all to service_role
+  using (true)
+  with check (true);
+
+
+-- ── 4. EXECUTION_RESULTS ─────────────────────────────────────
+create table if not exists execution_results (
+  id                       text primary key,
+  execution_ticket_id      text not null references execution_tickets(id),
+  ledger_id                bigint not null,
+  organization_id          text not null,
+  provider_name            text not null,
+  provider_transaction_id  text,
+  provider_status          text not null,
+  response_payload         jsonb not null default '{}',
+  final_status             text not null
+                           check (final_status in (
+                             'EXECUTED',
+                             'PROVIDER_REJECTED',
+                             'FAILED',
+                             'UNKNOWN_REQUIRES_RECONCILIATION'
+                           )),
+  is_reconciliation_event  boolean not null default false,
+  reconciliation_of_id     text references execution_results(id),
+  reconciled_by            text,
+  reconciled_at            timestamptz,
+  reconciliation_note      text,
+  created_at               timestamptz not null default now()
+);
+
+create index if not exists idx_results_ticket on execution_results (execution_ticket_id);
+create index if not exists idx_results_ledger on execution_results (ledger_id);
+create index if not exists idx_results_org on execution_results (organization_id, created_at desc);
+create index if not exists idx_results_status on execution_results (final_status);
+create index if not exists idx_results_recon on execution_results (is_reconciliation_event)
+  where is_reconciliation_event = true;
+create index if not exists idx_results_created on execution_results (created_at desc);
+
+create or replace function block_results_mutation()
+returns trigger as $$
+begin
+  raise exception 'EXECUTIA: execution_results is immutable. Entry %: cannot be updated or deleted.', old.id;
+end;
+$$ language plpgsql;
+
+drop trigger if exists no_update_results on execution_results;
+drop trigger if exists no_delete_results on execution_results;
+
+create trigger no_update_results
+before update on execution_results
+for each row execute function block_results_mutation();
+
+create trigger no_delete_results
+before delete on execution_results
+for each row execute function block_results_mutation();
+
+alter table execution_results enable row level security;
+
+drop policy if exists "service_manage_results" on execution_results;
+create policy "service_manage_results" on execution_results
+  for all to service_role
+  using (true)
+  with check (true);
+
+drop policy if exists "auth_read_own_results" on execution_results;
+create policy "auth_read_own_results" on execution_results
+  for select to authenticated
+  using (
+    organization_id in (
+      select organization_id from users where id = auth.uid()
+    )
+  );
+
+
+-- ── 4.5 ENGINE RATE LIMITS ───────────────────────────────────
+create table if not exists engine_rate_limits (
+  bucket_key     text primary key,
+  request_count  int not null default 0,
+  window_start   timestamptz not null,
+  updated_at     timestamptz not null default now()
+);
+
+create index if not exists idx_engine_rate_limits_updated on engine_rate_limits (updated_at);
+
+alter table engine_rate_limits enable row level security;
+
+drop policy if exists "service_manage_rate_limits" on engine_rate_limits;
+create policy "service_manage_rate_limits" on engine_rate_limits
+  for all to service_role
+  using (true)
+  with check (true);
+
+
+-- ── 4.6 API KEYS / OPERATORS / AUDIT LOGS ────────────────────
+create table if not exists operators (
+  id               text primary key,
+  organization_id  text not null,
+  email            text not null,
+  role             text not null default 'viewer'
+                   check (role in ('viewer','operator','admin')),
+  status           text not null default 'active'
+                   check (status in ('active','disabled')),
+  created_at       timestamptz not null default now()
+);
+
+create index if not exists idx_operators_org on operators (organization_id, role);
+
+alter table operators enable row level security;
+
+drop policy if exists "service_manage_operators" on operators;
+create policy "service_manage_operators" on operators
+  for all to service_role
+  using (true)
+  with check (true);
+
+create table if not exists api_keys (
+  id               text primary key,
+  organization_id  text not null,
+  operator_id      text references operators(id),
+  label            text,
+  key_hash         text not null unique,
+  scopes           text[] not null default array['read','execute'],
+  plan             text,
+  status           text not null default 'active'
+                   check (status in ('active','revoked')),
+  last_used_at     timestamptz,
+  created_at       timestamptz not null default now()
+);
+
+create index if not exists idx_api_keys_org on api_keys (organization_id, status);
+
+alter table api_keys enable row level security;
+
+drop policy if exists "service_manage_api_keys" on api_keys;
+create policy "service_manage_api_keys" on api_keys
+  for all to service_role
+  using (true)
+  with check (true);
+
+create table if not exists audit_logs (
+  id               text primary key,
+  organization_id  text,
+  actor_type       text not null default 'system',
+  actor_id         text,
+  actor_label      text,
+  action           text not null,
+  entity           text not null,
+  entity_id        text,
+  status           text not null default 'ok'
+                   check (status in ('ok','review','error')),
+  request_id       text,
+  payload          jsonb not null default '{}',
+  created_at       timestamptz not null default now()
+);
+
+create index if not exists idx_audit_org_created on audit_logs (organization_id, created_at desc);
+
+alter table audit_logs enable row level security;
+
+drop policy if exists "service_manage_audit_logs" on audit_logs;
+create policy "service_manage_audit_logs" on audit_logs
+  for all to service_role
+  using (true)
+  with check (true);
+
+create table if not exists operator_sessions (
+  id               text primary key,
+  operator_id      text not null references operators(id),
+  organization_id  text not null,
+  token_hash       text not null unique,
+  expires_at       timestamptz not null,
+  created_at       timestamptz not null default now(),
+  last_used_at     timestamptz
+);
+
+create table if not exists webhook_events (
+  id               text primary key,
+  organization_id  text,
+  provider_name    text,
+  signature        text not null,
+  received_at      timestamptz not null default now()
+);
+
+
+-- ── 5. RULE VIEW + RPC ────────────────────────────────────────
+drop view if exists scoped_published_rules cascade;
+
+create view scoped_published_rules as
+select
+  r.*,
+  case
+    when r.organization_id is not null and r.project_id is not null and r.event_type <> '*' then 'PROJECT_EVENT'
+    when r.organization_id is not null and r.project_id is not null                         then 'PROJECT_WILDCARD'
+    when r.organization_id is not null and r.project_id is null and r.event_type <> '*'    then 'ORG_EVENT'
+    when r.organization_id is not null and r.project_id is null                            then 'ORG_WILDCARD'
+    when r.organization_id is null and r.project_id is null and r.event_type <> '*'        then 'GLOBAL_EVENT'
+    else 'GLOBAL_WILDCARD'
+  end as scope_level,
+  case
+    when r.organization_id is not null and r.project_id is not null then 6
+    when r.organization_id is not null and r.event_type <> '*'      then 5
+    when r.organization_id is not null                              then 4
+    when r.project_id is not null and r.event_type <> '*'           then 3
+    when r.event_type <> '*'                                        then 2
+    else 1
+  end as specificity_score
+from execution_rules r
+where r.status = 'published';
+
+drop function if exists get_scoped_rules(text, text, text) cascade;
+
+create function get_scoped_rules(
+  p_event_type text,
+  p_organization_id text default null,
+  p_project_id text default null
+)
+returns setof scoped_published_rules
+language sql
+stable
+as $$
+  select *
+  from scoped_published_rules r
+  where
+    (r.event_type = p_event_type or r.event_type = '*')
+    and (r.organization_id = p_organization_id or r.organization_id is null)
+    and (
+      r.project_id is null
+      or (
+        r.project_id = p_project_id
+        and (r.organization_id = p_organization_id or r.organization_id is null)
+      )
+    )
+  order by r.specificity_score desc, r.priority asc, r.id asc
 $$;
 
 
--- ── 6. AUDIT VIEWS ────────────────────────────────────────────────
-
--- Current execution status per ticket (joins authoritative result)
-CREATE OR REPLACE VIEW execution_status_view AS
-SELECT
-  t.id                     AS ticket_id,
+-- ── 6. AUDIT / STATUS VIEWS ──────────────────────────────────
+drop view if exists execution_status_view cascade;
+create view execution_status_view as
+select
+  t.id                   as ticket_id,
   t.ledger_id,
   t.organization_id,
   t.allowed_action,
   t.idempotency_key,
-  t.status                 AS ticket_status_cache,  -- may lag behind results
-  l.decision               AS ledger_decision,
+  t.status               as ticket_status_cache,
+  l.decision             as ledger_decision,
   l.truth_hash,
-  r.final_status           AS authoritative_status, -- from execution_results
+  r.final_status         as authoritative_status,
   r.provider_name,
   r.provider_transaction_id,
   r.provider_status,
   r.is_reconciliation_event,
   t.expires_at,
-  t.created_at             AS ticket_created_at,
-  r.created_at             AS result_recorded_at
-FROM execution_tickets t
-JOIN execution_ledger l ON l.id = t.ledger_id
-LEFT JOIN LATERAL (
-  SELECT * FROM execution_results er
-  WHERE er.execution_ticket_id = t.id
-  ORDER BY er.created_at DESC
-  LIMIT 1
-) r ON TRUE;
+  t.created_at           as ticket_created_at,
+  r.created_at           as result_recorded_at
+from execution_tickets t
+join execution_ledger l on l.id = t.ledger_id
+left join lateral (
+  select *
+  from execution_results er
+  where er.execution_ticket_id = t.id
+  order by er.created_at desc
+  limit 1
+) r on true;
 
--- Tickets needing reconciliation
-CREATE OR REPLACE VIEW pending_reconciliation AS
-SELECT
-  t.id              AS ticket_id,
-  t.organization_id,
-  t.allowed_action,
-  t.idempotency_key AS idempotency_key,
-  t.created_at,
-  t.expires_at,
-  r.provider_name,
-  r.provider_transaction_id,
-  r.response_payload
-FROM execution_tickets t
-JOIN execution_results r ON r.execution_ticket_id = t.id
-WHERE t.status = 'UNKNOWN_REQUIRES_RECONCILIATION'
-  AND r.is_reconciliation_event = FALSE
-ORDER BY t.created_at ASC;
-
--- Decision + execution truth per ledger entry
-CREATE OR REPLACE VIEW ledger_execution_summary AS
-SELECT
-  l.id             AS ledger_id,
+drop view if exists ledger_execution_summary cascade;
+create view ledger_execution_summary as
+select
+  l.id                   as ledger_id,
   l.session_id,
   l.event_type,
   l.organization_id,
@@ -423,30 +561,52 @@ SELECT
   l.decision,
   l.reason_codes,
   l.truth_hash,
-  l.created_at     AS decided_at,
-  t.id             AS ticket_id,
+  l.created_at           as decided_at,
+  t.id                   as ticket_id,
   t.allowed_action,
-  t.status         AS ticket_status,
-  r.final_status   AS execution_status,
+  t.status               as ticket_status,
+  r.final_status         as execution_status,
   r.provider_name,
   r.provider_transaction_id,
-  r.created_at     AS executed_at
-FROM execution_ledger l
-LEFT JOIN execution_tickets t   ON t.ledger_id = l.id
-LEFT JOIN LATERAL (
-  SELECT * FROM execution_results er
-  WHERE er.execution_ticket_id = t.id
-  ORDER BY er.created_at DESC LIMIT 1
-) r ON TRUE
-ORDER BY l.created_at DESC;
+  r.created_at           as executed_at
+from execution_ledger l
+left join execution_tickets t on t.ledger_id = l.id
+left join lateral (
+  select *
+  from execution_results er
+  where er.execution_ticket_id = t.id
+  order by er.created_at desc
+  limit 1
+) r on true
+order by l.created_at desc;
+
+drop view if exists pending_reconciliation cascade;
+create view pending_reconciliation as
+select
+  t.id                                   as ticket_id,
+  t.organization_id,
+  l.event_type,
+  l.decision,
+  coalesce(r.final_status, t.status)     as execution_status,
+  t.allowed_action,
+  t.idempotency_key                      as idempotency_key,
+  t.created_at,
+  t.expires_at,
+  r.provider_name,
+  r.provider_transaction_id,
+  r.response_payload
+from execution_tickets t
+join execution_ledger l on l.id = t.ledger_id
+join execution_results r on r.execution_ticket_id = t.id
+where t.status = 'UNKNOWN_REQUIRES_RECONCILIATION'
+  and r.is_reconciliation_event = false
+order by t.created_at asc;
 
 
--- ── 7. SEED: EXAMPLE SYSTEM RULE ─────────────────────────────────
--- One global payment rule as reference.
--- Remove before production, or modify to your needs.
-INSERT INTO execution_rules (
+-- ── 7. SEED RULES ─────────────────────────────────────────────
+insert into execution_rules (
   rule_key, event_type, name, effect, condition_json, priority, status, created_by
-) VALUES (
+) values (
   'payment_block_zero_budget',
   'payment',
   'Block payment when budget is zero',
@@ -455,13 +615,14 @@ INSERT INTO execution_rules (
   10,
   'published',
   'system_seed'
-) ON CONFLICT (rule_key) DO NOTHING;
+)
+on conflict (rule_key) do nothing;
 
--- ── 8. SEED: PILOT RULES ───────────────────────────────────────────
--- Payment: allow verified supplier + budget
-INSERT INTO execution_rules (rule_key, event_type, name, effect, condition_json, priority, status, created_by)
-VALUES (
-  'payment_allow_verified_supplier', 'payment',
+insert into execution_rules (
+  rule_key, event_type, name, effect, condition_json, priority, status, created_by
+) values (
+  'payment_allow_verified_supplier',
+  'payment',
   'Allow payment when supplier verified and budget available',
   'ALLOW',
   '{"and": [
@@ -469,127 +630,50 @@ VALUES (
     {"field": "contractValid",    "op": "eq", "value": true},
     {"field": "budgetRemaining",  "op": "gt", "value": 0}
   ]}'::jsonb,
-  100, 'published', 'system_seed'
-) ON CONFLICT (rule_key) DO NOTHING;
+  100,
+  'published',
+  'system_seed'
+)
+on conflict (rule_key) do nothing;
 
--- Payment: escalate high amount (> 10000)
-INSERT INTO execution_rules (rule_key, event_type, name, effect, condition_json, priority, status, created_by)
-VALUES (
-  'payment_escalate_high_amount', 'payment',
+insert into execution_rules (
+  rule_key, event_type, name, effect, condition_json, priority, status, created_by
+) values (
+  'payment_escalate_high_amount',
+  'payment',
   'Escalate payment when amount exceeds manual review threshold',
   'ESCALATE',
   '{"field": "amount", "op": "gt", "value": 10000}'::jsonb,
-  50, 'published', 'system_seed'
-) ON CONFLICT (rule_key) DO NOTHING;
+  50,
+  'published',
+  'system_seed'
+)
+on conflict (rule_key) do nothing;
 
--- Worker unavailable: escalate
-INSERT INTO execution_rules (rule_key, event_type, name, effect, condition_json, priority, status, created_by)
-VALUES (
-  'worker_unavailable_escalate', 'worker_unavailable',
+insert into execution_rules (
+  rule_key, event_type, name, effect, condition_json, priority, status, created_by
+) values (
+  'worker_unavailable_escalate',
+  'worker_unavailable',
   'Escalate when no workers available for assignment',
   'ESCALATE',
   '{"field": "workersAvailable", "op": "eq", "value": 0}'::jsonb,
-  100, 'published', 'system_seed'
-) ON CONFLICT (rule_key) DO NOTHING;
+  100,
+  'published',
+  'system_seed'
+)
+on conflict (rule_key) do nothing;
 
--- Task completed: allow (default pass-through)
-INSERT INTO execution_rules (rule_key, event_type, name, effect, condition_json, priority, status, created_by)
-VALUES (
-  'task_completed_allow', 'task_completed',
+insert into execution_rules (
+  rule_key, event_type, name, effect, condition_json, priority, status, created_by
+) values (
+  'task_completed_allow',
+  'task_completed',
   'Allow task completion events by default',
   'ALLOW',
-  NULL,
-  100, 'published', 'system_seed'
-) ON CONFLICT (rule_key) DO NOTHING;
-
-
--- ── 4.6 API KEYS / OPERATORS / AUDIT LOGS (V3) ──────────────────
-CREATE TABLE IF NOT EXISTS operators (
-  id               TEXT PRIMARY KEY,
-  organization_id  TEXT NOT NULL,
-  email            TEXT NOT NULL,
-  role             TEXT NOT NULL DEFAULT 'viewer' CHECK (role IN ('viewer','operator','admin')),
-  status           TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','disabled')),
-  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_operators_org ON operators (organization_id, role);
-ALTER TABLE operators ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_manage_operators" ON operators FOR ALL TO service_role USING (true) WITH CHECK (true);
-
-CREATE TABLE IF NOT EXISTS api_keys (
-  id               TEXT PRIMARY KEY,
-  organization_id  TEXT NOT NULL,
-  operator_id      TEXT REFERENCES operators(id),
-  label            TEXT,
-  key_hash         TEXT NOT NULL UNIQUE,
-  scopes           TEXT[] NOT NULL DEFAULT ARRAY['read','execute'],
-  plan             TEXT,
-  status           TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','revoked')),
-  last_used_at     TIMESTAMPTZ,
-  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_api_keys_org ON api_keys (organization_id, status);
-ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_manage_api_keys" ON api_keys FOR ALL TO service_role USING (true) WITH CHECK (true);
-
-CREATE TABLE IF NOT EXISTS audit_logs (
-  id               TEXT PRIMARY KEY,
-  organization_id  TEXT,
-  actor_type       TEXT NOT NULL DEFAULT 'system',
-  actor_id         TEXT,
-  actor_label      TEXT,
-  action           TEXT NOT NULL,
-  entity           TEXT NOT NULL,
-  entity_id        TEXT,
-  status           TEXT NOT NULL DEFAULT 'ok' CHECK (status IN ('ok','review','error')),
-  request_id       TEXT,
-  payload          JSONB NOT NULL DEFAULT '{}',
-  created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_audit_org_created ON audit_logs (organization_id, created_at DESC);
-ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "service_manage_audit_logs" ON audit_logs FOR ALL TO service_role USING (true) WITH CHECK (true);
-
-ALTER TABLE execution_results ADD COLUMN IF NOT EXISTS reconciled_by TEXT;
-ALTER TABLE execution_results ADD COLUMN IF NOT EXISTS reconciled_at TIMESTAMPTZ;
-ALTER TABLE execution_results ADD COLUMN IF NOT EXISTS reconciliation_note TEXT;
-
-CREATE OR REPLACE VIEW pending_reconciliation AS
-SELECT
-  t.id              AS ticket_id,
-  t.organization_id,
-  l.event_type,
-  l.decision,
-  COALESCE(r.final_status, t.status) AS execution_status,
-  t.allowed_action,
-  t.idempotency_key AS idempotency_key,
-  t.created_at,
-  t.expires_at,
-  r.provider_name,
-  r.provider_transaction_id,
-  r.response_payload
-FROM execution_tickets t
-JOIN execution_ledger l ON l.id = t.ledger_id
-JOIN execution_results r ON r.execution_ticket_id = t.id
-WHERE t.status = 'UNKNOWN_REQUIRES_RECONCILIATION'
-  AND r.is_reconciliation_event = FALSE
-ORDER BY t.created_at ASC;
-
-
--- V4 additions
-CREATE TABLE IF NOT EXISTS operator_sessions (
-  id TEXT PRIMARY KEY,
-  operator_id TEXT NOT NULL REFERENCES operators(id),
-  organization_id TEXT NOT NULL,
-  token_hash TEXT NOT NULL UNIQUE,
-  expires_at TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  last_used_at TIMESTAMPTZ
-);
-CREATE TABLE IF NOT EXISTS webhook_events (
-  id TEXT PRIMARY KEY,
-  organization_id TEXT,
-  provider_name TEXT,
-  signature TEXT NOT NULL,
-  received_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+  null,
+  100,
+  'published',
+  'system_seed'
+)
+on conflict (rule_key) do nothing;
