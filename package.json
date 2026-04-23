@@ -1,14 +1,14 @@
 {
   "name": "executia-engine",
   "version": "4.0.0",
-  "description": "EXECUTIA\u2122 Execution Truth Engine",
+  "description": "EXECUTIA™ Execution Truth Engine",
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
     "@supabase/supabase-js": "^2.39.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   },
   "scripts": {
     "test": "node --test tests/*.test.js",
