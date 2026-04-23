@@ -21,6 +21,13 @@ const REQUIRED_TABLES = [
   "webhook_events",
 ];
 
+const HARD_FAIL_TABLES = [
+  "execution_rules",
+  "execution_ledger",
+  "execution_tickets",
+  "execution_results",
+];
+
 function parseMajorNodeVersion(versionString = process.versions.node) {
   const major = String(versionString).split(".")[0];
   return Number(major);
@@ -34,6 +41,7 @@ export function checkNodeRuntime() {
     ok,
     current: process.versions.node,
     required: "20.x",
+    severity: ok ? "ok" : "warn",
     message: ok
       ? "Node runtime OK"
       : `Node runtime unsupported: ${process.versions.node}. Required: 20.x`,
@@ -47,6 +55,7 @@ export function checkRequiredEnv() {
     ok: missing.length === 0,
     required: REQUIRED_ENV,
     missing,
+    severity: missing.length === 0 ? "ok" : "block",
     message:
       missing.length === 0
         ? "Required environment variables present"
@@ -76,6 +85,7 @@ export async function checkDatabaseConnectivity() {
     if (error) {
       return {
         ok: false,
+        severity: "warn",
         message: `Database connection failed: ${error.message}`,
         details: error,
       };
@@ -83,11 +93,13 @@ export async function checkDatabaseConnectivity() {
 
     return {
       ok: true,
+      severity: "ok",
       message: "Database connectivity OK",
     };
   } catch (error) {
     return {
       ok: false,
+      severity: "warn",
       message: `Database connection failed: ${error.message}`,
     };
   }
@@ -104,19 +116,24 @@ export async function checkRequiredTables() {
     if (error) {
       return {
         ok: false,
+        severity: "warn",
         message: `Table verification failed: ${error.message}`,
         missing: REQUIRED_TABLES,
+        hard_missing: HARD_FAIL_TABLES,
         details: error,
       };
     }
 
     const existing = Array.isArray(data) ? data : [];
     const missing = REQUIRED_TABLES.filter((t) => !existing.includes(t));
+    const hardMissing = HARD_FAIL_TABLES.filter((t) => !existing.includes(t));
 
     return {
       ok: missing.length === 0,
+      severity: hardMissing.length > 0 ? "block" : missing.length > 0 ? "warn" : "ok",
       existing,
       missing,
+      hard_missing: hardMissing,
       message:
         missing.length === 0
           ? "Required tables present"
@@ -125,8 +142,10 @@ export async function checkRequiredTables() {
   } catch (error) {
     return {
       ok: false,
+      severity: "warn",
       message: `Table verification failed: ${error.message}`,
       missing: REQUIRED_TABLES,
+      hard_missing: HARD_FAIL_TABLES,
     };
   }
 }
@@ -138,28 +157,30 @@ export async function getRuntimeControlReport() {
   if (!env.ok) {
     return {
       ok: false,
+      mode: "blocked",
       status: "CONFIG_UNSAFE",
+      warnings: [],
       checks: { node, env },
     };
   }
 
   const db = await checkDatabaseConnectivity();
-
-  if (!db.ok) {
-    return {
-      ok: false,
-      status: "DB_UNAVAILABLE",
-      checks: { node, env, db },
-    };
-  }
-
   const tables = await checkRequiredTables();
 
-  const ok = node.ok && env.ok && db.ok && tables.ok;
+  const warnings = [];
+  if (!node.ok) warnings.push(node.message);
+  if (!db.ok) warnings.push(db.message);
+  if (!tables.ok) warnings.push(tables.message);
+
+  const blocked =
+    env.severity === "block" ||
+    tables.severity === "block";
 
   return {
-    ok,
-    status: ok ? "READY" : "DEGRADED",
+    ok: !blocked,
+    mode: blocked ? "blocked" : warnings.length > 0 ? "soft" : "strict",
+    status: blocked ? "BLOCKED" : warnings.length > 0 ? "DEGRADED" : "READY",
+    warnings,
     checks: { node, env, db, tables },
   };
 }
