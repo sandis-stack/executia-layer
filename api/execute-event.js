@@ -6,6 +6,7 @@
  */
 
 import { assertRuntimeReady, getRuntimeControlReport } from "../services/runtime-control.js";
+import { applyCors } from "../services/cors.js";
 
 import {
   normalizeEventInput,
@@ -31,35 +32,8 @@ import { withEngine } from "../middleware/with-engine.js";
 import { createSupabaseAdmin } from "../services/supabase-admin.js";
 import { logAudit } from "../services/audit.js";
 
-function applyCors(req, res) {
-  const origin = req.headers.origin;
-
-  if (
-    origin &&
-    (
-      origin.includes("vercel.app") ||
-      origin === "https://executia.io" ||
-      origin === "https://execution.executia.io" ||
-      origin === "http://localhost:3000"
-    )
-  ) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Vary", "Origin");
-  }
-
-  res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-api-key");
-
-  if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return true;
-  }
-
-  return false;
-}
-
 export default withEngine(async (req, res) => {
-  if (applyCors(req, res)) return;
+  if (applyCors(req, res, "POST,OPTIONS")) return;
 
   const requestId = req.executia.requestId;
   const supabase = createSupabaseAdmin();
