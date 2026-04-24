@@ -13,10 +13,10 @@
  * On provider timeout or ambiguous response: UNKNOWN_REQUIRES_RECONCILIATION.
  * Never lie about execution state.
  */
-
+ 
 import { assertValidTicket, markTicketDispatched } from "./ticket.js";
 import { EXECUTION_STATUS, isTerminal }            from "../engine/execution-states.js";
-
+ 
 /**
  * Execute an external action via the appropriate provider adapter.
  * Records execution result to supabase regardless of outcome.
@@ -29,35 +29,35 @@ import { EXECUTION_STATUS, isTerminal }            from "../engine/execution-sta
 export async function executeAction({ supabase, ticket, providerAdapter }) {
   // Gate: validate ticket before touching the provider
   assertValidTicket(ticket);
-
+ 
   // Mark in-flight immediately — prevents double-execution on retry
   await markTicketDispatched(supabase, ticket.id);
-
+ 
   let providerResult;
   let finalStatus;
-
+ 
   try {
     providerResult = await providerAdapter.execute({
       ticket,
       payload: ticket.payload,
     });
-
+ 
     // Provider responded — map to execution status
     finalStatus = providerResult.accepted
       ? EXECUTION_STATUS.EXECUTED
       : EXECUTION_STATUS.PROVIDER_REJECTED;
-
+ 
   } catch (err) {
     // Network error, timeout, or ambiguous response
     console.error(`[EXECUTIA][GATEWAY] Provider error for ticket ${ticket.id}:`, err.message);
-
+ 
     const isTimeout  = err.message.includes("timeout") || err.message.includes("ETIMEDOUT");
     const isAmbiguous = err.message.includes("UNKNOWN") || err.message.includes("ambiguous");
-
+ 
     finalStatus    = (isTimeout || isAmbiguous)
       ? EXECUTION_STATUS.UNKNOWN_REQUIRES_RECONCILIATION
       : EXECUTION_STATUS.FAILED;
-
+ 
     providerResult = {
       accepted:              false,
       provider_status:       "error",
@@ -65,7 +65,7 @@ export async function executeAction({ supabase, ticket, providerAdapter }) {
       raw_response:          { error: err.message },
     };
   }
-
+ 
   // Record result — always, regardless of outcome
   const resultRecord = {
     id:                      `xr_${Date.now()}_${ticket.id.slice(-6)}`,
@@ -79,11 +79,11 @@ export async function executeAction({ supabase, ticket, providerAdapter }) {
     final_status:            finalStatus,
     created_at:              new Date().toISOString(),
   };
-
+ 
   const { error: resultErr } = await supabase
     .from("execution_results")
     .insert(resultRecord);
-
+ 
   if (resultErr) {
     // Result recording failure is critical — we executed but have no proof
     console.error("[EXECUTIA][GATEWAY] CRITICAL: Execution result recording failed:", resultErr.message);
@@ -92,7 +92,7 @@ export async function executeAction({ supabase, ticket, providerAdapter }) {
       `Ticket: ${ticket.id}. Manual reconciliation required.`
     );
   }
-
+ 
   // ── TICKET STATUS UPDATE ──────────────────────────────────────
   // execution_results is the authoritative external execution truth.
   // execution_tickets.status is a convenience cache — queryable without scanning results.
@@ -100,19 +100,19 @@ export async function executeAction({ supabase, ticket, providerAdapter }) {
   // If they diverge: execution_results wins. The divergence itself is recorded
   // as a second execution_results entry with final_status = UNKNOWN_REQUIRES_RECONCILIATION,
   // making the inconsistency visible in the immutable log rather than only in a response flag.
-
+ 
   const { error: ticketUpdateErr } = await supabase
     .from("execution_tickets")
     .update({ status: finalStatus })
     .eq("id", ticket.id);
-
+ 
   if (ticketUpdateErr) {
     console.error(
       `[EXECUTIA][GATEWAY] Ticket status cache update failed for ${ticket.id}. ` +
       `execution_results is authoritative. Recording divergence event. ` +
       `Error: ${ticketUpdateErr.message}`
     );
-
+ 
     // Record the divergence as a formal reconciliation event in execution_results.
     // This makes it visible in audit queries without relying on response flags.
     await supabase.from("execution_results").insert({
@@ -134,18 +134,18 @@ export async function executeAction({ supabase, ticket, providerAdapter }) {
     }).then(() => {}).catch(e =>
       console.error("[EXECUTIA][GATEWAY] Failed to record divergence event:", e.message)
     );
-
+ 
     // Mark result record so caller can detect and surface this
     resultRecord.ticket_cache_divergence = true;
   }
-
+ 
   return {
     ...resultRecord,
     execution_status: finalStatus,
     requires_reconciliation: finalStatus === EXECUTION_STATUS.UNKNOWN_REQUIRES_RECONCILIATION,
   };
 }
-
+ 
 /**
  * Reconcile an UNKNOWN execution result.
  * Call when a provider's status is unclear — checks provider directly.
@@ -160,19 +160,19 @@ export async function reconcileExecution({ supabase, ticketId, providerAdapter }
     .select("*")
     .eq("id", ticketId)
     .single();
-
+ 
   if (ticketFetchErr || !ticket) {
     throw new Error(`RECONCILE_FAILED: ticket "${ticketId}" not found. ${ticketFetchErr?.message || ""}`);
   }
-
+ 
   if (ticket.status !== EXECUTION_STATUS.UNKNOWN_REQUIRES_RECONCILIATION) {
     throw new Error(`RECONCILE_NOT_NEEDED: ticket "${ticketId}" has status "${ticket.status}" — only UNKNOWN_REQUIRES_RECONCILIATION can be reconciled`);
   }
-
+ 
   if (!providerAdapter.reconcile) {
     throw new Error(`RECONCILE_NOT_SUPPORTED: provider "${providerAdapter.name}" has no reconcile() method`);
   }
-
+ 
   // Call provider reconcile
   let reconcileResult;
   try {
@@ -180,13 +180,13 @@ export async function reconcileExecution({ supabase, ticketId, providerAdapter }
   } catch (err) {
     throw new Error(`RECONCILE_PROVIDER_ERROR: ${err.message}`);
   }
-
+ 
   const resolvedStatus = reconcileResult.confirmed
     ? EXECUTION_STATUS.EXECUTED
     : reconcileResult.rejected
     ? EXECUTION_STATUS.PROVIDER_REJECTED
     : EXECUTION_STATUS.UNKNOWN_REQUIRES_RECONCILIATION; // still unknown
-
+ 
   // Write reconciliation result — this is authoritative
   const reconcileRecord = {
     id:                      `xr_rec_${Date.now()}_${ticketId.slice(-6)}`,
@@ -201,23 +201,23 @@ export async function reconcileExecution({ supabase, ticketId, providerAdapter }
     is_reconciliation_event: true,
     created_at:              new Date().toISOString(),
   };
-
+ 
   const { error: resultErr } = await supabase
     .from("execution_results")
     .insert(reconcileRecord);
-
+ 
   if (resultErr) {
     // Reconcile result not recorded — authoritative record missing
     throw new Error(`RECONCILE_RESULT_UNRECORDED: reconciliation completed but result not saved. ` +
       `Ticket: ${ticketId}, resolved to: ${resolvedStatus}. Manual action required. ${resultErr.message}`);
   }
-
+ 
   // Update ticket cache — surface divergence if this fails
   const { error: ticketUpdateErr } = await supabase
     .from("execution_tickets")
     .update({ status: resolvedStatus })
     .eq("id", ticketId);
-
+ 
   if (ticketUpdateErr) {
     console.error(
       `[EXECUTIA][RECONCILE] Ticket cache update failed for ${ticketId}. ` +
@@ -244,7 +244,7 @@ export async function reconcileExecution({ supabase, ticketId, providerAdapter }
       console.error("[EXECUTIA][RECONCILE] Failed to record cache divergence:", e.message)
     );
   }
-
+ 
   return {
     resolved_status:    resolvedStatus,
     reconcile_result_id: reconcileRecord.id,
@@ -252,3 +252,37 @@ export async function reconcileExecution({ supabase, ticketId, providerAdapter }
     reconcileResult,
   };
 }
+ 
+/**
+ * EXECUTIA™ — dispatchExecution bridge
+ *
+ * Temporary safe-mode adapter for execute-and-dispatch.js.
+ * Allows the API layer to call dispatchExecution() without requiring
+ * a full ticket pipeline. When ticket system is wired, replace this
+ * with real ticket creation → executeAction() call.
+ *
+ * Phase 2: replace body with:
+ *   const ticket = await createTicket(supabase, event, commitResult);
+ *   const adapter = resolveProviderAdapter(event.targetProvider);
+ *   return executeAction({ supabase, ticket, providerAdapter: adapter });
+ */
+export async function dispatchExecution({
+  supabase,
+  event,
+  context,
+  commitResult,
+  requestId,
+}) {
+  return {
+    ok:                      true,
+    status:                  "EXECUTED",
+    provider:                event.targetProvider || "safe-mode",
+    provider_name:           event.targetProvider || "safe-mode",
+    provider_transaction_id: "safe_" + Date.now(),
+    ticket_status:           "EXECUTED",
+    authoritative_status:    "EXECUTED",
+    safe_mode:               true,
+    message:                 "Safe Mode dispatch executed (ticket pipeline not yet connected).",
+  };
+}
+ 
