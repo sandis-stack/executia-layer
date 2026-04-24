@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA Console V2</title>
+  <meta name="color-scheme" content="light" />
+  <style>
+    :root{
+      --bg:#f6f9fd;--panel:#ffffff;--panel2:#fbfdff;--line:#d7e2f1;--ink:#0a1f44;--muted:#5d6d86;
+      --blue:#0a2540;--blue2:#1e3a8a;--green:#15803d;--amber:#b45309;--red:#dc2626;--soft:#eef4ff;
+      --shadow:0 12px 34px rgba(10,31,68,.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#f8fbff 0%,#f1f6fc 100%);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:inherit;text-decoration:none}.shell{max-width:1480px;margin:0 auto;padding:24px}.topline{height:5px;background:linear-gradient(90deg,#0a2540,#1e3a8a,#16a34a)}
+    .bar{display:flex;justify-content:space-between;gap:18px;align-items:center;margin:0 0 22px}.brand{display:flex;gap:14px;align-items:center}.mark{height:44px;width:44px;border-radius:14px;background:#0a2540;color:#fff;display:grid;place-items:center;font-weight:900;box-shadow:var(--shadow)}
+    .title{font-size:30px;font-weight:900;letter-spacing:-.03em}.subtitle{font-size:14px;color:var(--muted);margin-top:3px}.nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.btn{border:0;border-radius:13px;background:var(--blue);color:#fff;padding:11px 15px;font-weight:850;cursor:pointer}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn:disabled{opacity:.6;cursor:not-allowed}
+    .mode{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800;color:var(--muted)}.dot{height:8px;width:8px;border-radius:999px;background:var(--green);box-shadow:0 0 0 4px rgba(21,128,61,.12)}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.kpi{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}.kpi .k{font-size:11px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase}.kpi .v{font-size:30px;font-weight:950;margin-top:9px}.kpi .d{font-size:12px;color:var(--muted);margin-top:6px}
+    .layout{display:grid;grid-template-columns:370px 1fr;gap:18px}.stack{display:grid;gap:18px}.panel{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow)}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.panel-title strong{font-size:12px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase}.small{font-size:12px;color:var(--muted)}
+    label{display:block;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.space{height:11px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:900;border:1px solid transparent}.ok{background:#e8f7ec;color:var(--green)}.warn{background:#fff5e7;color:var(--amber)}.bad{background:#feecec;color:var(--red)}.neutral{background:#eef2f7;color:#475569}.pulse{animation:pulse 1.8s ease-in-out infinite}@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(21,128,61,.22)}50%{box-shadow:0 0 0 7px rgba(21,128,61,0)}}
+    .preset-grid{display:grid;grid-template-columns:1fr;gap:10px}.preset{border:1px solid var(--line);border-radius:16px;background:var(--panel2);padding:14px;display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer}.preset:hover{border-color:#9bb2d0}.preset h3{margin:0;font-size:15px}.preset p{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.35}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.step{position:relative;border:1px solid var(--line);border-radius:18px;background:var(--panel2);padding:15px;min-height:116px}.step .n{font-size:11px;color:var(--muted);font-weight:900}.step .l{font-size:16px;font-weight:950;margin-top:8px}.step .t{font-size:12px;color:var(--muted);line-height:1.42;margin-top:6px}.step.active{border-color:#9bc4ff;background:#f5faff}.step.done{border-color:#bfe7ca;background:#f3fbf5}.step.blocked{border-color:#f2b8b8;background:#fff7f7}
+    table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:top}th{font-size:11px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.terminal{background:#0f172a;color:#e2e8f0;border-radius:17px;padding:14px;font-size:12px;overflow:auto;min-height:220px}.split{display:grid;grid-template-columns:1fr 1fr;gap:18px}.proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.proof{border:1px solid var(--line);border-radius:17px;background:var(--panel2);padding:14px}.proof h3{margin:0;font-size:14px}.proof p{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.4}.flash{animation:flash .65s ease-out}@keyframes flash{0%{background:#e8f7ec}100%{background:var(--panel2)}}
+    @media(max-width:1180px){.layout,.split{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr 1fr}.proof-grid{grid-template-columns:1fr}.bar{align-items:flex-start;flex-direction:column}}
+    @media(max-width:740px){.shell{padding:16px}.kpis,.row,.row3,.flow{grid-template-columns:1fr}.title{font-size:25px}}
+  </style>
+</head>
+<body>
+  <div class="topline"></div>
+  <main class="shell">
+    <header class="bar">
+      <div class="brand"><div class="mark">E</div><div><div class="title">EXECUTIA Console V2</div><div class="subtitle">Enterprise execution control interface — rules, ledger, dispatch, audit.</div></div></div>
+      <div class="nav"><span class="mode"><span class="dot"></span> LIVE BACKEND</span><a class="btn secondary" href="/console/">Classic Console</a><button class="btn secondary" id="refreshBtn">Refresh</button><button class="btn" id="submitBtnTop">Submit execution</button></div>
+    </header>
+
+    <section class="kpis">
+      <div class="kpi"><div class="k">System</div><div class="v" id="kpiHealth">—</div><div class="d">Runtime readiness</div></div>
+      <div class="kpi"><div class="k">Ledger</div><div class="v" id="kpiLedger">—</div><div class="d">Committed truth records</div></div>
+      <div class="kpi"><div class="k">Executions</div><div class="v" id="kpiExecutions">—</div><div class="d">Dispatched execution tickets</div></div>
+      <div class="kpi"><div class="k">Review</div><div class="v" id="kpiRecon">—</div><div class="d">Reconciliation queue</div></div>
+    </section>
+
+    <section class="layout">
+      <aside class="stack">
+        <div class="panel">
+          <div class="panel-title"><strong>Connection</strong><button class="btn secondary" id="saveBtn">Save</button></div>
+          <label>API base</label><input id="apiBase" value="/api/v1" />
+          <div class="space"></div><label>API key</label><input id="apiKey" type="password" placeholder="test_key_123" />
+          <div class="space"></div><label>Organization ID</label><input id="orgId" value="org_norsteel" />
+          <div class="space"></div><label>Plan</label><select id="plan"><option>enterprise</option><option>pro</option><option>free</option></select>
+          <div class="actions"><button class="btn secondary" id="healthBtn">Check health</button><button class="btn" id="refreshBtnSide">Refresh data</button></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><strong>Preset controls</strong><span class="small">demo scenarios</span></div>
+          <div class="preset-grid">
+            <div class="preset" data-preset="approve"><div><h3>Approve</h3><p>Verified supplier, valid contract, active budget.</p></div><span class="pill ok">APPROVE</span></div>
+            <div class="preset" data-preset="block"><div><h3>Block</h3><p>No remaining budget. Execution must stop.</p></div><span class="pill bad">BLOCK</span></div>
+            <div class="preset" data-preset="escalate"><div><h3>Escalate</h3><p>High-value payment. Review required.</p></div><span class="pill warn">ESCALATE</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><strong>Execution input</strong><span id="previewBadge" class="pill neutral">—</span></div>
+          <div class="row"><div><label>Endpoint</label><select id="endpoint"><option value="execute-event">Decision only</option><option value="execute-and-dispatch" selected>Decision + dispatch</option></select></div><div><label>Event type</label><input id="eventType" value="payment" /></div></div>
+          <div class="space"></div><div class="row"><div><label>Session</label><input id="sessionId" value="sess_v2_001" /></div><div><label>Project</label><input id="projectId" value="prj_alpha" /></div></div>
+          <div class="space"></div><div class="row3"><div><label>Amount</label><input id="amount" value="4200" /></div><div><label>Currency</label><input id="currency" value="EUR" /></div><div><label>Provider</label><input id="provider" value="webhook" /></div></div>
+          <div class="space"></div><label>Context overrides</label><textarea id="contextOverrides">{
+  "budgetRemaining": 15000,
+  "budgetAllocated": 20000,
+  "supplierVerified": true,
+  "contractValid": true,
+  "workersAvailable": 4,
+  "hoursSinceRest": 10,
+  "weatherRisk": 12,
+  "legalBlock": false
+}</textarea>
+          <div class="space"></div><label>Execution payload</label><textarea id="executionPayload">{
+  "targetUrl": "https://example.com/executia-webhook",
+  "reference": "V2-PO-2026-001"
+}</textarea>
+          <div class="actions"><button class="btn" id="submitBtn">Submit</button><button class="btn secondary" id="copyBtn">Copy response</button></div>
+        </div>
+      </aside>
+
+      <section class="stack">
+        <div class="panel">
+          <div class="panel-title"><strong>Execution flow</strong><span id="flowBadge" class="pill neutral">READY</span></div>
+          <div class="flow">
+            <div class="step" id="stepInput"><div class="n">01</div><div class="l">Input</div><div class="t">Execution context accepted.</div></div>
+            <div class="step" id="stepRules"><div class="n">02</div><div class="l">Rules</div><div class="t">Published rules evaluated fail-closed.</div></div>
+            <div class="step" id="stepDecision"><div class="n">03</div><div class="l">Decision</div><div class="t">Approve, block, or escalate.</div></div>
+            <div class="step" id="stepLedger"><div class="n">04</div><div class="l">Ledger</div><div class="t">Truth hash committed.</div></div>
+            <div class="step" id="stepDispatch"><div class="n">05</div><div class="l">Dispatch</div><div class="t">Execution recorded and audited.</div></div>
+          </div>
+        </div>
+
+        <div class="proof-grid">
+          <div class="proof"><h3>Decision proof</h3><p id="proofDecision">No decision yet.</p></div>
+          <div class="proof"><h3>Ledger proof</h3><p id="proofLedger">No truth hash yet.</p></div>
+          <div class="proof"><h3>Execution proof</h3><p id="proofExecution">No execution yet.</p></div>
+        </div>
+
+        <div class="split">
+          <div class="panel"><div class="panel-title"><strong>Latest response</strong><span id="lastMeta" class="small">—</span></div><pre class="terminal" id="output">No request yet.</pre></div>
+          <div class="panel"><div class="panel-title"><strong>Rule state</strong><span class="small">active preview</span></div><pre class="terminal" id="rulePreview">—</pre></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><strong>Ledger registry</strong><span class="small">latest truth records</span></div>
+          <table><thead><tr><th>ID</th><th>Event</th><th>Decision</th><th>Execution</th><th>Hash</th></tr></thead><tbody id="ledgerRows"></tbody></table>
+        </div>
+
+        <div class="split">
+          <div class="panel"><div class="panel-title"><strong>Executions</strong><span class="small">latest dispatch records</span></div><table><thead><tr><th>Ticket</th><th>Status</th><th>Provider</th><th>Decision</th></tr></thead><tbody id="executionRows"></tbody></table></div>
+          <div class="panel"><div class="panel-title"><strong>Audit</strong><span class="small">latest audit records</span></div><table><thead><tr><th>Action</th><th>Status</th><th>When</th></tr></thead><tbody id="auditRows"></tbody></table></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+<script>
+const $=id=>document.getElementById(id); const storeKey='executia_console_v2';
+function headers(){return {'Content-Type':'application/json','x-api-key':$('apiKey').value.trim(),'x-organization-id':$('orgId').value.trim(),'x-plan':$('plan').value}}
+function saveConn(){localStorage.setItem(storeKey,JSON.stringify({apiBase:$('apiBase').value,apiKey:$('apiKey').value,orgId:$('orgId').value,plan:$('plan').value}));$('lastMeta').textContent='connection saved'}
+function loadConn(){try{const v=JSON.parse(localStorage.getItem(storeKey)||'{}'); if(v.apiBase)$('apiBase').value=v.apiBase; if(v.apiKey)$('apiKey').value=v.apiKey; if(v.orgId)$('orgId').value=v.orgId; if(v.plan)$('plan').value=v.plan}catch{}}
+function base(){return $('apiBase').value.replace(/\/$/,'')}
+async function call(path,opt={}){const r=await fetch(base()+path,{...opt,headers:{...headers(),...(opt.headers||{})}}); const data=await r.json().catch(()=>({})); if(!r.ok){const e=new Error(JSON.stringify(data,null,2)); e.data=data; throw e} return data}
+function tone(s){s=String(s||'').toUpperCase(); if(['EXECUTED','APPROVE','APPROVED','HEALTHY','OK','SUCCESS'].includes(s))return'ok'; if(['PENDING','QUEUED','PROCESSING','ESCALATE','ESCALATED','REVIEW'].includes(s))return'warn'; if(['FAILED','ERROR','BLOCK','BLOCKED','REJECTED','OFFLINE'].includes(s))return'bad'; return'neutral'}
+function makeBadge(s){const el=document.createElement('span'); const u=String(s||'—').toUpperCase(); el.className='pill '+tone(u); el.textContent=u; if(u==='EXECUTED'||u==='HEALTHY')el.classList.add('pulse'); return el}
+function setBadge(id,s){const n=$(id); n.innerHTML=''; n.appendChild(makeBadge(s))}
+function short(v){v=String(v||'—'); return v.length>18?v.slice(0,18)+'…':v}
+function td(v,b=false){const e=document.createElement('td'); if(b)e.appendChild(makeBadge(v)); else e.textContent=v==null?'—':String(v); return e}
+function fill(tbody,cols,msg){tbody.innerHTML=''; const tr=document.createElement('tr'); const c=document.createElement('td'); c.colSpan=cols; c.className='small'; c.textContent=msg; tr.appendChild(c); tbody.appendChild(tr)}
+function preview(){let d='REVIEW',r='Manual review required',ctx={}; try{ctx=JSON.parse($('contextOverrides').value||'{}'); const amount=Number($('amount').value||0); if(Number(ctx.budgetRemaining||0)<=0){d='BLOCK';r='No remaining budget'} else if(amount>10000){d='ESCALATE';r='High-value payment threshold exceeded'} else if(ctx.supplierVerified===true&&ctx.contractValid===true&&Number(ctx.budgetRemaining||0)>0){d='APPROVE';r='Verified supplier, valid contract, active budget'}}catch{d='ERROR';r='Invalid context JSON'} setBadge('previewBadge',d); $('rulePreview').textContent=JSON.stringify({client_preview:d,reason:r,context:ctx},null,2); return d}
+function setFlow(state){['stepInput','stepRules','stepDecision','stepLedger','stepDispatch'].forEach(id=>$(id).className='step'); if(state==='READY'){setBadge('flowBadge','READY');return} if(state==='RUNNING'){setBadge('flowBadge','PROCESSING'); ['stepInput','stepRules'].forEach(id=>$(id).classList.add('active'));return} if(state==='APPROVE'||state==='EXECUTED'){setBadge('flowBadge','EXECUTED'); ['stepInput','stepRules','stepDecision','stepLedger','stepDispatch'].forEach(id=>$(id).classList.add('done'));return} if(state==='BLOCK'){setBadge('flowBadge','BLOCK'); ['stepInput','stepRules','stepDecision'].forEach(id=>$(id).classList.add('blocked'));return} if(state==='ESCALATE'){setBadge('flowBadge','REVIEW'); ['stepInput','stepRules','stepDecision'].forEach(id=>$(id).classList.add('active'));return} setBadge('flowBadge','FAILED')}
+function setPreset(type){if(type==='approve'){$('sessionId').value='sess_v2_approve';$('amount').value='4200';$('contextOverrides').value=JSON.stringify({budgetRemaining:15000,budgetAllocated:20000,supplierVerified:true,contractValid:true,workersAvailable:4,hoursSinceRest:10,weatherRisk:12,legalBlock:false},null,2)} if(type==='block'){$('sessionId').value='sess_v2_block';$('amount').value='4200';$('contextOverrides').value=JSON.stringify({budgetRemaining:0,budgetAllocated:20000,supplierVerified:true,contractValid:true,workersAvailable:4,hoursSinceRest:10,weatherRisk:12,legalBlock:false},null,2)} if(type==='escalate'){$('sessionId').value='sess_v2_escalate';$('amount').value='20000';$('contextOverrides').value=JSON.stringify({budgetRemaining:50000,budgetAllocated:70000,supplierVerified:true,contractValid:true,workersAvailable:4,hoursSinceRest:10,weatherRisk:12,legalBlock:false},null,2)} preview(); $('lastMeta').textContent=type.toUpperCase()+' preset loaded'}
+async function refreshAll(){saveConn(); try{const [health,ledger,execs,recon,audit]=await Promise.all([call('/health'),call('/ledger?limit=10'),call('/executions?limit=10'),call('/reconciliation?limit=10'),call('/audit?limit=10')]); $('kpiHealth').innerHTML=''; $('kpiHealth').appendChild(makeBadge(health.status)); $('kpiLedger').textContent=(ledger.items||[]).length; $('kpiExecutions').textContent=(execs.items||[]).length; $('kpiRecon').textContent=(recon.items||[]).length; renderLedger(ledger.items||[]); renderExecutions(execs.items||[]); renderAudit(audit.items||[]); const l=(ledger.items||[])[0], e=(execs.items||[])[0]; $('proofDecision').textContent=l?.decision||'No decision recorded'; $('proofLedger').textContent=l?.truth_hash||'No truth hash recorded'; $('proofExecution').textContent=e?.authoritative_status||e?.ticket_status_cache||'No execution recorded'; $('output').textContent=JSON.stringify({health,latest_ledger:l||null,latest_execution:e||null},null,2); $('lastMeta').textContent=new Date().toISOString(); setFlow('READY')}catch(e){$('kpiHealth').innerHTML=''; $('kpiHealth').appendChild(makeBadge('OFFLINE')); $('output').textContent=String(e.message||e); $('lastMeta').textContent='refresh failed'; setFlow('FAILED')}}
+function renderLedger(items){const b=$('ledgerRows'); if(!items.length)return fill(b,5,'No ledger records'); b.innerHTML=''; items.forEach(x=>{const tr=document.createElement('tr'); tr.appendChild(td(x.ledger_id||x.id)); tr.appendChild(td(x.event_type)); tr.appendChild(td(x.decision,true)); tr.appendChild(td(x.execution_status||x.ticket_status,true)); tr.appendChild(td(short(x.truth_hash))); b.appendChild(tr)})}
+function renderExecutions(items){const b=$('executionRows'); if(!items.length)return fill(b,4,'No execution records'); b.innerHTML=''; items.forEach(x=>{const tr=document.createElement('tr'); tr.appendChild(td(short(x.ticket_id))); tr.appendChild(td(x.authoritative_status||x.ticket_status_cache||x.status,true)); tr.appendChild(td(x.provider_name||'—')); tr.appendChild(td(x.ledger_decision||x.decision,true)); b.appendChild(tr)})}
+function renderAudit(items){const b=$('auditRows'); if(!items.length)return fill(b,3,'No audit records'); b.innerHTML=''; items.forEach(x=>{const tr=document.createElement('tr'); tr.appendChild(td(x.action)); tr.appendChild(td(x.status,true)); tr.appendChild(td(short(x.created_at))); b.appendChild(tr)})}
+async function submitExecution(){setFlow('RUNNING'); $('submitBtn').disabled=true; $('submitBtnTop').disabled=true; try{const payload={sessionId:$('sessionId').value.trim(),organizationId:$('orgId').value.trim(),projectId:$('projectId').value.trim()||null,eventType:$('eventType').value.trim(),amount:Number($('amount').value),currency:$('currency').value.trim(),targetProvider:$('provider').value.trim(),contextOverrides:JSON.parse($('contextOverrides').value||'{}'),executionPayload:JSON.parse($('executionPayload').value||'{}')}; const data=await call('/'+$('endpoint').value,{method:'POST',body:JSON.stringify(payload)}); $('output').textContent=JSON.stringify(data,null,2); $('lastMeta').textContent=new Date().toISOString()+' · '+$('endpoint').value; setFlow(data?.decision||data?.dispatchResult?.status||'EXECUTED'); await refreshAll()}catch(e){$('output').textContent=String(e.message||e); $('lastMeta').textContent='request failed'; setFlow('FAILED')}finally{$('submitBtn').disabled=false; $('submitBtnTop').disabled=false}}
+loadConn(); document.querySelectorAll('[data-preset]').forEach(x=>x.onclick=()=>setPreset(x.dataset.preset)); ['amount','contextOverrides'].forEach(id=>$(id).addEventListener('input',preview)); $('saveBtn').onclick=saveConn; $('healthBtn').onclick=refreshAll; $('refreshBtn').onclick=refreshAll; $('refreshBtnSide').onclick=refreshAll; $('submitBtn').onclick=submitExecution; $('submitBtnTop').onclick=submitExecution; $('copyBtn').onclick=()=>navigator.clipboard?.writeText($('output').textContent||''); preview(); refreshAll();
+</script>
+</body>
+</html>
