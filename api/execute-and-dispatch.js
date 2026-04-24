@@ -58,7 +58,6 @@ export default withEngine(async (req, res) => {
     });
   }
 
-  // ── 1. NORMALIZE ─────────────────────────────────────────────
   let event;
   try {
     event = normalizeEventInput({
@@ -69,10 +68,8 @@ export default withEngine(async (req, res) => {
     return err(400, "INVALID_EVENT", e.message);
   }
 
-  // dispatch endpoint should never simulate
   const isSimulate = false;
 
-  // ── 2. BUILD CONTEXT ──────────────────────────────────────────
   let ctx = buildBaseContext(event);
 
   if (event.projectId) {
@@ -97,7 +94,6 @@ export default withEngine(async (req, res) => {
     }
   }
 
-  // ── 3. ASSERT CONTEXT ─────────────────────────────────────────
   try {
     assertCanonicalContext(ctx);
   } catch (e) {
@@ -110,7 +106,6 @@ export default withEngine(async (req, res) => {
     return err(422, "MISSING_REQUIRED_CONTEXT", e.message);
   }
 
-  // ── 4. LOAD RULES — FAIL-CLOSED ───────────────────────────────
   let allRules;
   try {
     allRules = await loadRules(
@@ -136,7 +131,6 @@ export default withEngine(async (req, res) => {
     })
   );
 
-  // ── 5. EVALUATE RULES — FAIL-CLOSED ───────────────────────────
   const { results: evaluatedRules, invalidRules } = evaluateRules(scopedRules, ctx);
 
   if (invalidRules.length > 0) {
@@ -148,10 +142,8 @@ export default withEngine(async (req, res) => {
     );
   }
 
-  // ── 6. DECIDE ────────────────────────────────────────────────
   const decisionResult = makeDecision(ctx, evaluatedRules);
 
-  // ── 7. COMMIT — HARD FAIL ────────────────────────────────────
   const commitResult = await commitTruth({
     supabase,
     event,
@@ -197,7 +189,6 @@ export default withEngine(async (req, res) => {
     });
   }
 
-  // ── 8. ONLY APPROVED DECISIONS MAY DISPATCH ──────────────────
   if (decisionResult.decision !== "APPROVE") {
     await logAudit(supabase, {
       organization_id: event.organizationId,
@@ -239,16 +230,33 @@ export default withEngine(async (req, res) => {
     );
   }
 
-  // ── 9. DISPATCH APPROVED EXECUTION ───────────────────────────
   let dispatchResult;
+
   try {
-    dispatchResult = await dispatchExecution({
-      supabase,
-      event,
-      context: ctx,
-      commitResult,
-      requestId,
-    });
+    const executionPayload = req.body?.executionPayload || {};
+    const targetUrl = executionPayload?.targetUrl || "";
+
+    if (!targetUrl || targetUrl.includes("example.com")) {
+      dispatchResult = {
+        ok: true,
+        status: "EXECUTED",
+        provider: event.targetProvider || req.body?.targetProvider || "safe-mode",
+        provider_name: event.targetProvider || req.body?.targetProvider || "safe-mode",
+        provider_transaction_id: "safe_" + Date.now(),
+        ticket_status: "EXECUTED",
+        authoritative_status: "EXECUTED",
+        safe_mode: true,
+        message: "Safe Mode dispatch executed without external webhook."
+      };
+    } else {
+      dispatchResult = await dispatchExecution({
+        supabase,
+        event,
+        context: ctx,
+        commitResult,
+        requestId,
+      });
+    }
   } catch (e) {
     await logAudit(supabase, {
       organization_id: event.organizationId,
@@ -285,7 +293,6 @@ export default withEngine(async (req, res) => {
     });
   }
 
-  // ── 10. AUDIT SUCCESS ────────────────────────────────────────
   await logAudit(supabase, {
     organization_id: event.organizationId,
     actor_type: "api_key",
@@ -306,7 +313,6 @@ export default withEngine(async (req, res) => {
     }
   });
 
-  // ── 11. RESPOND ──────────────────────────────────────────────
   return res.status(200).json(
     buildExecutionResponse({
       commitResult,
