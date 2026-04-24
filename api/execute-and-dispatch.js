@@ -1,5 +1,8 @@
 /**
  * EXECUTIA™ — /api/execute-and-dispatch.js
+ *
+ * Phase 2: evaluate event, commit decision to immutable ledger,
+ * then dispatch approved actions to provider/gateway.
  */
 
 import { assertRuntimeReady, getRuntimeControlReport } from "../services/runtime-control.js";
@@ -11,28 +14,24 @@ import {
   mergeEnrichment,
   assertCanonicalContext
 } from "../engine/canonical-context.js";
-
 import { assertRequiredContext } from "../engine/required-context.js";
-
 import {
   loadRules,
   filterScopedRules,
   sortRulesDeterministically
 } from "../engine/rule-loader.js";
-
 import { evaluateRules } from "../engine/rule-evaluator.js";
 import { makeDecision } from "../engine/decision-engine.js";
 import { commitTruth } from "../engine/commit-truth.js";
-
 import {
   buildExecutionResponse,
   buildErrorResponse
 } from "../engine/response-builder.js";
-
 import { DECISION_STATES } from "../engine/decision-states.js";
 import { withEngine } from "../middleware/with-engine.js";
 import { createSupabaseAdmin } from "../services/supabase-admin.js";
 import { logAudit } from "../services/audit.js";
+import { dispatchExecution } from "../gateway/execute-action.js";
 
 export default withEngine(async (req, res) => {
   if (applyCors(req, res, "POST,OPTIONS")) return;
@@ -47,7 +46,6 @@ export default withEngine(async (req, res) => {
   }
 
   let runtimeReport;
-
   try {
     runtimeReport = await getRuntimeControlReport();
     await assertRuntimeReady();
@@ -56,25 +54,22 @@ export default withEngine(async (req, res) => {
       ok: false,
       status: e.code || "RUNTIME_BLOCKED",
       message: e.message,
-      report: e.report || null
+      report: e.report || null,
     });
   }
 
   let event;
-
   try {
     event = normalizeEventInput({
       ...req.body,
-      organizationId:
-        req.executia.organizationId ||
-        req.body?.organizationId ||
-        null
+      organizationId: req.executia.organizationId || req.body?.organizationId || null,
     });
   } catch (e) {
     return err(400, "INVALID_EVENT", e.message);
   }
 
   const isSimulate = false;
+
   let ctx = buildBaseContext(event);
 
   if (event.projectId) {
@@ -86,9 +81,7 @@ export default withEngine(async (req, res) => {
         .single();
 
       if (project?.budget_remaining != null) {
-        ctx = mergeEnrichment(ctx, {
-          budgetRemaining: project.budget_remaining
-        });
+        ctx = mergeEnrichment(ctx, { budgetRemaining: project.budget_remaining });
       }
     } catch {}
   }
@@ -114,7 +107,6 @@ export default withEngine(async (req, res) => {
   }
 
   let allRules;
-
   try {
     allRules = await loadRules(
       supabase,
@@ -135,7 +127,7 @@ export default withEngine(async (req, res) => {
     filterScopedRules(allRules, {
       organizationId: event.organizationId,
       projectId: event.projectId,
-      eventType: event.eventType
+      eventType: event.eventType,
     })
   );
 
@@ -158,7 +150,7 @@ export default withEngine(async (req, res) => {
     context: ctx,
     evaluatedRules,
     decisionResult,
-    simulation: isSimulate
+    simulation: isSimulate,
   });
 
   if (!commitResult.ok) {
@@ -178,7 +170,7 @@ export default withEngine(async (req, res) => {
         reason_codes: decisionResult.reason_codes,
         error: commitResult.error_message,
         runtime_status: runtimeReport?.status || null,
-        runtime_warnings: runtimeReport?.warnings || []
+        runtime_warnings: runtimeReport?.warnings || [],
       }
     });
 
@@ -193,7 +185,7 @@ export default withEngine(async (req, res) => {
       decision_state: DECISION_STATES.DECIDED,
       commit_state: commitResult.commit_state,
       reason_codes: decisionResult.reason_codes,
-      runtime: runtimeReport
+      runtime: runtimeReport,
     });
   }
 
@@ -213,7 +205,7 @@ export default withEngine(async (req, res) => {
         decision: decisionResult.decision,
         truth_hash: commitResult.truth_hash,
         runtime_status: runtimeReport?.status || null,
-        runtime_warnings: runtimeReport?.warnings || []
+        runtime_warnings: runtimeReport?.warnings || [],
       }
     });
 
@@ -230,25 +222,117 @@ export default withEngine(async (req, res) => {
           id: r.id,
           name: r.name,
           priority: r.priority,
-          effect: r.effect
+          effect: r.effect,
         })),
         invalidRules,
-        runtime: runtimeReport
+        runtime: runtimeReport,
       })
     );
   }
 
-  const dispatchResult = {
-    ok: true,
-    status: "EXECUTED",
-    provider: event.targetProvider || req.body?.targetProvider || "safe-mode",
-    provider_name: event.targetProvider || req.body?.targetProvider || "safe-mode",
-    provider_transaction_id: "safe_" + Date.now(),
-    ticket_status: "EXECUTED",
-    authoritative_status: "EXECUTED",
-    safe_mode: true,
-    message: "Safe Mode dispatch executed without external gateway."
-  };
+  let dispatchResult;
+
+  try {
+    const executionPayload = req.body?.executionPayload || {};
+    const targetUrl = executionPayload?.targetUrl || "";
+
+    if (!targetUrl || targetUrl.includes("example.com")) {
+      dispatchResult = {
+        ok: true,
+        status: "EXECUTED",
+        provider: event.targetProvider || req.body?.targetProvider || "safe-mode",
+        provider_name: event.targetProvider || req.body?.targetProvider || "safe-mode",
+        provider_transaction_id: "safe_" + Date.now(),
+        ticket_status: "EXECUTED",
+        authoritative_status: "EXECUTED",
+        safe_mode: true,
+        message: "Safe Mode dispatch executed without external webhook."
+      };
+    } else {
+      dispatchResult = await dispatchExecution({
+        supabase,
+        event,
+        context: ctx,
+        commitResult,
+        requestId,
+      });
+    }
+  } catch (e) {
+    await logAudit(supabase, {
+      organization_id: event.organizationId,
+      actor_type: "api_key",
+      actor_id: req.executia?.auth?.keyId || null,
+      actor_label: req.executia?.operatorEmail || null,
+      action: "EXECUTION_DISPATCH_FAILED",
+      entity: "execution",
+      entity_id: String(commitResult.ledger_id || ""),
+      status: "error",
+      request_id: requestId,
+      payload: {
+        event_type: event.eventType,
+        decision: decisionResult.decision,
+        truth_hash: commitResult.truth_hash,
+        dispatch_error: e.message,
+        runtime_status: runtimeReport?.status || null,
+        runtime_warnings: runtimeReport?.warnings || [],
+      }
+    });
+
+    return res.status(500).json({
+      ...buildErrorResponse(
+        "DISPATCH_FAILED",
+        e.message || "Dispatch failed after approved decision.",
+        null,
+        requestId
+      ),
+      decision: decisionResult.decision,
+      decision_state: DECISION_STATES.DECIDED,
+      commit_state: commitResult.commit_state,
+      reason_codes: decisionResult.reason_codes,
+      runtime: runtimeReport,
+    });
+  }
+
+  // Record execution in executions table after successful dispatch
+  const { error: executionInsertError } = await supabase.from("executions").insert({
+    ticket_id: dispatchResult?.ticket_id || `exec_${commitResult.ledger_id || Date.now()}`,
+    organization_id: event.organizationId,
+    session_id: event.sessionId,
+    project_id: event.projectId,
+    event_type: event.eventType,
+    provider_name: dispatchResult?.provider_name || dispatchResult?.provider || event.targetProvider || "webhook",
+    provider_transaction_id: dispatchResult?.provider_transaction_id || null,
+    authoritative_status: dispatchResult?.authoritative_status || dispatchResult?.status || "EXECUTED",
+    ticket_status_cache: dispatchResult?.ticket_status || dispatchResult?.status || "EXECUTED",
+    ledger_decision: decisionResult.decision,
+    ledger_id: commitResult.ledger_id || null,
+    truth_hash: commitResult.truth_hash || null,
+    request_id: requestId,
+    payload: {
+      dispatch_result: dispatchResult,
+      execution_payload: req.body?.executionPayload || null,
+      reason_codes: decisionResult.reason_codes || []
+    }
+  });
+
+  if (executionInsertError) {
+    await logAudit(supabase, {
+      organization_id: event.organizationId,
+      actor_type: "api_key",
+      actor_id: req.executia?.auth?.keyId || null,
+      actor_label: req.executia?.operatorEmail || null,
+      action: "EXECUTION_RECORD_FAILED",
+      entity: "execution",
+      entity_id: String(commitResult.ledger_id || ""),
+      status: "error",
+      request_id: requestId,
+      payload: {
+        error: executionInsertError.message,
+        code: executionInsertError.code || null,
+        details: executionInsertError.details || null
+      }
+    });
+  }
 
   await logAudit(supabase, {
     organization_id: event.organizationId,
@@ -258,15 +342,15 @@ export default withEngine(async (req, res) => {
     action: "EXECUTION_DISPATCHED",
     entity: "execution",
     entity_id: String(commitResult.ledger_id || ""),
-    status: "ok",
+    status: runtimeReport?.mode === "soft" ? "review" : "ok",
     request_id: requestId,
     payload: {
       event_type: event.eventType,
       decision: decisionResult.decision,
       truth_hash: commitResult.truth_hash,
-      dispatch_result: dispatchResult,
+      dispatch_result: dispatchResult || null,
       runtime_status: runtimeReport?.status || null,
-      runtime_warnings: runtimeReport?.warnings || []
+      runtime_warnings: runtimeReport?.warnings || [],
     }
   });
 
@@ -284,14 +368,11 @@ export default withEngine(async (req, res) => {
         id: r.id,
         name: r.name,
         priority: r.priority,
-        effect: r.effect
+        effect: r.effect,
       })),
       invalidRules,
-      runtime: runtimeReport
+      runtime: runtimeReport,
     })
   );
-}, {
-  methods: ["POST", "OPTIONS"],
-  requireAuth: true,
-  rateLimit: true
-});
+
+}, { methods: ["POST", "OPTIONS"], requireAuth: true, rateLimit: true });
