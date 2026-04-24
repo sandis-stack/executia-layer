@@ -7,186 +7,52 @@
   <meta name="color-scheme" content="light">
   <style>
     :root{
-      --bg:#f4f7fb;
-      --panel:#fff;
-      --line:#d7e2f1;
-      --ink:#0a1f44;
-      --muted:#5d6d86;
-      --blue:#1e3a8a;
-      --red:#dc2626;
-      --green:#15803d;
-      --amber:#b45309;
-      --soft:#eef4ff;
+      --bg:#f4f7fb;--panel:#fff;--line:#d7e2f1;--ink:#0a1f44;--muted:#5d6d86;
+      --blue:#1e3a8a;--red:#dc2626;--green:#15803d;--amber:#b45309;--soft:#eef4ff;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:var(--bg);
-      color:var(--ink)
-    }
-    .sessionbar{
-      padding:8px 12px;
-      background:#eef4ff;
-      border-bottom:1px solid #dbe3f0;
-      font:14px Arial,sans-serif
-    }
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+    .sessionbar{padding:8px 12px;background:#eef4ff;border-bottom:1px solid #dbe3f0;font:14px Arial,sans-serif}
     .wrap{max-width:1380px;margin:0 auto;padding:24px}
-    .top{
-      display:flex;
-      justify-content:space-between;
-      gap:16px;
-      align-items:flex-start;
-      margin-bottom:20px
-    }
+    .top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}
     .title{font-size:34px;font-weight:800}
     .sub{color:var(--muted);margin-top:6px}
     .grid{display:grid;grid-template-columns:330px 1fr;gap:18px}
-    .card{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:18px
-    }
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
     .stack{display:grid;gap:18px}
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px;
-      margin-bottom:18px
-    }
-    .stat{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px
-    }
-    .stat .k{
-      font-size:12px;
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:.06em
-    }
-    .stat .v{
-      font-size:26px;
-      font-weight:800;
-      margin-top:8px;
-      line-height:1.2
-    }
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+    .stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+    .stat .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .stat .v{font-size:26px;font-weight:800;margin-top:8px;line-height:1.2}
     .stat .v .pill{font-size:14px}
-    label{
-      display:block;
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.06em;
-      color:var(--muted);
-      margin-bottom:6px
-    }
-    input,select,textarea{
-      width:100%;
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:12px;
-      background:#fff;
-      color:var(--ink)
-    }
-    textarea{
-      min-height:120px;
-      font-family:ui-monospace,SFMono-Regular,monospace
-    }
+    label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+    textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,monospace}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-    button{
-      border:0;
-      background:var(--blue);
-      color:#fff;
-      padding:12px 16px;
-      border-radius:12px;
-      font-weight:700;
-      cursor:pointer
-    }
-    button:disabled{
-      opacity:.65;
-      cursor:not-allowed
-    }
-    .ghost{
-      background:#fff;
-      color:var(--ink);
-      border:1px solid var(--line)
-    }
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:14px
-    }
-    .pill{
-      display:inline-block;
-      padding:5px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:700;
-      border:1px solid transparent
-    }
+    button{border:0;background:var(--blue);color:#fff;padding:12px 16px;border-radius:12px;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.65;cursor:not-allowed}
+    .ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .pill{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid transparent}
     .ok{background:#e8f7ec;color:var(--green)}
     .bad{background:#feecec;color:var(--red)}
     .warn{background:#fff5e7;color:var(--amber)}
     .neutral{background:#eef2f7;color:#475569}
     table{width:100%;border-collapse:collapse}
-    th,td{
-      padding:10px 8px;
-      border-bottom:1px solid var(--line);
-      font-size:13px;
-      text-align:left;
-      vertical-align:top
-    }
-    th{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.06em;
-      color:var(--muted)
-    }
-    pre{
-      margin:0;
-      background:#0f172a;
-      color:#e2e8f0;
-      padding:14px;
-      border-radius:12px;
-      overflow:auto;
-      font-size:12px;
-      min-height:160px
-    }
-    .section-title{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:10px;
-      gap:12px
-    }
+    th,td{padding:10px 8px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;vertical-align:top}
+    th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+    pre{margin:0;background:#0f172a;color:#e2e8f0;padding:14px;border-radius:12px;overflow:auto;font-size:12px;min-height:160px}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px}
     .mono{font-family:ui-monospace,SFMono-Regular,monospace}
     .small{font-size:12px;color:var(--muted)}
-    .preview-box{
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:#fbfdff;
-      padding:14px;
-      margin-top:12px
-    }
-    .hero-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap
-    }
-    @media (max-width:1100px){
-      .grid{grid-template-columns:1fr}
-      .stats{grid-template-columns:repeat(2,1fr)}
-    }
-    @media (max-width:720px){
-      .row,.row3,.stats{grid-template-columns:1fr}
-      .top{flex-direction:column}
-    }
+    .preview-box{border:1px solid var(--line);border-radius:14px;background:#fbfdff;padding:14px;margin-top:12px}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+    @media (max-width:1100px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:720px){.row,.row3,.stats{grid-template-columns:1fr}.top{flex-direction:column}}
   </style>
 </head>
+
 <body>
   <div class="sessionbar">
     Session mode available.
@@ -198,9 +64,7 @@
     <div class="top">
       <div>
         <div class="title">EXECUTIA Live Console</div>
-        <div class="sub">
-          Production operator shell for health, decision flow, dispatch flow, ledger, executions, and reconciliation.
-        </div>
+        <div class="sub">Production operator shell for health, decision flow, dispatch flow, ledger, executions, and reconciliation.</div>
       </div>
       <div class="card" style="min-width:280px">
         <div class="small">Mode</div>
@@ -209,22 +73,10 @@
     </div>
 
     <div class="stats">
-      <div class="stat">
-        <div class="k">Health</div>
-        <div class="v" id="healthStatus">—</div>
-      </div>
-      <div class="stat">
-        <div class="k">Ledger entries</div>
-        <div class="v" id="ledgerCount">—</div>
-      </div>
-      <div class="stat">
-        <div class="k">Executions</div>
-        <div class="v" id="executionCount">—</div>
-      </div>
-      <div class="stat">
-        <div class="k">Recon queue</div>
-        <div class="v" id="reconCount">—</div>
-      </div>
+      <div class="stat"><div class="k">Health</div><div class="v" id="healthStatus">—</div></div>
+      <div class="stat"><div class="k">Ledger entries</div><div class="v" id="ledgerCount">—</div></div>
+      <div class="stat"><div class="k">Executions</div><div class="v" id="executionCount">—</div></div>
+      <div class="stat"><div class="k">Recon queue</div><div class="v" id="reconCount">—</div></div>
     </div>
 
     <div class="grid">
@@ -295,18 +147,9 @@
           </div>
 
           <div class="row3">
-            <div>
-              <label>Amount</label>
-              <input id="amount" value="4200" />
-            </div>
-            <div>
-              <label>Currency</label>
-              <input id="currency" value="EUR" />
-            </div>
-            <div>
-              <label>Provider</label>
-              <input id="provider" value="webhook" />
-            </div>
+            <div><label>Amount</label><input id="amount" value="4200" /></div>
+            <div><label>Currency</label><input id="currency" value="EUR" /></div>
+            <div><label>Provider</label><input id="provider" value="webhook" /></div>
           </div>
 
           <label style="margin-top:10px">Context overrides (JSON)</label>
@@ -353,77 +196,33 @@
 
       <div class="stack">
         <div class="card">
-          <div class="section-title">
-            <strong>Ledger</strong>
-            <span class="small">/api/v1/ledger</span>
-          </div>
+          <div class="section-title"><strong>Ledger</strong><span class="small">/api/v1/ledger</span></div>
           <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Event</th>
-                <th>Decision</th>
-                <th>Execution</th>
-                <th>Hash</th>
-              </tr>
-            </thead>
+            <thead><tr><th>ID</th><th>Event</th><th>Decision</th><th>Execution</th><th>Hash</th></tr></thead>
             <tbody id="ledgerRows"></tbody>
           </table>
         </div>
 
         <div class="card">
-          <div class="section-title">
-            <strong>Executions</strong>
-            <span class="small">/api/v1/executions</span>
-          </div>
+          <div class="section-title"><strong>Executions</strong><span class="small">/api/v1/executions</span></div>
           <table>
-            <thead>
-              <tr>
-                <th>Ticket</th>
-                <th>Status</th>
-                <th>Provider</th>
-                <th>Txn</th>
-                <th>Decision</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Ticket</th><th>Status</th><th>Provider</th><th>Txn</th><th>Decision</th></tr></thead>
             <tbody id="executionRows"></tbody>
           </table>
         </div>
 
         <div class="card">
-          <div class="section-title">
-            <strong>Reconciliation</strong>
-            <span class="small">/api/v1/reconciliation</span>
-          </div>
+          <div class="section-title"><strong>Reconciliation</strong><span class="small">/api/v1/reconciliation</span></div>
           <table>
-            <thead>
-              <tr>
-                <th>Ticket</th>
-                <th>Action</th>
-                <th>Provider</th>
-                <th>Created</th>
-                <th>Key</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Ticket</th><th>Action</th><th>Provider</th><th>Created</th><th>Key</th></tr></thead>
             <tbody id="reconRows"></tbody>
           </table>
         </div>
 
         <div class="card">
-          <div class="section-title">
-            <strong>Audit log</strong>
-            <span class="small">/api/v1/audit</span>
-          </div>
+          <div class="section-title"><strong>Audit log</strong><span class="small">/api/v1/audit</span></div>
           <table>
-            <thead>
-              <tr>
-                <th>Action</th>
-                <th>Entity</th>
-                <th>Status</th>
-                <th>Actor</th>
-                <th>When</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Action</th><th>Entity</th><th>Status</th><th>Actor</th><th>When</th></tr></thead>
             <tbody id="auditRows"></tbody>
           </table>
         </div>
@@ -451,6 +250,7 @@
         orgId: $('orgId').value,
         plan: $('plan').value
       }));
+      $('lastMeta').textContent = 'connection saved';
     }
 
     function loadConn(){
@@ -475,28 +275,11 @@
 
       const s = String(status).toUpperCase();
 
-      if(
-        s.includes('HEALTHY') ||
-        s.includes('READY') ||
-        s.includes('APPROVE') ||
-        s === 'OK' ||
-        s.includes('EXECUTED')
-      ){
+      if(s.includes('HEALTHY') || s.includes('READY') || s.includes('APPROVE') || s === 'OK' || s.includes('EXECUTED')){
         el.classList.add('ok');
-      } else if(
-        s.includes('BLOCK') ||
-        s.includes('FAILED') ||
-        s.includes('REJECT') ||
-        s.includes('ERROR') ||
-        s.includes('OFFLINE')
-      ){
+      } else if(s.includes('BLOCK') || s.includes('FAILED') || s.includes('REJECT') || s.includes('ERROR') || s.includes('OFFLINE')){
         el.classList.add('bad');
-      } else if(
-        s.includes('ESCALATE') ||
-        s.includes('WARN') ||
-        s.includes('PENDING') ||
-        s.includes('REVIEW')
-      ){
+      } else if(s.includes('ESCALATE') || s.includes('WARN') || s.includes('PENDING') || s.includes('REVIEW')){
         el.classList.add('warn');
       } else {
         el.classList.add('neutral');
@@ -515,8 +298,15 @@
           ...(opts.headers || {})
         }
       });
+
       const data = await r.json().catch(() => ({}));
-      if(!r.ok) throw new Error(JSON.stringify(data, null, 2));
+
+      if(!r.ok){
+        const err = new Error(JSON.stringify(data, null, 2));
+        err.data = data;
+        throw err;
+      }
+
       return data;
     }
 
@@ -565,10 +355,7 @@
     function renderLedger(items){
       const tbody = $('ledgerRows');
       clearNode(tbody);
-      if(!items.length){
-        appendFallbackRow(tbody, 5, 'No entries');
-        return;
-      }
+      if(!items.length){ appendFallbackRow(tbody, 5, 'No entries'); return; }
 
       items.forEach(it => {
         const tr = document.createElement('tr');
@@ -584,10 +371,7 @@
     function renderExecutions(items){
       const tbody = $('executionRows');
       clearNode(tbody);
-      if(!items.length){
-        appendFallbackRow(tbody, 5, 'No entries');
-        return;
-      }
+      if(!items.length){ appendFallbackRow(tbody, 5, 'No entries'); return; }
 
       items.forEach(it => {
         const tr = document.createElement('tr');
@@ -603,10 +387,7 @@
     function renderRecon(items){
       const tbody = $('reconRows');
       clearNode(tbody);
-      if(!items.length){
-        appendFallbackRow(tbody, 5, 'Queue empty');
-        return;
-      }
+      if(!items.length){ appendFallbackRow(tbody, 5, 'Queue empty'); return; }
 
       items.forEach(it => {
         const tr = document.createElement('tr');
@@ -647,10 +428,7 @@
     function renderAudit(items){
       const tbody = $('auditRows');
       clearNode(tbody);
-      if(!items.length){
-        appendFallbackRow(tbody, 5, 'No entries');
-        return;
-      }
+      if(!items.length){ appendFallbackRow(tbody, 5, 'No entries'); return; }
 
       items.forEach(it => {
         const tr = document.createElement('tr');
@@ -726,6 +504,7 @@
       }
 
       updateDecisionPreview();
+      $('lastMeta').textContent = type.toUpperCase() + ' preset loaded';
     }
 
     function updateDecisionPreview(){
@@ -742,11 +521,7 @@
         } else if(amount > 10000){
           decision = 'ESCALATE';
           reason = 'High-value payment threshold exceeded';
-        } else if(
-          ctx.supplierVerified === true &&
-          ctx.contractValid === true &&
-          Number(ctx.budgetRemaining || 0) > 0
-        ){
+        } else if(ctx.supplierVerified === true && ctx.contractValid === true && Number(ctx.budgetRemaining || 0) > 0){
           decision = 'APPROVE';
           reason = 'Verified supplier, valid contract, active budget';
         }
@@ -758,6 +533,21 @@
         clearNode($('decisionPreview'));
         $('decisionPreview').appendChild(makeBadge('invalid'));
         $('decisionReason').textContent = 'Invalid context JSON';
+      }
+    }
+
+    async function runHealthCheck(){
+      try{
+        const data = await call('/health', { method:'GET' });
+        clearNode($('healthStatus'));
+        $('healthStatus').appendChild(makeBadge(data.status));
+        $('output').textContent = JSON.stringify(data, null, 2);
+        $('lastMeta').textContent = new Date().toISOString() + ' · health';
+      }catch(err){
+        clearNode($('healthStatus'));
+        $('healthStatus').appendChild(makeBadge('offline'));
+        $('output').textContent = String(err.message || err);
+        $('lastMeta').textContent = 'health failed';
       }
     }
 
@@ -810,6 +600,7 @@
 
     async function runExecution(){
       $('runExec').disabled = true;
+
       try{
         const payload = {
           sessionId: $('sessionId').value.trim(),
@@ -844,16 +635,8 @@
     $('saveConn').onclick = saveConn;
     $('runRefresh').onclick = refreshAll;
     $('runExec').onclick = runExecution;
-    $('runHealth').onclick = async () => {
-      try{
-        const data = await call('/health', { method:'GET' });
-        $('output').textContent = JSON.stringify(data, null, 2);
-        $('lastMeta').textContent = new Date().toISOString() + ' · health';
-      }catch(err){
-        $('output').textContent = String(err.message || err);
-      }
-    };
-    $('runHealthMini').onclick = $('runHealth').onclick;
+    $('runHealth').onclick = runHealthCheck;
+    $('runHealthMini').onclick = runHealthCheck;
 
     $('presetApprove').onclick = () => setPreset('approve');
     $('presetBlock').onclick = () => setPreset('block');
