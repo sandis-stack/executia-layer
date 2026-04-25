@@ -134,6 +134,7 @@
 
 <script>
 const API_BASE = "/api/v1";
+let loading = false;
 
 function getDecision(e) {
   return e.decision || e.ledger_decision || e.result_status || e.status || "-";
@@ -152,6 +153,9 @@ function getHash(e) {
 }
 
 async function load() {
+  if (loading) return;
+  loading = true;
+
   try {
     const healthRes = await fetch(API_BASE + "/health");
     const health = await healthRes.json();
@@ -163,12 +167,7 @@ async function load() {
       document.getElementById("systemStatus").innerText = health.status || "degraded";
       document.getElementById("systemStatus").className = "value offline";
     }
-  } catch (err) {
-    document.getElementById("systemStatus").innerText = "offline";
-    document.getElementById("systemStatus").className = "value offline";
-  }
 
-  try {
     const res = await fetch(API_BASE + "/executions");
     const data = await res.json();
 
@@ -219,8 +218,13 @@ async function load() {
     });
 
   } catch (err) {
+    document.getElementById("systemStatus").innerText = "offline";
+    document.getElementById("systemStatus").className = "value offline";
+
     document.getElementById("table").innerHTML =
       `<tr><td colspan="5">Error: ${err.message || JSON.stringify(err)}</td></tr>`;
+  } finally {
+    loading = false;
   }
 }
 
@@ -274,7 +278,11 @@ async function testExecution() {
   }
 }
 
+// Initial load
 load();
+
+// Auto refresh every 3 seconds
+setInterval(load, 3000);
 </script>
 
 </body>
