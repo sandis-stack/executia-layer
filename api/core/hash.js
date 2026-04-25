@@ -1,8 +1,7 @@
-import crypto from "crypto";
-
-export function createTruthHash(payload = {}) {
-  return crypto
-    .createHash("sha256")
-    .update(JSON.stringify(payload, Object.keys(payload).sort()))
-    .digest("hex");
+export default function handler(req, res) {
+  return res.status(200).json({
+    ok: true,
+    status: "healthy",
+    route: "/api/v1/health"
+  });
 }
