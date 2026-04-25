@@ -59,6 +59,11 @@
       margin-right: 10px;
     }
 
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -112,7 +117,7 @@
 </div>
 
 <button onclick="load()">Refresh</button>
-<button onclick="testExecution()">Run test execution</button>
+<button id="runBtn" onclick="testExecution()">Run test execution</button>
 
 <table>
   <thead>
@@ -139,11 +144,11 @@ function getStatus(e) {
 }
 
 function getEvent(e) {
-  return e.event_type || e.payment_type || e.source || "execution";
+  return e.event_type || e.payment_type || e.source || e.payload?.event_type || "execution";
 }
 
 function getHash(e) {
-  return e.truth_hash || e.execution_id || e.request_id || e.ticket_id || "";
+  return e.truth_hash || e.payload?.truth_hash || e.execution_id || e.request_id || e.ticket_id || "";
 }
 
 async function load() {
@@ -202,7 +207,7 @@ async function load() {
     executions.forEach(e => {
       const hash = getHash(e);
 
-      const row = `
+      table.innerHTML += `
         <tr>
           <td>${e.created_at || "-"}</td>
           <td><strong>${getDecision(e)}</strong></td>
@@ -211,8 +216,6 @@ async function load() {
           <td><code>${hash ? hash.substring(0, 12) : "-"}</code></td>
         </tr>
       `;
-
-      table.innerHTML += row;
     });
 
   } catch (err) {
@@ -222,7 +225,21 @@ async function load() {
 }
 
 async function testExecution() {
+  const btn = document.getElementById("runBtn");
+
   try {
+    btn.disabled = true;
+    btn.innerText = "Running...";
+
+    const scenarios = [
+      { amount: 100, legalBlock: false },
+      { amount: 15000, legalBlock: false },
+      { amount: 0, legalBlock: false },
+      { amount: 500, legalBlock: true }
+    ];
+
+    const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+
     const res = await fetch(API_BASE + "/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -231,11 +248,11 @@ async function testExecution() {
         session_id: "dashboard_session_" + Date.now(),
         project_id: "dashboard_test",
         event_type: "payment",
-        amount: 100,
+        amount: scenario.amount,
         currency: "EUR",
         context: {
           source: "dashboard",
-          legalBlock: false
+          legalBlock: scenario.legalBlock
         }
       })
     });
@@ -247,10 +264,13 @@ async function testExecution() {
       return;
     }
 
-    load();
+    await load();
 
   } catch (err) {
     alert(err.message || JSON.stringify(err));
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "Run test execution";
   }
 }
 
