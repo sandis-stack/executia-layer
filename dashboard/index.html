@@ -16,12 +16,17 @@
     .value { font-size:28px; font-weight:800; margin-top:12px; }
     .ok { color:#16803a; }
     .bad { color:#c62828; }
+    .muted { color:#667085; }
+    .actions { display:flex; gap:12px; align-items:center; }
     table { width:100%; border-collapse:collapse; margin-top:14px; }
-    th,td { padding:12px; border-bottom:1px solid #e5edf7; text-align:left; font-size:14px; }
+    th,td { padding:12px; border-bottom:1px solid #e5edf7; text-align:left; font-size:14px; vertical-align:top; }
     th { color:#667085; text-transform:uppercase; font-size:11px; letter-spacing:.12em; }
     code { font-size:12px; word-break:break-all; }
     button { background:#0A2540; color:white; border:0; border-radius:12px; padding:12px 18px; font-weight:700; cursor:pointer; }
+    button.secondary { background:#fff; color:#0A2540; border:1px solid #d9e4f2; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
     .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    .result { margin-top:18px; padding:14px 16px; border-radius:14px; background:#fff; border:1px solid #d9e4f2; }
   </style>
 </head>
 
@@ -34,7 +39,10 @@
 <div class="wrap">
   <div class="top">
     <strong>System overview</strong>
-    <button onclick="loadDashboard()">Refresh</button>
+    <div class="actions">
+      <button class="secondary" onclick="loadDashboard()">Refresh</button>
+      <button id="runBtn" onclick="runTestExecution()">Run test execution</button>
+    </div>
   </div>
 
   <div class="grid">
@@ -59,7 +67,11 @@
     </div>
   </div>
 
-  <div class="card">
+  <div id="lastResult" class="result muted">
+    Ready. Click “Run test execution” to create a live execution record.
+  </div>
+
+  <div class="card" style="margin-top:20px;">
     <div class="label">Latest execution</div>
 
     <table>
@@ -85,19 +97,30 @@
 <script>
 const API_BASE = "https://execution.executia.io/api/v1";
 
-async function safeJson(url) {
+async function safeJson(url, options = {}) {
   const response = await fetch(url, {
-    method: "GET",
     headers: {
-      "Accept": "application/json"
-    }
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    },
+    ...options
   });
 
-  if (!response.ok) {
-    throw new Error(url + " failed: " + response.status);
+  const text = await response.text();
+  let json = null;
+
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch (_) {
+    json = { raw: text };
   }
 
-  return response.json();
+  if (!response.ok) {
+    throw new Error(json?.error || json?.message || (url + " failed: " + response.status));
+  }
+
+  return json;
 }
 
 function decisionOf(item) {
@@ -126,7 +149,6 @@ async function loadDashboard() {
 
   try {
     const health = await safeJson(API_BASE + "/health");
-
     statusEl.textContent = health.status || "healthy";
     statusEl.className = "value ok";
   } catch (err) {
@@ -144,7 +166,6 @@ async function loadDashboard() {
     document.getElementById("total").textContent = executions.length;
 
     const approved = executions.filter((item) => decisionOf(item) === "APPROVE").length;
-
     const blocked = executions.filter((item) =>
       ["BLOCK", "ESCALATE"].includes(decisionOf(item))
     ).length;
@@ -178,6 +199,55 @@ async function loadDashboard() {
         <td colspan="5">Executions unavailable: ${err.message}</td>
       </tr>
     `;
+  }
+}
+
+async function runTestExecution() {
+  const btn = document.getElementById("runBtn");
+  const resultBox = document.getElementById("lastResult");
+
+  btn.disabled = true;
+  btn.textContent = "Running...";
+  resultBox.className = "result muted";
+  resultBox.textContent = "Sending execution request...";
+
+  const payload = {
+    organization_id: "org_norsteel",
+    session_id: "sess_dashboard_" + Date.now(),
+    project_id: "prj_alpha",
+    event_type: "payment",
+    amount: 4200,
+    currency: "EUR",
+    context: {
+      supplierVerified: true,
+      contractValid: true,
+      legalBlock: false,
+      weatherRisk: 2,
+      hoursSinceRest: 12
+    }
+  };
+
+  try {
+    const result = await safeJson(API_BASE + "/execute", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    resultBox.className = "result ok";
+    resultBox.innerHTML = `
+      Execution completed: <strong>${result.decision || "—"}</strong><br>
+      Status: <strong>${result.execution_status || result.authoritative_status || "—"}</strong><br>
+      Hash: <code>${result.truth_hash || "—"}</code>
+    `;
+
+    await loadDashboard();
+
+  } catch (err) {
+    resultBox.className = "result bad";
+    resultBox.textContent = "Execution failed: " + err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Run test execution";
   }
 }
 
