@@ -1,7 +1,9 @@
-import { runExecution } from "../core/engine.js";
-import { db } from "../services/db.js";
+import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req, res) {
+  res.setHeader("Content-Type", "application/json");
+
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
@@ -10,46 +12,95 @@ export default async function handler(req, res) {
   }
 
   try {
-    const result = await runExecution(req.body || {});
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    const { data, error } = await db
+    if (!supabaseUrl || !supabaseKey) {
+      return res.status(200).json({
+        ok: false,
+        error: "SUPABASE_ENV_MISSING"
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const body = req.body || {};
+
+    const amount = Number(body.amount || 0);
+    const currency = body.currency || "EUR";
+
+    let status = "APPROVED";
+    let reason = "Execution approved";
+
+    if (amount <= 0) {
+      status = "BLOCKED";
+      reason = "Amount must be greater than zero";
+    }
+
+    if (amount > 10000) {
+      status = "REQUIRES_REVIEW";
+      reason = "High-value execution requires review";
+    }
+
+    if (body.context?.legalBlock === true) {
+      status = "BLOCKED";
+      reason = "Legal block detected";
+    }
+
+    const execution_id = "EX-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    const truth_hash = crypto
+      .createHash("sha256")
+      .update(JSON.stringify({
+        execution_id,
+        amount,
+        currency,
+        status,
+        reason,
+        body
+      }))
+      .digest("hex");
+
+    const payload = {
+      execution_id,
+      status,
+      result_status: status,
+      authorized: status === "APPROVED",
+      hold_pending: status === "REQUIRES_REVIEW",
+      budget: amount,
+      currency,
+      reason,
+      source: body.context?.source || "dashboard",
+      payload: body,
+      truth_hash
+    };
+
+    const { data, error } = await supabase
       .from("executions")
-      .insert({
-        ticket_id: `exec_${Date.now()}`,
-        organization_id: result.ledger?.organization_id || null,
-        session_id: result.ledger?.session_id || null,
-        project_id: result.ledger?.project_id || null,
-        event_type: result.ledger?.event_type || null,
-
-        provider_name: result.dispatch?.provider || "safe-mode",
-        provider_transaction_id: result.dispatch?.provider_transaction_id || null,
-
-        authoritative_status: result.execution_status || null,
-        ticket_status_cache: result.execution_status || null,
-        ledger_decision: result.decision || null,
-
-        truth_hash: result.truth_hash || null,
-        payload: result
-      })
+      .insert(payload)
       .select()
       .single();
 
     if (error) {
-      return res.status(500).json({
+      return res.status(200).json({
         ok: false,
         error: error.message
       });
     }
 
     return res.status(200).json({
-      ...result,
+      ok: true,
+      decision: status,
+      status,
+      reason,
+      truth_hash,
       execution: data
     });
 
   } catch (err) {
-    return res.status(500).json({
+    return res.status(200).json({
       ok: false,
-      error: err.message
+      error: err.message || String(err)
     });
   }
 }
