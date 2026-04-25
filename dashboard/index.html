@@ -4,137 +4,129 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>EXECUTIA Dashboard</title>
-  <meta name="color-scheme" content="light" />
   <style>
-    :root{
-      --bg:#f5f8fc;--panel:#fff;--ink:#0a1f44;--muted:#5d6d86;--line:#d7e2f1;
-      --blue:#1e3a8a;--red:#dc2626;--green:#15803d;--amber:#b45309;--soft:#eef4ff;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    a{color:inherit}.shell{max-width:1440px;margin:0 auto;padding:28px}.topbar{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:22px}
-    .brand{display:flex;gap:14px;align-items:center}.mark{width:42px;height:42px;border-radius:12px;background:var(--ink);color:white;display:grid;place-items:center;font-weight:900}.title{font-size:30px;font-weight:850;letter-spacing:-.02em}.subtitle{font-size:14px;color:var(--muted);margin-top:2px}.nav{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer;background:var(--blue);color:#fff}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.grid{display:grid;grid-template-columns:360px 1fr;gap:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px}.panel h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;margin:0 0 14px;color:var(--muted)}.status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.metric{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px}.metric .k{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}.metric .v{font-size:30px;font-weight:900;margin-top:8px}.metric .d{font-size:12px;color:var(--muted);margin-top:6px}.stack{display:grid;gap:18px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800}.ok{background:#e8f7ec;color:var(--green)}.bad{background:#feecec;color:var(--red)}.warn{background:#fff5e7;color:var(--amber)}.neutral{background:#eef2f7;color:#475569}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.step{border:1px solid var(--line);background:#fbfdff;border-radius:16px;padding:14px;min-height:96px}.step .num{font-size:12px;color:var(--muted);font-weight:800}.step .label{font-weight:900;margin-top:7px}.step .desc{font-size:12px;color:var(--muted);margin-top:6px}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.section-title strong{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;vertical-align:top}th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.mono{font-family:ui-monospace,SFMono-Regular,monospace}.small{font-size:12px;color:var(--muted)}input,select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff;color:var(--ink)}label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.case{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfdff}.case h3{margin:0 0 8px;font-size:16px}.case p{margin:0;color:var(--muted);font-size:13px;line-height:1.45}.case button{margin-top:12px;width:100%}.terminal{background:#0f172a;color:#e2e8f0;border-radius:16px;padding:14px;font-size:12px;overflow:auto;min-height:180px}.hidden{display:none}
-    @media(max-width:1100px){.grid,.two{grid-template-columns:1fr}.status-grid{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr 1fr}.topbar{align-items:flex-start;flex-direction:column}}
-    @media(max-width:720px){.status-grid,.three,.row,.flow{grid-template-columns:1fr}.shell{padding:16px}}
+    body { margin:0; font-family: Arial, sans-serif; background:#f6f9fc; color:#0A2540; }
+    header { padding:28px 36px; border-bottom:1px solid #d9e4f2; background:#fff; }
+    h1 { margin:0; font-size:30px; }
+    .sub { color:#667085; margin-top:6px; }
+    .wrap { padding:28px 36px; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
+    .card { background:#fff; border:1px solid #d9e4f2; border-radius:18px; padding:20px; box-shadow:0 8px 24px rgba(10,37,64,.06); }
+    .label { font-size:12px; letter-spacing:.14em; color:#667085; text-transform:uppercase; }
+    .value { font-size:28px; font-weight:800; margin-top:12px; }
+    .ok { color:#16803a; }
+    .bad { color:#c62828; }
+    table { width:100%; border-collapse:collapse; margin-top:14px; }
+    th,td { padding:12px; border-bottom:1px solid #e5edf7; text-align:left; font-size:14px; }
+    th { color:#667085; text-transform:uppercase; font-size:11px; letter-spacing:.12em; }
+    code { font-size:12px; word-break:break-all; }
+    button { background:#0A2540; color:white; border:0; border-radius:12px; padding:12px 18px; font-weight:700; cursor:pointer; }
+    .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
   </style>
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="mark">E</div>
-        <div>
-          <div class="title">EXECUTIA Dashboard</div>
-          <div class="subtitle">Execution status, control flow, ledger proof, and audit visibility.</div>
-        </div>
-      </div>
-      <div class="nav">
-        <a class="btn secondary" href="/console/">Console</a>
-        <button class="btn secondary" id="refreshBtn">Refresh</button>
-        <button class="btn" id="runDemoBtn">Run approved control</button>
-      </div>
-    </header>
+<header>
+  <h1>EXECUTIA Dashboard</h1>
+  <div class="sub">Execution visibility — decision, ledger, proof.</div>
+</header>
 
-    <section class="status-grid">
-      <div class="metric"><div class="k">System status</div><div class="v" id="systemStatus">—</div><div class="d">Runtime readiness</div></div>
-      <div class="metric"><div class="k">Ledger</div><div class="v" id="ledgerCount">—</div><div class="d">Committed decisions</div></div>
-      <div class="metric"><div class="k">Executions</div><div class="v" id="executionCount">—</div><div class="d">Dispatched actions</div></div>
-      <div class="metric"><div class="k">Review</div><div class="v" id="reviewCount">—</div><div class="d">Reconciliation queue</div></div>
-    </section>
+<div class="wrap">
+  <div class="top">
+    <strong>System overview</strong>
+    <button onclick="loadDashboard()">Refresh</button>
+  </div>
 
-    <section class="grid">
-      <aside class="stack">
-        <div class="panel">
-          <h2>Connection</h2>
-          <label>API base</label><input id="apiBase" value="/api/v1" />
-          <div style="height:10px"></div>
-          <label>API key</label><input id="apiKey" type="password" placeholder="test_key_123" />
-          <div style="height:10px"></div>
-          <label>Organization</label><input id="orgId" value="org_norsteel" />
-          <div style="height:10px"></div>
-          <label>Plan</label><select id="plan"><option>enterprise</option><option>pro</option><option>free</option></select>
-          <div style="display:flex;gap:10px;margin-top:14px"><button class="btn secondary" id="saveBtn">Save</button><button class="btn" id="healthBtn">Check</button></div>
-        </div>
+  <div class="grid">
+    <div class="card"><div class="label">System</div><div id="status" class="value">—</div></div>
+    <div class="card"><div class="label">Total executions</div><div id="total" class="value">—</div></div>
+    <div class="card"><div class="label">Approved</div><div id="approved" class="value">—</div></div>
+    <div class="card"><div class="label">Blocked / Escalated</div><div id="blocked" class="value">—</div></div>
+  </div>
 
-        <div class="panel">
-          <h2>Demo control</h2>
-          <div class="three">
-            <div class="case"><h3>Approve</h3><p>Verified supplier, valid contract, active budget.</p><button class="btn secondary" data-case="approve">Load</button></div>
-            <div class="case"><h3>Block</h3><p>No remaining budget. Execution must not proceed.</p><button class="btn secondary" data-case="block">Load</button></div>
-            <div class="case"><h3>Review</h3><p>High-value payment exceeds control threshold.</p><button class="btn secondary" data-case="escalate">Load</button></div>
-          </div>
-        </div>
+  <div class="card">
+    <div class="label">Latest execution</div>
+    <table>
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>Decision</th>
+          <th>Status</th>
+          <th>Event</th>
+          <th>Hash</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td colspan="5">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-        <div class="panel">
-          <h2>Current input</h2>
-          <div class="row"><div><label>Amount</label><input id="amount" value="4200" /></div><div><label>Budget</label><input id="budget" value="15000" /></div></div>
-          <div style="height:10px"></div>
-          <div class="row"><div><label>Supplier verified</label><select id="supplier"><option value="true">true</option><option value="false">false</option></select></div><div><label>Contract valid</label><select id="contract"><option value="true">true</option><option value="false">false</option></select></div></div>
-          <div style="margin-top:14px"><span id="previewBadge" class="pill neutral">—</span><div id="previewText" class="small" style="margin-top:8px">—</div></div>
-        </div>
-      </aside>
+<script>
+const API_BASE = "/api/v1";
 
-      <section class="stack">
-        <div class="panel">
-          <div class="section-title"><strong>Execution control flow</strong><span id="flowState" class="pill neutral">READY</span></div>
-          <div class="flow">
-            <div class="step"><div class="num">01</div><div class="label">Input</div><div class="desc">Execution context submitted.</div></div>
-            <div class="step"><div class="num">02</div><div class="label">Validation</div><div class="desc">Rules loaded and evaluated.</div></div>
-            <div class="step"><div class="num">03</div><div class="label">Decision</div><div class="desc">APPROVE / BLOCK / REVIEW.</div></div>
-            <div class="step"><div class="num">04</div><div class="label">Ledger</div><div class="desc">Truth hash committed.</div></div>
-            <div class="step"><div class="num">05</div><div class="label">Execution</div><div class="desc">Dispatch or reconciliation.</div></div>
-          </div>
-        </div>
+async function safeJson(url) {
+  const r = await fetch(url, { headers: { "Accept": "application/json" } });
+  if (!r.ok) throw new Error(url + " failed: " + r.status);
+  return r.json();
+}
 
-        <div class="two">
-          <div class="panel">
-            <div class="section-title"><strong>Latest response</strong><span id="lastMeta" class="small">—</span></div>
-            <pre class="terminal" id="output">No request yet.</pre>
-          </div>
-          <div class="panel">
-            <div class="section-title"><strong>System proof</strong><span class="small">current snapshot</span></div>
-            <div class="case"><h3>Decision layer</h3><p id="proofDecision">—</p></div>
-            <div style="height:10px"></div>
-            <div class="case"><h3>Ledger layer</h3><p id="proofLedger">—</p></div>
-            <div style="height:10px"></div>
-            <div class="case"><h3>Execution layer</h3><p id="proofExecution">—</p></div>
-          </div>
-        </div>
+function decisionOf(x) {
+  return x.ledger_decision || x.decision || x.payload?.decision || "—";
+}
 
-        <div class="panel">
-          <div class="section-title"><strong>Ledger registry</strong><span class="small">latest decisions</span></div>
-          <table><thead><tr><th>ID</th><th>Event</th><th>Decision</th><th>Execution</th><th>Hash</th></tr></thead><tbody id="ledgerRows"></tbody></table>
-        </div>
+function statusOf(x) {
+  return x.authoritative_status || x.execution_status || x.status || "—";
+}
 
-        <div class="two">
-          <div class="panel"><div class="section-title"><strong>Execution registry</strong><span class="small">latest dispatches</span></div><table><thead><tr><th>Ticket</th><th>Status</th><th>Provider</th></tr></thead><tbody id="executionRows"></tbody></table></div>
-          <div class="panel"><div class="section-title"><strong>Audit registry</strong><span class="small">latest records</span></div><table><thead><tr><th>Action</th><th>Status</th><th>When</th></tr></thead><tbody id="auditRows"></tbody></table></div>
-        </div>
-      </section>
-    </section>
-  </main>
+function hashOf(x) {
+  return x.truth_hash || x.payload?.truth_hash || "—";
+}
 
-  <script>
-    const $=id=>document.getElementById(id); const key='executia_dashboard_config';
-    const state={case:'approve'};
-    function h(){return {'Content-Type':'application/json','x-api-key':$('apiKey').value.trim(),'x-organization-id':$('orgId').value.trim(),'x-plan':$('plan').value}}
-    function base(){return $('apiBase').value.replace(/\/$/,'')}
-    function save(){localStorage.setItem(key,JSON.stringify({apiBase:$('apiBase').value,apiKey:$('apiKey').value,orgId:$('orgId').value,plan:$('plan').value}))}
-    function load(){try{const v=JSON.parse(localStorage.getItem(key)||'{}'); if(v.apiBase)$('apiBase').value=v.apiBase; if(v.apiKey)$('apiKey').value=v.apiKey; if(v.orgId)$('orgId').value=v.orgId; if(v.plan)$('plan').value=v.plan}catch{}}
-    async function call(path,opt={}){const r=await fetch(base()+path,{...opt,headers:{...h(),...(opt.headers||{})}}); const data=await r.json().catch(()=>({})); if(!r.ok) throw new Error(JSON.stringify(data,null,2)); return data}
-    function badge(el,text){el.className='pill '+tone(text); el.textContent=text||'—'}
-    function tone(s){s=String(s||'').toUpperCase(); if(s.includes('APPROVE')||s.includes('HEALTH')||s.includes('EXECUTED')||s.includes('OK'))return'ok'; if(s.includes('BLOCK')||s.includes('FAIL')||s.includes('OFFLINE')||s.includes('ERROR'))return'bad'; if(s.includes('REVIEW')||s.includes('ESCALATE')||s.includes('PENDING'))return'warn'; return'neutral'}
-    function td(t){const e=document.createElement('td'); e.textContent=t==null?'—':String(t); return e}
-    function short(v){v=String(v||'—'); return v.length>18?v.slice(0,18)+'…':v}
-    function fill(tbody,cols,msg){tbody.innerHTML=''; const tr=document.createElement('tr'); const cell=document.createElement('td'); cell.colSpan=cols; cell.className='small'; cell.textContent=msg; tr.appendChild(cell); tbody.appendChild(tr)}
-    function preview(){const amount=Number($('amount').value||0), budget=Number($('budget').value||0), supplier=$('supplier').value==='true', contract=$('contract').value==='true'; let d='REVIEW', r='Manual review required'; if(budget<=0){d='BLOCK';r='Budget exhausted'} else if(amount>10000){d='ESCALATE';r='High-value execution requires review'} else if(supplier&&contract&&budget>0){d='APPROVE';r='Execution permitted'} badge($('previewBadge'),d); $('previewText').textContent=r; return {decision:d,reason:r}}
-    function loadCase(c){state.case=c; if(c==='approve'){ $('amount').value='4200'; $('budget').value='15000'; $('supplier').value='true'; $('contract').value='true'} if(c==='block'){ $('amount').value='4200'; $('budget').value='0'; $('supplier').value='true'; $('contract').value='true'} if(c==='escalate'){ $('amount').value='20000'; $('budget').value='50000'; $('supplier').value='true'; $('contract').value='true'} preview(); $('lastMeta').textContent=c.toUpperCase()+' loaded'}
-    async function refresh(){save(); try{const [health,ledger,execs,audit,recon]=await Promise.all([call('/health'),call('/ledger?limit=8'),call('/executions?limit=8'),call('/audit?limit=8'),call('/reconciliation?limit=8')]); $('systemStatus').innerHTML=''; $('systemStatus').appendChild(Object.assign(document.createElement('span'),{className:'pill '+tone(health.status),textContent:health.status||'—'})); $('ledgerCount').textContent=(ledger.items||[]).length; $('executionCount').textContent=(execs.items||[]).length; $('reviewCount').textContent=(recon.items||[]).length; renderLedger(ledger.items||[]); renderExecs(execs.items||[]); renderAudit(audit.items||[]); $('proofDecision').textContent=(ledger.items||[])[0]?.decision||'No decision recorded'; $('proofLedger').textContent=(ledger.items||[])[0]?.truth_hash||'No truth hash recorded'; $('proofExecution').textContent=(execs.items||[])[0]?.authoritative_status||(execs.items||[])[0]?.ticket_status_cache||'No execution dispatch recorded'; $('output').textContent=JSON.stringify({health,latest_ledger:(ledger.items||[])[0]||null,latest_execution:(execs.items||[])[0]||null},null,2); $('lastMeta').textContent=new Date().toISOString(); badge($('flowState'),'READY')}catch(e){badge($('systemStatus'),'OFFLINE'); $('output').textContent=String(e.message||e); $('lastMeta').textContent='refresh failed'}}
-    function renderLedger(items){const b=$('ledgerRows'); if(!items.length)return fill(b,5,'No entries'); b.innerHTML=''; items.forEach(x=>{const tr=document.createElement('tr'); tr.appendChild(td(x.ledger_id||x.id)); tr.appendChild(td(x.event_type)); tr.appendChild(td(x.decision)); tr.appendChild(td(x.execution_status||x.ticket_status)); tr.appendChild(td(short(x.truth_hash))); b.appendChild(tr)})}
-    function renderExecs(items){const b=$('executionRows'); if(!items.length)return fill(b,3,'No executions'); b.innerHTML=''; items.forEach(x=>{const tr=document.createElement('tr'); tr.appendChild(td(short(x.ticket_id))); tr.appendChild(td(x.authoritative_status||x.ticket_status_cache||x.status)); tr.appendChild(td(x.provider_name||'—')); b.appendChild(tr)})}
-    function renderAudit(items){const b=$('auditRows'); if(!items.length)return fill(b,3,'No audit records'); b.innerHTML=''; items.forEach(x=>{const tr=document.createElement('tr'); tr.appendChild(td(x.action)); tr.appendChild(td(x.status)); tr.appendChild(td(short(x.created_at))); b.appendChild(tr)})}
-    async function runApproved(){badge($('flowState'),'RUNNING'); const ctx={budgetRemaining:Number($('budget').value||0),budgetAllocated:20000,supplierVerified:$('supplier').value==='true',contractValid:$('contract').value==='true',workersAvailable:4,hoursSinceRest:10,weatherRisk:12,legalBlock:false}; const payload={sessionId:'dash_'+Date.now(),organizationId:$('orgId').value.trim(),projectId:'prj_alpha',eventType:'payment',amount:Number($('amount').value||0),currency:'EUR',targetProvider:'webhook',contextOverrides:ctx,executionPayload:{targetUrl:'https://example.com/executia-webhook',reference:'DASH-'+Date.now()}}; try{const data=await call('/execute-and-dispatch',{method:'POST',body:JSON.stringify(payload)}); $('output').textContent=JSON.stringify(data,null,2); badge($('flowState'),data.decision||'EXECUTED'); await refresh()}catch(e){badge($('flowState'),'FAILED'); $('output').textContent=String(e.message||e); $('lastMeta').textContent='execution failed'}}
-    load(); document.querySelectorAll('[data-case]').forEach(b=>b.onclick=()=>loadCase(b.dataset.case)); ['amount','budget','supplier','contract'].forEach(id=>$(id).addEventListener('input',preview)); $('saveBtn').onclick=save; $('healthBtn').onclick=refresh; $('refreshBtn').onclick=refresh; $('runDemoBtn').onclick=runApproved; preview(); refresh();
-  </script>
+function eventOf(x) {
+  return x.event_type || x.payload?.ledger?.event_type || "—";
+}
+
+async function loadDashboard() {
+  const statusEl = document.getElementById("status");
+  const rowsEl = document.getElementById("rows");
+
+  try {
+    const health = await safeJson(API_BASE + "/health");
+    statusEl.textContent = health.status || "healthy";
+    statusEl.className = "value ok";
+  } catch (e) {
+    statusEl.textContent = "offline";
+    statusEl.className = "value bad";
+  }
+
+  try {
+    const data = await safeJson(API_BASE + "/executions");
+    const executions = Array.isArray(data) ? data : (data.executions || data.data || []);
+
+    document.getElementById("total").textContent = executions.length;
+
+    const approved = executions.filter(x => decisionOf(x) === "APPROVE").length;
+    const blocked = executions.filter(x => ["BLOCK","ESCALATE"].includes(decisionOf(x))).length;
+
+    document.getElementById("approved").textContent = approved;
+    document.getElementById("blocked").textContent = blocked;
+
+    rowsEl.innerHTML = executions.slice(0, 20).map(x => `
+      <tr>
+        <td>${x.created_at ? new Date(x.created_at).toLocaleString() : "—"}</td>
+        <td><strong>${decisionOf(x)}</strong></td>
+        <td>${statusOf(x)}</td>
+        <td>${eventOf(x)}</td>
+        <td><code>${hashOf(x)}</code></td>
+      </tr>
+    `).join("") || `<tr><td colspan="5">No executions yet.</td></tr>`;
+  } catch (e) {
+    rowsEl.innerHTML = `<tr><td colspan="5">Executions unavailable: ${e.message}</td></tr>`;
+  }
+}
+
+loadDashboard();
+</script>
 </body>
 </html>
