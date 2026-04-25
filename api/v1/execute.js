@@ -3,7 +3,10 @@ import { db } from "../services/db.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
+    return res.status(405).json({
+      ok: false,
+      error: "METHOD_NOT_ALLOWED"
+    });
   }
 
   try {
@@ -13,16 +16,19 @@ export default async function handler(req, res) {
       .from("executions")
       .insert({
         ticket_id: `exec_${Date.now()}`,
-        organization_id: result.ledger.organization_id,
-        session_id: result.ledger.session_id,
-        project_id: result.ledger.project_id,
-        event_type: result.ledger.event_type,
-        provider_name: result.dispatch.provider || "safe-mode",
-        provider_transaction_id: result.dispatch.provider_transaction_id || null,
-        authoritative_status: result.execution_status,
-        ticket_status_cache: result.execution_status,
-        ledger_decision: result.decision,
-        truth_hash: result.truth_hash,
+        organization_id: result.ledger?.organization_id || null,
+        session_id: result.ledger?.session_id || null,
+        project_id: result.ledger?.project_id || null,
+        event_type: result.ledger?.event_type || null,
+
+        provider_name: result.dispatch?.provider || "safe-mode",
+        provider_transaction_id: result.dispatch?.provider_transaction_id || null,
+
+        authoritative_status: result.execution_status || null,
+        ticket_status_cache: result.execution_status || null,
+        ledger_decision: result.decision || null,
+
+        truth_hash: result.truth_hash || null,
         payload: result
       })
       .select()
