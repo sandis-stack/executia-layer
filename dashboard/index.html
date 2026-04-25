@@ -24,6 +24,7 @@
     .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
   </style>
 </head>
+
 <body>
 <header>
   <h1>EXECUTIA Dashboard</h1>
@@ -37,14 +38,30 @@
   </div>
 
   <div class="grid">
-    <div class="card"><div class="label">System</div><div id="status" class="value">—</div></div>
-    <div class="card"><div class="label">Total executions</div><div id="total" class="value">—</div></div>
-    <div class="card"><div class="label">Approved</div><div id="approved" class="value">—</div></div>
-    <div class="card"><div class="label">Blocked / Escalated</div><div id="blocked" class="value">—</div></div>
+    <div class="card">
+      <div class="label">System</div>
+      <div id="status" class="value">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Total executions</div>
+      <div id="total" class="value">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Approved</div>
+      <div id="approved" class="value">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Blocked / Escalated</div>
+      <div id="blocked" class="value">—</div>
+    </div>
   </div>
 
   <div class="card">
     <div class="label">Latest execution</div>
+
     <table>
       <thead>
         <tr>
@@ -55,36 +72,52 @@
           <th>Hash</th>
         </tr>
       </thead>
+
       <tbody id="rows">
-        <tr><td colspan="5">Loading...</td></tr>
+        <tr>
+          <td colspan="5">Loading...</td>
+        </tr>
       </tbody>
     </table>
   </div>
 </div>
 
 <script>
-const API_BASE = "/api/v1";
+const API_BASE = "https://execution.executia.io/api/v1";
 
 async function safeJson(url) {
-  const r = await fetch(url, { headers: { "Accept": "application/json" } });
-  if (!r.ok) throw new Error(url + " failed: " + r.status);
-  return r.json();
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(url + " failed: " + response.status);
+  }
+
+  return response.json();
 }
 
-function decisionOf(x) {
-  return x.ledger_decision || x.decision || x.payload?.decision || "—";
+function decisionOf(item) {
+  return item.ledger_decision || item.decision || item.payload?.decision || "—";
 }
 
-function statusOf(x) {
-  return x.authoritative_status || x.execution_status || x.status || "—";
+function statusOf(item) {
+  return item.authoritative_status || item.execution_status || item.status || "—";
 }
 
-function hashOf(x) {
-  return x.truth_hash || x.payload?.truth_hash || "—";
+function hashOf(item) {
+  return item.truth_hash || item.payload?.truth_hash || "—";
 }
 
-function eventOf(x) {
-  return x.event_type || x.payload?.ledger?.event_type || "—";
+function eventOf(item) {
+  return item.event_type || item.payload?.ledger?.event_type || "—";
+}
+
+function createdOf(item) {
+  return item.created_at || item.execution?.created_at || null;
 }
 
 async function loadDashboard() {
@@ -93,36 +126,58 @@ async function loadDashboard() {
 
   try {
     const health = await safeJson(API_BASE + "/health");
+
     statusEl.textContent = health.status || "healthy";
     statusEl.className = "value ok";
-  } catch (e) {
+  } catch (err) {
     statusEl.textContent = "offline";
     statusEl.className = "value bad";
   }
 
   try {
-    const data = await safeJson(API_BASE + "/executions");
-    const executions = Array.isArray(data) ? data : (data.executions || data.data || []);
+    const result = await safeJson(API_BASE + "/executions");
+
+    const executions = Array.isArray(result)
+      ? result
+      : result.executions || result.data || [];
 
     document.getElementById("total").textContent = executions.length;
 
-    const approved = executions.filter(x => decisionOf(x) === "APPROVE").length;
-    const blocked = executions.filter(x => ["BLOCK","ESCALATE"].includes(decisionOf(x))).length;
+    const approved = executions.filter((item) => decisionOf(item) === "APPROVE").length;
+
+    const blocked = executions.filter((item) =>
+      ["BLOCK", "ESCALATE"].includes(decisionOf(item))
+    ).length;
 
     document.getElementById("approved").textContent = approved;
     document.getElementById("blocked").textContent = blocked;
 
-    rowsEl.innerHTML = executions.slice(0, 20).map(x => `
+    if (!executions.length) {
+      rowsEl.innerHTML = `<tr><td colspan="5">No executions yet.</td></tr>`;
+      return;
+    }
+
+    rowsEl.innerHTML = executions.slice(0, 20).map((item) => {
+      const created = createdOf(item);
+      const when = created ? new Date(created).toLocaleString() : "—";
+
+      return `
+        <tr>
+          <td>${when}</td>
+          <td><strong>${decisionOf(item)}</strong></td>
+          <td>${statusOf(item)}</td>
+          <td>${eventOf(item)}</td>
+          <td><code>${hashOf(item)}</code></td>
+        </tr>
+      `;
+    }).join("");
+
+  } catch (err) {
+    rowsEl.innerHTML = `
       <tr>
-        <td>${x.created_at ? new Date(x.created_at).toLocaleString() : "—"}</td>
-        <td><strong>${decisionOf(x)}</strong></td>
-        <td>${statusOf(x)}</td>
-        <td>${eventOf(x)}</td>
-        <td><code>${hashOf(x)}</code></td>
+        <td colspan="5">Executions unavailable: ${err.message}</td>
       </tr>
-    `).join("") || `<tr><td colspan="5">No executions yet.</td></tr>`;
-  } catch (e) {
-    rowsEl.innerHTML = `<tr><td colspan="5">Executions unavailable: ${e.message}</td></tr>`;
+    `;
   }
 }
 
