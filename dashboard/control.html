@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>EXECUTIA Control Interface</title>
+<style>
+body{margin:0;padding:40px;font-family:Arial,sans-serif;background:#f7f9fc;color:#0A2540}
+h1{margin:0 0 6px;font-size:32px}.sub{color:#667085;margin-bottom:28px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+button{background:#0A2540;color:#fff;border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;margin-left:8px}
+button.secondary{background:#fff;color:#0A2540;border:1px solid #d9e4f2}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.card{background:#fff;border:1px solid #d9e4f2;border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(10,37,64,.04)}
+.label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#667085;margin-bottom:8px}
+.value{font-size:24px;font-weight:800}.ok{color:#15803d}.review{color:#b45309}.bad{color:#c62828}
+.panel{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.row{display:grid;grid-template-columns:170px 160px 160px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7;font-size:14px}
+.header{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#667085;font-weight:700}
+code{font-size:12px;word-break:break-all}
+pre{margin:0;background:#f6f9fc;border:1px solid #d9e4f2;border-radius:12px;padding:14px;white-space:pre-wrap;max-height:420px;overflow:auto}
+a{color:#0A2540;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div>
+    <h1>EXECUTIA Control Interface</h1>
+    <div class="sub">System state · Live execution stream · Decision control · Truth registry</div>
+  </div>
+  <div>
+    <a href="/dashboard">Dashboard</a>
+    <button class="secondary" onclick="loadControl()">Refresh</button>
+    <button id="runBtn" onclick="runControl()">Run control</button>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
+  <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
+  <div class="card"><div class="label">Approved</div><div id="approved" class="value ok">—</div></div>
+  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value review">—</div></div>
+</div>
+
+<div class="panel">
+  <div class="card">
+    <div class="label">Live execution stream</div>
+    <div class="row header">
+      <div>Time</div><div>Decision</div><div>Source</div><div>Registry proof</div>
+    </div>
+    <div id="stream"></div>
+  </div>
+
+  <div class="card">
+    <div class="label">Decision breakdown</div>
+    <pre id="breakdown">No execution selected.</pre>
+  </div>
+</div>
+
+<script>
+const API="/api/v1";
+let loading=false;
+
+function decision(e){return e.decision||e.ledger_decision||e.result_status||e.status||"UNKNOWN";}
+function source(e){return e.source||e.payload?.context?.source||e.payload?.source||"registry";}
+function hash(e){return e.truth_hash||e.payload?.truth_hash||e.execution_id||e.request_id||e.ticket_id||"NO_HASH";}
+function cls(d){if(d==="APPROVED"||d==="APPROVE")return"ok";if(d==="BLOCKED"||d==="BLOCK")return"bad";return"review";}
+
+async function json(url,opt={}){
+  const r=await fetch(url,{headers:{"Content-Type":"application/json","Accept":"application/json"},...opt});
+  const t=await r.text();
+  let d={};
+  try{d=t?JSON.parse(t):{};}catch{throw new Error("NON_JSON_RESPONSE");}
+  if(!r.ok)throw new Error(d.error||"REQUEST_FAILED");
+  return d;
+}
+
+async function loadControl(){
+  if(loading)return; loading=true;
+  try{
+    const h=await json(API+"/health").catch(()=>({status:"offline"}));
+    const system=document.getElementById("system");
+    system.textContent=h.status==="healthy"?"ACTIVE":(h.status||"OFFLINE").toUpperCase();
+    system.className="value "+(h.status==="healthy"?"ok":"bad");
+
+    const d=await json(API+"/executions");
+    const items=d.executions||[];
+
+    document.getElementById("total").textContent=items.length;
+
+    let a=0,b=0;
+    items.forEach(e=>{
+      const de=decision(e);
+      if(de==="APPROVED"||de==="APPROVE")a++; else b++;
+    });
+    document.getElementById("approved").textContent=a;
+    document.getElementById("blocked").textContent=b;
+
+    const stream=document.getElementById("stream");
+    stream.innerHTML=items.slice(0,25).map((e,i)=>{
+      const de=decision(e);
+      return `<div class="row" onclick="showBreakdown(${i})" style="cursor:pointer">
+        <div>${e.created_at||"—"}</div>
+        <div class="${cls(de)}"><strong>${de}</strong></div>
+        <div>${source(e)}</div>
+        <div><code>${hash(e).substring(0,28)}</code></div>
+      </div>`;
+    }).join("");
+
+    window.__executiaItems=items;
+    if(items[0]) showBreakdown(0);
+
+  }catch(err){
+    document.getElementById("stream").innerHTML=`<div class="row"><div>SYSTEM ERROR</div><div>${err.message}</div></div>`;
+  }finally{loading=false;}
+}
+
+function showBreakdown(i){
+  const e=(window.__executiaItems||[])[i];
+  if(!e)return;
+  document.getElementById("breakdown").textContent=JSON.stringify({
+    decision:decision(e),
+    status:e.status||e.result_status||null,
+    reason:e.reason||e.payload?.reason||"Execution recorded",
+    authorized:e.authorized??null,
+    hold_pending:e.hold_pending??null,
+    source:source(e),
+    execution_id:e.execution_id||null,
+    truth_hash:e.truth_hash||e.payload?.truth_hash||null,
+    payload:e.payload||null
+  },null,2);
+}
+
+async function runControl(){
+  const btn=document.getElementById("runBtn");
+  btn.disabled=true; btn.textContent="Running...";
+  try{
+    const scenarios=[
+      {amount:100,legalBlock:false},
+      {amount:15000,legalBlock:false},
+      {amount:0,legalBlock:false},
+      {amount:500,legalBlock:true}
+    ];
+    const s=scenarios[Math.floor(Math.random()*scenarios.length)];
+    const d=await json(API+"/execute",{
+      method:"POST",
+      body:JSON.stringify({
+        organization_id:"org_norsteel",
+        session_id:"control_"+Date.now(),
+        project_id:"enterprise_control",
+        event_type:"payment",
+        amount:s.amount,
+        currency:"EUR",
+        context:{source:"control_interface",legalBlock:s.legalBlock}
+      })
+    });
+    if(d.ok===false)throw new Error(d.error||"EXECUTION_FAILED");
+    await loadControl();
+  }catch(err){alert(err.message);}
+  finally{btn.disabled=false;btn.textContent="Run control";}
+}
+
+loadControl();
+setInterval(loadControl,3000);
+</script>
+</body>
+</html>
