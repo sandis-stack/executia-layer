@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>EXECUTIA Simulator</title>
+
+<style>
+body{margin:0;padding:40px;font-family:Arial,sans-serif;background:#f7f9fc;color:#0A2540}
+h1{margin:0 0 6px}
+.sub{color:#667085;margin-bottom:30px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.card{background:#fff;border:1px solid #d9e4f2;border-radius:16px;padding:22px}
+.label{font-size:12px;letter-spacing:.14em;color:#667085;text-transform:uppercase;margin-bottom:12px}
+input,select{width:100%;padding:12px;border:1px solid #d9e4f2;border-radius:10px;margin:8px 0 16px;font-size:15px}
+button{background:#0A2540;color:#fff;border:0;border-radius:10px;padding:13px 18px;font-weight:700;cursor:pointer}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:30px 0}
+.step{background:#fff;border:1px solid #d9e4f2;border-radius:12px;padding:16px;text-align:center;font-weight:700}
+.active{border-color:#0A2540;box-shadow:0 0 0 2px rgba(10,37,64,.12)}
+.good{color:#16803a}
+.review{color:#d97706}
+.bad{color:#c62828}
+pre{white-space:pre-wrap;background:#f3f6fb;padding:16px;border-radius:12px;font-size:13px}
+a{color:#0A2540}
+</style>
+</head>
+
+<body>
+
+<h1>EXECUTIA Simulator</h1>
+<div class="sub">INPUT → VALIDATION → DECISION → WHY → REGISTRY</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="label">Input</div>
+
+    <label>Amount (€)</label>
+    <input id="amount" type="number" value="100" />
+
+    <label>Entity</label>
+    <input id="entity" value="Supplier A" />
+
+    <label>Risk level</label>
+    <select id="risk">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+      <option value="legal_block">Legal block</option>
+    </select>
+
+    <button onclick="runExecution()">Run execution control</button>
+  </div>
+
+  <div class="card">
+    <div class="label">Decision</div>
+    <h2 id="decision">Waiting</h2>
+    <p id="why">Submit parameters to the execution layer.</p>
+  </div>
+</div>
+
+<div class="flow">
+  <div id="s1" class="step">INPUT</div>
+  <div id="s2" class="step">VALIDATION</div>
+  <div id="s3" class="step">DECISION</div>
+  <div id="s4" class="step">WHY</div>
+  <div id="s5" class="step">REGISTRY</div>
+</div>
+
+<div class="card">
+  <div class="label">Registry response</div>
+  <pre id="registry">No execution yet.</pre>
+</div>
+
+<p style="margin-top:24px">
+  <a href="/dashboard">← Back to dashboard</a>
+</p>
+
+<script>
+const API = "/api/v1";
+
+function resetFlow(){
+  ["s1","s2","s3","s4","s5"].forEach(id=>{
+    document.getElementById(id).className="step";
+  });
+}
+
+function activate(id){
+  document.getElementById(id).classList.add("active");
+}
+
+function localDecision(amount,risk){
+  if(amount <= 0) return ["BLOCKED","Amount must be greater than zero.","bad"];
+  if(risk === "legal_block") return ["BLOCKED","Legal block detected before execution.","bad"];
+  if(risk === "high" || amount > 10000) return ["REQUIRES_REVIEW","Execution requires human review.","review"];
+  return ["APPROVED","Execution conditions are met.","good"];
+}
+
+async function runExecution(){
+  resetFlow();
+  activate("s1");
+
+  const amount = Number(document.getElementById("amount").value || 0);
+  const entity = document.getElementById("entity").value;
+  const risk = document.getElementById("risk").value;
+
+  setTimeout(()=>activate("s2"),200);
+  setTimeout(()=>activate("s3"),400);
+  setTimeout(()=>activate("s4"),600);
+
+  const [decision, reason, cls] = localDecision(amount,risk);
+
+  document.getElementById("decision").innerText = decision;
+  document.getElementById("decision").className = cls;
+  document.getElementById("why").innerText = reason;
+
+  const payload = {
+    organization_id:"EXECUTIA",
+    session_id:"SIM_" + Date.now(),
+    project_id:"SIMULATOR",
+    event_type:"execution",
+    amount,
+    currency:"EUR",
+    context:{
+      source:"simulator",
+      entity,
+      risk,
+      local_decision:decision,
+      local_reason:reason,
+      legalBlock:risk === "legal_block"
+    }
+  };
+
+  try{
+    const res = await fetch(API + "/execute",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    activate("s5");
+
+    document.getElementById("registry").innerText =
+      JSON.stringify({
+        submitted:true,
+        local_decision:decision,
+        reason,
+        server_response:data
+      },null,2);
+
+  }catch(err){
+    activate("s5");
+    document.getElementById("registry").innerText =
+      "Registry unavailable: " + err.message + "\n\nLocal decision: " + decision;
+  }
+}
+</script>
+
+</body>
+</html>
