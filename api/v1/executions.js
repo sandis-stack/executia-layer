@@ -1,34 +1,19 @@
-import { withEngine } from "../middleware/with-engine.js";
-import { createSupabaseAdmin } from "../services/supabase-admin.js";
+import { db } from "../services/db.js";
 
-export default withEngine(async (req, res) => {
-  const supabase = createSupabaseAdmin();
-  const orgId = req.executia.organizationId;
+export default async function handler(req, res) {
+  try {
+    const { data, error } = await db
+      .from("executions")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(20);
 
-  const limit = Math.min(Math.max(Number(req.query.limit || 25), 1), 100);
-  const offset = Math.max(Number(req.query.offset || 0), 0);
+    if (error) throw error;
 
-  let query = supabase
-    .from("executions")
-    .select("*")
-    .eq("organization_id", orgId)
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  const { data, error } = await query;
-
-  if (error) {
+    return res.status(200).json(data || []);
+  } catch (err) {
     return res.status(500).json({
-      ok: false,
-      error_code: "EXECUTION_FETCH_FAILED",
-      error_message: error.message,
-      request_id: req.executia.requestId
+      error: err.message
     });
   }
-
-  return res.status(200).json({
-    ok: true,
-    items: data || []
-  });
-
-}, { methods: ["GET"], requireAuth: true, rateLimit: true });
+}
