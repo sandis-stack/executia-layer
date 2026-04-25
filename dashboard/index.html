@@ -1,92 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>EXECUTIA Dashboard</title>
+<meta charset="UTF-8" />
+<title>EXECUTIA Dashboard</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f9fc;
-      margin: 0;
-      padding: 40px;
-      color: #0A2540;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f9fc;
+  margin: 0;
+  padding: 40px;
+  color: #0A2540;
+}
 
-    h1 { margin-bottom: 5px; }
+h1 { margin-bottom: 5px; }
+.sub { color: #666; margin-bottom: 30px; }
 
-    .sub {
-      color: #666;
-      margin-bottom: 30px;
-    }
+.cards {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
 
-    .cards {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
+.card {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e0e6ed;
+}
 
-    .card {
-      flex: 1;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid #e0e6ed;
-    }
+.label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
 
-    .label {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 5px;
-      text-transform: uppercase;
-    }
+.value {
+  font-size: 22px;
+  font-weight: bold;
+}
 
-    .value {
-      font-size: 22px;
-      font-weight: bold;
-    }
+.online { color: green; }
+.offline { color: #c62828; }
+.review { color: #b45309; }
 
-    .offline { color: #c62828; }
-    .online { color: green; }
+button {
+  background: #0A2540;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+}
 
-    button {
-      background: #0A2540;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 
-    button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-    }
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
 
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-    }
+th {
+  background: #f0f3f8;
+}
 
-    th {
-      background: #f0f3f8;
-    }
+strong.approved { color: green; }
+strong.blocked { color: #c62828; }
+strong.review { color: #b45309; }
 
-    code {
-      font-size: 12px;
-    }
-  </style>
+code {
+  font-size: 12px;
+}
+</style>
 </head>
 
 <body>
@@ -97,7 +98,7 @@
 <div class="cards">
   <div class="card">
     <div class="label">SYSTEM</div>
-    <div id="systemStatus" class="value offline">offline</div>
+    <div id="systemStatus" class="value offline">checking</div>
   </div>
 
   <div class="card">
@@ -116,8 +117,8 @@
   </div>
 </div>
 
-<button onclick="load()">Refresh</button>
-<button id="runBtn" onclick="testExecution()">Run test execution</button>
+<button onclick="loadData()">Refresh</button>
+<button id="runBtn" onclick="runTestExecution()">Run test execution</button>
 
 <table>
   <thead>
@@ -133,7 +134,7 @@
 </table>
 
 <script>
-const API_BASE = "/api/v1";
+const API_BASE = "https://execution.executia.io";
 let loading = false;
 
 function getDecision(e) {
@@ -145,30 +146,37 @@ function getStatus(e) {
 }
 
 function getEvent(e) {
-  return e.event_type || e.payment_type || e.source || e.payload?.event_type || "execution";
+  return e.event_type || e.payment_type || e.source || e.payload?.event_type || e.payload?.context?.source || "execution";
 }
 
 function getHash(e) {
   return e.truth_hash || e.payload?.truth_hash || e.execution_id || e.request_id || e.ticket_id || "";
 }
 
-async function load() {
+function decisionClass(decision) {
+  if (decision === "APPROVED" || decision === "APPROVE") return "approved";
+  if (decision === "BLOCKED" || decision === "BLOCK") return "blocked";
+  return "review";
+}
+
+async function loadData() {
   if (loading) return;
   loading = true;
 
   try {
-    const healthRes = await fetch(API_BASE + "/health");
+    const healthRes = await fetch(`${API_BASE}/api/v1/health`);
     const health = await healthRes.json();
 
-    if (health.status === "healthy") {
-      document.getElementById("systemStatus").innerText = "online";
-      document.getElementById("systemStatus").className = "value online";
+    const system = document.getElementById("systemStatus");
+    if (health.ok && health.status === "healthy") {
+      system.innerText = "online";
+      system.className = "value online";
     } else {
-      document.getElementById("systemStatus").innerText = health.status || "degraded";
-      document.getElementById("systemStatus").className = "value offline";
+      system.innerText = health.status || "degraded";
+      system.className = "value review";
     }
 
-    const res = await fetch(API_BASE + "/executions");
+    const res = await fetch(`${API_BASE}/api/v1/executions`);
     const data = await res.json();
 
     if (!data.ok) {
@@ -183,13 +191,9 @@ async function load() {
     let blocked = 0;
 
     executions.forEach(e => {
-      const decision = getDecision(e);
-
-      if (decision === "APPROVE" || decision === "APPROVED") {
-        approved++;
-      } else {
-        blocked++;
-      }
+      const d = getDecision(e);
+      if (d === "APPROVED" || d === "APPROVE") approved++;
+      else blocked++;
     });
 
     document.getElementById("approved").innerText = approved;
@@ -203,16 +207,17 @@ async function load() {
       return;
     }
 
-    executions.forEach(e => {
-      const hash = getHash(e);
+    executions.slice(0, 50).forEach(e => {
+      const d = getDecision(e);
+      const h = getHash(e);
 
       table.innerHTML += `
         <tr>
           <td>${e.created_at || "-"}</td>
-          <td><strong>${getDecision(e)}</strong></td>
+          <td><strong class="${decisionClass(d)}">${d}</strong></td>
           <td>${getStatus(e)}</td>
           <td>${getEvent(e)}</td>
-          <td><code>${hash ? hash.substring(0, 12) : "-"}</code></td>
+          <td><code>${h ? h.substring(0, 12) : "-"}</code></td>
         </tr>
       `;
     });
@@ -220,15 +225,14 @@ async function load() {
   } catch (err) {
     document.getElementById("systemStatus").innerText = "offline";
     document.getElementById("systemStatus").className = "value offline";
-
     document.getElementById("table").innerHTML =
-      `<tr><td colspan="5">Error: ${err.message || JSON.stringify(err)}</td></tr>`;
+      `<tr><td colspan="5">Error: ${err.message}</td></tr>`;
   } finally {
     loading = false;
   }
 }
 
-async function testExecution() {
+async function runTestExecution() {
   const btn = document.getElementById("runBtn");
 
   try {
@@ -244,7 +248,7 @@ async function testExecution() {
 
     const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
 
-    const res = await fetch(API_BASE + "/execute", {
+    const res = await fetch(`${API_BASE}/api/v1/execute`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -268,21 +272,18 @@ async function testExecution() {
       return;
     }
 
-    await load();
+    await loadData();
 
   } catch (err) {
-    alert(err.message || JSON.stringify(err));
+    alert(err.message || "Execution failed");
   } finally {
     btn.disabled = false;
     btn.innerText = "Run test execution";
   }
 }
 
-// Initial load
-load();
-
-// Auto refresh every 3 seconds
-setInterval(load, 3000);
+loadData();
+setInterval(loadData, 3000);
 </script>
 
 </body>
