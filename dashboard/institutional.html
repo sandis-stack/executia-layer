@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>EXECUTIA Institutional View</title>
+
+<style>
+body {
+  margin: 0;
+  padding: 40px;
+  font-family: Arial, sans-serif;
+  background: #ffffff;
+  color: #0A1F44;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 30px;
+}
+
+.sub {
+  color: #667085;
+  margin-bottom: 34px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+.card {
+  border: 1px solid #d9e4f2;
+  padding: 20px;
+  background: #fff;
+}
+
+.label {
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #667085;
+  margin-bottom: 10px;
+}
+
+.value {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.status-active { color: #15803d; }
+.status-blocked { color: #dc2626; }
+.status-review { color: #b45309; }
+
+button {
+  background: #0A1F44;
+  color: white;
+  border: none;
+  padding: 11px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.section {
+  border-top: 1px solid #d9e4f2;
+  padding-top: 22px;
+  margin-top: 26px;
+}
+
+.stream {
+  display: grid;
+  gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 170px 160px 160px 1fr;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 14px;
+}
+
+.header {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #667085;
+  font-weight: 700;
+}
+
+code {
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+pre {
+  background: #f6f9fc;
+  border: 1px solid #d9e4f2;
+  padding: 16px;
+  white-space: pre-wrap;
+  overflow: auto;
+}
+
+a {
+  color: #0A1F44;
+}
+</style>
+</head>
+
+<body>
+
+<h1>EXECUTIA Institutional View</h1>
+<div class="sub">Execution Control · Risk Score · Decision Breakdown · Registry</div>
+
+<div>
+  <button onclick="runInstitutionalExecution()">RUN EXECUTION CONTROL</button>
+  <button onclick="loadInstitutional()">VIEW EXECUTION STATUS</button>
+  <a href="/dashboard" style="margin-left:12px;">Dashboard</a>
+</div>
+
+<div class="grid" style="margin-top:26px;">
+  <div class="card">
+    <div class="label">System status</div>
+    <div id="systemStatus" class="value">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Total executions</div>
+    <div id="totalExecutions" class="value">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Risk score</div>
+    <div id="riskScore" class="value">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Last decision</div>
+    <div id="lastDecision" class="value">—</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Execution stream</div>
+
+  <div class="row header">
+    <div>Time</div>
+    <div>Decision</div>
+    <div>Status</div>
+    <div>Truth / Registry ID</div>
+  </div>
+
+  <div id="stream" class="stream"></div>
+</div>
+
+<div class="section">
+  <div class="label">Decision breakdown</div>
+
+  <div class="breakdown">
+    <pre id="decisionBreakdown">No execution loaded.</pre>
+    <pre id="registryProof">No registry proof loaded.</pre>
+  </div>
+</div>
+
+<script>
+const API = "/api/v1";
+
+function normalizeDecision(e) {
+  return e.decision || e.ledger_decision || e.result_status || e.status || "UNKNOWN";
+}
+
+function normalizeStatus(e) {
+  return e.status || e.authoritative_status || e.ticket_status_cache || e.result_status || "UNKNOWN";
+}
+
+function normalizeHash(e) {
+  return e.truth_hash || e.execution_id || e.request_id || e.ticket_id || "NO_HASH";
+}
+
+function classify(decision) {
+  if (decision === "APPROVED" || decision === "APPROVE") return "status-active";
+  if (decision === "BLOCKED" || decision === "BLOCK") return "status-blocked";
+  return "status-review";
+}
+
+function computeRisk(executions) {
+  if (!executions.length) return 0;
+
+  let risk = 0;
+
+  executions.forEach(e => {
+    const d = normalizeDecision(e);
+    if (d === "BLOCKED" || d === "BLOCK") risk += 40;
+    else if (d === "REQUIRES_REVIEW" || d === "ESCALATE") risk += 20;
+    else risk += 5;
+  });
+
+  return Math.min(100, Math.round(risk / executions.length));
+}
+
+async function getJson(url, options = {}) {
+  const res = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    ...options
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.error || data.message || "REQUEST_FAILED");
+  }
+
+  return data;
+}
+
+async function loadInstitutional() {
+  const systemEl = document.getElementById("systemStatus");
+
+  try {
+    const health = await getJson(API + "/health");
+
+    if (health.status === "healthy") {
+      systemEl.textContent = "ACTIVE";
+      systemEl.className = "value status-active";
+    } else {
+      systemEl.textContent = "DEGRADED";
+      systemEl.className = "value status-review";
+    }
+  } catch {
+    systemEl.textContent = "OFFLINE";
+    systemEl.className = "value status-blocked";
+  }
+
+  try {
+    const result = await getJson(API + "/executions");
+    const executions = result.executions || result.data || [];
+
+    document.getElementById("totalExecutions").textContent = executions.length;
+    document.getElementById("riskScore").textContent = computeRisk(executions) + "%";
+
+    const last = executions[0];
+
+    if (!last) {
+      document.getElementById("lastDecision").textContent = "NO DATA";
+      document.getElementById("stream").innerHTML = "<div class='row'><div>No executions recorded.</div></div>";
+      return;
+    }
+
+    const lastDecision = normalizeDecision(last);
+    const lastDecisionEl = document.getElementById("lastDecision");
+    lastDecisionEl.textContent = lastDecision;
+    lastDecisionEl.className = "value " + classify(lastDecision);
+
+    document.getElementById("stream").innerHTML = executions.slice(0, 20).map(e => {
+      const d = normalizeDecision(e);
+      return `
+        <div class="row">
+          <div>${e.created_at || "—"}</div>
+          <div class="${classify(d)}"><strong>${d}</strong></div>
+          <div>${normalizeStatus(e)}</div>
+          <div><code>${normalizeHash(e)}</code></div>
+        </div>
+      `;
+    }).join("");
+
+    document.getElementById("decisionBreakdown").textContent = JSON.stringify({
+      decision: normalizeDecision(last),
+      status: normalizeStatus(last),
+      source: last.source || last.payload?.context?.source || "registry",
+      reason: last.reason || last.payload?.reason || "Execution result recorded",
+      authorized: last.authorized ?? null,
+      hold_pending: last.hold_pending ?? null
+    }, null, 2);
+
+    document.getElementById("registryProof").textContent = JSON.stringify({
+      execution_id: last.execution_id || null,
+      truth_hash: last.truth_hash || last.payload?.truth_hash || null,
+      created_at: last.created_at || null,
+      payload: last.payload || null
+    }, null, 2);
+
+  } catch (err) {
+    document.getElementById("stream").innerHTML = `
+      <div class="row">
+        <div>SYSTEM ERROR</div>
+        <div>${err.message}</div>
+      </div>
+    `;
+  }
+}
+
+async function runInstitutionalExecution() {
+  const amount = Math.floor(Math.random() * 15000) + 1;
+
+  const payload = {
+    organization_id: "EXECUTIA",
+    session_id: "INST_" + Date.now(),
+    project_id: "INSTITUTIONAL_CONTROL",
+    event_type: "payment",
+    amount,
+    currency: "EUR",
+    context: {
+      source: "institutional",
+      legalBlock: false,
+      controlLayer: true
+    }
+  };
+
+  try {
+    await getJson(API + "/execute", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+
+    await loadInstitutional();
+  } catch (err) {
+    alert("EXECUTION FAILED: " + err.message);
+  }
+}
+
+loadInstitutional();
+</script>
+
+</body>
+</html>
