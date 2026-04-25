@@ -4,22 +4,32 @@ import { createClient } from "@supabase/supabase-js";
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
+  // ✅ only POST
   if (req.method !== "POST") {
-    return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
+    return res.status(405).json({
+      ok: false,
+      error: "METHOD_NOT_ALLOWED"
+    });
   }
 
   try {
+    // ✅ ENV
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return res.status(200).json({ ok: false, error: "SUPABASE_ENV_MISSING" });
+      return res.status(200).json({
+        ok: false,
+        error: "SUPABASE_ENV_MISSING"
+      });
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
+
     const body = req.body || {};
     const amount = Number(body.amount || 0);
 
+    // ✅ EXECUTION LOGIC
     let status = "APPROVED";
     let reason = "Execution approved";
 
@@ -36,14 +46,25 @@ export default async function handler(req, res) {
       reason = "Legal block detected";
     }
 
+    // ✅ ID
     const execution_id =
       "EX-" + Math.random().toString(36).substring(2, 8).toUpperCase();
 
+    // ✅ TRUTH HASH
     const truth_hash = crypto
       .createHash("sha256")
-      .update(JSON.stringify({ execution_id, amount, status, reason, body }))
+      .update(
+        JSON.stringify({
+          execution_id,
+          amount,
+          status,
+          reason,
+          timestamp: Date.now()
+        })
+      )
       .digest("hex");
 
+    // ✅ INSERT (NO currency column!)
     const insertPayload = {
       execution_id,
       status,
@@ -55,7 +76,7 @@ export default async function handler(req, res) {
       source: body.context?.source || "dashboard",
       payload: {
         ...body,
-        currency: body.currency || "EUR",
+        currency: body.currency || "EUR", // tikai payload, ne DB kolonna
         truth_hash
       }
     };
@@ -67,9 +88,13 @@ export default async function handler(req, res) {
       .single();
 
     if (error) {
-      return res.status(200).json({ ok: false, error: error.message });
+      return res.status(200).json({
+        ok: false,
+        error: error.message
+      });
     }
 
+    // ✅ RESPONSE
     return res.status(200).json({
       ok: true,
       decision: status,
@@ -78,6 +103,7 @@ export default async function handler(req, res) {
       truth_hash,
       execution: data
     });
+
   } catch (err) {
     return res.status(200).json({
       ok: false,
