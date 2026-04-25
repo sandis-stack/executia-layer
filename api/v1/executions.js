@@ -27,9 +27,20 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from("executions")
-      .select("*")
+      .select(`
+        id,
+        execution_id,
+        status,
+        result_status,
+        created_at,
+        payload,
+        authorized,
+        hold_pending,
+        reason,
+        source
+      `)
       .order("created_at", { ascending: false })
-      .limit(20);
+      .limit(50);
 
     if (error) {
       return res.status(200).json({
