@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import { runExecution } from "../core/engine.js";
 import { db } from "../services/db.js";
 
 export default async function handler(req, res) {
@@ -7,61 +7,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    const {
-      session_id = "demo_session",
-      organization_id = "org_norsteel",
-      project_id = "prj_alpha",
-      event_type = "payment",
-      amount = 0,
-      currency = "EUR",
-      context = {}
-    } = req.body || {};
-
-    let decision = "APPROVE";
-    let reason = "Execution approved";
-
-    if (Number(amount) <= 0) {
-      decision = "BLOCK";
-      reason = "Amount must be greater than zero";
-    }
-
-    if (Number(amount) > 10000) {
-      decision = "ESCALATE";
-      reason = "High-value payment requires review";
-    }
-
-    if (context.legalBlock === true) {
-      decision = "BLOCK";
-      reason = "Legal block detected";
-    }
-
-    const truth_hash = crypto
-      .createHash("sha256")
-      .update(JSON.stringify({
-        session_id,
-        organization_id,
-        project_id,
-        event_type,
-        amount,
-        currency,
-        decision,
-        reason,
-        context
-      }))
-      .digest("hex");
+    const result = await runExecution(req.body || {});
 
     const { data, error } = await db
       .from("executions")
       .insert({
-        session_id,
-        organization_id,
-        project_id,
-        event_type,
-        amount,
-        currency,
-        decision,
-        reason,
-        truth_hash
+        ticket_id: `exec_${Date.now()}`,
+        organization_id: result.ledger.organization_id,
+        session_id: result.ledger.session_id,
+        project_id: result.ledger.project_id,
+        event_type: result.ledger.event_type,
+        provider_name: result.dispatch.provider || "safe-mode",
+        provider_transaction_id: result.dispatch.provider_transaction_id || null,
+        authoritative_status: result.execution_status,
+        ticket_status_cache: result.execution_status,
+        ledger_decision: result.decision,
+        truth_hash: result.truth_hash,
+        payload: result
       })
       .select()
       .single();
@@ -74,10 +36,7 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      ok: true,
-      decision,
-      reason,
-      truth_hash,
+      ...result,
       execution: data
     });
 
