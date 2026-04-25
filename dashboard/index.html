@@ -1,257 +1,218 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
   <title>EXECUTIA Dashboard</title>
+
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#f6f9fc; color:#0A2540; }
-    header { padding:28px 36px; border-bottom:1px solid #d9e4f2; background:#fff; }
-    h1 { margin:0; font-size:30px; }
-    .sub { color:#667085; margin-top:6px; }
-    .wrap { padding:28px 36px; }
-    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
-    .card { background:#fff; border:1px solid #d9e4f2; border-radius:18px; padding:20px; box-shadow:0 8px 24px rgba(10,37,64,.06); }
-    .label { font-size:12px; letter-spacing:.14em; color:#667085; text-transform:uppercase; }
-    .value { font-size:28px; font-weight:800; margin-top:12px; }
-    .ok { color:#16803a; }
-    .bad { color:#c62828; }
-    .muted { color:#667085; }
-    .actions { display:flex; gap:12px; align-items:center; }
-    table { width:100%; border-collapse:collapse; margin-top:14px; }
-    th,td { padding:12px; border-bottom:1px solid #e5edf7; text-align:left; font-size:14px; vertical-align:top; }
-    th { color:#667085; text-transform:uppercase; font-size:11px; letter-spacing:.12em; }
-    code { font-size:12px; word-break:break-all; }
-    button { background:#0A2540; color:white; border:0; border-radius:12px; padding:12px 18px; font-weight:700; cursor:pointer; }
-    button.secondary { background:#fff; color:#0A2540; border:1px solid #d9e4f2; }
-    button:disabled { opacity:.55; cursor:not-allowed; }
-    .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-    .result { margin-top:18px; padding:14px 16px; border-radius:14px; background:#fff; border:1px solid #d9e4f2; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f9fc;
+      margin: 0;
+      padding: 40px;
+      color: #0A2540;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .sub {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #e0e6ed;
+    }
+
+    .label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .offline {
+      color: red;
+    }
+
+    .online {
+      color: green;
+    }
+
+    button {
+      background: #0A2540;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    th {
+      background: #f0f3f8;
+    }
   </style>
 </head>
-
 <body>
-<header>
-  <h1>EXECUTIA Dashboard</h1>
-  <div class="sub">Execution visibility — decision, ledger, proof.</div>
-</header>
 
-<div class="wrap">
-  <div class="top">
-    <strong>System overview</strong>
-    <div class="actions">
-      <button class="secondary" onclick="loadDashboard()">Refresh</button>
-      <button id="runBtn" onclick="runTestExecution()">Run test execution</button>
-    </div>
+<h1>EXECUTIA Dashboard</h1>
+<div class="sub">Execution visibility — decision, ledger, proof.</div>
+
+<div class="cards">
+  <div class="card">
+    <div class="label">SYSTEM</div>
+    <div id="systemStatus" class="value offline">offline</div>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <div class="label">System</div>
-      <div id="status" class="value">—</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Total executions</div>
-      <div id="total" class="value">—</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Approved</div>
-      <div id="approved" class="value">—</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Blocked / Escalated</div>
-      <div id="blocked" class="value">—</div>
-    </div>
+  <div class="card">
+    <div class="label">TOTAL EXECUTIONS</div>
+    <div id="total" class="value">—</div>
   </div>
 
-  <div id="lastResult" class="result muted">
-    Ready. Click “Run test execution” to create a live execution record.
+  <div class="card">
+    <div class="label">APPROVED</div>
+    <div id="approved" class="value">—</div>
   </div>
 
-  <div class="card" style="margin-top:20px;">
-    <div class="label">Latest execution</div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>When</th>
-          <th>Decision</th>
-          <th>Status</th>
-          <th>Event</th>
-          <th>Hash</th>
-        </tr>
-      </thead>
-
-      <tbody id="rows">
-        <tr>
-          <td colspan="5">Loading...</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="card">
+    <div class="label">BLOCKED / ESCALATED</div>
+    <div id="blocked" class="value">—</div>
   </div>
 </div>
 
+<button onclick="load()">Refresh</button>
+<button onclick="testExecution()">Run test execution</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>WHEN</th>
+      <th>DECISION</th>
+      <th>STATUS</th>
+      <th>EVENT</th>
+      <th>HASH</th>
+    </tr>
+  </thead>
+  <tbody id="table"></tbody>
+</table>
+
 <script>
-const API_BASE = "https://execution.executia.io/api/v1";
+const API_BASE = "/api/v1";
 
-async function safeJson(url, options = {}) {
-  const response = await fetch(url, {
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    },
-    ...options
-  });
-
-  const text = await response.text();
-  let json = null;
-
+async function load() {
   try {
-    json = text ? JSON.parse(text) : null;
-  } catch (_) {
-    json = { raw: text };
-  }
+    const healthRes = await fetch(API_BASE + "/health");
+    const health = await healthRes.json();
 
-  if (!response.ok) {
-    throw new Error(json?.error || json?.message || (url + " failed: " + response.status));
-  }
-
-  return json;
-}
-
-function decisionOf(item) {
-  return item.ledger_decision || item.decision || item.payload?.decision || "—";
-}
-
-function statusOf(item) {
-  return item.authoritative_status || item.execution_status || item.status || "—";
-}
-
-function hashOf(item) {
-  return item.truth_hash || item.payload?.truth_hash || "—";
-}
-
-function eventOf(item) {
-  return item.event_type || item.payload?.ledger?.event_type || "—";
-}
-
-function createdOf(item) {
-  return item.created_at || item.execution?.created_at || null;
-}
-
-async function loadDashboard() {
-  const statusEl = document.getElementById("status");
-  const rowsEl = document.getElementById("rows");
-
-  try {
-    const health = await safeJson(API_BASE + "/health");
-    statusEl.textContent = health.status || "healthy";
-    statusEl.className = "value ok";
-  } catch (err) {
-    statusEl.textContent = "offline";
-    statusEl.className = "value bad";
-  }
-
-  try {
-    const result = await safeJson(API_BASE + "/executions");
-
-    const executions = Array.isArray(result)
-      ? result
-      : result.executions || result.data || [];
-
-    document.getElementById("total").textContent = executions.length;
-
-    const approved = executions.filter((item) => decisionOf(item) === "APPROVE").length;
-    const blocked = executions.filter((item) =>
-      ["BLOCK", "ESCALATE"].includes(decisionOf(item))
-    ).length;
-
-    document.getElementById("approved").textContent = approved;
-    document.getElementById("blocked").textContent = blocked;
-
-    if (!executions.length) {
-      rowsEl.innerHTML = `<tr><td colspan="5">No executions yet.</td></tr>`;
-      return;
+    if (health.status === "healthy") {
+      document.getElementById("systemStatus").innerText = "online";
+      document.getElementById("systemStatus").className = "value online";
+    } else {
+      document.getElementById("systemStatus").innerText = "degraded";
     }
 
-    rowsEl.innerHTML = executions.slice(0, 20).map((item) => {
-      const created = createdOf(item);
-      const when = created ? new Date(created).toLocaleString() : "—";
-
-      return `
-        <tr>
-          <td>${when}</td>
-          <td><strong>${decisionOf(item)}</strong></td>
-          <td>${statusOf(item)}</td>
-          <td>${eventOf(item)}</td>
-          <td><code>${hashOf(item)}</code></td>
-        </tr>
-      `;
-    }).join("");
-
   } catch (err) {
-    rowsEl.innerHTML = `
-      <tr>
-        <td colspan="5">Executions unavailable: ${err.message}</td>
-      </tr>
-    `;
+    document.getElementById("systemStatus").innerText =
+      err.message || JSON.stringify(err);
   }
-}
-
-async function runTestExecution() {
-  const btn = document.getElementById("runBtn");
-  const resultBox = document.getElementById("lastResult");
-
-  btn.disabled = true;
-  btn.textContent = "Running...";
-  resultBox.className = "result muted";
-  resultBox.textContent = "Sending execution request...";
-
-  const payload = {
-    organization_id: "org_norsteel",
-    session_id: "sess_dashboard_" + Date.now(),
-    project_id: "prj_alpha",
-    event_type: "payment",
-    amount: 4200,
-    currency: "EUR",
-    context: {
-      supplierVerified: true,
-      contractValid: true,
-      legalBlock: false,
-      weatherRisk: 2,
-      hoursSinceRest: 12
-    }
-  };
 
   try {
-    const result = await safeJson(API_BASE + "/execute", {
-      method: "POST",
-      body: JSON.stringify(payload)
+    const res = await fetch(API_BASE + "/executions");
+    const data = await res.json();
+
+    if (!data.ok) {
+      throw new Error(data.error || "API error");
+    }
+
+    const executions = data.executions || [];
+
+    document.getElementById("total").innerText = executions.length;
+
+    let approved = 0;
+    let blocked = 0;
+
+    executions.forEach(e => {
+      if (e.ledger_decision === "APPROVE") approved++;
+      else blocked++;
     });
 
-    resultBox.className = "result ok";
-    resultBox.innerHTML = `
-      Execution completed: <strong>${result.decision || "—"}</strong><br>
-      Status: <strong>${result.execution_status || result.authoritative_status || "—"}</strong><br>
-      Hash: <code>${result.truth_hash || "—"}</code>
-    `;
+    document.getElementById("approved").innerText = approved;
+    document.getElementById("blocked").innerText = blocked;
 
-    await loadDashboard();
+    const table = document.getElementById("table");
+    table.innerHTML = "";
+
+    executions.forEach(e => {
+      const row = `
+        <tr>
+          <td>${e.created_at || "-"}</td>
+          <td>${e.ledger_decision || "-"}</td>
+          <td>${e.authoritative_status || "-"}</td>
+          <td>${e.event_type || "-"}</td>
+          <td>${(e.truth_hash || "").substring(0, 10)}</td>
+        </tr>
+      `;
+      table.innerHTML += row;
+    });
 
   } catch (err) {
-    resultBox.className = "result bad";
-    resultBox.textContent = "Execution failed: " + err.message;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Run test execution";
+    document.getElementById("table").innerHTML =
+      `<tr><td colspan="5">Error: ${err.message || JSON.stringify(err)}</td></tr>`;
   }
 }
 
-loadDashboard();
+async function testExecution() {
+  try {
+    await fetch(API_BASE + "/execute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: 100,
+        currency: "EUR"
+      })
+    });
+
+    load();
+
+  } catch (err) {
+    alert(err.message || JSON.stringify(err));
+  }
+}
+
+load();
 </script>
+
 </body>
 </html>
