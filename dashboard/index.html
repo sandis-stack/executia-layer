@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>EXECUTIA Dashboard</title>
+<title>EXECUTIA Dashboard V2</title>
 
 <style>
 body {
@@ -13,33 +13,41 @@ body {
   color: #0A2540;
 }
 
-h1 { margin-bottom: 5px; }
-.sub { color: #666; margin-bottom: 30px; }
+h1 { margin: 0 0 5px; }
+.sub { color: #667085; margin-bottom: 28px; }
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 26px;
+}
 
 .cards {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
 }
 
 .card {
-  flex: 1;
-  background: white;
+  background: #fff;
+  border: 1px solid #d9e4f2;
+  border-radius: 14px;
   padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #e0e6ed;
 }
 
 .label {
-  font-size: 12px;
-  color: #888;
-  margin-bottom: 5px;
+  font-size: 11px;
+  letter-spacing: .12em;
   text-transform: uppercase;
+  color: #667085;
+  margin-bottom: 8px;
 }
 
 .value {
-  font-size: 22px;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 800;
 }
 
 .online { color: green; }
@@ -50,99 +58,165 @@ button {
   background: #0A2540;
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 6px;
+  padding: 11px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-right: 10px;
+  margin-left: 8px;
+  font-weight: 700;
+}
+
+button.secondary {
+  background: white;
+  color: #0A2540;
+  border: 1px solid #d9e4f2;
 }
 
 button:disabled {
-  opacity: 0.55;
+  opacity: .55;
   cursor: not-allowed;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  background: white;
-  border-radius: 10px;
+.layout {
+  display: grid;
+  grid-template-columns: 1.25fr .75fr;
+  gap: 20px;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #d9e4f2;
+  border-radius: 14px;
   overflow: hidden;
 }
 
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
+.panel-title {
+  padding: 16px 18px;
+  border-bottom: 1px solid #eef2f7;
+  font-weight: 800;
 }
 
-th {
+.row {
+  display: grid;
+  grid-template-columns: 180px 150px 140px 1fr;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #eef2f7;
+  cursor: pointer;
+}
+
+.row:hover { background: #f8fbff; }
+
+.header {
   background: #f0f3f8;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #667085;
+  font-weight: 800;
+  cursor: default;
 }
 
-strong.approved { color: green; }
-strong.blocked { color: #c62828; }
-strong.review { color: #b45309; }
+.status-approved { color: green; font-weight: 800; }
+.status-blocked { color: #c62828; font-weight: 800; }
+.status-review { color: #b45309; font-weight: 800; }
 
-code {
+.detail {
+  padding: 18px;
+}
+
+pre {
+  background: #f6f9fc;
+  border: 1px solid #d9e4f2;
+  border-radius: 10px;
+  padding: 14px;
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: 440px;
   font-size: 12px;
 }
+
+.live-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: green;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+code { font-size: 12px; }
 </style>
 </head>
 
 <body>
 
-<h1>EXECUTIA Dashboard</h1>
-<div class="sub">Execution visibility — decision, ledger, proof.</div>
+<div class="top">
+  <div>
+    <h1>EXECUTIA Dashboard V2</h1>
+    <div class="sub">Live stream · decision control · truth registry</div>
+  </div>
+
+  <div>
+    <button class="secondary" onclick="loadData()">Refresh</button>
+    <button id="runBtn" onclick="runTestExecution()">Run execution</button>
+  </div>
+</div>
 
 <div class="cards">
   <div class="card">
-    <div class="label">SYSTEM</div>
+    <div class="label">System</div>
     <div id="systemStatus" class="value offline">checking</div>
   </div>
 
   <div class="card">
-    <div class="label">TOTAL EXECUTIONS</div>
+    <div class="label">Total executions</div>
     <div id="total" class="value">—</div>
   </div>
 
   <div class="card">
-    <div class="label">APPROVED</div>
+    <div class="label">Approved</div>
     <div id="approved" class="value">—</div>
   </div>
 
   <div class="card">
-    <div class="label">BLOCKED / ESCALATED</div>
+    <div class="label">Review / blocked</div>
     <div id="blocked" class="value">—</div>
   </div>
 </div>
 
-<button onclick="loadData()">Refresh</button>
-<button id="runBtn" onclick="runTestExecution()">Run test execution</button>
+<div class="layout">
+  <div class="panel">
+    <div class="panel-title"><span class="live-dot"></span>Live execution stream</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>WHEN</th>
-      <th>DECISION</th>
-      <th>STATUS</th>
-      <th>EVENT</th>
-      <th>HASH</th>
-    </tr>
-  </thead>
-  <tbody id="table"></tbody>
-</table>
+    <div class="row header">
+      <div>When</div>
+      <div>Decision</div>
+      <div>Event</div>
+      <div>Proof</div>
+    </div>
+
+    <div id="stream"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Execution detail</div>
+    <div class="detail">
+      <pre id="detail">Select an execution from the stream.</pre>
+    </div>
+  </div>
+</div>
 
 <script>
 const API_BASE = "https://execution.executia.io";
 let loading = false;
+let items = [];
 
 function getDecision(e) {
-  return e.decision || e.ledger_decision || e.result_status || e.status || "-";
+  return e.decision || e.ledger_decision || e.result_status || e.status || "UNKNOWN";
 }
 
 function getStatus(e) {
-  return e.status || e.authoritative_status || e.ticket_status_cache || e.result_status || "-";
+  return e.status || e.authoritative_status || e.ticket_status_cache || e.result_status || "UNKNOWN";
 }
 
 function getEvent(e) {
@@ -153,10 +227,28 @@ function getHash(e) {
   return e.truth_hash || e.payload?.truth_hash || e.execution_id || e.request_id || e.ticket_id || "";
 }
 
-function decisionClass(decision) {
-  if (decision === "APPROVED" || decision === "APPROVE") return "approved";
-  if (decision === "BLOCKED" || decision === "BLOCK") return "blocked";
-  return "review";
+function statusClass(d) {
+  if (d === "APPROVED" || d === "APPROVE") return "status-approved";
+  if (d === "BLOCKED" || d === "BLOCK") return "status-blocked";
+  return "status-review";
+}
+
+async function getJson(url, options = {}) {
+  const res = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    ...options
+  });
+
+  const text = await res.text();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("NON_JSON_RESPONSE");
+  }
 }
 
 async function loadData() {
@@ -164,72 +256,82 @@ async function loadData() {
   loading = true;
 
   try {
-    const healthRes = await fetch(`${API_BASE}/api/v1/health`);
-    const health = await healthRes.json();
-
+    const health = await getJson(`${API_BASE}/api/v1/health`);
     const system = document.getElementById("systemStatus");
+
     if (health.ok && health.status === "healthy") {
       system.innerText = "online";
       system.className = "value online";
     } else {
-      system.innerText = health.status || "degraded";
+      system.innerText = "degraded";
       system.className = "value review";
     }
 
-    const res = await fetch(`${API_BASE}/api/v1/executions`);
-    const data = await res.json();
+    const data = await getJson(`${API_BASE}/api/v1/executions`);
 
-    if (!data.ok) {
-      throw new Error(data.error || "API error");
-    }
+    if (!data.ok) throw new Error(data.error || "API_ERROR");
 
-    const executions = data.executions || [];
+    items = data.executions || [];
 
-    document.getElementById("total").innerText = executions.length;
+    document.getElementById("total").innerText = items.length;
 
-    let approved = 0;
-    let blocked = 0;
-
-    executions.forEach(e => {
+    const approvedCount = items.filter(e => {
       const d = getDecision(e);
-      if (d === "APPROVED" || d === "APPROVE") approved++;
-      else blocked++;
-    });
+      return d === "APPROVED" || d === "APPROVE";
+    }).length;
 
-    document.getElementById("approved").innerText = approved;
-    document.getElementById("blocked").innerText = blocked;
+    document.getElementById("approved").innerText = approvedCount;
+    document.getElementById("blocked").innerText = items.length - approvedCount;
 
-    const table = document.getElementById("table");
-    table.innerHTML = "";
+    const stream = document.getElementById("stream");
 
-    if (!executions.length) {
-      table.innerHTML = `<tr><td colspan="5">No executions yet.</td></tr>`;
+    if (!items.length) {
+      stream.innerHTML = `<div class="row"><div>No executions yet.</div></div>`;
       return;
     }
 
-    executions.slice(0, 50).forEach(e => {
+    stream.innerHTML = items.slice(0, 40).map((e, i) => {
       const d = getDecision(e);
       const h = getHash(e);
 
-      table.innerHTML += `
-        <tr>
-          <td>${e.created_at || "-"}</td>
-          <td><strong class="${decisionClass(d)}">${d}</strong></td>
-          <td>${getStatus(e)}</td>
-          <td>${getEvent(e)}</td>
-          <td><code>${h ? h.substring(0, 12) : "-"}</code></td>
-        </tr>
+      return `
+        <div class="row" onclick="showDetail(${i})">
+          <div>${e.created_at || "—"}</div>
+          <div class="${statusClass(d)}">${d}</div>
+          <div>${getEvent(e)}</div>
+          <div><code>${h ? h.substring(0, 18) : "-"}</code></div>
+        </div>
       `;
-    });
+    }).join("");
+
+    showDetail(0);
 
   } catch (err) {
     document.getElementById("systemStatus").innerText = "offline";
     document.getElementById("systemStatus").className = "value offline";
-    document.getElementById("table").innerHTML =
-      `<tr><td colspan="5">Error: ${err.message}</td></tr>`;
+    document.getElementById("stream").innerHTML =
+      `<div class="row"><div>Error</div><div>${err.message}</div></div>`;
   } finally {
     loading = false;
   }
+}
+
+function showDetail(index) {
+  const e = items[index];
+  if (!e) return;
+
+  document.getElementById("detail").textContent = JSON.stringify({
+    decision: getDecision(e),
+    status: getStatus(e),
+    reason: e.reason || e.payload?.reason || null,
+    source: getEvent(e),
+    authorized: e.authorized ?? null,
+    hold_pending: e.hold_pending ?? null,
+    execution_id: e.execution_id || null,
+    truth_hash: e.truth_hash || e.payload?.truth_hash || null,
+    created_at: e.created_at || null,
+    payload: e.payload || null
+  }, null, 2);
 }
 
 async function runTestExecution() {
@@ -248,26 +350,23 @@ async function runTestExecution() {
 
     const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
 
-    const res = await fetch(`${API_BASE}/api/v1/execute`, {
+    const data = await getJson(`${API_BASE}/api/v1/execute`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         organization_id: "org_norsteel",
-        session_id: "dashboard_session_" + Date.now(),
-        project_id: "dashboard_test",
+        session_id: "dashboard_v2_" + Date.now(),
+        project_id: "dashboard_v2",
         event_type: "payment",
         amount: scenario.amount,
         currency: "EUR",
         context: {
-          source: "dashboard",
+          source: "dashboard_v2",
           legalBlock: scenario.legalBlock
         }
       })
     });
 
-    const data = await res.json();
-
-    if (!res.ok || data.ok === false) {
+    if (data.ok === false) {
       alert(data.error || "Execution failed");
       return;
     }
@@ -278,7 +377,7 @@ async function runTestExecution() {
     alert(err.message || "Execution failed");
   } finally {
     btn.disabled = false;
-    btn.innerText = "Run test execution";
+    btn.innerText = "Run execution";
   }
 }
 
