@@ -1,15 +1,31 @@
-import { db } from "../services/db.js";
+import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req, res) {
+  res.setHeader("Content-Type", "application/json");
+
   if (req.method !== "GET") {
     return res.status(405).json({
       ok: false,
+      executions: [],
       error: "METHOD_NOT_ALLOWED"
     });
   }
 
   try {
-    const { data, error } = await db
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return res.status(200).json({
+        ok: false,
+        executions: [],
+        error: "SUPABASE_ENV_MISSING"
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data, error } = await supabase
       .from("executions")
       .select("*")
       .order("created_at", { ascending: false })
@@ -32,7 +48,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       ok: false,
       executions: [],
-      error: err.message
+      error: err.message || String(err)
     });
   }
 }
