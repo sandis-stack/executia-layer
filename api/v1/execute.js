@@ -5,10 +5,7 @@ export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
   if (req.method !== "POST") {
-    return res.status(405).json({
-      ok: false,
-      error: "METHOD_NOT_ALLOWED"
-    });
+    return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
   }
 
   try {
@@ -16,18 +13,12 @@ export default async function handler(req, res) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return res.status(200).json({
-        ok: false,
-        error: "SUPABASE_ENV_MISSING"
-      });
+      return res.status(200).json({ ok: false, error: "SUPABASE_ENV_MISSING" });
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-
     const body = req.body || {};
-
     const amount = Number(body.amount || 0);
-    const currency = body.currency || "EUR";
 
     let status = "APPROVED";
     let reason = "Execution approved";
@@ -35,9 +26,7 @@ export default async function handler(req, res) {
     if (amount <= 0) {
       status = "BLOCKED";
       reason = "Amount must be greater than zero";
-    }
-
-    if (amount > 10000) {
+    } else if (amount > 10000) {
       status = "REQUIRES_REVIEW";
       reason = "High-value execution requires review";
     }
@@ -47,45 +36,38 @@ export default async function handler(req, res) {
       reason = "Legal block detected";
     }
 
-    const execution_id = "EX-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const execution_id =
+      "EX-" + Math.random().toString(36).substring(2, 8).toUpperCase();
 
     const truth_hash = crypto
       .createHash("sha256")
-      .update(JSON.stringify({
-        execution_id,
-        amount,
-        currency,
-        status,
-        reason,
-        body
-      }))
+      .update(JSON.stringify({ execution_id, amount, status, reason, body }))
       .digest("hex");
 
-    const payload = {
+    const insertPayload = {
       execution_id,
       status,
       result_status: status,
       authorized: status === "APPROVED",
       hold_pending: status === "REQUIRES_REVIEW",
       budget: amount,
-      currency,
       reason,
       source: body.context?.source || "dashboard",
-      payload: body,
-      truth_hash
+      payload: {
+        ...body,
+        currency: body.currency || "EUR",
+        truth_hash
+      }
     };
 
     const { data, error } = await supabase
       .from("executions")
-      .insert(payload)
+      .insert(insertPayload)
       .select()
       .single();
 
     if (error) {
-      return res.status(200).json({
-        ok: false,
-        error: error.message
-      });
+      return res.status(200).json({ ok: false, error: error.message });
     }
 
     return res.status(200).json({
@@ -96,7 +78,6 @@ export default async function handler(req, res) {
       truth_hash,
       execution: data
     });
-
   } catch (err) {
     return res.status(200).json({
       ok: false,
