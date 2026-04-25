@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>EXECUTIA Dashboard V2</title>
+<title>EXECUTIA Dashboard V3</title>
 
 <style>
 body {
@@ -14,7 +14,17 @@ body {
 }
 
 h1 { margin: 0 0 5px; }
-.sub { color: #667085; margin-bottom: 28px; }
+
+.sub {
+  color: #667085;
+  margin-bottom: 18px;
+}
+
+.mode {
+  margin-bottom: 24px;
+  font-weight: 800;
+  color: green;
+}
 
 .top {
   display: flex;
@@ -71,9 +81,22 @@ button.secondary {
   border: 1px solid #d9e4f2;
 }
 
+button.danger {
+  background: #c62828;
+}
+
 button:disabled {
   opacity: .55;
   cursor: not-allowed;
+}
+
+select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #d9e4f2;
+  color: #0A2540;
+  font-weight: 700;
+  background: white;
 }
 
 .layout {
@@ -124,6 +147,10 @@ button:disabled {
   padding: 18px;
 }
 
+.actions {
+  margin-bottom: 14px;
+}
+
 pre {
   background: #f6f9fc;
   border: 1px solid #d9e4f2;
@@ -152,8 +179,9 @@ code { font-size: 12px; }
 
 <div class="top">
   <div>
-    <h1>EXECUTIA Dashboard V2</h1>
+    <h1>EXECUTIA Dashboard V3</h1>
     <div class="sub">Live stream · decision control · truth registry</div>
+    <div class="mode">Execution control mode: ACTIVE</div>
   </div>
 
   <div>
@@ -184,6 +212,15 @@ code { font-size: 12px; }
   </div>
 </div>
 
+<div style="margin-bottom:20px;">
+  <select id="filter" onchange="renderStream()">
+    <option value="ALL">All</option>
+    <option value="APPROVED">Approved</option>
+    <option value="BLOCKED">Blocked</option>
+    <option value="REQUIRES_REVIEW">Requires Review</option>
+  </select>
+</div>
+
 <div class="layout">
   <div class="panel">
     <div class="panel-title"><span class="live-dot"></span>Live execution stream</div>
@@ -200,7 +237,13 @@ code { font-size: 12px; }
 
   <div class="panel">
     <div class="panel-title">Execution detail</div>
+
     <div class="detail">
+      <div class="actions">
+        <button onclick="forceApprove()">Force approve</button>
+        <button class="danger" onclick="blockExecution()">Block</button>
+      </div>
+
       <pre id="detail">Select an execution from the stream.</pre>
     </div>
   </div>
@@ -208,8 +251,11 @@ code { font-size: 12px; }
 
 <script>
 const API_BASE = "https://execution.executia.io";
+
 let loading = false;
 let items = [];
+let filteredItems = [];
+let selectedExecution = null;
 
 function getDecision(e) {
   return e.decision || e.ledger_decision || e.result_status || e.status || "UNKNOWN";
@@ -231,6 +277,23 @@ function statusClass(d) {
   if (d === "APPROVED" || d === "APPROVE") return "status-approved";
   if (d === "BLOCKED" || d === "BLOCK") return "status-blocked";
   return "status-review";
+}
+
+function getRisk(e) {
+  const amount = Number(e.budget || e.payload?.amount || 0);
+  const decision = getDecision(e);
+
+  if (decision === "BLOCKED" || decision === "BLOCK") return "HIGH";
+  if (decision === "REQUIRES_REVIEW") return "REVIEW";
+  if (amount > 10000) return "HIGH";
+  return "NORMAL";
+}
+
+function getMeaning(decision) {
+  if (decision === "APPROVED" || decision === "APPROVE") return "execution passed";
+  if (decision === "BLOCKED" || decision === "BLOCK") return "prevented";
+  if (decision === "REQUIRES_REVIEW") return "human needed";
+  return "unknown state";
 }
 
 async function getJson(url, options = {}) {
@@ -283,28 +346,7 @@ async function loadData() {
     document.getElementById("approved").innerText = approvedCount;
     document.getElementById("blocked").innerText = items.length - approvedCount;
 
-    const stream = document.getElementById("stream");
-
-    if (!items.length) {
-      stream.innerHTML = `<div class="row"><div>No executions yet.</div></div>`;
-      return;
-    }
-
-    stream.innerHTML = items.slice(0, 40).map((e, i) => {
-      const d = getDecision(e);
-      const h = getHash(e);
-
-      return `
-        <div class="row" onclick="showDetail(${i})">
-          <div>${e.created_at || "—"}</div>
-          <div class="${statusClass(d)}">${d}</div>
-          <div>${getEvent(e)}</div>
-          <div><code>${h ? h.substring(0, 18) : "-"}</code></div>
-        </div>
-      `;
-    }).join("");
-
-    showDetail(0);
+    renderStream();
 
   } catch (err) {
     document.getElementById("systemStatus").innerText = "offline";
@@ -316,13 +358,53 @@ async function loadData() {
   }
 }
 
+function renderStream() {
+  const filter = document.getElementById("filter").value;
+  const stream = document.getElementById("stream");
+
+  filteredItems = items;
+
+  if (filter !== "ALL") {
+    filteredItems = items.filter(e => getDecision(e) === filter);
+  }
+
+  if (!filteredItems.length) {
+    stream.innerHTML = `<div class="row"><div>No executions for this filter.</div></div>`;
+    document.getElementById("detail").textContent = "No execution selected.";
+    return;
+  }
+
+  stream.innerHTML = filteredItems.slice(0, 40).map((e, i) => {
+    const d = getDecision(e);
+    const h = getHash(e);
+    const isNew = i === 0 ? "background:#e6f4ff;" : "";
+
+    return `
+      <div class="row" style="${isNew}" onclick="showDetail(${i})">
+        <div>${e.created_at || "—"}</div>
+        <div class="${statusClass(d)}">${d}</div>
+        <div>${getEvent(e)}</div>
+        <div><code>${h ? h.substring(0, 18) : "-"}</code></div>
+      </div>
+    `;
+  }).join("");
+
+  stream.scrollTop = 0;
+  showDetail(0);
+}
+
 function showDetail(index) {
-  const e = items[index];
+  const e = filteredItems[index];
   if (!e) return;
 
+  selectedExecution = e;
+  const decision = getDecision(e);
+
   document.getElementById("detail").textContent = JSON.stringify({
-    decision: getDecision(e),
+    decision,
+    meaning: getMeaning(decision),
     status: getStatus(e),
+    risk: getRisk(e),
     reason: e.reason || e.payload?.reason || null,
     source: getEvent(e),
     authorized: e.authorized ?? null,
@@ -332,6 +414,32 @@ function showDetail(index) {
     created_at: e.created_at || null,
     payload: e.payload || null
   }, null, 2);
+}
+
+function forceApprove() {
+  if (!selectedExecution) {
+    alert("No execution selected.");
+    return;
+  }
+
+  alert(
+    "Override action queued for: " +
+    (selectedExecution.execution_id || selectedExecution.id || "unknown") +
+    "\nNext step: connect override API."
+  );
+}
+
+function blockExecution() {
+  if (!selectedExecution) {
+    alert("No execution selected.");
+    return;
+  }
+
+  alert(
+    "Block action queued for: " +
+    (selectedExecution.execution_id || selectedExecution.id || "unknown") +
+    "\nNext step: connect block API."
+  );
 }
 
 async function runTestExecution() {
@@ -354,13 +462,13 @@ async function runTestExecution() {
       method: "POST",
       body: JSON.stringify({
         organization_id: "org_norsteel",
-        session_id: "dashboard_v2_" + Date.now(),
-        project_id: "dashboard_v2",
+        session_id: "dashboard_v3_" + Date.now(),
+        project_id: "dashboard_v3",
         event_type: "payment",
         amount: scenario.amount,
         currency: "EUR",
         context: {
-          source: "dashboard_v2",
+          source: "dashboard_v3",
           legalBlock: scenario.legalBlock
         }
       })
