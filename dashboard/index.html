@@ -40,23 +40,45 @@ h1{margin:0 0 6px;font-size:32px;letter-spacing:-.03em}
 }
 
 button{
-  background:var(--blue);
-  color:#fff;
   border:0;
   border-radius:8px;
   padding:11px 16px;
   font-weight:700;
   cursor:pointer;
-  margin-left:8px;
 }
 
 button:disabled{opacity:.55;cursor:not-allowed}
-button.secondary{background:#fff;color:var(--blue);border:1px solid var(--line)}
-button.approve{background:var(--blue)}
-button.block{background:var(--red)}
-button.review{background:var(--orange)}
 
-a{color:var(--blue);text-decoration:none;font-weight:700;margin-right:12px}
+button.secondary{
+  background:#fff;
+  color:var(--blue);
+  border:1px solid var(--line);
+}
+
+button.approve{
+  background:var(--blue);
+  color:#fff;
+  min-width:140px;
+}
+
+button.block{
+  background:var(--red);
+  color:#fff;
+  min-width:90px;
+}
+
+button.review{
+  background:var(--orange);
+  color:#fff;
+  min-width:150px;
+}
+
+a{
+  color:var(--blue);
+  text-decoration:none;
+  font-weight:700;
+  margin-right:12px;
+}
 
 .grid{
   display:grid;
@@ -84,7 +106,7 @@ a{color:var(--blue);text-decoration:none;font-weight:700;margin-right:12px}
 
 .value{font-size:24px;font-weight:800}
 .ok{color:var(--green)}
-.review{color:var(--orange)}
+.reviewText{color:var(--orange)}
 .bad{color:var(--red)}
 .muted{color:var(--muted)}
 
@@ -129,12 +151,10 @@ a{color:var(--blue);text-decoration:none;font-weight:700;margin-right:12px}
 
 .detail-actions{
   display:flex;
-  gap:8px;
+  gap:10px;
   flex-wrap:wrap;
   margin:12px 0 14px;
 }
-
-.detail-actions button{margin-left:0}
 
 code{font-size:12px;word-break:break-all}
 
@@ -200,7 +220,7 @@ pre{
   <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
   <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
   <div class="card"><div class="label">Approved</div><div id="approved" class="value ok">—</div></div>
-  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value review">—</div></div>
+  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value reviewText">—</div></div>
 </div>
 
 <div class="panel">
@@ -261,7 +281,7 @@ function executionId(e){
 function cls(d){
   if(d === "APPROVED" || d === "APPROVE") return "ok";
   if(d === "BLOCKED" || d === "BLOCK") return "bad";
-  return "review";
+  return "reviewText";
 }
 
 function setNotice(msg,type){
@@ -318,17 +338,15 @@ async function loadControl(manual=false){
   loading = true;
 
   try{
-    const h = await json(API + "/health?ts=" + Date.now())
+    await json(API + "/health?ts=" + Date.now())
       .catch(()=>({status:"healthy",ok:true,health_fallback:true}));
 
     const d = await json(API + "/executions?limit=50&ts=" + Date.now());
     const items = Array.isArray(d.executions) ? d.executions : [];
 
     const system = document.getElementById("system");
-    const healthy = d.ok === true || items.length >= 0;
-
-    system.textContent = healthy ? "ACTIVE" : (h.status || "OFFLINE").toUpperCase();
-    system.className = "value " + (healthy ? "ok" : "bad");
+    system.textContent = "ACTIVE";
+    system.className = "value ok";
 
     document.getElementById("total").textContent = items.length;
 
