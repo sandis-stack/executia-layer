@@ -1,20 +1,14 @@
 {
   "version": 2,
   "functions": {
-    "api/**/*.js": { "maxDuration": 30 }
+    "api/**/*.js": {
+      "maxDuration": 30
+    }
   },
   "routes": [
-    { "src": "/api/v1/execute-event",        "dest": "/api/execute-event" },
-    { "src": "/api/v1/execute-and-dispatch", "dest": "/api/execute-and-dispatch" },
-    { "src": "/api/v1/generate-rule",        "dest": "/api/generate-rule" },
-    { "src": "/api/v1/health",               "dest": "/api/health" },
-    { "src": "/api/v1/ledger",               "dest": "/api/ledger" },
-    { "src": "/api/v1/executions",           "dest": "/api/executions" },
-    { "src": "/api/v1/reconciliation",       "dest": "/api/reconciliation" },
-    { "src": "/api/v1/reconcile",            "dest": "/api/reconcile" },
-    { "src": "/api/v1/provider-callback",    "dest": "/api/provider-callback" },
-    { "src": "/api/v1/audit",                "dest": "/api/audit" },
-    { "src": "/api/v1/auth-login",           "dest": "/api/auth-login" },
-    { "src": "/api/v1/auth-session",         "dest": "/api/auth-session" }
+    {
+      "src": "/api/v1/(.*)",
+      "dest": "/api/v1/$1"
+    }
   ]
 }
