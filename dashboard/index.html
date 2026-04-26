@@ -165,7 +165,7 @@ pre{
   border-radius:12px;
   padding:14px;
   white-space:pre-wrap;
-  max-height:420px;
+  max-height:360px;
   overflow:auto;
   font-size:13px;
   line-height:1.45;
@@ -183,9 +183,15 @@ pre{
   border-bottom:1px solid #eef2f7;
   padding:10px 0;
   font-size:13px;
+  line-height:1.45;
 }
 
 .audit-item:last-child{border-bottom:0}
+
+.audit-action{
+  font-weight:900;
+  color:var(--blue);
+}
 
 @media(max-width:1000px){
   body{padding:24px}
@@ -252,6 +258,11 @@ pre{
       <div class="label">Latest control action</div>
       <div id="auditTrail" class="muted">No override action yet.</div>
     </div>
+
+    <div class="audit-box">
+      <div class="label">Execution audit trail</div>
+      <div id="auditList" class="muted">No execution selected.</div>
+    </div>
   </div>
 </div>
 
@@ -275,11 +286,11 @@ function hash(e){
 }
 
 function executionId(e){
-  return e.execution_id || e.id || null;
+  return e.execution_id || e.entity_id || e.request_id || e.id || null;
 }
 
 function cls(d){
-  if(d === "APPROVED" || d === "APPROVE") return "ok";
+  if(d === "APPROVED" || d === "APPROVE" || d === "EXECUTED") return "ok";
   if(d === "BLOCKED" || d === "BLOCK") return "bad";
   return "reviewText";
 }
@@ -338,8 +349,7 @@ async function loadControl(manual=false){
   loading = true;
 
   try{
-    await json(API + "/health?ts=" + Date.now())
-      .catch(()=>({status:"healthy",ok:true,health_fallback:true}));
+    await json(API + "/health?ts=" + Date.now()).catch(()=>null);
 
     const d = await json(API + "/executions?limit=50&ts=" + Date.now());
     const items = Array.isArray(d.executions) ? d.executions : [];
@@ -355,7 +365,7 @@ async function loadControl(manual=false){
 
     items.forEach(e=>{
       const de = decision(e);
-      if(de === "APPROVED" || de === "APPROVE") approved++;
+      if(de === "APPROVED" || de === "APPROVE" || de === "EXECUTED") approved++;
       else reviewBlocked++;
     });
 
@@ -424,6 +434,53 @@ function showBreakdown(i){
     created_at: e.created_at || null,
     payload: e.payload || null
   },null,2);
+
+  loadAudit(executionId(e));
+}
+
+async function loadAudit(executionIdValue){
+  const auditList = document.getElementById("auditList");
+
+  if(!executionIdValue){
+    auditList.innerHTML = "No execution selected.";
+    return;
+  }
+
+  auditList.innerHTML = "Loading audit trail...";
+
+  try{
+    const data = await json(
+      API + "/audit-log?execution_id=" + encodeURIComponent(executionIdValue) + "&limit=25&ts=" + Date.now()
+    );
+
+    const logs = data.audit_logs || [];
+
+    if(logs.length === 0){
+      auditList.innerHTML = "No audit records for this execution.";
+      return;
+    }
+
+    auditList.innerHTML = logs.map(log => {
+      const actor = log.actor_label || log.operator || log.actor_id || "system";
+      const status = log.new_status || log.payload?.decision || log.decision || log.status || "-";
+      const previous = log.previous_status || "-";
+      const time = log.created_at || "-";
+      const reason = log.reason || log.message || log.payload?.reason || "-";
+
+      return `
+        <div class="audit-item">
+          <div class="audit-action">${log.action || "AUDIT_EVENT"}</div>
+          Actor: ${actor}<br>
+          Status: ${previous} → ${status}<br>
+          Reason: ${reason}<br>
+          Time: ${time}
+        </div>
+      `;
+    }).join("");
+
+  }catch(err){
+    auditList.innerHTML = "Audit load failed: " + err.message;
+  }
 }
 
 async function overrideSelected(action){
@@ -485,6 +542,7 @@ async function overrideSelected(action){
     );
 
     await loadControl(false);
+    await loadAudit(id);
 
   }catch(err){
     setNotice("Override failed: " + err.message,"bad");
