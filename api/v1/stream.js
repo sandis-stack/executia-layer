@@ -27,11 +27,6 @@ export default async function handler(req, res) {
     "X-Accel-Buffering": "no"
   });
 
-  const send = (event, payload) => {
-    res.write(`event: ${event}\n`);
-    res.write(`data: ${JSON.stringify(payload)}\n\n`);
-  };
-
   const supabase = createClient(supabaseUrl, supabaseKey, {
     auth: {
       persistSession: false,
@@ -41,41 +36,59 @@ export default async function handler(req, res) {
 
   let closed = false;
 
-  async function sendSnapshot() {
-    const { data, error } = await supabase
-      .from("executions")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(10);
+  function send(event, payload) {
+    if (closed) return;
 
-    if (error) {
+    res.write(`event: ${event}\n`);
+    res.write(`data: ${JSON.stringify(payload)}\n\n`);
+  }
+
+  async function sendSnapshot(reason = "snapshot") {
+    try {
+      const { data, error } = await supabase
+        .from("executions")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(25);
+
+      if (error) {
+        send("error", {
+          ok: false,
+          error: "SNAPSHOT_QUERY_FAILED",
+          detail: error.message,
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      send("execution", {
+        ok: true,
+        type: reason,
+        executions: data || [],
+        timestamp: new Date().toISOString()
+      });
+    } catch (err) {
       send("error", {
         ok: false,
-        error: "SNAPSHOT_QUERY_FAILED",
-        detail: error.message
+        error: "SNAPSHOT_INTERNAL_ERROR",
+        detail: err.message || String(err),
+        timestamp: new Date().toISOString()
       });
-      return;
     }
-
-    send("execution", {
-      ok: true,
-      type: "snapshot",
-      executions: data || [],
-      timestamp: new Date().toISOString()
-    });
   }
 
   send("connected", {
     ok: true,
     service: "EXECUTIA STREAM",
     mode: "supabase-realtime",
+    events: ["connected", "execution", "change", "heartbeat", "realtime_status", "error"],
     timestamp: new Date().toISOString()
   });
 
-  await sendSnapshot();
+  await sendSnapshot("initial_snapshot");
 
   const channel = supabase
-    .channel("executia-executions-stream")
+    .channel("executia-executions-realtime")
     .on(
       "postgres_changes",
       {
@@ -86,35 +99,41 @@ export default async function handler(req, res) {
       async (payload) => {
         if (closed) return;
 
+        const row = payload.new || payload.old || null;
+
         send("change", {
           ok: true,
           type: "postgres_change",
           eventType: payload.eventType,
-          execution: payload.new || payload.old || null,
+          table: "executions",
+          execution: row,
           old: payload.old || null,
+          new: payload.new || null,
+          execution_id: row?.execution_id || row?.id || null,
+          status: row?.status || row?.result_status || null,
+          reason: row?.reason || row?.payload?.reason || null,
           timestamp: new Date().toISOString()
         });
 
-        await sendSnapshot();
+        await sendSnapshot("change_snapshot");
       }
     )
-    .subscribe((status) => {
+    .subscribe((status, err) => {
       send("realtime_status", {
-        ok: true,
+        ok: !err,
         status,
+        error: err?.message || null,
         timestamp: new Date().toISOString()
       });
     });
 
   const heartbeat = setInterval(() => {
-    if (!closed) {
-      send("heartbeat", {
-        ok: true,
-        type: "heartbeat",
-        timestamp: new Date().toISOString()
-      });
-    }
-  }, 25000);
+    send("heartbeat", {
+      ok: true,
+      type: "heartbeat",
+      timestamp: new Date().toISOString()
+    });
+  }, 20000);
 
   req.on("close", async () => {
     closed = true;
@@ -124,6 +143,8 @@ export default async function handler(req, res) {
       await supabase.removeChannel(channel);
     } catch {}
 
-    res.end();
+    try {
+      res.end();
+    } catch {}
   });
 }
