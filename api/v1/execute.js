@@ -2,14 +2,14 @@ import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 
 function getSupabase() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || !supabaseKey) {
+  if (!url || !key) {
     throw new Error("SUPABASE_ENV_MISSING");
   }
 
-  return createClient(supabaseUrl, supabaseKey, {
+  return createClient(url, key, {
     auth: {
       persistSession: false,
       autoRefreshToken: false
@@ -17,15 +17,15 @@ function getSupabase() {
   });
 }
 
-function truthHash(payload) {
+function makeId() {
+  return "EX-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+function hash(payload) {
   return crypto
     .createHash("sha256")
     .update(JSON.stringify(payload))
     .digest("hex");
-}
-
-function makeExecutionId() {
-  return "EX-" + Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
 function decide(amount, context = {}) {
@@ -81,64 +81,50 @@ export default async function handler(req, res) {
 
     const amount = Number(body.amount || 0);
     const context = body.context || {};
-    const decision = decide(amount, context);
+    const result = decide(amount, context);
 
     const now = new Date().toISOString();
-    const execution_id = body.execution_id || makeExecutionId();
+    const execution_id = body.execution_id || makeId();
 
-    const basePayload = {
+    const proofPayload = {
       execution_id,
-      organization_id: body.organization_id || "org_norsteel",
-      session_id: body.session_id || "sess_" + Date.now(),
-      project_id: body.project_id || "prj_alpha",
-      event_type: body.event_type || "payment",
       amount,
       currency: body.currency || "EUR",
       context,
-      status: decision.status,
-      authorized: decision.authorized,
-      hold_pending: decision.hold_pending,
-      reason: decision.reason,
+      status: result.status,
+      authorized: result.authorized,
+      hold_pending: result.hold_pending,
+      reason: result.reason,
       created_at: now
     };
 
-    const hash = truthHash(basePayload);
+    const truth_hash = hash(proofPayload);
 
-    const executionRecord = {
+    const record = {
       execution_id,
-      status: decision.status,
-      result_status: decision.status,
-      decision: decision.status,
-      authorized: decision.authorized,
-      hold_pending: decision.hold_pending,
+      status: result.status,
+      authorized: result.authorized,
+      hold_pending: result.hold_pending,
       budget: amount,
-      reason: decision.reason,
-      organization_id: basePayload.organization_id,
-      session_id: basePayload.session_id,
-      project_id: basePayload.project_id,
-      event_type: basePayload.event_type,
-      source: context.source || "execute_api",
-      truth_hash: hash,
+      reason: result.reason,
       payload: {
         amount,
-        currency: basePayload.currency,
+        currency: body.currency || "EUR",
         context,
-        truth_hash: hash
+        truth_hash
       },
+      truth_hash,
       created_at: now,
       updated_at: now
     };
 
-    console.log("EXECUTE INSERT PAYLOAD:", executionRecord);
-
     const { data, error } = await supabase
       .from("executions")
-      .insert([executionRecord])
+      .insert([record])
       .select("*");
 
     if (error) {
-      console.error("EXECUTE INSERT ERROR:", error);
-
+      console.error("EXECUTION_INSERT_FAILED:", error);
       return res.status(500).json({
         ok: false,
         error: "EXECUTION_INSERT_FAILED",
@@ -148,10 +134,10 @@ export default async function handler(req, res) {
       });
     }
 
-    const inserted = Array.isArray(data) ? data[0] : data;
+    const execution = Array.isArray(data) ? data[0] : data;
 
-    const auditPayload = {
-      organization_id: basePayload.organization_id,
+    await supabase.from("audit_logs").insert([{
+      organization_id: "org_norsteel",
       actor_type: "system",
       actor_id: "execute_api",
       actor_label: "EXECUTIA Engine",
@@ -159,41 +145,29 @@ export default async function handler(req, res) {
       entity: "execution",
       entity_id: execution_id,
       status: "ok",
-      request_id: basePayload.session_id,
       payload: {
         execution_id,
-        decision: decision.status,
-        reason: decision.reason,
-        truth_hash: hash
+        decision: result.status,
+        reason: result.reason,
+        truth_hash
       },
       created_at: now
-    };
-
-    const { error: auditError } = await supabase
-      .from("audit_logs")
-      .insert([auditPayload]);
-
-    if (auditError) {
-      console.error("EXECUTE AUDIT ERROR:", auditError);
-    }
+    }]).catch(() => null);
 
     return res.status(200).json({
       ok: true,
       execution_id,
-      decision: decision.status,
-      status: decision.status,
-      result_status: decision.status,
-      authorized: decision.authorized,
-      hold_pending: decision.hold_pending,
-      reason: decision.reason,
-      truth_hash: hash,
-      execution: inserted || executionRecord,
-      audit_ok: !auditError,
-      audit_error: auditError?.message || null
+      status: result.status,
+      decision: result.status,
+      authorized: result.authorized,
+      hold_pending: result.hold_pending,
+      reason: result.reason,
+      truth_hash,
+      execution
     });
 
   } catch (err) {
-    console.error("EXECUTE SERVER ERROR:", err);
+    console.error("EXECUTE_SERVER_ERROR:", err);
 
     return res.status(500).json({
       ok: false,
