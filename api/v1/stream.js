@@ -9,6 +9,17 @@ export default async function handler(req, res) {
     });
   }
 
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      ok: false,
+      error: "SUPABASE_ENV_MISSING"
+    });
+  }
+
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache, no-transform",
@@ -21,86 +32,98 @@ export default async function handler(req, res) {
     res.write(`data: ${JSON.stringify(payload)}\n\n`);
   };
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    send("error", {
-      ok: false,
-      error: "SUPABASE_ENV_MISSING"
-    });
-    res.end();
-    return;
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false
+    }
+  });
 
   let closed = false;
-  let lastId = null;
 
-  async function poll() {
-    if (closed) return;
+  async function sendSnapshot() {
+    const { data, error } = await supabase
+      .from("executions")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(10);
 
-    try {
-      let query = supabase
-        .from("executions")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      const { data, error } = await query;
-
-      if (error) {
-        send("error", {
-          ok: false,
-          error: "STREAM_QUERY_FAILED",
-          detail: error.message
-        });
-        return;
-      }
-
-      const latest = data?.[0] || null;
-
-      if (latest && latest.id !== lastId) {
-        lastId = latest.id;
-
-        send("execution", {
-          ok: true,
-          type: "execution",
-          execution: latest,
-          executions: data || [],
-          timestamp: new Date().toISOString()
-        });
-      } else {
-        send("heartbeat", {
-          ok: true,
-          type: "heartbeat",
-          timestamp: new Date().toISOString()
-        });
-      }
-    } catch (err) {
+    if (error) {
       send("error", {
         ok: false,
-        error: "STREAM_INTERNAL_ERROR",
-        detail: err.message || String(err)
+        error: "SNAPSHOT_QUERY_FAILED",
+        detail: error.message
       });
+      return;
     }
+
+    send("execution", {
+      ok: true,
+      type: "snapshot",
+      executions: data || [],
+      timestamp: new Date().toISOString()
+    });
   }
 
   send("connected", {
     ok: true,
     service: "EXECUTIA STREAM",
-    mode: "polling-sse",
+    mode: "supabase-realtime",
     timestamp: new Date().toISOString()
   });
 
-  await poll();
+  await sendSnapshot();
 
-  const interval = setInterval(poll, 5000);
+  const channel = supabase
+    .channel("executia-executions-stream")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "executions"
+      },
+      async (payload) => {
+        if (closed) return;
 
-  req.on("close", () => {
+        send("change", {
+          ok: true,
+          type: "postgres_change",
+          eventType: payload.eventType,
+          execution: payload.new || payload.old || null,
+          old: payload.old || null,
+          timestamp: new Date().toISOString()
+        });
+
+        await sendSnapshot();
+      }
+    )
+    .subscribe((status) => {
+      send("realtime_status", {
+        ok: true,
+        status,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+  const heartbeat = setInterval(() => {
+    if (!closed) {
+      send("heartbeat", {
+        ok: true,
+        type: "heartbeat",
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, 25000);
+
+  req.on("close", async () => {
     closed = true;
-    clearInterval(interval);
+    clearInterval(heartbeat);
+
+    try {
+      await supabase.removeChannel(channel);
+    } catch {}
+
     res.end();
   });
 }
