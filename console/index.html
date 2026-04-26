@@ -47,8 +47,8 @@ body{
 }
 
 .logo{
-  width:40px;
-  height:40px;
+  width:38px;
+  height:38px;
   border-radius:11px;
   background:var(--blue);
   color:#fff;
@@ -56,19 +56,19 @@ body{
   align-items:center;
   justify-content:center;
   font-weight:900;
-  font-size:18px;
+  font-size:17px;
 }
 
 h1{
   margin:0;
-  font-size:28px;
+  font-size:26px;
   letter-spacing:-.04em;
 }
 
 .sub{
   color:var(--muted);
   margin-top:5px;
-  font-size:14px;
+  font-size:13px;
 }
 
 .actions{
@@ -153,7 +153,8 @@ button:disabled{
 }
 
 .grid .card{
-  min-height:92px;
+  min-height:82px;
+  padding:14px 18px;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -168,22 +169,39 @@ button:disabled{
   font-weight:900;
 }
 
+.grid .label{
+  font-size:9.5px;
+  letter-spacing:.18em;
+  margin-bottom:6px;
+}
+
 .value{
-  font-size:18px;
-  line-height:1.1;
+  font-size:17px;
+  line-height:1.05;
   font-weight:800;
-  letter-spacing:-.02em;
+  letter-spacing:-.025em;
   color:var(--blue);
 }
 
 #executionCount{
-  font-size:20px;
+  font-size:18px;
+}
+
+#systemState,
+#lastDecision,
+#lastStatus{
+  font-size:17px;
 }
 
 .help{
   color:#50627f;
   font-size:12px;
   margin-top:8px;
+}
+
+.grid .help{
+  font-size:11px;
+  margin-top:7px;
 }
 
 .ok{color:var(--green)}
@@ -321,8 +339,8 @@ pre,.preview{
   padding:16px;
   white-space:pre-wrap;
   overflow:auto;
-  max-height:420px;
-  font-size:12px;
+  max-height:340px;
+  font-size:11.5px;
   line-height:1.45;
 }
 
