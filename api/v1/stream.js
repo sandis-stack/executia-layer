@@ -35,8 +35,8 @@ export default async function handler(req, res) {
   });
 
   let closed = false;
-  let lastStateHash = null;
-  let lastLatestId = null;
+  let previousRows = [];
+  let previousHash = null;
 
   function send(event, payload) {
     if (closed) return;
@@ -45,20 +45,50 @@ export default async function handler(req, res) {
     res.write(`data: ${JSON.stringify(payload)}\n\n`);
   }
 
+  function rowId(row) {
+    return row?.execution_id || row?.id || null;
+  }
+
+  function stableStringify(value) {
+    return JSON.stringify(value);
+  }
+
   function createStateHash(rows) {
-    return JSON.stringify(
-      (rows || []).map((e) => ({
-        id: e.id,
-        execution_id: e.execution_id,
-        status: e.status,
-        result_status: e.result_status,
-        authorized: e.authorized,
-        hold_pending: e.hold_pending,
-        reason: e.reason,
-        updated_at: e.updated_at,
-        created_at: e.created_at
+    return stableStringify(
+      (rows || []).map((row) => ({
+        id: row.id,
+        execution_id: row.execution_id,
+        status: row.status,
+        result_status: row.result_status,
+        authorized: row.authorized,
+        hold_pending: row.hold_pending,
+        reason: row.reason,
+        updated_at: row.updated_at,
+        created_at: row.created_at,
+        payload: row.payload
       }))
     );
+  }
+
+  function findChangedRow(previous, current) {
+    const prevMap = new Map(
+      (previous || []).map((row) => [
+        rowId(row),
+        stableStringify(row)
+      ])
+    );
+
+    for (const row of current || []) {
+      const id = rowId(row);
+      const oldHash = prevMap.get(id);
+      const newHash = stableStringify(row);
+
+      if (!oldHash || oldHash !== newHash) {
+        return row;
+      }
+    }
+
+    return (current || [])[0] || null;
   }
 
   async function fetchExecutions(limit = 25) {
@@ -68,35 +98,8 @@ export default async function handler(req, res) {
       .order("created_at", { ascending: false })
       .limit(limit);
 
-    if (error) {
-      throw error;
-    }
-
+    if (error) throw error;
     return data || [];
-  }
-
-  async function emitSnapshot(type = "snapshot") {
-    try {
-      const executions = await fetchExecutions(25);
-
-      send("execution", {
-        ok: true,
-        type,
-        executions,
-        timestamp: new Date().toISOString()
-      });
-
-      return executions;
-    } catch (err) {
-      send("error", {
-        ok: false,
-        error: "SNAPSHOT_FAILED",
-        detail: err.message || String(err),
-        timestamp: new Date().toISOString()
-      });
-
-      return [];
-    }
   }
 
   async function checkForChanges() {
@@ -105,12 +108,10 @@ export default async function handler(req, res) {
     try {
       const executions = await fetchExecutions(25);
       const currentHash = createStateHash(executions);
-      const latest = executions[0] || null;
-      const latestId = latest?.execution_id || latest?.id || null;
 
-      if (lastStateHash === null) {
-        lastStateHash = currentHash;
-        lastLatestId = latestId;
+      if (previousHash === null) {
+        previousHash = currentHash;
+        previousRows = executions;
 
         send("execution", {
           ok: true,
@@ -122,24 +123,20 @@ export default async function handler(req, res) {
         return;
       }
 
-      if (currentHash !== lastStateHash) {
-        const previousHash = lastStateHash;
-        const previousLatestId = lastLatestId;
+      if (currentHash !== previousHash) {
+        const changedRow = findChangedRow(previousRows, executions);
 
-        lastStateHash = currentHash;
-        lastLatestId = latestId;
+        previousHash = currentHash;
+        previousRows = executions;
 
         send("change", {
           ok: true,
           type: "deterministic_db_change",
           table: "executions",
-          execution: latest,
-          execution_id: latestId,
-          previous_latest_id: previousLatestId,
-          status: latest?.status || latest?.result_status || null,
-          reason: latest?.reason || latest?.payload?.reason || null,
-          previous_hash: previousHash,
-          current_hash: currentHash,
+          execution: changedRow,
+          execution_id: rowId(changedRow),
+          status: changedRow?.status || changedRow?.result_status || null,
+          reason: changedRow?.reason || changedRow?.payload?.reason || null,
           timestamp: new Date().toISOString()
         });
 
@@ -156,7 +153,6 @@ export default async function handler(req, res) {
       send("heartbeat", {
         ok: true,
         type: "heartbeat",
-        latest_id: latestId,
         timestamp: new Date().toISOString()
       });
 
@@ -173,7 +169,7 @@ export default async function handler(req, res) {
   send("connected", {
     ok: true,
     service: "EXECUTIA STREAM",
-    mode: "deterministic-db-change-stream",
+    mode: "deterministic-db-diff-stream",
     events: ["connected", "execution", "change", "heartbeat", "error"],
     interval_ms: 2000,
     timestamp: new Date().toISOString()
