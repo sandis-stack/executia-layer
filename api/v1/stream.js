@@ -1,5 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
+const STREAM_INTERVAL_MS = 2000;
+const MAX_STREAM_MS = 25000;
+
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     res.setHeader("Content-Type", "application/json");
@@ -21,7 +24,7 @@ export default async function handler(req, res) {
   }
 
   res.writeHead(200, {
-    "Content-Type": "text/event-stream",
+    "Content-Type": "text/event-stream; charset=utf-8",
     "Cache-Control": "no-cache, no-transform",
     "Connection": "keep-alive",
     "X-Accel-Buffering": "no"
@@ -37,12 +40,31 @@ export default async function handler(req, res) {
   let closed = false;
   let previousRows = [];
   let previousHash = null;
+  let interval = null;
+  let shutdownTimer = null;
+
+  function safeEnd() {
+    if (closed) return;
+
+    closed = true;
+
+    if (interval) clearInterval(interval);
+    if (shutdownTimer) clearTimeout(shutdownTimer);
+
+    try {
+      res.end();
+    } catch {}
+  }
 
   function send(event, payload) {
     if (closed) return;
 
-    res.write(`event: ${event}\n`);
-    res.write(`data: ${JSON.stringify(payload)}\n\n`);
+    try {
+      res.write(`event: ${event}\n`);
+      res.write(`data: ${JSON.stringify(payload)}\n\n`);
+    } catch {
+      safeEnd();
+    }
   }
 
   function rowId(row) {
@@ -60,11 +82,14 @@ export default async function handler(req, res) {
         execution_id: row.execution_id,
         status: row.status,
         result_status: row.result_status,
+        decision: row.decision,
         authorized: row.authorized,
         hold_pending: row.hold_pending,
         reason: row.reason,
+        source: row.source,
         updated_at: row.updated_at,
         created_at: row.created_at,
+        truth_hash: row.truth_hash,
         payload: row.payload
       }))
     );
@@ -135,7 +160,7 @@ export default async function handler(req, res) {
           table: "executions",
           execution: changedRow,
           execution_id: rowId(changedRow),
-          status: changedRow?.status || changedRow?.result_status || null,
+          status: changedRow?.status || changedRow?.result_status || changedRow?.decision || null,
           reason: changedRow?.reason || changedRow?.payload?.reason || null,
           timestamp: new Date().toISOString()
         });
@@ -170,21 +195,28 @@ export default async function handler(req, res) {
     ok: true,
     service: "EXECUTIA STREAM",
     mode: "deterministic-db-diff-stream",
-    events: ["connected", "execution", "change", "heartbeat", "error"],
-    interval_ms: 2000,
+    events: ["connected", "execution", "change", "heartbeat", "error", "stream_restart"],
+    interval_ms: STREAM_INTERVAL_MS,
+    max_stream_ms: MAX_STREAM_MS,
     timestamp: new Date().toISOString()
   });
 
   await checkForChanges();
 
-  const interval = setInterval(checkForChanges, 2000);
+  interval = setInterval(checkForChanges, STREAM_INTERVAL_MS);
+
+  shutdownTimer = setTimeout(() => {
+    send("heartbeat", {
+      ok: true,
+      type: "stream_restart",
+      reason: "VERCEL_TIMEOUT_PREVENTION",
+      timestamp: new Date().toISOString()
+    });
+
+    safeEnd();
+  }, MAX_STREAM_MS);
 
   req.on("close", () => {
-    closed = true;
-    clearInterval(interval);
-
-    try {
-      res.end();
-    } catch {}
+    safeEnd();
   });
 }
