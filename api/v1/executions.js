@@ -2,11 +2,11 @@ import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store");
 
   if (req.method !== "GET") {
     return res.status(405).json({
       ok: false,
-      executions: [],
       error: "METHOD_NOT_ALLOWED"
     });
   }
@@ -16,50 +16,42 @@ export default async function handler(req, res) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
-      return res.status(200).json({
+      return res.status(500).json({
         ok: false,
-        executions: [],
         error: "SUPABASE_ENV_MISSING"
       });
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    const limitRaw = req.query?.limit || 50;
+    const limit = Math.min(Number(limitRaw) || 50, 100);
+
     const { data, error } = await supabase
       .from("executions")
-      .select(`
-        id,
-        execution_id,
-        status,
-        result_status,
-        created_at,
-        payload,
-        authorized,
-        hold_pending,
-        reason,
-        source
-      `)
+      .select("*")
       .order("created_at", { ascending: false })
-      .limit(50);
+      .limit(limit);
 
     if (error) {
-      return res.status(200).json({
+      return res.status(500).json({
         ok: false,
-        executions: [],
-        error: error.message
+        error: "SUPABASE_QUERY_FAILED",
+        detail: error.message
       });
     }
 
     return res.status(200).json({
       ok: true,
+      count: data?.length || 0,
       executions: data || []
     });
 
   } catch (err) {
-    return res.status(200).json({
+    return res.status(500).json({
       ok: false,
-      executions: [],
-      error: err.message || String(err)
+      error: "INTERNAL_ERROR",
+      detail: err.message || String(err)
     });
   }
 }
