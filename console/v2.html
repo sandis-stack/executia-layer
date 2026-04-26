@@ -1,680 +1,761 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>EXECUTIA Console V2 — Core Execute</title>
-  <meta name="color-scheme" content="light" />
-  <style>
-    :root{
-      --bg:#f6f9fd;
-      --panel:#ffffff;
-      --panel2:#fbfdff;
-      --line:#d7e2f1;
-      --ink:#0a1f44;
-      --muted:#5d6d86;
-      --blue:#0a2540;
-      --blue2:#1e3a8a;
-      --green:#15803d;
-      --amber:#b45309;
-      --red:#dc2626;
-      --shadow:0 12px 34px rgba(10,31,68,.08);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EXECUTIA Console V2</title>
 
-    *{box-sizing:border-box}
+<style>
+:root{
+  --blue:#0A2540;
+  --line:#d9e4f2;
+  --soft:#f7f9fc;
+  --soft2:#f6f9fc;
+  --muted:#667085;
+  --green:#15803d;
+  --greenSoft:#ecfdf3;
+  --orange:#b45309;
+  --orangeSoft:#fff7ed;
+  --red:#991b1b;
+  --redSoft:#fff1f2;
+  --dark:#0f172a;
+}
 
-    body{
-      margin:0;
-      background:linear-gradient(180deg,#f8fbff 0%,#f1f6fc 100%);
-      color:var(--ink);
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    }
+*{box-sizing:border-box}
 
-    a{color:inherit;text-decoration:none}
-    .topline{height:5px;background:linear-gradient(90deg,#0a2540,#1e3a8a,#16a34a)}
-    .shell{max-width:1480px;margin:0 auto;padding:24px}
+body{
+  margin:0;
+  padding:40px;
+  font-family:Arial,sans-serif;
+  background:var(--soft);
+  color:var(--blue);
+  border-top:6px solid var(--green);
+}
 
-    .bar{
-      display:flex;
-      justify-content:space-between;
-      gap:18px;
-      align-items:center;
-      margin-bottom:22px;
-    }
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+  margin-bottom:26px;
+}
 
-    .brand{display:flex;gap:14px;align-items:center}
-    .mark{
-      height:44px;
-      width:44px;
-      border-radius:14px;
-      background:var(--blue);
-      color:#fff;
-      display:grid;
-      place-items:center;
-      font-weight:900;
-      box-shadow:var(--shadow);
-    }
+.brand{
+  display:flex;
+  gap:14px;
+  align-items:center;
+}
 
-    .title{font-size:30px;font-weight:900;letter-spacing:-.03em}
-    .subtitle{font-size:14px;color:var(--muted);margin-top:3px}
+.logo{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  background:var(--blue);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+}
 
-    .nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .btn{
-      border:0;
-      border-radius:13px;
-      background:var(--blue);
-      color:#fff;
-      padding:11px 15px;
-      font-weight:850;
-      cursor:pointer;
-    }
-    .btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
+h1{
+  margin:0;
+  font-size:32px;
+  letter-spacing:-.04em;
+}
 
-    .mode{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:7px 11px;
-      font-size:12px;
-      font-weight:800;
-      color:var(--muted);
-    }
+.sub{
+  color:var(--muted);
+  margin-top:5px;
+}
 
-    .dot{height:8px;width:8px;border-radius:999px;background:var(--green);box-shadow:0 0 0 4px rgba(21,128,61,.12)}
+.actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
 
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:14px;
-      margin-bottom:18px;
-    }
+button{
+  border:0;
+  border-radius:10px;
+  padding:12px 16px;
+  font-weight:800;
+  cursor:pointer;
+}
 
-    .kpi{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:18px;
-      box-shadow:var(--shadow);
-    }
+button.primary{
+  background:var(--blue);
+  color:white;
+}
 
-    .kpi .k{font-size:11px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase}
-    .kpi .v{font-size:30px;font-weight:950;margin-top:9px;min-height:38px}
-    .kpi .d{font-size:12px;color:var(--muted);margin-top:6px}
+button.secondary{
+  background:white;
+  color:var(--blue);
+  border:1px solid var(--line);
+}
 
-    .layout{display:grid;grid-template-columns:370px 1fr;gap:18px}
-    .stack{display:grid;gap:18px}
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
 
-    .panel{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:22px;
-      padding:18px;
-      box-shadow:var(--shadow);
-    }
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid var(--line);
+  background:white;
+  border-radius:999px;
+  padding:9px 12px;
+  font-size:12px;
+  font-weight:900;
+  color:var(--muted);
+  text-transform:uppercase;
+}
 
-    .panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-    .panel-title strong{font-size:12px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase}
-    .small{font-size:12px;color:var(--muted)}
+.dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--green);
+}
 
-    label{
-      display:block;
-      font-size:11px;
-      color:var(--muted);
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      margin-bottom:6px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:18px;
+}
 
-    input,select,textarea{
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:13px;
-      padding:11px 12px;
-      background:#fff;
-      color:var(--ink);
-      font:inherit;
-    }
+.card{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 8px 22px rgba(10,37,64,.04);
+}
 
-    textarea{min-height:120px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-    .space{height:11px}
+.label{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:10px;
+  font-weight:900;
+}
 
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.value{
+  font-size:26px;
+  font-weight:900;
+}
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      border-radius:999px;
-      padding:5px 10px;
-      font-size:12px;
-      font-weight:900;
-      border:1px solid transparent;
-      white-space:nowrap;
-    }
+.help{
+  color:#50627f;
+  font-size:13px;
+  margin-top:10px;
+}
 
-    .ok{background:#e8f7ec;color:var(--green)}
-    .warn{background:#fff5e7;color:var(--amber)}
-    .bad{background:#feecec;color:var(--red)}
-    .neutral{background:#eef2f7;color:#475569}
+.ok{color:var(--green)}
+.review{color:var(--orange)}
+.bad{color:var(--red)}
+.muted{color:var(--muted)}
 
-    .pulse{animation:pulse 1.8s ease-in-out infinite}
-    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(21,128,61,.22)}50%{box-shadow:0 0 0 7px rgba(21,128,61,0)}}
+.layout{
+  display:grid;
+  grid-template-columns:370px 1fr;
+  gap:20px;
+}
 
-    .preset-grid{display:grid;grid-template-columns:1fr;gap:10px}
-    .preset{
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:var(--panel2);
-      padding:14px;
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      cursor:pointer;
-    }
-    .preset:hover{border-color:#9bb2d0}
-    .preset h3{margin:0;font-size:15px}
-    .preset p{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.35}
+.panel{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+}
 
-    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-    .step{position:relative;border:1px solid var(--line);border-radius:18px;background:var(--panel2);padding:15px;min-height:116px}
-    .step .n{font-size:11px;color:var(--muted);font-weight:900}
-    .step .l{font-size:16px;font-weight:950;margin-top:8px}
-    .step .t{font-size:12px;color:var(--muted);line-height:1.42;margin-top:6px}
-    .step.active{border-color:#9bc4ff;background:#f5faff}
-    .step.done{border-color:#bfe7ca;background:#f3fbf5}
-    .step.blocked{border-color:#f2b8b8;background:#fff7f7}
-    .step.review{border-color:#ffd38b;background:#fffaf0}
+.input{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:13px 14px;
+  font-size:16px;
+  color:var(--blue);
+  outline:none;
+  background:white;
+  margin-bottom:12px;
+}
 
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:top}
-    th{font-size:11px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase}
+.small-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
 
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-    .terminal{background:#0f172a;color:#e2e8f0;border-radius:17px;padding:14px;font-size:12px;overflow:auto;min-height:220px}
-    .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-    .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .proof{border:1px solid var(--line);border-radius:17px;background:var(--panel2);padding:14px}
-    .proof h3{margin:0;font-size:14px}
-    .proof p{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.4;word-break:break-word}
+.flow{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin:12px 0 18px;
+}
 
-    @media(max-width:1180px){
-      .layout,.split{grid-template-columns:1fr}
-      .kpis{grid-template-columns:repeat(2,1fr)}
-      .flow{grid-template-columns:1fr 1fr}
-      .proof-grid{grid-template-columns:1fr}
-      .bar{align-items:flex-start;flex-direction:column}
-    }
+.step{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  background:var(--soft2);
+}
 
-    @media(max-width:740px){
-      .shell{padding:16px}
-      .kpis,.row,.row3,.flow{grid-template-columns:1fr}
-      .title{font-size:25px}
-    }
-  </style>
+.step-num{
+  font-size:12px;
+  font-weight:900;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+
+.step-title{
+  font-size:18px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.step-text{
+  color:#50627f;
+  font-size:13px;
+  line-height:1.35;
+}
+
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  border-radius:999px;
+  padding:8px 14px;
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+
+.pill-ok{background:var(--greenSoft);color:var(--green)}
+.pill-review{background:var(--orangeSoft);color:var(--orange)}
+.pill-bad{background:var(--redSoft);color:var(--red)}
+.pill-muted{background:#eef2f7;color:#50627f}
+
+.proofs{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.proof{
+  border:1px solid var(--line);
+  background:var(--soft2);
+  border-radius:14px;
+  padding:14px;
+  min-height:74px;
+}
+
+pre{
+  margin:0;
+  background:var(--dark);
+  color:white;
+  border-radius:14px;
+  padding:18px;
+  white-space:pre-wrap;
+  overflow:auto;
+  max-height:440px;
+  font-size:13px;
+  line-height:1.45;
+}
+
+.response-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.preview{
+  background:var(--dark);
+  color:white;
+  border-radius:14px;
+  padding:18px;
+  font-size:13px;
+  white-space:pre-wrap;
+  max-height:260px;
+  overflow:auto;
+}
+
+.scenario{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:10px;
+  background:var(--soft2);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+}
+
+.scenario-title{
+  font-weight:900;
+  margin-bottom:4px;
+}
+
+.scenario-text{
+  color:#50627f;
+  font-size:13px;
+}
+
+.notice{
+  display:none;
+  margin-bottom:18px;
+  padding:14px 16px;
+  border-radius:14px;
+  font-weight:800;
+  border:1px solid #c7d7eb;
+  background:#e6f0fa;
+}
+
+.notice.show{display:block}
+
+@media(max-width:1100px){
+  body{padding:24px}
+  .top{display:block}
+  .actions{margin-top:16px}
+  .grid{grid-template-columns:1fr 1fr}
+  .layout{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr}
+  .proofs{grid-template-columns:1fr}
+}
+</style>
 </head>
+
 <body>
-  <div class="topline"></div>
 
-  <main class="shell">
-    <header class="bar">
-      <div class="brand">
-        <div class="mark">E</div>
+<div class="top">
+  <div class="brand">
+    <div class="logo">E</div>
+    <div>
+      <h1>EXECUTIA Console V2</h1>
+      <div class="sub">Core execution interface — input, rule decision, dispatch, ledger proof.</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <span class="badge"><span class="dot"></span> Core engine</span>
+    <button class="secondary" onclick="refreshData()">Refresh</button>
+    <button id="executeBtn" class="primary" onclick="executeScenario()">Execute</button>
+  </div>
+</div>
+
+<div id="notice" class="notice"></div>
+
+<div class="grid">
+  <div class="card">
+    <div class="label">System</div>
+    <div id="systemState" class="value muted">—</div>
+    <div class="help">/api/v1/health</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Executions</div>
+    <div id="executionCount" class="value">—</div>
+    <div class="help">stored execution records</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Last decision</div>
+    <div id="lastDecision" class="value">—</div>
+    <div class="help">APPROVE / BLOCK / ESCALATE</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Last status</div>
+    <div id="lastStatus" class="value">—</div>
+    <div class="help">EXECUTED / BLOCKED / REVIEW</div>
+  </div>
+</div>
+
+<div class="layout">
+  <div>
+    <div class="panel" style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div class="label">Connection</div>
+        <button class="secondary" onclick="saveConnection()">Save</button>
+      </div>
+
+      <div class="label">API Base</div>
+      <input id="apiBase" class="input" value="/api/v1" />
+
+      <div class="label">Organization ID</div>
+      <input id="orgId" class="input" value="org_norsteel" />
+
+      <div class="small-actions">
+        <button class="secondary" onclick="checkHealth()">Check health</button>
+        <button class="primary" onclick="refreshData()">Refresh data</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div class="label">Preset controls</div>
+        <div class="help" style="margin:0">demo scenarios</div>
+      </div>
+
+      <div class="scenario">
         <div>
-          <div class="title">EXECUTIA Console V2</div>
-          <div class="subtitle">Core execution interface — input, rule decision, dispatch, ledger proof.</div>
+          <div class="scenario-title">Approve</div>
+          <div class="scenario-text">Normal payment. Execution should complete.</div>
+        </div>
+        <button class="secondary" onclick="executeScenario('approve')">APPROVE</button>
+      </div>
+
+      <div class="scenario">
+        <div>
+          <div class="scenario-title">Block</div>
+          <div class="scenario-text">Legal block or invalid amount.</div>
+        </div>
+        <button class="secondary" onclick="executeScenario('block')">BLOCK</button>
+      </div>
+
+      <div class="scenario">
+        <div>
+          <div class="scenario-title">Review</div>
+          <div class="scenario-text">High-value execution requires review.</div>
+        </div>
+        <button class="secondary" onclick="executeScenario('review')">REVIEW</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel" style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div class="label">Execution flow</div>
+        <span id="flowStatus" class="status-pill pill-muted">READY</span>
+      </div>
+
+      <div class="flow">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-title">Input</div>
+          <div class="step-text">Execution request accepted.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-title">Rules</div>
+          <div class="step-text">Core rules applied deterministically.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-title">Decision</div>
+          <div class="step-text">Approve, block, or escalate.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-title">Dispatch</div>
+          <div class="step-text">Safe-mode execution action.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-title">Ledger</div>
+          <div class="step-text">Truth hash generated and stored.</div>
         </div>
       </div>
 
-      <div class="nav">
-        <span class="mode"><span class="dot"></span> CORE ENGINE</span>
-        <button class="btn secondary" id="refreshBtn">Refresh</button>
-        <button class="btn" id="submitBtnTop">Execute</button>
+      <div class="proofs">
+        <div class="proof">
+          <div class="label">Decision proof</div>
+          <div id="decisionProof" class="help">No decision yet.</div>
+        </div>
+        <div class="proof">
+          <div class="label">Ledger proof</div>
+          <div id="ledgerProof" class="help">No truth hash yet.</div>
+        </div>
+        <div class="proof">
+          <div class="label">Execution proof</div>
+          <div id="executionProof" class="help">No execution yet.</div>
+        </div>
       </div>
-    </header>
 
-    <section class="kpis">
-      <div class="kpi"><div class="k">System</div><div class="v" id="kpiHealth">—</div><div class="d">/api/v1/health</div></div>
-      <div class="kpi"><div class="k">Executions</div><div class="v" id="kpiExecutions">—</div><div class="d">stored execution records</div></div>
-      <div class="kpi"><div class="k">Last decision</div><div class="v" id="kpiDecision">—</div><div class="d">APPROVE / BLOCK / ESCALATE</div></div>
-      <div class="kpi"><div class="k">Last status</div><div class="v" id="kpiStatus">—</div><div class="d">EXECUTED / BLOCKED / REVIEW</div></div>
-    </section>
+      <div class="response-head">
+        <div class="label" style="margin:0">Latest response</div>
+        <div id="lastRefresh" class="help" style="margin:0">not refreshed</div>
+      </div>
+      <pre id="latestResponse">Waiting for EXECUTIA engine response...</pre>
+    </div>
 
-    <section class="layout">
-      <aside class="stack">
-        <div class="panel">
-          <div class="panel-title"><strong>Connection</strong><button class="btn secondary" id="saveBtn">Save</button></div>
-          <label>API base</label>
-          <input id="apiBase" value="/api/v1" />
-          <div class="space"></div>
-          <label>Organization ID</label>
-          <input id="orgId" value="org_norsteel" />
-          <div class="actions">
-            <button class="btn secondary" id="healthBtn">Check health</button>
-            <button class="btn" id="refreshBtnSide">Refresh data</button>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title"><strong>Preset controls</strong><span class="small">demo scenarios</span></div>
-          <div class="preset-grid">
-            <div class="preset" data-preset="approve"><div><h3>Approve</h3><p>Normal payment. Execution should complete.</p></div><span class="pill ok">APPROVE</span></div>
-            <div class="preset" data-preset="block"><div><h3>Block</h3><p>Legal block or invalid amount. Execution stops.</p></div><span class="pill bad">BLOCK</span></div>
-            <div class="preset" data-preset="escalate"><div><h3>Escalate</h3><p>High-value payment. Manual review required.</p></div><span class="pill warn">ESCALATE</span></div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title"><strong>Execution input</strong><span id="previewBadge" class="pill neutral">—</span></div>
-
-          <div class="row">
-            <div><label>Endpoint</label><input id="endpoint" value="execute" readonly /></div>
-            <div><label>Event type</label><input id="eventType" value="payment" /></div>
-          </div>
-
-          <div class="space"></div>
-
-          <div class="row">
-            <div><label>Session</label><input id="sessionId" value="sess_v2_001" /></div>
-            <div><label>Project</label><input id="projectId" value="prj_alpha" /></div>
-          </div>
-
-          <div class="space"></div>
-
-          <div class="row3">
-            <div><label>Amount</label><input id="amount" value="4200" /></div>
-            <div><label>Currency</label><input id="currency" value="EUR" /></div>
-            <div><label>Provider</label><input id="provider" value="safe-mode" /></div>
-          </div>
-
-          <div class="space"></div>
-
-          <label>Context JSON</label>
-          <textarea id="contextJson">{
-  "supplierVerified": true,
-  "contractValid": true,
-  "budgetRemaining": 15000,
-  "legalBlock": false
-}</textarea>
-
-          <div class="actions">
-            <button class="btn" id="submitBtn">Execute</button>
-            <button class="btn secondary" id="copyBtn">Copy response</button>
-          </div>
-        </div>
-      </aside>
-
-      <section class="stack">
-        <div class="panel">
-          <div class="panel-title"><strong>Execution flow</strong><span id="flowBadge" class="pill neutral">READY</span></div>
-          <div class="flow">
-            <div class="step" id="stepInput"><div class="n">01</div><div class="l">Input</div><div class="t">Execution request accepted.</div></div>
-            <div class="step" id="stepRules"><div class="n">02</div><div class="l">Rules</div><div class="t">Core rules applied deterministically.</div></div>
-            <div class="step" id="stepDecision"><div class="n">03</div><div class="l">Decision</div><div class="t">Approve, block, or escalate.</div></div>
-            <div class="step" id="stepDispatch"><div class="n">04</div><div class="l">Dispatch</div><div class="t">Safe-mode execution action.</div></div>
-            <div class="step" id="stepLedger"><div class="n">05</div><div class="l">Ledger</div><div class="t">Truth hash generated and stored.</div></div>
-          </div>
-        </div>
-
-        <div class="proof-grid">
-          <div class="proof"><h3>Decision proof</h3><p id="proofDecision">No decision yet.</p></div>
-          <div class="proof"><h3>Ledger proof</h3><p id="proofLedger">No truth hash yet.</p></div>
-          <div class="proof"><h3>Execution proof</h3><p id="proofExecution">No execution yet.</p></div>
-        </div>
-
-        <div class="split">
-          <div class="panel">
-            <div class="panel-title"><strong>Latest response</strong><span id="lastMeta" class="small">—</span></div>
-            <pre class="terminal" id="output">No request yet.</pre>
-          </div>
-          <div class="panel">
-            <div class="panel-title"><strong>Client preview</strong><span class="small">local rule preview</span></div>
-            <pre class="terminal" id="rulePreview">—</pre>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title"><strong>Executions</strong><span class="small">latest records from /executions</span></div>
-          <table>
-            <thead><tr><th>Ticket</th><th>Decision</th><th>Status</th><th>Provider</th><th>Hash</th></tr></thead>
-            <tbody id="executionRows"></tbody>
-          </table>
-        </div>
-      </section>
-    </section>
-  </main>
+    <div class="panel">
+      <div class="response-head">
+        <div class="label" style="margin:0">Client preview</div>
+        <div class="help" style="margin:0">local rule preview</div>
+      </div>
+      <div id="clientPreview" class="preview">{}</div>
+    </div>
+  </div>
+</div>
 
 <script>
-const $ = id => document.getElementById(id);
-const storeKey = 'executia_console_v2_clean';
+const DEFAULT_API = "/api/v1";
 
-function saveConn(){
-  localStorage.setItem(storeKey, JSON.stringify({
-    apiBase: $('apiBase').value,
-    orgId: $('orgId').value
-  }));
-  $('lastMeta').textContent = 'connection saved';
+function getApiBase(){
+  const input = document.getElementById("apiBase");
+  return (input.value || DEFAULT_API).replace(/\/+$/,"");
 }
 
-function loadConn(){
-  try{
-    const v = JSON.parse(localStorage.getItem(storeKey) || '{}');
-    if(v.apiBase) $('apiBase').value = v.apiBase;
-    if(v.orgId) $('orgId').value = v.orgId;
-  }catch{}
-}
+function setNotice(message,type="ok"){
+  const box = document.getElementById("notice");
+  box.textContent = message;
+  box.className = "notice show";
 
-function base(){ return $('apiBase').value.replace(/\/$/, ''); }
-
-async function call(path, opt = {}){
-  const r = await fetch(base() + path, {
-    ...opt,
-    headers: {
-      'Content-Type':'application/json',
-      ...(opt.headers || {})
-    }
-  });
-  const data = await r.json().catch(() => ({}));
-  if(!r.ok){
-    const e = new Error(JSON.stringify(data, null, 2));
-    e.data = data;
-    throw e;
+  if(type === "bad"){
+    box.style.background = "#fff1f2";
+    box.style.borderColor = "#fecdd3";
+    box.style.color = "#991b1b";
+  }else{
+    box.style.background = "#e6f0fa";
+    box.style.borderColor = "#c7d7eb";
+    box.style.color = "#0A2540";
   }
+}
+
+function statusFromExecution(e){
+  return e?.decision || e?.ledger_decision || e?.result_status || e?.status || "UNKNOWN";
+}
+
+function hashFromExecution(e){
+  return e?.truth_hash || e?.payload?.truth_hash || e?.execution_id || e?.request_id || "NO_HASH";
+}
+
+async function apiJson(path,opt={}){
+  const base = getApiBase();
+  const url = base + path;
+
+  const res = await fetch(url,{
+    method: opt.method || "GET",
+    headers:{
+      "Content-Type":"application/json",
+      "Accept":"application/json"
+    },
+    body: opt.body ? JSON.stringify(opt.body) : undefined,
+    cache:"no-store"
+  });
+
+  const text = await res.text();
+  let data = {};
+
+  try{
+    data = text ? JSON.parse(text) : {};
+  }catch{
+    throw new Error("NON_JSON_RESPONSE");
+  }
+
+  if(!res.ok){
+    throw new Error(data.error || data.detail || "REQUEST_FAILED");
+  }
+
   return data;
 }
 
-function tone(s){
-  s = String(s || '').toUpperCase();
-  if(['HEALTHY','OK','SUCCESS','APPROVE','APPROVED','EXECUTED'].includes(s)) return 'ok';
-  if(['ESCALATE','ESCALATED','REVIEW','PENDING_REVIEW','PENDING'].includes(s)) return 'warn';
-  if(['BLOCK','BLOCKED','FAILED','ERROR','OFFLINE','REJECTED'].includes(s)) return 'bad';
-  return 'neutral';
+function setSystem(status){
+  const el = document.getElementById("systemState");
+  el.textContent = status;
+  el.className = "value " + (status === "HEALTHY" ? "ok" : "bad");
 }
 
-function makeBadge(s){
-  const u = String(s || '—').toUpperCase();
-  const el = document.createElement('span');
-  el.className = 'pill ' + tone(u);
-  el.textContent = u;
-  if(u === 'HEALTHY' || u === 'EXECUTED') el.classList.add('pulse');
-  return el;
+function setFlow(status){
+  const el = document.getElementById("flowStatus");
+
+  if(status === "APPROVED" || status === "EXECUTED"){
+    el.textContent = "READY";
+    el.className = "status-pill pill-ok";
+  }else if(status === "BLOCKED"){
+    el.textContent = "BLOCKED";
+    el.className = "status-pill pill-bad";
+  }else if(status === "REQUIRES_REVIEW"){
+    el.textContent = "REVIEW";
+    el.className = "status-pill pill-review";
+  }else{
+    el.textContent = "READY";
+    el.className = "status-pill pill-muted";
+  }
 }
 
-function setBadge(id, s){
-  const n = $(id);
-  n.innerHTML = '';
-  n.appendChild(makeBadge(s));
-}
+function previewScenario(type="approve"){
+  let scenario;
 
-function short(v){
-  const s = String(v || '—');
-  return s.length > 18 ? s.slice(0,18) + '…' : s;
-}
-
-function td(v, badge=false){
-  const e = document.createElement('td');
-  if(badge) e.appendChild(makeBadge(v));
-  else e.textContent = v == null ? '—' : String(v);
-  return e;
-}
-
-function fill(tbody, cols, msg){
-  tbody.innerHTML = '';
-  const tr = document.createElement('tr');
-  const c = document.createElement('td');
-  c.colSpan = cols;
-  c.className = 'small';
-  c.textContent = msg;
-  tr.appendChild(c);
-  tbody.appendChild(tr);
-}
-
-function readContext(){
-  return JSON.parse($('contextJson').value || '{}');
-}
-
-function preview(){
-  let decision = 'REVIEW';
-  let reason = 'Manual review required';
-  let context = {};
-
-  try{
-    context = readContext();
-    const amount = Number($('amount').value || 0);
-
-    if(context.legalBlock === true){
-      decision = 'BLOCK';
-      reason = 'Legal block detected';
-    } else if(amount <= 0){
-      decision = 'BLOCK';
-      reason = 'Amount must be greater than zero';
-    } else if(amount > 10000){
-      decision = 'ESCALATE';
-      reason = 'High-value payment requires review';
-    } else {
-      decision = 'APPROVE';
-      reason = 'Execution approved';
-    }
-  } catch(err){
-    decision = 'ERROR';
-    reason = 'Invalid context JSON';
+  if(type === "block"){
+    scenario = {
+      client_preview:"BLOCK",
+      reason:"Legal block detected",
+      context:{supplierVerified:true,contractValid:true,budgetRemaining:15000,legalBlock:true}
+    };
+  }else if(type === "review"){
+    scenario = {
+      client_preview:"REVIEW",
+      reason:"High-value execution requires review",
+      context:{supplierVerified:true,contractValid:true,budgetRemaining:15000,legalBlock:false}
+    };
+  }else{
+    scenario = {
+      client_preview:"APPROVE",
+      reason:"Execution approved",
+      context:{supplierVerified:true,contractValid:true,budgetRemaining:15000,legalBlock:false}
+    };
   }
 
-  setBadge('previewBadge', decision);
-  $('rulePreview').textContent = JSON.stringify({ client_preview: decision, reason, context }, null, 2);
-  return decision;
-}
-
-function setFlow(state){
-  ['stepInput','stepRules','stepDecision','stepDispatch','stepLedger'].forEach(id => $(id).className = 'step');
-
-  const s = String(state || 'READY').toUpperCase();
-
-  if(s === 'READY'){
-    setBadge('flowBadge','READY');
-    return;
-  }
-
-  if(s === 'RUNNING'){
-    setBadge('flowBadge','PROCESSING');
-    ['stepInput','stepRules'].forEach(id => $(id).classList.add('active'));
-    return;
-  }
-
-  if(s === 'APPROVE' || s === 'APPROVED' || s === 'EXECUTED'){
-    setBadge('flowBadge','EXECUTED');
-    ['stepInput','stepRules','stepDecision','stepDispatch','stepLedger'].forEach(id => $(id).classList.add('done'));
-    return;
-  }
-
-  if(s === 'BLOCK' || s === 'BLOCKED'){
-    setBadge('flowBadge','BLOCKED');
-    ['stepInput','stepRules','stepDecision'].forEach(id => $(id).classList.add('blocked'));
-    return;
-  }
-
-  if(s === 'ESCALATE' || s === 'PENDING_REVIEW'){
-    setBadge('flowBadge','REVIEW');
-    ['stepInput','stepRules','stepDecision'].forEach(id => $(id).classList.add('review'));
-    return;
-  }
-
-  setBadge('flowBadge','FAILED');
-}
-
-function setPreset(type){
-  if(type === 'approve'){
-    $('sessionId').value = 'sess_v2_approve';
-    $('amount').value = '4200';
-    $('contextJson').value = JSON.stringify({
-      supplierVerified:true,
-      contractValid:true,
-      budgetRemaining:15000,
-      legalBlock:false
-    }, null, 2);
-  }
-
-  if(type === 'block'){
-    $('sessionId').value = 'sess_v2_block';
-    $('amount').value = '4200';
-    $('contextJson').value = JSON.stringify({
-      supplierVerified:true,
-      contractValid:true,
-      budgetRemaining:15000,
-      legalBlock:true
-    }, null, 2);
-  }
-
-  if(type === 'escalate'){
-    $('sessionId').value = 'sess_v2_escalate';
-    $('amount').value = '20000';
-    $('contextJson').value = JSON.stringify({
-      supplierVerified:true,
-      contractValid:true,
-      budgetRemaining:50000,
-      legalBlock:false
-    }, null, 2);
-  }
-
-  preview();
-  $('lastMeta').textContent = type.toUpperCase() + ' preset loaded';
+  document.getElementById("clientPreview").textContent = JSON.stringify(scenario,null,2);
+  return scenario;
 }
 
 async function checkHealth(){
   try{
-    const health = await call('/health');
-    $('kpiHealth').innerHTML = '';
-    $('kpiHealth').appendChild(makeBadge(health.status || (health.ok ? 'healthy' : 'offline')));
-    $('output').textContent = JSON.stringify(health, null, 2);
-    $('lastMeta').textContent = new Date().toISOString() + ' · health';
-  } catch(e){
-    $('kpiHealth').innerHTML = '';
-    $('kpiHealth').appendChild(makeBadge('OFFLINE'));
-    $('output').textContent = String(e.message || e);
-    $('lastMeta').textContent = 'health failed';
+    const data = await apiJson("/health?ts=" + Date.now());
+    setSystem(data.status === "healthy" ? "HEALTHY" : "OFFLINE");
+    setNotice("Health check completed.");
+    return data;
+  }catch(err){
+    setSystem("OFFLINE");
+    setNotice("Health check failed: " + err.message,"bad");
+    throw err;
   }
 }
 
-async function refreshExecutions(){
-  saveConn();
+async function refreshData(){
   try{
-    const execs = await call('/executions?limit=10');
-    const items = execs.items || execs.data || [];
+    const health = await apiJson("/health?ts=" + Date.now()).catch(() => null);
+    setSystem(health?.status === "healthy" ? "HEALTHY" : "OFFLINE");
 
-    $('kpiExecutions').textContent = items.length;
+    const data = await apiJson("/executions?limit=50&ts=" + Date.now());
+    const executions = Array.isArray(data.executions) ? data.executions : [];
 
-    if(items[0]){
-      $('kpiDecision').innerHTML = '';
-      $('kpiDecision').appendChild(makeBadge(items[0].ledger_decision || items[0].decision || '—'));
-      $('kpiStatus').innerHTML = '';
-      $('kpiStatus').appendChild(makeBadge(items[0].authoritative_status || items[0].execution_status || items[0].status || '—'));
-      $('proofDecision').textContent = items[0].ledger_decision || items[0].decision || '—';
-      $('proofLedger').textContent = items[0].truth_hash || items[0].payload?.truth_hash || 'No truth hash recorded';
-      $('proofExecution').textContent = items[0].authoritative_status || items[0].execution_status || items[0].status || '—';
+    document.getElementById("executionCount").textContent =
+      typeof data.count === "number" ? data.count : executions.length;
+
+    const latest = executions[0] || null;
+    const latestStatus = latest ? statusFromExecution(latest) : "—";
+
+    document.getElementById("lastDecision").textContent = latestStatus;
+    document.getElementById("lastDecision").className =
+      "value " + (latestStatus === "APPROVED" ? "ok" : latestStatus === "BLOCKED" ? "bad" : latestStatus === "REQUIRES_REVIEW" ? "review" : "muted");
+
+    document.getElementById("lastStatus").textContent = latestStatus;
+    document.getElementById("lastStatus").className =
+      "value " + (latestStatus === "APPROVED" ? "ok" : latestStatus === "BLOCKED" ? "bad" : latestStatus === "REQUIRES_REVIEW" ? "review" : "muted");
+
+    setFlow(latestStatus);
+
+    if(latest){
+      document.getElementById("decisionProof").textContent = latestStatus;
+      document.getElementById("ledgerProof").textContent = hashFromExecution(latest);
+      document.getElementById("executionProof").textContent = latest.execution_id || latest.id || "recorded";
     }
 
-    renderExecutions(items);
-    $('lastMeta').textContent = new Date().toISOString() + ' · refresh';
-    setFlow('READY');
-  } catch(e){
-    fill($('executionRows'), 5, 'Could not load executions');
-    $('output').textContent = String(e.message || e);
-    $('lastMeta').textContent = 'refresh failed';
-    setFlow('FAILED');
+    document.getElementById("latestResponse").textContent = JSON.stringify(data,null,2);
+    document.getElementById("lastRefresh").textContent = new Date().toISOString() + " · refresh";
+
+  }catch(err){
+    document.getElementById("latestResponse").textContent = JSON.stringify({
+      ok:false,
+      error:err.message
+    },null,2);
+    setNotice("Refresh failed: " + err.message,"bad");
   }
 }
 
-async function refreshAll(){
-  await checkHealth();
-  await refreshExecutions();
+function saveConnection(){
+  localStorage.setItem("executia_api_base", getApiBase());
+  localStorage.setItem("executia_org_id", document.getElementById("orgId").value || "org_norsteel");
+  setNotice("Connection settings saved.");
 }
 
-function renderExecutions(items){
-  const b = $('executionRows');
-  if(!items.length) return fill(b, 5, 'No execution records');
-
-  b.innerHTML = '';
-  items.forEach(x => {
-    const payload = x.payload || {};
-    const tr = document.createElement('tr');
-    tr.appendChild(td(short(x.ticket_id || x.id)));
-    tr.appendChild(td(x.ledger_decision || x.decision || payload.decision, true));
-    tr.appendChild(td(x.authoritative_status || x.execution_status || x.status || payload.execution_status, true));
-    tr.appendChild(td(x.provider_name || payload.dispatch?.provider || 'safe-mode'));
-    tr.appendChild(td(short(x.truth_hash || payload.truth_hash)));
-    b.appendChild(tr);
-  });
-}
-
-async function submitExecution(){
-  setFlow('RUNNING');
-  $('submitBtn').disabled = true;
-  $('submitBtnTop').disabled = true;
+async function executeScenario(type){
+  const btn = document.getElementById("executeBtn");
+  btn.disabled = true;
+  btn.textContent = "Executing...";
 
   try{
+    const scenarioType = type || "approve";
+    const preview = previewScenario(scenarioType);
+
     const payload = {
-      session_id: $('sessionId').value.trim(),
-      organization_id: $('orgId').value.trim(),
-      project_id: $('projectId').value.trim() || null,
-      event_type: $('eventType').value.trim(),
-      amount: Number($('amount').value),
-      currency: $('currency').value.trim(),
-      provider: $('provider').value.trim(),
-      context: readContext()
+      organization_id: document.getElementById("orgId").value || "org_norsteel",
+      session_id: "console_v2_" + Date.now(),
+      project_id: "console_v2",
+      event_type: "payment",
+      amount: scenarioType === "review" ? 15000 : scenarioType === "block" ? 500 : 4200,
+      currency: "EUR",
+      context:{
+        source:"console_v2",
+        legalBlock: preview.context.legalBlock,
+        contractValid: preview.context.contractValid,
+        supplierVerified: preview.context.supplierVerified,
+        budgetRemaining: preview.context.budgetRemaining
+      }
     };
 
-    const data = await call('/execute', {
-      method:'POST',
-      body: JSON.stringify(payload)
+    const data = await apiJson("/execute",{
+      method:"POST",
+      body:payload
     });
 
-    $('output').textContent = JSON.stringify(data, null, 2);
-    $('lastMeta').textContent = new Date().toISOString() + ' · execute';
+    const execution = data.execution || data;
+    const status = data.status || data.result_status || statusFromExecution(execution);
 
-    const decision = data.decision || data.execution?.ledger_decision || data.ledger?.decision;
-    const status = data.execution_status || data.execution?.authoritative_status || data.dispatch?.execution_status;
+    document.getElementById("lastDecision").textContent = status;
+    document.getElementById("lastStatus").textContent = status;
 
-    $('kpiDecision').innerHTML = '';
-    $('kpiDecision').appendChild(makeBadge(decision || '—'));
+    document.getElementById("lastDecision").className =
+      "value " + (status === "APPROVED" ? "ok" : status === "BLOCKED" ? "bad" : status === "REQUIRES_REVIEW" ? "review" : "muted");
 
-    $('kpiStatus').innerHTML = '';
-    $('kpiStatus').appendChild(makeBadge(status || '—'));
+    document.getElementById("lastStatus").className =
+      "value " + (status === "APPROVED" ? "ok" : status === "BLOCKED" ? "bad" : status === "REQUIRES_REVIEW" ? "review" : "muted");
 
-    $('proofDecision').textContent = decision || 'No decision recorded';
-    $('proofLedger').textContent = data.truth_hash || data.ledger?.truth_hash || 'No truth hash recorded';
-    $('proofExecution').textContent = status || 'No execution recorded';
+    setFlow(status);
 
-    setFlow(status || decision || 'EXECUTED');
-    await refreshExecutions();
+    document.getElementById("decisionProof").textContent = status;
+    document.getElementById("ledgerProof").textContent =
+      data.truth_hash || execution.truth_hash || execution.payload?.truth_hash || "generated";
 
-  } catch(e){
-    $('output').textContent = String(e.message || e);
-    $('lastMeta').textContent = 'request failed';
-    setFlow('FAILED');
-  } finally {
-    $('submitBtn').disabled = false;
-    $('submitBtnTop').disabled = false;
+    document.getElementById("executionProof").textContent =
+      data.execution_id || execution.execution_id || execution.id || "recorded";
+
+    document.getElementById("latestResponse").textContent = JSON.stringify(data,null,2);
+    document.getElementById("lastRefresh").textContent = new Date().toISOString() + " · execute";
+
+    setNotice("Execution completed: " + status, status === "BLOCKED" ? "bad" : "ok");
+
+    await refreshData();
+
+  }catch(err){
+    document.getElementById("latestResponse").textContent = JSON.stringify({
+      ok:false,
+      error:err.message
+    },null,2);
+    setFlow("FAILED");
+    setNotice("Execute failed: " + err.message,"bad");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Execute";
   }
 }
 
-loadConn();
-document.querySelectorAll('[data-preset]').forEach(x => x.onclick = () => setPreset(x.dataset.preset));
-['amount','contextJson'].forEach(id => $(id).addEventListener('input', preview));
-$('saveBtn').onclick = saveConn;
-$('healthBtn').onclick = checkHealth;
-$('refreshBtn').onclick = refreshAll;
-$('refreshBtnSide').onclick = refreshAll;
-$('submitBtn').onclick = submitExecution;
-$('submitBtnTop').onclick = submitExecution;
-$('copyBtn').onclick = () => navigator.clipboard?.writeText($('output').textContent || '');
-preview();
-refreshAll();
+function boot(){
+  const savedBase = localStorage.getItem("executia_api_base");
+  const savedOrg = localStorage.getItem("executia_org_id");
+
+  if(savedBase) document.getElementById("apiBase").value = savedBase;
+  if(savedOrg) document.getElementById("orgId").value = savedOrg;
+
+  previewScenario("approve");
+  refreshData();
+}
+
+boot();
 </script>
+
 </body>
 </html>
