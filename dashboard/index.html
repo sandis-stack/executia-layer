@@ -16,206 +16,46 @@
   --orange:#b45309;
   --red:#991b1b;
 }
-
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  padding:40px;
-  font-family:Arial,sans-serif;
-  background:var(--soft);
-  color:var(--blue);
-}
-
+body{margin:0;padding:40px;font-family:Arial,sans-serif;background:var(--soft);color:var(--blue)}
 h1{margin:0 0 6px;font-size:32px;letter-spacing:-.03em}
 .sub{color:var(--muted);margin-bottom:10px}
 .mode{font-weight:800;color:var(--green)}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:20px;
-  margin-bottom:22px;
-}
-
-button{
-  border:0;
-  border-radius:8px;
-  padding:11px 16px;
-  font-weight:700;
-  cursor:pointer;
-}
-
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}
+button{border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer}
 button:disabled{opacity:.55;cursor:not-allowed}
-
-button.secondary{
-  background:#fff;
-  color:var(--blue);
-  border:1px solid var(--line);
-}
-
-button.approve{
-  background:var(--blue);
-  color:#fff;
-  min-width:140px;
-}
-
-button.block{
-  background:var(--red);
-  color:#fff;
-  min-width:90px;
-}
-
-button.review{
-  background:var(--orange);
-  color:#fff;
-  min-width:150px;
-}
-
-a{
-  color:var(--blue);
-  text-decoration:none;
-  font-weight:700;
-  margin-right:12px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-  margin-bottom:18px;
-}
-
-.card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:18px;
-  box-shadow:0 6px 18px rgba(10,37,64,.04);
-}
-
-.label{
-  font-size:11px;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:8px;
-  font-weight:800;
-}
-
+button.secondary{background:#fff;color:var(--blue);border:1px solid var(--line)}
+button.approve{background:var(--blue);color:#fff;min-width:140px}
+button.block{background:var(--red);color:#fff;min-width:90px}
+button.review{background:var(--orange);color:#fff;min-width:150px}
+a{color:var(--blue);text-decoration:none;font-weight:700;margin-right:12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(10,37,64,.04)}
+.label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:800}
 .value{font-size:24px;font-weight:800}
 .ok{color:var(--green)}
 .reviewText{color:var(--orange)}
 .bad{color:var(--red)}
 .muted{color:var(--muted)}
-
-.notice{
-  display:none;
-  margin-bottom:18px;
-  padding:14px 16px;
-  border:1px solid #c7d7eb;
-  background:#e6f0fa;
-  border-radius:12px;
-  font-weight:700;
-}
-
+.notice{display:none;margin-bottom:18px;padding:14px 16px;border:1px solid #c7d7eb;background:#e6f0fa;border-radius:12px;font-weight:700}
 .notice.show{display:block}
-
-.panel{
-  display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:18px;
-}
-
-.row{
-  display:grid;
-  grid-template-columns:170px 160px 160px 1fr;
-  gap:12px;
-  padding:12px 0;
-  border-bottom:1px solid #eef2f7;
-  font-size:14px;
-}
-
+.panel{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.row{display:grid;grid-template-columns:170px 160px 160px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7;font-size:14px}
 .row.item{cursor:pointer}
 .row.item:hover{background:#f8fbff}
 .row.active{background:#e6f0fa;border-radius:10px;padding-left:10px;padding-right:10px}
-
-.header{
-  font-size:11px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--muted);
-  font-weight:700;
-}
-
-.live-indicator{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  font-weight:800;
-  color:var(--green);
-}
-
-.live-dot{
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 0 0 rgba(21,128,61,.5);
-  animation:pulse 1.8s infinite;
-}
-
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(21,128,61,.5)}
-  70%{box-shadow:0 0 0 8px rgba(21,128,61,0)}
-  100%{box-shadow:0 0 0 0 rgba(21,128,61,0)}
-}
-
-.detail-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin:12px 0 14px;
-}
-
+.row.realtime-highlight{background:#fff7ed;border-radius:10px;padding-left:10px;padding-right:10px}
+.header{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.live-indicator{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:var(--green)}
+.live-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(21,128,61,.5);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(21,128,61,.5)}70%{box-shadow:0 0 0 8px rgba(21,128,61,0)}100%{box-shadow:0 0 0 0 rgba(21,128,61,0)}}
+.detail-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 14px}
 code{font-size:12px;word-break:break-all}
-
-pre{
-  margin:0;
-  background:var(--soft2);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:14px;
-  white-space:pre-wrap;
-  max-height:360px;
-  overflow:auto;
-  font-size:13px;
-  line-height:1.45;
-}
-
-.audit-box{
-  margin-top:14px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
-}
-
-.audit-item{
-  border-bottom:1px solid #eef2f7;
-  padding:10px 0;
-  font-size:13px;
-  line-height:1.45;
-}
-
+pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:12px;padding:14px;white-space:pre-wrap;max-height:360px;overflow:auto;font-size:13px;line-height:1.45}
+.audit-box{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.audit-item{border-bottom:1px solid #eef2f7;padding:10px 0;font-size:13px;line-height:1.45}
 .audit-item:last-child{border-bottom:0}
-
-.audit-action{
-  font-weight:900;
-  color:var(--blue);
-}
-
+.audit-action{font-weight:900;color:var(--blue)}
 @media(max-width:1000px){
   body{padding:24px}
   .top{display:block}
@@ -251,39 +91,22 @@ pre{
 <div id="notice" class="notice"></div>
 
 <div class="grid">
-  <div class="card">
-    <div class="label">System state</div>
-    <div id="system" class="value" data-system-state>—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Executions</div>
-    <div id="total" class="value" data-executions-count>—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Approved</div>
-    <div id="approved" class="value ok" data-approved-count>—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Review / blocked</div>
-    <div id="blocked" class="value reviewText" data-blocked-count>—</div>
-  </div>
+  <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
+  <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
+  <div class="card"><div class="label">Approved</div><div id="approved" class="value ok">—</div></div>
+  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value reviewText">—</div></div>
 </div>
 
 <div class="panel">
   <div class="card">
     <div class="label">Live execution stream</div>
-
     <div class="row header">
       <div>Time</div>
       <div>Decision</div>
       <div>Source</div>
       <div>Registry proof</div>
     </div>
-
-    <div id="stream" data-live-stream></div>
+    <div id="stream"></div>
   </div>
 
   <div class="card">
@@ -295,7 +118,7 @@ pre{
       <button class="review" onclick="overrideSelected('REVIEW')">Send to review</button>
     </div>
 
-    <pre id="breakdown" data-execution-detail>No execution selected.</pre>
+    <pre id="breakdown">No execution selected.</pre>
 
     <div class="audit-box">
       <div class="label">Latest control action</div>
@@ -376,11 +199,8 @@ async function json(url,opt={}){
   const t = await r.text();
   let d = {};
 
-  try{
-    d = t ? JSON.parse(t) : {};
-  }catch{
-    throw new Error("NON_JSON_RESPONSE");
-  }
+  try{ d = t ? JSON.parse(t) : {}; }
+  catch{ throw new Error("NON_JSON_RESPONSE"); }
 
   if(!r.ok){
     throw new Error(d.error || d.detail || "REQUEST_FAILED");
@@ -420,7 +240,6 @@ async function loadControl(manual=false){
     const items = Array.isArray(d.executions) ? d.executions : [];
 
     window.__executiaItems = items;
-
     updateStats(items);
 
     if(selectedExecutionId){
@@ -446,14 +265,15 @@ async function loadControl(manual=false){
   }
 }
 
-function renderStream(items){
+function renderStream(items, highlightId=null){
   const stream = document.getElementById("stream");
 
   stream.innerHTML = items.slice(0,25).map((e,i)=>{
     const de = decision(e);
     const active = i === selectedIndex ? "active" : "";
+    const realtime = highlightId && executionId(e) === highlightId ? "realtime-highlight" : "";
 
-    return `<div class="row item ${active}" onclick="showBreakdown(${i})">
+    return `<div class="row item ${active} ${realtime}" onclick="showBreakdown(${i})">
       <div>${e.created_at || "—"}</div>
       <div class="${cls(de)}"><strong>${de}</strong></div>
       <div>${source(e)}</div>
@@ -660,15 +480,20 @@ function startLiveStream(){
     console.log("EXECUTIA STREAM CONNECTED", e.data);
   });
 
+  eventSource.addEventListener("realtime_status", (e) => {
+    const payload = JSON.parse(e.data);
+    if(streamState) streamState.textContent = "Realtime: " + payload.status;
+  });
+
   eventSource.addEventListener("heartbeat", () => {
-    if(streamState) streamState.textContent = "Live stream active";
+    if(streamState) streamState.textContent = "Realtime active";
   });
 
   eventSource.addEventListener("execution", (e) => {
     const payload = JSON.parse(e.data);
     const executions = payload.executions || [];
 
-    if(streamState) streamState.textContent = "Live execution received";
+    if(streamState) streamState.textContent = "Execution snapshot received";
 
     if(executions.length > 0){
       window.__executiaItems = executions;
@@ -685,9 +510,42 @@ function startLiveStream(){
       showBreakdown(selectedIndex);
 
       setTimeout(() => {
-        if(streamState) streamState.textContent = "Live stream active";
+        if(streamState) streamState.textContent = "Realtime active";
       }, 1200);
     }
+  });
+
+  eventSource.addEventListener("change", async (e) => {
+    const payload = JSON.parse(e.data);
+    const changed = payload.execution || null;
+    const changedId = changed ? executionId(changed) : null;
+
+    console.log("REALTIME CHANGE", payload);
+
+    if(streamState) streamState.textContent = "Realtime update received";
+
+    if(changed && changed.status === "BLOCKED"){
+      setNotice("Realtime alert: BLOCKED execution detected — " + (changedId || "unknown"), "bad");
+    }
+
+    await loadControl(false);
+
+    if(changedId){
+      const items = window.__executiaItems || [];
+      const found = items.findIndex(x => executionId(x) === changedId);
+
+      if(found >= 0){
+        selectedIndex = found;
+        selectedExecutionId = changedId;
+        renderStream(items, changedId);
+        showBreakdown(found);
+        await loadAudit(changedId);
+      }
+    }
+
+    setTimeout(() => {
+      if(streamState) streamState.textContent = "Realtime active";
+    }, 1500);
   });
 
   eventSource.onerror = () => {
