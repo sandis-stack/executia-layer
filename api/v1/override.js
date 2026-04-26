@@ -1,29 +1,67 @@
 import { createClient } from "@supabase/supabase-js";
 
+const ACTION_TO_STATUS = {
+  APPROVE: "APPROVED",
+  BLOCK: "BLOCKED",
+  REVIEW: "REQUIRES_REVIEW"
+};
+
+function json(res, status, payload) {
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store");
+  return res.status(status).json(payload);
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
+    return json(res, 405, {
+      ok: false,
+      error: "METHOD_NOT_ALLOWED"
+    });
   }
 
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: { persistSession: false }
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return json(res, 500, {
+      ok: false,
+      error: "SUPABASE_ENV_MISSING"
+    });
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false
     }
-  );
+  });
 
   try {
-    const { execution_id, action, operator, reason } = req.body;
+    const body = req.body || {};
 
-    if (!execution_id || !action) {
-      return res.status(400).json({
+    const execution_id = String(body.execution_id || "").trim();
+    const action = String(body.action || "").trim().toUpperCase();
+    const operator = String(body.operator || "EXECUTIA_OPERATOR").trim();
+    const reason = String(body.reason || "Manual control action").trim();
+
+    if (!execution_id) {
+      return json(res, 400, {
         ok: false,
-        error: "INVALID_INPUT"
+        error: "EXECUTION_ID_REQUIRED"
       });
     }
 
-    // 🔹 1. Atrodam execution
+    if (!ACTION_TO_STATUS[action]) {
+      return json(res, 400, {
+        ok: false,
+        error: "INVALID_ACTION",
+        allowed: Object.keys(ACTION_TO_STATUS)
+      });
+    }
+
+    const new_status = ACTION_TO_STATUS[action];
+
     const { data: existing, error: fetchError } = await supabase
       .from("executions")
       .select("*")
@@ -31,73 +69,135 @@ export default async function handler(req, res) {
       .single();
 
     if (fetchError || !existing) {
-      return res.status(404).json({
+      return json(res, 404, {
         ok: false,
-        error: "EXECUTION_NOT_FOUND"
+        error: "EXECUTION_NOT_FOUND",
+        detail: fetchError?.message || null
       });
     }
 
-    const previous_status = existing.status;
+    const previous_status =
+      existing.status ||
+      existing.result_status ||
+      existing.ledger_decision ||
+      null;
 
-    // 🔹 2. Jaunais statuss
-    let new_status = "REQUIRES_REVIEW";
+    const updatePayload = {
+      status: new_status,
+      result_status: new_status,
+      authorized: new_status === "APPROVED",
+      hold_pending: new_status === "REQUIRES_REVIEW",
+      reason,
+      updated_at: new Date().toISOString()
+    };
 
-    if (action === "APPROVE") new_status = "APPROVED";
-    if (action === "BLOCK") new_status = "BLOCKED";
-    if (action === "REVIEW") new_status = "REQUIRES_REVIEW";
-
-    // 🔹 3. Update execution (PRIMARY TRUTH)
-    const { error: updateError } = await supabase
+    const { data: updated, error: updateError } = await supabase
       .from("executions")
-      .update({
-        status: new_status,
-        authorized: action === "APPROVE",
-        updated_at: new Date().toISOString(),
-        reason: reason || null
-      })
-      .eq("execution_id", execution_id);
+      .update(updatePayload)
+      .eq("execution_id", execution_id)
+      .select("*")
+      .single();
 
-    if (updateError) {
-      return res.status(500).json({
+    if (updateError || !updated) {
+      return json(res, 500, {
         ok: false,
         error: "EXECUTION_UPDATE_FAILED",
-        detail: updateError.message
+        detail: updateError?.message || null
       });
     }
 
-    // 🔹 4. AUDIT (NEKAD NEBLOĶĒ EXECUTION)
+    let audit_ok = true;
+    let audit_error = null;
+    let audit = null;
+
     try {
-      await supabase.from("audit_logs").insert({
-        organization_id: existing.organization_id,
-        actor_type: "system",
-        actor_id: operator || "unknown",
-        actor_label: operator || "EXECUTIA",
+      const auditPayload = {
+        organization_id:
+          updated.organization_id ||
+          updated.payload?.organization_id ||
+          existing.organization_id ||
+          existing.payload?.organization_id ||
+          "org_unknown",
+
+        actor_type: "operator",
+        actor_id: operator,
+        actor_label: operator,
+
         action: "EXECUTION_OVERRIDE",
         entity: "execution",
         entity_id: execution_id,
-        previous_status,
-        new_status,
-        reason: reason || null,
+
+        status: "ok",
+        request_id:
+          updated.request_id ||
+          updated.payload?.request_id ||
+          updated.payload?.session_id ||
+          updated.session_id ||
+          null,
+
+        payload: {
+          execution_id,
+          action,
+          previous_status,
+          new_status,
+          reason,
+          operator,
+          source: "executia_control_interface",
+          execution_before: {
+            id: existing.id,
+            status: existing.status,
+            result_status: existing.result_status,
+            authorized: existing.authorized,
+            hold_pending: existing.hold_pending,
+            reason: existing.reason
+          },
+          execution_after: {
+            id: updated.id,
+            status: updated.status,
+            result_status: updated.result_status,
+            authorized: updated.authorized,
+            hold_pending: updated.hold_pending,
+            reason: updated.reason
+          }
+        },
+
         created_at: new Date().toISOString()
-      });
-    } catch (auditError) {
-      console.error("AUDIT FAILED (NON-BLOCKING):", auditError.message);
+      };
+
+      const { data: auditData, error: auditInsertError } = await supabase
+        .from("audit_logs")
+        .insert(auditPayload)
+        .select("*")
+        .single();
+
+      if (auditInsertError) {
+        audit_ok = false;
+        audit_error = auditInsertError.message;
+      } else {
+        audit = auditData;
+      }
+    } catch (err) {
+      audit_ok = false;
+      audit_error = err.message || String(err);
     }
 
-    // 🔹 5. FINAL RESPONSE (vienmēr OK)
-    return res.status(200).json({
+    return json(res, 200, {
       ok: true,
+      execution_id,
       action,
       previous_status,
       new_status,
-      execution_id
+      audit_ok,
+      audit_error,
+      execution: updated,
+      audit
     });
 
   } catch (err) {
-    return res.status(500).json({
+    return json(res, 500, {
       ok: false,
       error: "INTERNAL_ERROR",
-      detail: err.message
+      detail: err.message || String(err)
     });
   }
 }
