@@ -1,5 +1,6 @@
-export default function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store");
 
   if (req.method !== "GET") {
     return res.status(405).json({
@@ -11,8 +12,8 @@ export default function handler(req, res) {
   return res.status(200).json({
     ok: true,
     status: "healthy",
-    route: "/api/v1/health",
-    service: "EXECUTIA",
+    service: "EXECUTIA API",
+    version: "v1",
     timestamp: new Date().toISOString()
   });
 }
