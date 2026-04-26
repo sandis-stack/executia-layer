@@ -149,6 +149,29 @@ a{
   font-weight:700;
 }
 
+.live-indicator{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-weight:800;
+  color:var(--green);
+}
+
+.live-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 0 0 rgba(21,128,61,.5);
+  animation:pulse 1.8s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(21,128,61,.5)}
+  70%{box-shadow:0 0 0 8px rgba(21,128,61,0)}
+  100%{box-shadow:0 0 0 0 rgba(21,128,61,0)}
+}
+
 .detail-actions{
   display:flex;
   gap:10px;
@@ -210,7 +233,12 @@ pre{
   <div>
     <h1>EXECUTIA Control Interface</h1>
     <div class="sub">System state · Live execution stream · Decision control · Truth registry</div>
-    <div class="mode">Execution control mode: ACTIVE</div>
+    <div class="mode">
+      <span class="live-indicator">
+        <span class="live-dot"></span>
+        <span data-stream-state>Connecting stream...</span>
+      </span>
+    </div>
   </div>
 
   <div>
@@ -223,10 +251,25 @@ pre{
 <div id="notice" class="notice"></div>
 
 <div class="grid">
-  <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
-  <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
-  <div class="card"><div class="label">Approved</div><div id="approved" class="value ok">—</div></div>
-  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value reviewText">—</div></div>
+  <div class="card">
+    <div class="label">System state</div>
+    <div id="system" class="value" data-system-state>—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Executions</div>
+    <div id="total" class="value" data-executions-count>—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Approved</div>
+    <div id="approved" class="value ok" data-approved-count>—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Review / blocked</div>
+    <div id="blocked" class="value reviewText" data-blocked-count>—</div>
+  </div>
 </div>
 
 <div class="panel">
@@ -240,7 +283,7 @@ pre{
       <div>Registry proof</div>
     </div>
 
-    <div id="stream"></div>
+    <div id="stream" data-live-stream></div>
   </div>
 
   <div class="card">
@@ -252,7 +295,7 @@ pre{
       <button class="review" onclick="overrideSelected('REVIEW')">Send to review</button>
     </div>
 
-    <pre id="breakdown">No execution selected.</pre>
+    <pre id="breakdown" data-execution-detail>No execution selected.</pre>
 
     <div class="audit-box">
       <div class="label">Latest control action</div>
@@ -268,10 +311,12 @@ pre{
 
 <script>
 const API = "https://execution.executia.io/api/v1";
+const STREAM_URL = "/api/v1/stream";
 
 let loading = false;
 let selectedIndex = 0;
 let selectedExecutionId = null;
+let eventSource = null;
 
 function decision(e){
   return e.decision || e.ledger_decision || e.result_status || e.status || "UNKNOWN";
@@ -344,6 +389,26 @@ async function json(url,opt={}){
   return d;
 }
 
+function updateStats(items){
+  const system = document.getElementById("system");
+  system.textContent = "ACTIVE";
+  system.className = "value ok";
+
+  document.getElementById("total").textContent = items.length;
+
+  let approved = 0;
+  let reviewBlocked = 0;
+
+  items.forEach(e=>{
+    const de = decision(e);
+    if(de === "APPROVED" || de === "APPROVE" || de === "EXECUTED") approved++;
+    else reviewBlocked++;
+  });
+
+  document.getElementById("approved").textContent = approved;
+  document.getElementById("blocked").textContent = reviewBlocked;
+}
+
 async function loadControl(manual=false){
   if(loading) return;
   loading = true;
@@ -354,25 +419,9 @@ async function loadControl(manual=false){
     const d = await json(API + "/executions?limit=50&ts=" + Date.now());
     const items = Array.isArray(d.executions) ? d.executions : [];
 
-    const system = document.getElementById("system");
-    system.textContent = "ACTIVE";
-    system.className = "value ok";
-
-    document.getElementById("total").textContent = items.length;
-
-    let approved = 0;
-    let reviewBlocked = 0;
-
-    items.forEach(e=>{
-      const de = decision(e);
-      if(de === "APPROVED" || de === "APPROVE" || de === "EXECUTED") approved++;
-      else reviewBlocked++;
-    });
-
-    document.getElementById("approved").textContent = approved;
-    document.getElementById("blocked").textContent = reviewBlocked;
-
     window.__executiaItems = items;
+
+    updateStats(items);
 
     if(selectedExecutionId){
       const found = items.findIndex(e => executionId(e) === selectedExecutionId);
@@ -597,8 +646,58 @@ async function runControl(){
   }
 }
 
+function startLiveStream(){
+  const streamState = document.querySelector("[data-stream-state]");
+
+  if(eventSource){
+    eventSource.close();
+  }
+
+  eventSource = new EventSource(STREAM_URL);
+
+  eventSource.addEventListener("connected", (e) => {
+    if(streamState) streamState.textContent = "Live stream connected";
+    console.log("EXECUTIA STREAM CONNECTED", e.data);
+  });
+
+  eventSource.addEventListener("heartbeat", () => {
+    if(streamState) streamState.textContent = "Live stream active";
+  });
+
+  eventSource.addEventListener("execution", (e) => {
+    const payload = JSON.parse(e.data);
+    const executions = payload.executions || [];
+
+    if(streamState) streamState.textContent = "Live execution received";
+
+    if(executions.length > 0){
+      window.__executiaItems = executions;
+
+      if(selectedExecutionId){
+        const found = executions.findIndex(x => executionId(x) === selectedExecutionId);
+        selectedIndex = found >= 0 ? found : 0;
+      }else{
+        selectedIndex = 0;
+      }
+
+      updateStats(executions);
+      renderStream(executions);
+      showBreakdown(selectedIndex);
+
+      setTimeout(() => {
+        if(streamState) streamState.textContent = "Live stream active";
+      }, 1200);
+    }
+  });
+
+  eventSource.onerror = () => {
+    if(streamState) streamState.textContent = "Stream reconnecting...";
+  };
+}
+
 loadControl();
-setInterval(loadControl,10000);
+startLiveStream();
+setInterval(loadControl,30000);
 </script>
 
 </body>
