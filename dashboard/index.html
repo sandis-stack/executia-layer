@@ -31,15 +31,34 @@ button.secondary{background:#fff;color:var(--blue);border:1px solid var(--line)}
 button.approve{background:var(--blue);color:#fff;min-width:140px}
 button.block{background:var(--red);color:#fff;min-width:90px}
 button.review{background:var(--orange);color:#fff;min-width:150px}
+
 .live-indicator{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:var(--green)}
 .live-dot{width:9px;height:9px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(21,128,61,.5)}70%{box-shadow:0 0 0 8px rgba(21,128,61,0)}100%{box-shadow:0 0 0 0 rgba(21,128,61,0)}}
+
 .notice{display:none;margin-bottom:18px;padding:14px 16px;border:1px solid #c7d7eb;background:#e6f0fa;border-radius:12px;font-weight:700}
 .notice.show{display:block}
+
 .block-alert{display:none;margin-bottom:18px;padding:18px;border:1px solid var(--redLine);background:var(--redSoft);border-radius:14px;color:var(--red);font-weight:800}
 .block-alert.show{display:block}
 .block-alert-title{font-size:16px;margin-bottom:6px}
 .block-alert-meta{font-size:13px;font-weight:700;color:#7f1d1d}
+
+.moment-bar{
+  display:none;
+  margin-bottom:18px;
+  padding:16px 18px;
+  border:1px solid #c7d7eb;
+  background:#e6f0fa;
+  border-radius:14px;
+  font-weight:800;
+  animation:momentPulse .9s ease-out;
+}
+.moment-bar.show{display:block}
+.moment-title{font-size:15px;margin-bottom:5px}
+.moment-meta{font-size:13px;color:#0A2540;font-weight:700}
+@keyframes momentPulse{0%{transform:scale(.99);opacity:.65}100%{transform:scale(1);opacity:1}}
+
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(10,37,64,.04)}
 .label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:800}
@@ -48,6 +67,7 @@ button.review{background:var(--orange);color:#fff;min-width:150px}
 .reviewText{color:var(--orange)}
 .bad{color:var(--red)}
 .muted{color:var(--muted)}
+
 .panel{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
 .row{display:grid;grid-template-columns:170px 160px 160px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7;font-size:14px}
 .row.item{cursor:pointer}
@@ -56,6 +76,7 @@ button.review{background:var(--orange);color:#fff;min-width:150px}
 .row.realtime-highlight{background:var(--amberSoft);border-radius:10px;padding-left:10px;padding-right:10px}
 .row.blocked-highlight{background:var(--redSoft);border:1px solid var(--redLine);border-radius:10px;padding-left:10px;padding-right:10px}
 .header{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
 .detail-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 14px}
 code{font-size:12px;word-break:break-all}
 pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:12px;padding:14px;white-space:pre-wrap;max-height:360px;overflow:auto;font-size:13px;line-height:1.45}
@@ -63,6 +84,7 @@ pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:
 .audit-item{border-bottom:1px solid #eef2f7;padding:10px 0;font-size:13px;line-height:1.45}
 .audit-item:last-child{border-bottom:0}
 .audit-action{font-weight:900;color:var(--blue)}
+
 @media(max-width:1000px){
   body{padding:24px}
   .top{display:block}
@@ -100,6 +122,11 @@ pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:
   <div id="blockAlertMeta" class="block-alert-meta">Waiting for execution data...</div>
 </div>
 
+<div id="momentBar" class="moment-bar">
+  <div class="moment-title">Waiting for execution moment</div>
+  <div id="momentMeta" class="moment-meta">No live change yet.</div>
+</div>
+
 <div class="grid">
   <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
   <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
@@ -111,10 +138,7 @@ pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:
   <div class="card">
     <div class="label">Live execution stream</div>
     <div class="row header">
-      <div>Time</div>
-      <div>Decision</div>
-      <div>Source</div>
-      <div>Registry proof</div>
+      <div>Time</div><div>Decision</div><div>Source</div><div>Registry proof</div>
     </div>
     <div id="stream"></div>
   </div>
@@ -155,21 +179,10 @@ let lastBlockedId = null;
 
 window.__executiaItems = [];
 
-function decision(e){
-  return e?.decision || e?.ledger_decision || e?.result_status || e?.status || "UNKNOWN";
-}
-
-function source(e){
-  return e?.source || e?.payload?.context?.source || e?.payload?.source || "registry";
-}
-
-function hash(e){
-  return e?.truth_hash || e?.payload?.truth_hash || e?.execution_id || e?.request_id || e?.ticket_id || "NO_HASH";
-}
-
-function executionId(e){
-  return e?.execution_id || e?.entity_id || e?.request_id || e?.id || null;
-}
+function decision(e){return e?.decision || e?.ledger_decision || e?.result_status || e?.status || "UNKNOWN";}
+function source(e){return e?.source || e?.payload?.context?.source || e?.payload?.source || "registry";}
+function hash(e){return e?.truth_hash || e?.payload?.truth_hash || e?.execution_id || e?.request_id || e?.ticket_id || "NO_HASH";}
+function executionId(e){return e?.execution_id || e?.entity_id || e?.request_id || e?.id || null;}
 
 function cls(d){
   if(d === "APPROVED" || d === "APPROVE" || d === "EXECUTED") return "ok";
@@ -181,7 +194,6 @@ function setNotice(msg,type){
   const box = document.getElementById("notice");
   box.textContent = msg;
   box.className = "notice show";
-
   if(type === "bad"){
     box.style.background = "#fff1f2";
     box.style.borderColor = "#fecdd3";
@@ -215,27 +227,51 @@ function showBlockAlert(execution){
   document.getElementById("blockAlert").className = "block-alert show";
 }
 
+function showExecutionMoment(execution){
+  const id = executionId(execution) || "unknown";
+  const status = decision(execution);
+  const reason = execution?.reason || execution?.payload?.reason || "Execution state changed";
+
+  const bar = document.getElementById("momentBar");
+  const meta = document.getElementById("momentMeta");
+
+  meta.innerHTML = `
+    Execution: <code>${id}</code><br>
+    Status: <strong>${status}</strong><br>
+    Reason: ${reason}
+  `;
+
+  bar.className = "moment-bar show";
+
+  if(status === "BLOCKED"){
+    bar.style.background = "#fff1f2";
+    bar.style.borderColor = "#fecdd3";
+    bar.style.color = "#991b1b";
+  }else if(status === "APPROVED"){
+    bar.style.background = "#ecfdf3";
+    bar.style.borderColor = "#bbf7d0";
+    bar.style.color = "#15803d";
+  }else{
+    bar.style.background = "#fff7ed";
+    bar.style.borderColor = "#fed7aa";
+    bar.style.color = "#b45309";
+  }
+}
+
 async function json(url,opt={}){
   const r = await fetch(url,{
     method: opt.method || "GET",
-    headers:{
-      "Content-Type":"application/json",
-      "Accept":"application/json"
-    },
+    headers:{"Content-Type":"application/json","Accept":"application/json"},
     body: opt.body,
     cache:"no-store"
   });
 
   const t = await r.text();
   let d = {};
-
   try{ d = t ? JSON.parse(t) : {}; }
   catch{ throw new Error("NON_JSON_RESPONSE"); }
 
-  if(!r.ok){
-    throw new Error(d.error || d.detail || "REQUEST_FAILED");
-  }
-
+  if(!r.ok) throw new Error(d.error || d.detail || "REQUEST_FAILED");
   return d;
 }
 
@@ -246,11 +282,8 @@ function upsertExecution(item){
   const list = window.__executiaItems || [];
   const index = list.findIndex(x => executionId(x) === id);
 
-  if(index >= 0){
-    list[index] = {...list[index], ...item};
-  }else{
-    list.unshift(item);
-  }
+  if(index >= 0) list[index] = {...list[index], ...item};
+  else list.unshift(item);
 
   list.sort((a,b) => new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0));
   window.__executiaItems = list.slice(0,50);
@@ -262,8 +295,8 @@ function replaceExecutions(items){
 
 function updateStats(){
   const items = window.__executiaItems || [];
-
   const system = document.getElementById("system");
+
   system.textContent = "ACTIVE";
   system.className = "value ok";
 
@@ -288,11 +321,8 @@ async function loadControl(manual=false){
 
   try{
     await json(API + "/health?ts=" + Date.now()).catch(()=>null);
-
     const d = await json(API + "/executions?limit=50&ts=" + Date.now());
-    const items = Array.isArray(d.executions) ? d.executions : [];
-
-    replaceExecutions(items);
+    replaceExecutions(Array.isArray(d.executions) ? d.executions : []);
     updateStats();
 
     if(selectedExecutionId){
@@ -347,7 +377,6 @@ function showBreakdown(i){
 
   selectedIndex = i;
   selectedExecutionId = executionId(e);
-
   renderStream(lastChangedId || lastBlockedId);
 
   document.getElementById("breakdown").textContent = JSON.stringify({
@@ -378,10 +407,7 @@ async function loadAudit(executionIdValue){
   auditList.innerHTML = "Loading audit trail...";
 
   try{
-    const data = await json(
-      API + "/audit-log?execution_id=" + encodeURIComponent(executionIdValue) + "&limit=25&ts=" + Date.now()
-    );
-
+    const data = await json(API + "/audit-log?execution_id=" + encodeURIComponent(executionIdValue) + "&limit=25&ts=" + Date.now());
     const logs = data.audit_logs || [];
 
     if(logs.length === 0){
@@ -448,20 +474,17 @@ async function overrideSelected(action){
       })
     });
 
-    if(d.ok === false){
-      throw new Error(d.error || "OVERRIDE_FAILED");
-    }
+    if(d.ok === false) throw new Error(d.error || "OVERRIDE_FAILED");
 
     if(d.execution){
       upsertExecution(d.execution);
       lastChangedId = executionId(d.execution);
       selectedExecutionId = lastChangedId;
       selectedIndex = window.__executiaItems.findIndex(x => executionId(x) === selectedExecutionId);
+      showExecutionMoment(d.execution);
     }
 
-    if(d.new_status === "BLOCKED"){
-      showBlockAlert(d.execution || selected);
-    }
+    if(d.new_status === "BLOCKED") showBlockAlert(d.execution || selected);
 
     document.getElementById("auditTrail").innerHTML = `
       <div class="audit-item">
@@ -479,10 +502,7 @@ async function overrideSelected(action){
     await loadAudit(id);
 
     setNotice(
-      "Control action completed: " +
-      (d.previous_status || "—") +
-      " → " +
-      (d.new_status || "—"),
+      "Control action completed: " + (d.previous_status || "—") + " → " + (d.new_status || "—"),
       d.new_status === "BLOCKED" ? "bad" : "ok"
     );
 
@@ -522,17 +542,11 @@ async function runControl(){
         event_type:"payment",
         amount:s.amount,
         currency:"EUR",
-        context:{
-          source:"control_interface",
-          legalBlock:s.legalBlock
-        }
+        context:{source:"control_interface",legalBlock:s.legalBlock}
       })
     });
 
-    if(d.ok === false){
-      throw new Error(d.error || "EXECUTION_FAILED");
-    }
-
+    if(d.ok === false) throw new Error(d.error || "EXECUTION_FAILED");
     setNotice("New execution created.","ok");
 
   }catch(err){
@@ -546,9 +560,7 @@ async function runControl(){
 function startLiveStream(){
   const streamState = document.querySelector("[data-stream-state]");
 
-  if(eventSource){
-    eventSource.close();
-  }
+  if(eventSource) eventSource.close();
 
   eventSource = new EventSource(STREAM_URL);
 
@@ -591,16 +603,11 @@ function startLiveStream(){
   eventSource.addEventListener("change", async (e) => {
     const payload = JSON.parse(e.data);
     const changed = payload.execution || null;
-    const executions = payload.executions || [];
     const changedId = executionId(changed) || payload.execution_id || null;
 
     if(streamState) streamState.textContent = "Realtime update received";
 
-    if(changed){
-      upsertExecution(changed);
-    }else if(executions.length > 0){
-      executions.forEach(upsertExecution);
-    }
+    if(changed) upsertExecution(changed);
 
     if(changedId){
       lastChangedId = changedId;
@@ -610,6 +617,8 @@ function startLiveStream(){
       selectedIndex = found >= 0 ? found : 0;
 
       const current = window.__executiaItems[selectedIndex];
+
+      showExecutionMoment(current || changed);
 
       if(current && decision(current) === "BLOCKED"){
         showBlockAlert(current);
@@ -627,9 +636,6 @@ function startLiveStream(){
         lastChangedId = null;
         renderStream(lastBlockedId);
       }, 2500);
-    }else{
-      updateStats();
-      renderStream(lastChangedId || lastBlockedId);
     }
 
     setTimeout(() => {
