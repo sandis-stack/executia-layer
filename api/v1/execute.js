@@ -17,13 +17,19 @@ function getSupabase() {
   });
 }
 
-function makeTruthHash(payload) {
-  const stable = JSON.stringify(payload, Object.keys(payload).sort());
-  return crypto.createHash("sha256").update(stable).digest("hex");
+function truthHash(payload) {
+  return crypto
+    .createHash("sha256")
+    .update(JSON.stringify(payload))
+    .digest("hex");
 }
 
-function decide({ amount, context }) {
-  if (context?.legalBlock === true) {
+function makeExecutionId() {
+  return "EX-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+function decide(amount, context = {}) {
+  if (context.legalBlock === true) {
     return {
       status: "BLOCKED",
       authorized: false,
@@ -41,7 +47,7 @@ function decide({ amount, context }) {
     };
   }
 
-  if (Number(amount) > 10000) {
+  if (Number(amount) >= 10000) {
     return {
       status: "REQUIRES_REVIEW",
       authorized: false,
@@ -54,7 +60,7 @@ function decide({ amount, context }) {
     status: "APPROVED",
     authorized: true,
     hold_pending: false,
-    reason: "Execution approved by deterministic rules"
+    reason: "Execution approved"
   };
 }
 
@@ -71,89 +77,81 @@ export default async function handler(req, res) {
 
   try {
     const supabase = getSupabase();
-
     const body = req.body || {};
 
-    const organization_id = body.organization_id || "org_norsteel";
-    const session_id = body.session_id || "session_" + Date.now();
-    const project_id = body.project_id || "default_project";
-    const event_type = body.event_type || "payment";
     const amount = Number(body.amount || 0);
-    const currency = body.currency || "EUR";
     const context = body.context || {};
+    const decision = decide(amount, context);
 
-    const execution_id =
-      body.execution_id ||
-      "EX-" + Date.now() + "-" + Math.random().toString(16).slice(2, 8);
+    const now = new Date().toISOString();
+    const execution_id = body.execution_id || makeExecutionId();
 
-    const decisionResult = decide({ amount, context });
-
-    const created_at = new Date().toISOString();
-
-    const truthPayload = {
+    const basePayload = {
       execution_id,
-      organization_id,
-      session_id,
-      project_id,
-      event_type,
+      organization_id: body.organization_id || "org_norsteel",
+      session_id: body.session_id || "sess_" + Date.now(),
+      project_id: body.project_id || "prj_alpha",
+      event_type: body.event_type || "payment",
       amount,
-      currency,
+      currency: body.currency || "EUR",
       context,
-      status: decisionResult.status,
-      authorized: decisionResult.authorized,
-      hold_pending: decisionResult.hold_pending,
-      reason: decisionResult.reason,
-      created_at
+      status: decision.status,
+      authorized: decision.authorized,
+      hold_pending: decision.hold_pending,
+      reason: decision.reason,
+      created_at: now
     };
 
-    const truth_hash = makeTruthHash(truthPayload);
+    const hash = truthHash(basePayload);
 
     const executionRecord = {
       execution_id,
-      organization_id,
-      session_id,
-      project_id,
-      event_type,
-
-      amount,
-      currency,
-
-      status: decisionResult.status,
-      result_status: decisionResult.status,
-      decision: decisionResult.status,
-
-      authorized: decisionResult.authorized,
-      hold_pending: decisionResult.hold_pending,
-
-      reason: decisionResult.reason,
+      status: decision.status,
+      result_status: decision.status,
+      decision: decision.status,
+      authorized: decision.authorized,
+      hold_pending: decision.hold_pending,
+      budget: amount,
+      reason: decision.reason,
+      organization_id: basePayload.organization_id,
+      session_id: basePayload.session_id,
+      project_id: basePayload.project_id,
+      event_type: basePayload.event_type,
       source: context.source || "execute_api",
-
+      truth_hash: hash,
       payload: {
-        ...truthPayload,
-        truth_hash
+        amount,
+        currency: basePayload.currency,
+        context,
+        truth_hash: hash
       },
-
-      truth_hash,
-      created_at,
-      updated_at: created_at
+      created_at: now,
+      updated_at: now
     };
 
-    const { data: inserted, error: insertError } = await supabase
-      .from("executions")
-      .insert(executionRecord)
-      .select("*")
-      .maybeSingle();
+    console.log("EXECUTE INSERT PAYLOAD:", executionRecord);
 
-    if (insertError) {
+    const { data, error } = await supabase
+      .from("executions")
+      .insert([executionRecord])
+      .select("*");
+
+    if (error) {
+      console.error("EXECUTE INSERT ERROR:", error);
+
       return res.status(500).json({
         ok: false,
         error: "EXECUTION_INSERT_FAILED",
-        detail: insertError.message
+        detail: error.message,
+        hint: error.hint,
+        code: error.code
       });
     }
 
+    const inserted = Array.isArray(data) ? data[0] : data;
+
     const auditPayload = {
-      organization_id,
+      organization_id: basePayload.organization_id,
       actor_type: "system",
       actor_id: "execute_api",
       actor_label: "EXECUTIA Engine",
@@ -161,35 +159,35 @@ export default async function handler(req, res) {
       entity: "execution",
       entity_id: execution_id,
       status: "ok",
-      request_id: session_id,
+      request_id: basePayload.session_id,
       payload: {
         execution_id,
-        status: decisionResult.status,
-        reason: decisionResult.reason,
-        truth_hash
+        decision: decision.status,
+        reason: decision.reason,
+        truth_hash: hash
       },
-      created_at
+      created_at: now
     };
 
     const { error: auditError } = await supabase
       .from("audit_logs")
-      .insert(auditPayload);
+      .insert([auditPayload]);
 
     if (auditError) {
-      console.error("EXECUTE AUDIT FAILED:", auditError.message);
+      console.error("EXECUTE AUDIT ERROR:", auditError);
     }
 
     return res.status(200).json({
       ok: true,
       execution_id,
-      status: decisionResult.status,
-      result_status: decisionResult.status,
-      decision: decisionResult.status,
-      authorized: decisionResult.authorized,
-      hold_pending: decisionResult.hold_pending,
-      reason: decisionResult.reason,
-      truth_hash,
-      execution: inserted,
+      decision: decision.status,
+      status: decision.status,
+      result_status: decision.status,
+      authorized: decision.authorized,
+      hold_pending: decision.hold_pending,
+      reason: decision.reason,
+      truth_hash: hash,
+      execution: inserted || executionRecord,
       audit_ok: !auditError,
       audit_error: auditError?.message || null
     });
