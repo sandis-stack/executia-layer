@@ -17,157 +17,42 @@
   --red:#991b1b;
   --white:#fff;
 }
-
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  padding:40px;
-  font-family:Arial,sans-serif;
-  background:var(--soft);
-  color:var(--blue);
-}
-
+body{margin:0;padding:40px;font-family:Arial,sans-serif;background:var(--soft);color:var(--blue)}
 h1{margin:0 0 6px;font-size:32px;letter-spacing:-.03em}
 .sub{color:var(--muted);margin-bottom:10px}
 .mode{font-weight:800;color:var(--green)}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:20px;
-  margin-bottom:22px;
-}
-
-button{
-  background:var(--blue);
-  color:#fff;
-  border:0;
-  border-radius:8px;
-  padding:11px 16px;
-  font-weight:700;
-  cursor:pointer;
-  margin-left:8px;
-}
-
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}
+button{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;margin-left:8px}
 button:disabled{opacity:.55;cursor:not-allowed}
 button.secondary{background:#fff;color:var(--blue);border:1px solid var(--line)}
 button.approve{background:var(--blue)}
 button.block{background:var(--red)}
 button.review{background:var(--orange)}
-
 a{color:var(--blue);text-decoration:none;font-weight:700;margin-right:12px}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-  margin-bottom:18px;
-}
-
-.card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:18px;
-  box-shadow:0 6px 18px rgba(10,37,64,.04);
-}
-
-.label{
-  font-size:11px;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:8px;
-  font-weight:800;
-}
-
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(10,37,64,.04)}
+.label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:800}
 .value{font-size:24px;font-weight:800}
 .ok{color:var(--green)}
 .review{color:var(--orange)}
 .bad{color:var(--red)}
 .muted{color:var(--muted)}
-
-.notice{
-  display:none;
-  margin-bottom:18px;
-  padding:14px 16px;
-  border:1px solid #c7d7eb;
-  background:#e6f0fa;
-  border-radius:12px;
-  font-weight:700;
-}
-
+.notice{display:none;margin-bottom:18px;padding:14px 16px;border:1px solid #c7d7eb;background:#e6f0fa;border-radius:12px;font-weight:700}
 .notice.show{display:block}
-
-.panel{
-  display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:18px;
-}
-
-.row{
-  display:grid;
-  grid-template-columns:170px 160px 160px 1fr;
-  gap:12px;
-  padding:12px 0;
-  border-bottom:1px solid #eef2f7;
-  font-size:14px;
-}
-
+.panel{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.row{display:grid;grid-template-columns:170px 160px 160px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7;font-size:14px}
 .row.item{cursor:pointer}
 .row.item:hover{background:#f8fbff}
 .row.active{background:#e6f0fa;border-radius:10px;padding-left:10px;padding-right:10px}
-
-.header{
-  font-size:11px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--muted);
-  font-weight:700;
-}
-
-.detail-actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin:12px 0 14px;
-}
-
+.header{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 14px}
 .detail-actions button{margin-left:0}
-
 code{font-size:12px;word-break:break-all}
-
-pre{
-  margin:0;
-  background:var(--soft2);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:14px;
-  white-space:pre-wrap;
-  max-height:420px;
-  overflow:auto;
-  font-size:13px;
-  line-height:1.45;
-}
-
-.audit-box{
-  margin-top:14px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px;
-}
-
-.audit-item{
-  border-bottom:1px solid #eef2f7;
-  padding:10px 0;
-  font-size:13px;
-}
-
+pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:12px;padding:14px;white-space:pre-wrap;max-height:420px;overflow:auto;font-size:13px;line-height:1.45}
+.audit-box{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.audit-item{border-bottom:1px solid #eef2f7;padding:10px 0;font-size:13px}
 .audit-item:last-child{border-bottom:0}
-
 @media(max-width:1000px){
   body{padding:24px}
   .top{display:block}
@@ -198,25 +83,10 @@ pre{
 <div id="notice" class="notice"></div>
 
 <div class="grid">
-  <div class="card">
-    <div class="label">System state</div>
-    <div id="system" class="value">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Executions</div>
-    <div id="total" class="value">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Approved</div>
-    <div id="approved" class="value ok">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Review / blocked</div>
-    <div id="blocked" class="value review">—</div>
-  </div>
+  <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
+  <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
+  <div class="card"><div class="label">Approved</div><div id="approved" class="value ok">—</div></div>
+  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value review">—</div></div>
 </div>
 
 <div class="panel">
@@ -252,140 +122,118 @@ pre{
 </div>
 
 <script>
-const API = "/api/v1";
+const API = window.location.origin + "/api/v1";
 let loading = false;
 let selectedIndex = 0;
 let selectedExecutionId = null;
 
-function decision(e){
-  return e.decision || e.ledger_decision || e.result_status || e.status || "UNKNOWN";
-}
+function decision(e){return e.decision || e.ledger_decision || e.result_status || e.status || "UNKNOWN";}
+function source(e){return e.source || e.payload?.context?.source || e.payload?.source || "registry";}
+function hash(e){return e.truth_hash || e.payload?.truth_hash || e.execution_id || e.request_id || e.ticket_id || "NO_HASH";}
+function executionId(e){return e.execution_id || e.id || null;}
+function cls(d){if(d==="APPROVED"||d==="APPROVE")return"ok";if(d==="BLOCKED"||d==="BLOCK")return"bad";return"review";}
 
-function source(e){
-  return e.source || e.payload?.context?.source || e.payload?.source || "registry";
-}
-
-function hash(e){
-  return e.truth_hash || e.payload?.truth_hash || e.execution_id || e.request_id || e.ticket_id || "NO_HASH";
-}
-
-function executionId(e){
-  return e.execution_id || e.id || null;
-}
-
-function cls(d){
-  if(d === "APPROVED" || d === "APPROVE") return "ok";
-  if(d === "BLOCKED" || d === "BLOCK") return "bad";
-  return "review";
-}
-
-function setNotice(msg, type){
-  const box = document.getElementById("notice");
-  box.textContent = msg;
-  box.className = "notice show";
-  if(type === "bad"){
-    box.style.background = "#fff1f2";
-    box.style.borderColor = "#fecdd3";
-    box.style.color = "#991b1b";
+function setNotice(msg,type){
+  const box=document.getElementById("notice");
+  box.textContent=msg;
+  box.className="notice show";
+  if(type==="bad"){
+    box.style.background="#fff1f2";
+    box.style.borderColor="#fecdd3";
+    box.style.color="#991b1b";
   }else{
-    box.style.background = "#e6f0fa";
-    box.style.borderColor = "#c7d7eb";
-    box.style.color = "#0A2540";
+    box.style.background="#e6f0fa";
+    box.style.borderColor="#c7d7eb";
+    box.style.color="#0A2540";
   }
 }
 
 function clearNotice(){
-  const box = document.getElementById("notice");
-  box.textContent = "";
-  box.className = "notice";
+  const box=document.getElementById("notice");
+  box.textContent="";
+  box.className="notice";
 }
 
 async function json(url,opt={}){
-  const r = await fetch(url,{
-    method: opt.method || "GET",
+  const r=await fetch(url,{
+    method:opt.method || "GET",
     headers:{
       "Content-Type":"application/json",
       "Accept":"application/json"
     },
-    body: opt.body,
+    body:opt.body,
     cache:"no-store"
   });
 
-  const t = await r.text();
-  let d = {};
+  const t=await r.text();
+  let d={};
 
-  try{
-    d = t ? JSON.parse(t) : {};
-  }catch{
-    throw new Error("NON_JSON_RESPONSE");
-  }
+  try{d=t?JSON.parse(t):{};}
+  catch{throw new Error("NON_JSON_RESPONSE");}
 
-  if(!r.ok){
-    throw new Error(d.error || d.detail || "REQUEST_FAILED");
-  }
+  if(!r.ok)throw new Error(d.error || d.detail || "REQUEST_FAILED");
 
   return d;
 }
 
 async function loadControl(manual=false){
-  if(loading) return;
-  loading = true;
+  if(loading)return;
+  loading=true;
 
   try{
-    const h = await json(API + "/health").catch(()=>({status:"offline", ok:false}));
+    const h=await json(API + "/health").catch(()=>({status:"offline",ok:false}));
+    const system=document.getElementById("system");
+    const healthy=h.ok===true || h.status==="healthy";
 
-    const system = document.getElementById("system");
-    const healthy = h.ok === true || h.status === "healthy";
+    system.textContent=healthy ? "ACTIVE" : (h.status || "OFFLINE").toUpperCase();
+    system.className="value " + (healthy ? "ok" : "bad");
 
-    system.textContent = healthy ? "ACTIVE" : (h.status || "OFFLINE").toUpperCase();
-    system.className = "value " + (healthy ? "ok" : "bad");
+    const d=await json(API + "/executions");
+    const items=Array.isArray(d.executions) ? d.executions : [];
 
-    const d = await json(API + "/executions");
-    const items = Array.isArray(d.executions) ? d.executions : [];
+    document.getElementById("total").textContent=items.length;
 
-    document.getElementById("total").textContent = items.length;
-
-    let approved = 0;
-    let reviewBlocked = 0;
+    let approved=0;
+    let reviewBlocked=0;
 
     items.forEach(e=>{
-      const de = decision(e);
-      if(de === "APPROVED" || de === "APPROVE") approved++;
+      const de=decision(e);
+      if(de==="APPROVED" || de==="APPROVE") approved++;
       else reviewBlocked++;
     });
 
-    document.getElementById("approved").textContent = approved;
-    document.getElementById("blocked").textContent = reviewBlocked;
+    document.getElementById("approved").textContent=approved;
+    document.getElementById("blocked").textContent=reviewBlocked;
 
-    window.__executiaItems = items;
+    window.__executiaItems=items;
 
     if(selectedExecutionId){
-      const found = items.findIndex(e => executionId(e) === selectedExecutionId);
-      selectedIndex = found >= 0 ? found : 0;
+      const found=items.findIndex(e=>executionId(e)===selectedExecutionId);
+      selectedIndex=found>=0 ? found : 0;
     }
 
     renderStream(items);
 
     if(items[selectedIndex]) showBreakdown(selectedIndex);
-    else document.getElementById("breakdown").textContent = "No execution selected.";
+    else document.getElementById("breakdown").textContent="No execution selected.";
 
-    if(manual) setNotice("Control interface refreshed.", "ok");
+    if(manual) setNotice("Control interface refreshed.","ok");
 
   }catch(err){
     document.getElementById("stream").innerHTML =
       `<div class="row"><div>SYSTEM ERROR</div><div class="bad">${err.message}</div></div>`;
-    setNotice("Load failed: " + err.message, "bad");
+    setNotice("Load failed: " + err.message,"bad");
   }finally{
-    loading = false;
+    loading=false;
   }
 }
 
 function renderStream(items){
-  const stream = document.getElementById("stream");
+  const stream=document.getElementById("stream");
 
-  stream.innerHTML = items.slice(0,25).map((e,i)=>{
-    const de = decision(e);
-    const active = i === selectedIndex ? "active" : "";
+  stream.innerHTML=items.slice(0,25).map((e,i)=>{
+    const de=decision(e);
+    const active=i===selectedIndex ? "active" : "";
 
     return `<div class="row item ${active}" onclick="showBreakdown(${i})">
       <div>${e.created_at || "—"}</div>
@@ -397,56 +245,56 @@ function renderStream(items){
 }
 
 function showBreakdown(i){
-  const e = (window.__executiaItems || [])[i];
-  if(!e) return;
+  const e=(window.__executiaItems || [])[i];
+  if(!e)return;
 
-  selectedIndex = i;
-  selectedExecutionId = executionId(e);
+  selectedIndex=i;
+  selectedExecutionId=executionId(e);
 
   renderStream(window.__executiaItems || []);
 
-  document.getElementById("breakdown").textContent = JSON.stringify({
-    decision: decision(e),
-    status: e.status || e.result_status || null,
-    reason: e.reason || e.payload?.reason || "Execution recorded",
-    authorized: e.authorized ?? null,
-    hold_pending: e.hold_pending ?? null,
-    source: source(e),
-    execution_id: executionId(e),
-    truth_hash: e.truth_hash || e.payload?.truth_hash || null,
-    created_at: e.created_at || null,
-    payload: e.payload || null
-  }, null, 2);
+  document.getElementById("breakdown").textContent=JSON.stringify({
+    decision:decision(e),
+    status:e.status || e.result_status || null,
+    reason:e.reason || e.payload?.reason || "Execution recorded",
+    authorized:e.authorized ?? null,
+    hold_pending:e.hold_pending ?? null,
+    source:source(e),
+    execution_id:executionId(e),
+    truth_hash:e.truth_hash || e.payload?.truth_hash || null,
+    created_at:e.created_at || null,
+    payload:e.payload || null
+  },null,2);
 }
 
 async function overrideSelected(action){
   clearNotice();
 
-  const items = window.__executiaItems || [];
-  const selected = items[selectedIndex];
+  const items=window.__executiaItems || [];
+  const selected=items[selectedIndex];
 
   if(!selected){
-    setNotice("No execution selected.", "bad");
+    setNotice("No execution selected.","bad");
     return;
   }
 
-  const id = executionId(selected);
+  const id=executionId(selected);
 
   if(!id){
-    setNotice("Selected execution has no execution_id.", "bad");
+    setNotice("Selected execution has no execution_id.","bad");
     return;
   }
 
-  const reasonMap = {
-    APPROVE: "Manual force approve from EXECUTIA Control Interface",
-    BLOCK: "Manual block from EXECUTIA Control Interface",
-    REVIEW: "Manual review request from EXECUTIA Control Interface"
+  const reasonMap={
+    APPROVE:"Manual force approve from EXECUTIA Control Interface",
+    BLOCK:"Manual block from EXECUTIA Control Interface",
+    REVIEW:"Manual review request from EXECUTIA Control Interface"
   };
 
   try{
-    setNotice("Sending control action: " + action + " → " + id, "ok");
+    setNotice("Sending control action: " + action + " → " + id,"ok");
 
-    const d = await json(API + "/override",{
+    const d=await json(API + "/override",{
       method:"POST",
       body:JSON.stringify({
         execution_id:id,
@@ -456,11 +304,9 @@ async function overrideSelected(action){
       })
     });
 
-    if(d.ok === false){
-      throw new Error(d.error || "OVERRIDE_FAILED");
-    }
+    if(d.ok===false)throw new Error(d.error || "OVERRIDE_FAILED");
 
-    document.getElementById("auditTrail").innerHTML = `
+    document.getElementById("auditTrail").innerHTML=`
       <div class="audit-item">
         <strong>${d.action || action}</strong><br>
         Execution: <code>${id}</code><br>
@@ -469,39 +315,33 @@ async function overrideSelected(action){
       </div>
     `;
 
-    setNotice(
-      "Control action completed: " +
-      (d.previous_status || "—") +
-      " → " +
-      (d.new_status || "—"),
-      "ok"
-    );
+    setNotice("Control action completed: " + (d.previous_status || "—") + " → " + (d.new_status || "—"),"ok");
 
     await loadControl(false);
 
   }catch(err){
-    setNotice("Override failed: " + err.message, "bad");
+    setNotice("Override failed: " + err.message,"bad");
   }
 }
 
 async function runControl(){
   clearNotice();
 
-  const btn = document.getElementById("runBtn");
-  btn.disabled = true;
-  btn.textContent = "Running...";
+  const btn=document.getElementById("runBtn");
+  btn.disabled=true;
+  btn.textContent="Running...";
 
   try{
-    const scenarios = [
-      {amount:100, legalBlock:false},
-      {amount:15000, legalBlock:false},
-      {amount:0, legalBlock:false},
-      {amount:500, legalBlock:true}
+    const scenarios=[
+      {amount:100,legalBlock:false},
+      {amount:15000,legalBlock:false},
+      {amount:0,legalBlock:false},
+      {amount:500,legalBlock:true}
     ];
 
-    const s = scenarios[Math.floor(Math.random() * scenarios.length)];
+    const s=scenarios[Math.floor(Math.random()*scenarios.length)];
 
-    const d = await json(API + "/execute",{
+    const d=await json(API + "/execute",{
       method:"POST",
       body:JSON.stringify({
         organization_id:"org_norsteel",
@@ -517,18 +357,16 @@ async function runControl(){
       })
     });
 
-    if(d.ok === false){
-      throw new Error(d.error || "EXECUTION_FAILED");
-    }
+    if(d.ok===false)throw new Error(d.error || "EXECUTION_FAILED");
 
-    setNotice("New execution created.", "ok");
+    setNotice("New execution created.","ok");
     await loadControl(false);
 
   }catch(err){
-    setNotice("Run control failed: " + err.message, "bad");
+    setNotice("Run control failed: " + err.message,"bad");
   }finally{
-    btn.disabled = false;
-    btn.textContent = "Run control";
+    btn.disabled=false;
+    btn.textContent="Run control";
   }
 }
 
