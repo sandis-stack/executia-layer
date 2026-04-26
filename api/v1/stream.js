@@ -35,6 +35,8 @@ export default async function handler(req, res) {
   });
 
   let closed = false;
+  let lastStateHash = null;
+  let lastLatestId = null;
 
   function send(event, payload) {
     if (closed) return;
@@ -43,34 +45,125 @@ export default async function handler(req, res) {
     res.write(`data: ${JSON.stringify(payload)}\n\n`);
   }
 
-  async function sendSnapshot(reason = "snapshot") {
-    try {
-      const { data, error } = await supabase
-        .from("executions")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(25);
+  function createStateHash(rows) {
+    return JSON.stringify(
+      (rows || []).map((e) => ({
+        id: e.id,
+        execution_id: e.execution_id,
+        status: e.status,
+        result_status: e.result_status,
+        authorized: e.authorized,
+        hold_pending: e.hold_pending,
+        reason: e.reason,
+        updated_at: e.updated_at,
+        created_at: e.created_at
+      }))
+    );
+  }
 
-      if (error) {
-        send("error", {
-          ok: false,
-          error: "SNAPSHOT_QUERY_FAILED",
-          detail: error.message,
-          timestamp: new Date().toISOString()
-        });
-        return;
-      }
+  async function fetchExecutions(limit = 25) {
+    const { data, error } = await supabase
+      .from("executions")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      throw error;
+    }
+
+    return data || [];
+  }
+
+  async function emitSnapshot(type = "snapshot") {
+    try {
+      const executions = await fetchExecutions(25);
 
       send("execution", {
         ok: true,
-        type: reason,
-        executions: data || [],
+        type,
+        executions,
         timestamp: new Date().toISOString()
       });
+
+      return executions;
     } catch (err) {
       send("error", {
         ok: false,
-        error: "SNAPSHOT_INTERNAL_ERROR",
+        error: "SNAPSHOT_FAILED",
+        detail: err.message || String(err),
+        timestamp: new Date().toISOString()
+      });
+
+      return [];
+    }
+  }
+
+  async function checkForChanges() {
+    if (closed) return;
+
+    try {
+      const executions = await fetchExecutions(25);
+      const currentHash = createStateHash(executions);
+      const latest = executions[0] || null;
+      const latestId = latest?.execution_id || latest?.id || null;
+
+      if (lastStateHash === null) {
+        lastStateHash = currentHash;
+        lastLatestId = latestId;
+
+        send("execution", {
+          ok: true,
+          type: "initial_snapshot",
+          executions,
+          timestamp: new Date().toISOString()
+        });
+
+        return;
+      }
+
+      if (currentHash !== lastStateHash) {
+        const previousHash = lastStateHash;
+        const previousLatestId = lastLatestId;
+
+        lastStateHash = currentHash;
+        lastLatestId = latestId;
+
+        send("change", {
+          ok: true,
+          type: "deterministic_db_change",
+          table: "executions",
+          execution: latest,
+          execution_id: latestId,
+          previous_latest_id: previousLatestId,
+          status: latest?.status || latest?.result_status || null,
+          reason: latest?.reason || latest?.payload?.reason || null,
+          previous_hash: previousHash,
+          current_hash: currentHash,
+          timestamp: new Date().toISOString()
+        });
+
+        send("execution", {
+          ok: true,
+          type: "change_snapshot",
+          executions,
+          timestamp: new Date().toISOString()
+        });
+
+        return;
+      }
+
+      send("heartbeat", {
+        ok: true,
+        type: "heartbeat",
+        latest_id: latestId,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (err) {
+      send("error", {
+        ok: false,
+        error: "STREAM_CHECK_FAILED",
         detail: err.message || String(err),
         timestamp: new Date().toISOString()
       });
@@ -80,68 +173,19 @@ export default async function handler(req, res) {
   send("connected", {
     ok: true,
     service: "EXECUTIA STREAM",
-    mode: "supabase-realtime",
-    events: ["connected", "execution", "change", "heartbeat", "realtime_status", "error"],
+    mode: "deterministic-db-change-stream",
+    events: ["connected", "execution", "change", "heartbeat", "error"],
+    interval_ms: 2000,
     timestamp: new Date().toISOString()
   });
 
-  await sendSnapshot("initial_snapshot");
+  await checkForChanges();
 
-  const channel = supabase
-    .channel("executia-executions-realtime")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "executions"
-      },
-      async (payload) => {
-        if (closed) return;
+  const interval = setInterval(checkForChanges, 2000);
 
-        const row = payload.new || payload.old || null;
-
-        send("change", {
-          ok: true,
-          type: "postgres_change",
-          eventType: payload.eventType,
-          table: "executions",
-          execution: row,
-          old: payload.old || null,
-          new: payload.new || null,
-          execution_id: row?.execution_id || row?.id || null,
-          status: row?.status || row?.result_status || null,
-          reason: row?.reason || row?.payload?.reason || null,
-          timestamp: new Date().toISOString()
-        });
-
-        await sendSnapshot("change_snapshot");
-      }
-    )
-    .subscribe((status, err) => {
-      send("realtime_status", {
-        ok: !err,
-        status,
-        error: err?.message || null,
-        timestamp: new Date().toISOString()
-      });
-    });
-
-  const heartbeat = setInterval(() => {
-    send("heartbeat", {
-      ok: true,
-      type: "heartbeat",
-      timestamp: new Date().toISOString()
-    });
-  }, 20000);
-
-  req.on("close", async () => {
+  req.on("close", () => {
     closed = true;
-    clearInterval(heartbeat);
-
-    try {
-      await supabase.removeChannel(channel);
-    } catch {}
+    clearInterval(interval);
 
     try {
       res.end();
