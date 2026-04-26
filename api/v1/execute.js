@@ -5,15 +5,10 @@ function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!url || !key) {
-    throw new Error("SUPABASE_ENV_MISSING");
-  }
+  if (!url || !key) throw new Error("SUPABASE_ENV_MISSING");
 
   return createClient(url, key, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false
-    }
+    auth: { persistSession: false, autoRefreshToken: false }
   });
 }
 
@@ -21,47 +16,24 @@ function makeId() {
   return "EX-" + Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
-function hash(payload) {
-  return crypto
-    .createHash("sha256")
-    .update(JSON.stringify(payload))
-    .digest("hex");
+function makeHash(payload) {
+  return crypto.createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
 function decide(amount, context = {}) {
   if (context.legalBlock === true) {
-    return {
-      status: "BLOCKED",
-      authorized: false,
-      hold_pending: false,
-      reason: "Legal block detected"
-    };
+    return { status: "BLOCKED", authorized: false, hold_pending: false, reason: "Legal block detected" };
   }
 
   if (!amount || Number(amount) <= 0) {
-    return {
-      status: "BLOCKED",
-      authorized: false,
-      hold_pending: false,
-      reason: "Invalid execution amount"
-    };
+    return { status: "BLOCKED", authorized: false, hold_pending: false, reason: "Invalid execution amount" };
   }
 
   if (Number(amount) >= 10000) {
-    return {
-      status: "REQUIRES_REVIEW",
-      authorized: false,
-      hold_pending: true,
-      reason: "High-value execution requires review"
-    };
+    return { status: "REQUIRES_REVIEW", authorized: false, hold_pending: true, reason: "High-value execution requires review" };
   }
 
-  return {
-    status: "APPROVED",
-    authorized: true,
-    hold_pending: false,
-    reason: "Execution approved"
-  };
+  return { status: "APPROVED", authorized: true, hold_pending: false, reason: "Execution approved" };
 }
 
 export default async function handler(req, res) {
@@ -69,10 +41,7 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   if (req.method !== "POST") {
-    return res.status(405).json({
-      ok: false,
-      error: "METHOD_NOT_ALLOWED"
-    });
+    return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
   }
 
   try {
@@ -82,7 +51,6 @@ export default async function handler(req, res) {
     const amount = Number(body.amount || 0);
     const context = body.context || {};
     const result = decide(amount, context);
-
     const now = new Date().toISOString();
     const execution_id = body.execution_id || makeId();
 
@@ -98,7 +66,7 @@ export default async function handler(req, res) {
       created_at: now
     };
 
-    const truth_hash = hash(proofPayload);
+    const truth_hash = makeHash(proofPayload);
 
     const record = {
       execution_id,
@@ -124,7 +92,6 @@ export default async function handler(req, res) {
       .select("*");
 
     if (error) {
-      console.error("EXECUTION_INSERT_FAILED:", error);
       return res.status(500).json({
         ok: false,
         error: "EXECUTION_INSERT_FAILED",
@@ -136,7 +103,7 @@ export default async function handler(req, res) {
 
     const execution = Array.isArray(data) ? data[0] : data;
 
-    await supabase.from("audit_logs").insert([{
+    const auditPayload = {
       organization_id: "org_norsteel",
       actor_type: "system",
       actor_id: "execute_api",
@@ -152,7 +119,15 @@ export default async function handler(req, res) {
         truth_hash
       },
       created_at: now
-    }]).catch(() => null);
+    };
+
+    const { error: auditError } = await supabase
+      .from("audit_logs")
+      .insert([auditPayload]);
+
+    if (auditError) {
+      console.error("EXECUTE_AUDIT_FAILED:", auditError);
+    }
 
     return res.status(200).json({
       ok: true,
@@ -163,12 +138,12 @@ export default async function handler(req, res) {
       hold_pending: result.hold_pending,
       reason: result.reason,
       truth_hash,
-      execution
+      execution,
+      audit_ok: !auditError,
+      audit_error: auditError?.message || null
     });
 
   } catch (err) {
-    console.error("EXECUTE_SERVER_ERROR:", err);
-
     return res.status(500).json({
       ok: false,
       error: "EXECUTE_SERVER_ERROR",
