@@ -2,176 +2,65 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>EXECUTIA Dashboard V3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EXECUTIA Control Interface</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f7f9fc;
-  margin: 0;
-  padding: 40px;
-  color: #0A2540;
+:root{
+  --blue:#0A2540;
+  --line:#d9e4f2;
+  --soft:#f7f9fc;
+  --soft2:#f6f9fc;
+  --muted:#667085;
+  --green:#15803d;
+  --orange:#b45309;
+  --red:#991b1b;
+  --white:#fff;
 }
-
-h1 { margin: 0 0 5px; }
-
-.sub {
-  color: #667085;
-  margin-bottom: 18px;
+*{box-sizing:border-box}
+body{margin:0;padding:40px;font-family:Arial,sans-serif;background:var(--soft);color:var(--blue)}
+h1{margin:0 0 6px;font-size:32px;letter-spacing:-.03em}
+.sub{color:var(--muted);margin-bottom:10px}
+.mode{font-weight:800;color:var(--green)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}
+button{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;margin-left:8px}
+button:disabled{opacity:.55;cursor:not-allowed}
+button.secondary{background:#fff;color:var(--blue);border:1px solid var(--line)}
+button.approve{background:var(--blue)}
+button.block{background:var(--red)}
+button.review{background:var(--orange)}
+a{color:var(--blue);text-decoration:none;font-weight:700;margin-right:12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(10,37,64,.04)}
+.label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:800}
+.value{font-size:24px;font-weight:800}
+.ok{color:var(--green)}
+.review{color:var(--orange)}
+.bad{color:var(--red)}
+.muted{color:var(--muted)}
+.notice{display:none;margin-bottom:18px;padding:14px 16px;border:1px solid #c7d7eb;background:#e6f0fa;border-radius:12px;font-weight:700}
+.notice.show{display:block}
+.panel{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.row{display:grid;grid-template-columns:170px 160px 160px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7;font-size:14px}
+.row.item{cursor:pointer}
+.row.item:hover{background:#f8fbff}
+.row.active{background:#e6f0fa;border-radius:10px;padding-left:10px;padding-right:10px}
+.header{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 14px}
+.detail-actions button{margin-left:0}
+code{font-size:12px;word-break:break-all}
+pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:12px;padding:14px;white-space:pre-wrap;max-height:420px;overflow:auto;font-size:13px;line-height:1.45}
+.audit-box{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.audit-item{border-bottom:1px solid #eef2f7;padding:10px 0;font-size:13px}
+.audit-item:last-child{border-bottom:0}
+@media(max-width:1000px){
+  body{padding:24px}
+  .top{display:block}
+  .top div:last-child{margin-top:18px}
+  .grid{grid-template-columns:1fr 1fr}
+  .panel{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr}
 }
-
-.mode {
-  margin-bottom: 24px;
-  font-weight: 800;
-  color: green;
-}
-
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 26px;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-  margin-bottom: 24px;
-}
-
-.card {
-  background: #fff;
-  border: 1px solid #d9e4f2;
-  border-radius: 14px;
-  padding: 20px;
-}
-
-.label {
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: #667085;
-  margin-bottom: 8px;
-}
-
-.value {
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.online { color: green; }
-.offline { color: #c62828; }
-.review { color: #b45309; }
-
-button {
-  background: #0A2540;
-  color: white;
-  border: none;
-  padding: 11px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-left: 8px;
-  font-weight: 700;
-}
-
-button.secondary {
-  background: white;
-  color: #0A2540;
-  border: 1px solid #d9e4f2;
-}
-
-button.danger {
-  background: #c62828;
-}
-
-button:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-}
-
-select {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid #d9e4f2;
-  color: #0A2540;
-  font-weight: 700;
-  background: white;
-}
-
-.layout {
-  display: grid;
-  grid-template-columns: 1.25fr .75fr;
-  gap: 20px;
-}
-
-.panel {
-  background: #fff;
-  border: 1px solid #d9e4f2;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.panel-title {
-  padding: 16px 18px;
-  border-bottom: 1px solid #eef2f7;
-  font-weight: 800;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 180px 150px 140px 1fr;
-  gap: 12px;
-  padding: 12px 18px;
-  border-bottom: 1px solid #eef2f7;
-  cursor: pointer;
-}
-
-.row:hover { background: #f8fbff; }
-
-.header {
-  background: #f0f3f8;
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: #667085;
-  font-weight: 800;
-  cursor: default;
-}
-
-.status-approved { color: green; font-weight: 800; }
-.status-blocked { color: #c62828; font-weight: 800; }
-.status-review { color: #b45309; font-weight: 800; }
-
-.detail {
-  padding: 18px;
-}
-
-.actions {
-  margin-bottom: 14px;
-}
-
-pre {
-  background: #f6f9fc;
-  border: 1px solid #d9e4f2;
-  border-radius: 10px;
-  padding: 14px;
-  white-space: pre-wrap;
-  overflow: auto;
-  max-height: 440px;
-  font-size: 12px;
-}
-
-.live-dot {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  background: green;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-code { font-size: 12px; }
 </style>
 </head>
 
@@ -179,318 +68,310 @@ code { font-size: 12px; }
 
 <div class="top">
   <div>
-    <h1>EXECUTIA Dashboard V3</h1>
-    <div class="sub">Live stream · decision control · truth registry</div>
+    <h1>EXECUTIA Control Interface</h1>
+    <div class="sub">System state · Live execution stream · Decision control · Truth registry</div>
     <div class="mode">Execution control mode: ACTIVE</div>
   </div>
 
   <div>
-    <button class="secondary" onclick="loadData()">Refresh</button>
-    <button id="runBtn" onclick="runTestExecution()">Run execution</button>
+    <a href="/dashboard">Dashboard</a>
+    <button class="secondary" onclick="loadControl(true)">Refresh</button>
+    <button id="runBtn" onclick="runControl()">Run control</button>
   </div>
 </div>
 
-<div class="cards">
-  <div class="card">
-    <div class="label">System</div>
-    <div id="systemStatus" class="value offline">checking</div>
-  </div>
+<div id="notice" class="notice"></div>
 
-  <div class="card">
-    <div class="label">Total executions</div>
-    <div id="total" class="value">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Approved</div>
-    <div id="approved" class="value">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Review / blocked</div>
-    <div id="blocked" class="value">—</div>
-  </div>
+<div class="grid">
+  <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
+  <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
+  <div class="card"><div class="label">Approved</div><div id="approved" class="value ok">—</div></div>
+  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value review">—</div></div>
 </div>
 
-<div style="margin-bottom:20px;">
-  <select id="filter" onchange="renderStream()">
-    <option value="ALL">All</option>
-    <option value="APPROVED">Approved</option>
-    <option value="BLOCKED">Blocked</option>
-    <option value="REQUIRES_REVIEW">Requires Review</option>
-  </select>
-</div>
-
-<div class="layout">
-  <div class="panel">
-    <div class="panel-title"><span class="live-dot"></span>Live execution stream</div>
+<div class="panel">
+  <div class="card">
+    <div class="label">Live execution stream</div>
 
     <div class="row header">
-      <div>When</div>
+      <div>Time</div>
       <div>Decision</div>
-      <div>Event</div>
-      <div>Proof</div>
+      <div>Source</div>
+      <div>Registry proof</div>
     </div>
 
     <div id="stream"></div>
   </div>
 
-  <div class="panel">
-    <div class="panel-title">Execution detail</div>
+  <div class="card">
+    <div class="label">Execution detail</div>
 
-    <div class="detail">
-      <div class="actions">
-        <button onclick="forceApprove()">Force approve</button>
-        <button class="danger" onclick="blockExecution()">Block</button>
-      </div>
+    <div class="detail-actions">
+      <button class="approve" onclick="overrideSelected('APPROVE')">Force approve</button>
+      <button class="block" onclick="overrideSelected('BLOCK')">Block</button>
+      <button class="review" onclick="overrideSelected('REVIEW')">Send to review</button>
+    </div>
 
-      <pre id="detail">Select an execution from the stream.</pre>
+    <pre id="breakdown">No execution selected.</pre>
+
+    <div class="audit-box">
+      <div class="label">Latest control action</div>
+      <div id="auditTrail" class="muted">No override action yet.</div>
     </div>
   </div>
 </div>
 
 <script>
-const API_BASE = "https://execution.executia.io";
-
+const API = window.location.origin + "/api/v1";
 let loading = false;
-let items = [];
-let filteredItems = [];
-let selectedExecution = null;
+let selectedIndex = 0;
+let selectedExecutionId = null;
 
-function getDecision(e) {
-  return e.decision || e.ledger_decision || e.result_status || e.status || "UNKNOWN";
+function decision(e){return e.decision || e.ledger_decision || e.result_status || e.status || "UNKNOWN";}
+function source(e){return e.source || e.payload?.context?.source || e.payload?.source || "registry";}
+function hash(e){return e.truth_hash || e.payload?.truth_hash || e.execution_id || e.request_id || e.ticket_id || "NO_HASH";}
+function executionId(e){return e.execution_id || e.id || null;}
+function cls(d){if(d==="APPROVED"||d==="APPROVE")return"ok";if(d==="BLOCKED"||d==="BLOCK")return"bad";return"review";}
+
+function setNotice(msg,type){
+  const box=document.getElementById("notice");
+  box.textContent=msg;
+  box.className="notice show";
+  if(type==="bad"){
+    box.style.background="#fff1f2";
+    box.style.borderColor="#fecdd3";
+    box.style.color="#991b1b";
+  }else{
+    box.style.background="#e6f0fa";
+    box.style.borderColor="#c7d7eb";
+    box.style.color="#0A2540";
+  }
 }
 
-function getStatus(e) {
-  return e.status || e.authoritative_status || e.ticket_status_cache || e.result_status || "UNKNOWN";
+function clearNotice(){
+  const box=document.getElementById("notice");
+  box.textContent="";
+  box.className="notice";
 }
 
-function getEvent(e) {
-  return e.event_type || e.payment_type || e.source || e.payload?.event_type || e.payload?.context?.source || "execution";
-}
-
-function getHash(e) {
-  return e.truth_hash || e.payload?.truth_hash || e.execution_id || e.request_id || e.ticket_id || "";
-}
-
-function statusClass(d) {
-  if (d === "APPROVED" || d === "APPROVE") return "status-approved";
-  if (d === "BLOCKED" || d === "BLOCK") return "status-blocked";
-  return "status-review";
-}
-
-function getRisk(e) {
-  const amount = Number(e.budget || e.payload?.amount || 0);
-  const decision = getDecision(e);
-
-  if (decision === "BLOCKED" || decision === "BLOCK") return "HIGH";
-  if (decision === "REQUIRES_REVIEW") return "REVIEW";
-  if (amount > 10000) return "HIGH";
-  return "NORMAL";
-}
-
-function getMeaning(decision) {
-  if (decision === "APPROVED" || decision === "APPROVE") return "execution passed";
-  if (decision === "BLOCKED" || decision === "BLOCK") return "prevented";
-  if (decision === "REQUIRES_REVIEW") return "human needed";
-  return "unknown state";
-}
-
-async function getJson(url, options = {}) {
-  const res = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
+async function json(url,opt={}){
+  const r=await fetch(url,{
+    method:opt.method || "GET",
+    headers:{
+      "Content-Type":"application/json",
+      "Accept":"application/json"
     },
-    ...options
+    body:opt.body,
+    cache:"no-store"
   });
 
-  const text = await res.text();
+  const t=await r.text();
+  let d={};
 
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error("NON_JSON_RESPONSE");
-  }
+  try{d=t?JSON.parse(t):{};}
+  catch{throw new Error("NON_JSON_RESPONSE");}
+
+  if(!r.ok)throw new Error(d.error || d.detail || "REQUEST_FAILED");
+
+  return d;
 }
 
-async function loadData() {
-  if (loading) return;
-  loading = true;
+async function loadControl(manual=false){
+  if(loading)return;
+  loading=true;
 
-  try {
-    const health = await getJson(`${API_BASE}/api/v1/health`);
-    const system = document.getElementById("systemStatus");
+  try{
+    const h=await json(API + "/health").catch(()=>({status:"offline",ok:false}));
+    const system=document.getElementById("system");
+    const healthy=h.ok===true || h.status==="healthy";
 
-    if (health.ok && health.status === "healthy") {
-      system.innerText = "online";
-      system.className = "value online";
-    } else {
-      system.innerText = "degraded";
-      system.className = "value review";
+    system.textContent=healthy ? "ACTIVE" : (h.status || "OFFLINE").toUpperCase();
+    system.className="value " + (healthy ? "ok" : "bad");
+
+    const d=await json(API + "/executions");
+    const items=Array.isArray(d.executions) ? d.executions : [];
+
+    document.getElementById("total").textContent=items.length;
+
+    let approved=0;
+    let reviewBlocked=0;
+
+    items.forEach(e=>{
+      const de=decision(e);
+      if(de==="APPROVED" || de==="APPROVE") approved++;
+      else reviewBlocked++;
+    });
+
+    document.getElementById("approved").textContent=approved;
+    document.getElementById("blocked").textContent=reviewBlocked;
+
+    window.__executiaItems=items;
+
+    if(selectedExecutionId){
+      const found=items.findIndex(e=>executionId(e)===selectedExecutionId);
+      selectedIndex=found>=0 ? found : 0;
     }
 
-    const data = await getJson(`${API_BASE}/api/v1/executions`);
+    renderStream(items);
 
-    if (!data.ok) throw new Error(data.error || "API_ERROR");
+    if(items[selectedIndex]) showBreakdown(selectedIndex);
+    else document.getElementById("breakdown").textContent="No execution selected.";
 
-    items = data.executions || [];
+    if(manual) setNotice("Control interface refreshed.","ok");
 
-    document.getElementById("total").innerText = items.length;
-
-    const approvedCount = items.filter(e => {
-      const d = getDecision(e);
-      return d === "APPROVED" || d === "APPROVE";
-    }).length;
-
-    document.getElementById("approved").innerText = approvedCount;
-    document.getElementById("blocked").innerText = items.length - approvedCount;
-
-    renderStream();
-
-  } catch (err) {
-    document.getElementById("systemStatus").innerText = "offline";
-    document.getElementById("systemStatus").className = "value offline";
+  }catch(err){
     document.getElementById("stream").innerHTML =
-      `<div class="row"><div>Error</div><div>${err.message}</div></div>`;
-  } finally {
-    loading = false;
+      `<div class="row"><div>SYSTEM ERROR</div><div class="bad">${err.message}</div></div>`;
+    setNotice("Load failed: " + err.message,"bad");
+  }finally{
+    loading=false;
   }
 }
 
-function renderStream() {
-  const filter = document.getElementById("filter").value;
-  const stream = document.getElementById("stream");
+function renderStream(items){
+  const stream=document.getElementById("stream");
 
-  filteredItems = items;
+  stream.innerHTML=items.slice(0,25).map((e,i)=>{
+    const de=decision(e);
+    const active=i===selectedIndex ? "active" : "";
 
-  if (filter !== "ALL") {
-    filteredItems = items.filter(e => getDecision(e) === filter);
-  }
+    return `<div class="row item ${active}" onclick="showBreakdown(${i})">
+      <div>${e.created_at || "—"}</div>
+      <div class="${cls(de)}"><strong>${de}</strong></div>
+      <div>${source(e)}</div>
+      <div><code>${String(hash(e)).substring(0,28)}</code></div>
+    </div>`;
+  }).join("");
+}
 
-  if (!filteredItems.length) {
-    stream.innerHTML = `<div class="row"><div>No executions for this filter.</div></div>`;
-    document.getElementById("detail").textContent = "No execution selected.";
+function showBreakdown(i){
+  const e=(window.__executiaItems || [])[i];
+  if(!e)return;
+
+  selectedIndex=i;
+  selectedExecutionId=executionId(e);
+
+  renderStream(window.__executiaItems || []);
+
+  document.getElementById("breakdown").textContent=JSON.stringify({
+    decision:decision(e),
+    status:e.status || e.result_status || null,
+    reason:e.reason || e.payload?.reason || "Execution recorded",
+    authorized:e.authorized ?? null,
+    hold_pending:e.hold_pending ?? null,
+    source:source(e),
+    execution_id:executionId(e),
+    truth_hash:e.truth_hash || e.payload?.truth_hash || null,
+    created_at:e.created_at || null,
+    payload:e.payload || null
+  },null,2);
+}
+
+async function overrideSelected(action){
+  clearNotice();
+
+  const items=window.__executiaItems || [];
+  const selected=items[selectedIndex];
+
+  if(!selected){
+    setNotice("No execution selected.","bad");
     return;
   }
 
-  stream.innerHTML = filteredItems.slice(0, 40).map((e, i) => {
-    const d = getDecision(e);
-    const h = getHash(e);
-    const isNew = i === 0 ? "background:#e6f4ff;" : "";
+  const id=executionId(selected);
 
-    return `
-      <div class="row" style="${isNew}" onclick="showDetail(${i})">
-        <div>${e.created_at || "—"}</div>
-        <div class="${statusClass(d)}">${d}</div>
-        <div>${getEvent(e)}</div>
-        <div><code>${h ? h.substring(0, 18) : "-"}</code></div>
+  if(!id){
+    setNotice("Selected execution has no execution_id.","bad");
+    return;
+  }
+
+  const reasonMap={
+    APPROVE:"Manual force approve from EXECUTIA Control Interface",
+    BLOCK:"Manual block from EXECUTIA Control Interface",
+    REVIEW:"Manual review request from EXECUTIA Control Interface"
+  };
+
+  try{
+    setNotice("Sending control action: " + action + " → " + id,"ok");
+
+    const d=await json(API + "/override",{
+      method:"POST",
+      body:JSON.stringify({
+        execution_id:id,
+        action:action,
+        operator:"Sandis",
+        reason:reasonMap[action] || "Manual control action"
+      })
+    });
+
+    if(d.ok===false)throw new Error(d.error || "OVERRIDE_FAILED");
+
+    document.getElementById("auditTrail").innerHTML=`
+      <div class="audit-item">
+        <strong>${d.action || action}</strong><br>
+        Execution: <code>${id}</code><br>
+        Status: <strong>${d.previous_status || "—"}</strong> → <strong>${d.new_status || "—"}</strong><br>
+        Operator: Sandis
       </div>
     `;
-  }).join("");
 
-  stream.scrollTop = 0;
-  showDetail(0);
-}
+    setNotice("Control action completed: " + (d.previous_status || "—") + " → " + (d.new_status || "—"),"ok");
 
-function showDetail(index) {
-  const e = filteredItems[index];
-  if (!e) return;
+    await loadControl(false);
 
-  selectedExecution = e;
-  const decision = getDecision(e);
-
-  document.getElementById("detail").textContent = JSON.stringify({
-    decision,
-    meaning: getMeaning(decision),
-    status: getStatus(e),
-    risk: getRisk(e),
-    reason: e.reason || e.payload?.reason || null,
-    source: getEvent(e),
-    authorized: e.authorized ?? null,
-    hold_pending: e.hold_pending ?? null,
-    execution_id: e.execution_id || null,
-    truth_hash: e.truth_hash || e.payload?.truth_hash || null,
-    created_at: e.created_at || null,
-    payload: e.payload || null
-  }, null, 2);
-}
-
-function forceApprove() {
-  if (!selectedExecution) {
-    alert("No execution selected.");
-    return;
+  }catch(err){
+    setNotice("Override failed: " + err.message,"bad");
   }
-
-  alert(
-    "Override action queued for: " +
-    (selectedExecution.execution_id || selectedExecution.id || "unknown") +
-    "\nNext step: connect override API."
-  );
 }
 
-function blockExecution() {
-  if (!selectedExecution) {
-    alert("No execution selected.");
-    return;
-  }
+async function runControl(){
+  clearNotice();
 
-  alert(
-    "Block action queued for: " +
-    (selectedExecution.execution_id || selectedExecution.id || "unknown") +
-    "\nNext step: connect block API."
-  );
-}
+  const btn=document.getElementById("runBtn");
+  btn.disabled=true;
+  btn.textContent="Running...";
 
-async function runTestExecution() {
-  const btn = document.getElementById("runBtn");
-
-  try {
-    btn.disabled = true;
-    btn.innerText = "Running...";
-
-    const scenarios = [
-      { amount: 100, legalBlock: false },
-      { amount: 15000, legalBlock: false },
-      { amount: 0, legalBlock: false },
-      { amount: 500, legalBlock: true }
+  try{
+    const scenarios=[
+      {amount:100,legalBlock:false},
+      {amount:15000,legalBlock:false},
+      {amount:0,legalBlock:false},
+      {amount:500,legalBlock:true}
     ];
 
-    const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+    const s=scenarios[Math.floor(Math.random()*scenarios.length)];
 
-    const data = await getJson(`${API_BASE}/api/v1/execute`, {
-      method: "POST",
-      body: JSON.stringify({
-        organization_id: "org_norsteel",
-        session_id: "dashboard_v3_" + Date.now(),
-        project_id: "dashboard_v3",
-        event_type: "payment",
-        amount: scenario.amount,
-        currency: "EUR",
-        context: {
-          source: "dashboard_v3",
-          legalBlock: scenario.legalBlock
+    const d=await json(API + "/execute",{
+      method:"POST",
+      body:JSON.stringify({
+        organization_id:"org_norsteel",
+        session_id:"control_" + Date.now(),
+        project_id:"enterprise_control",
+        event_type:"payment",
+        amount:s.amount,
+        currency:"EUR",
+        context:{
+          source:"control_interface",
+          legalBlock:s.legalBlock
         }
       })
     });
 
-    if (data.ok === false) {
-      alert(data.error || "Execution failed");
-      return;
-    }
+    if(d.ok===false)throw new Error(d.error || "EXECUTION_FAILED");
 
-    await loadData();
+    setNotice("New execution created.","ok");
+    await loadControl(false);
 
-  } catch (err) {
-    alert(err.message || "Execution failed");
-  } finally {
-    btn.disabled = false;
-    btn.innerText = "Run execution";
+  }catch(err){
+    setNotice("Run control failed: " + err.message,"bad");
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Run control";
   }
 }
 
-loadData();
-setInterval(loadData, 3000);
+loadControl();
+setInterval(loadControl,10000);
 </script>
 
 </body>
