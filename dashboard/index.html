@@ -21,330 +21,53 @@
   --greenSoft:#ecfdf3;
   --greenLine:#bbf7d0;
 }
-
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  padding:26px;
-  font-family:Arial,sans-serif;
-  background:var(--soft);
-  color:var(--blue);
-  border-top:5px solid var(--green);
-  font-size:12px;
-}
-
-h1{
-  margin:0 0 4px;
-  font-size:20px;
-  letter-spacing:-.04em;
-}
-
-.sub{
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:8px;
-}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:18px;
-  margin-bottom:16px;
-}
-
-a{
-  color:var(--blue);
-  text-decoration:none;
-  font-weight:800;
-  margin-right:10px;
-  font-size:11px;
-}
-
-button{
-  border:0;
-  border-radius:8px;
-  padding:8px 12px;
-  font-size:11px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-button:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-}
-
-button.secondary{
-  background:#fff;
-  color:var(--blue);
-  border:1px solid var(--line);
-}
-
-button.approve{
-  background:var(--blue);
-  color:#fff;
-}
-
-button.block{
-  background:var(--red);
-  color:#fff;
-}
-
-button.review{
-  background:var(--orange);
-  color:#fff;
-}
-
-.live-indicator{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  font-size:11px;
-  font-weight:800;
-  color:var(--green);
-}
-
-.live-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:var(--green);
-  animation:pulse 1.8s infinite;
-}
-
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(21,128,61,.45)}
-  70%{box-shadow:0 0 0 7px rgba(21,128,61,0)}
-  100%{box-shadow:0 0 0 0 rgba(21,128,61,0)}
-}
-
-.notice,
-.moment-bar,
-.block-alert{
-  display:none;
-  margin-bottom:12px;
-  padding:10px 13px;
-  border-radius:10px;
-  font-size:11px;
-  font-weight:800;
-}
-
-.notice.show,
-.moment-bar.show,
-.block-alert.show{
-  display:block;
-}
-
-.notice{
-  border:1px solid #c7d7eb;
-  background:#e6f0fa;
-}
-
-.block-alert{
-  border:1px solid var(--redLine);
-  background:var(--redSoft);
-  color:var(--red);
-}
-
-.moment-bar{
-  border:1px solid #c7d7eb;
-  background:#e6f0fa;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:12px;
-}
-
-.card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:12px 14px;
-  box-shadow:0 6px 18px rgba(10,37,64,.03);
-}
-
-.grid .card{
-  min-height:62px;
-  padding:10px 14px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-}
-
-.label{
-  font-size:8px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:5px;
-  font-weight:900;
-}
-
-.value{
-  font-size:13px;
-  line-height:1.05;
-  font-weight:800;
-  letter-spacing:-.02em;
-  color:var(--blue);
-}
-
-.ok{color:var(--green)}
-.reviewText{color:var(--orange)}
-.bad{color:var(--red)}
-.muted{color:var(--muted)}
-
-.panel{
-  display:grid;
-  grid-template-columns:1.1fr .9fr;
-  gap:14px;
-}
-
-.feed-header,
-.row{
-  display:grid;
-  grid-template-columns:150px 135px 135px 1fr;
-  gap:10px;
-}
-
-.feed-header{
-  padding:2px 0 8px;
-  font-size:8px;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:var(--muted);
-  font-weight:900;
-}
-
-.row{
-  padding:10px 0;
-  border-bottom:1px solid #eef2f7;
-  font-size:11px;
-  line-height:1.35;
-}
-
-.row.item{
-  cursor:pointer;
-}
-
-.row.item:hover{
-  background:#f8fbff;
-}
-
-.row.active{
-  background:#e6f0fa;
-  border-radius:9px;
-  padding-left:9px;
-  padding-right:9px;
-  outline:1px solid #c7d7eb;
-}
-
-.row.realtime-highlight{
-  background:var(--amberSoft);
-  border-radius:9px;
-  padding-left:9px;
-  padding-right:9px;
-}
-
-.row.blocked-highlight{
-  background:var(--redSoft);
-  border:1px solid var(--redLine);
-  border-radius:9px;
-  padding-left:9px;
-  padding-right:9px;
-}
-
-.detail-actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin:10px 0 12px;
-}
-
-code{
-  font-size:10px;
-  word-break:break-all;
-}
-
-pre{
-  margin:0;
-  background:var(--soft2);
-  border:1px solid var(--line);
-  border-radius:11px;
-  padding:12px;
-  white-space:pre-wrap;
-  max-height:320px;
-  overflow:auto;
-  font-size:10px;
-  line-height:1.38;
-}
-
-.audit-box{
-  margin-top:12px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:11px;
-  padding:11px;
-}
-
-.audit-item{
-  border-bottom:1px solid #eef2f7;
-  padding:9px 0;
-  font-size:11px;
-  line-height:1.45;
-}
-
-.audit-item:last-child{
-  border-bottom:0;
-}
-
-.audit-action{
-  font-weight:900;
-  color:var(--blue);
-}
-
-.state-flow{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:7px;
-  margin:0 0 12px;
-}
-
-.state-step{
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:9px;
-  padding:8px;
-  font-size:8px;
-  font-weight:900;
-  color:var(--muted);
-  text-align:center;
-  letter-spacing:.08em;
-}
-
-.state-step.on{
-  background:#e6f0fa;
-  color:var(--blue);
-  border-color:#c7d7eb;
-}
-
-@media(max-width:1000px){
-  body{padding:22px}
-  .top{display:block}
-  .top div:last-child{margin-top:14px}
-  .grid{grid-template-columns:1fr 1fr}
-  .panel{grid-template-columns:1fr}
-  .feed-header{display:none}
-  .row{grid-template-columns:1fr}
-  .state-flow{grid-template-columns:1fr 1fr}
-}
+body{margin:0;padding:26px;font-family:Arial,sans-serif;background:var(--soft);color:var(--blue);border-top:5px solid var(--green);font-size:12px;}
+h1{margin:0 0 4px;font-size:20px;letter-spacing:-.04em;}
+.sub{color:var(--muted);font-size:11px;margin-bottom:8px;}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:16px;}
+a{color:var(--blue);text-decoration:none;font-weight:800;margin-right:10px;font-size:11px;}
+button{border:0;border-radius:8px;padding:8px 12px;font-size:11px;font-weight:800;cursor:pointer;}
+button:disabled{opacity:.55;cursor:not-allowed;}
+button.secondary{background:#fff;color:var(--blue);border:1px solid var(--line);}
+button.approve{background:var(--blue);color:#fff;}
+button.block{background:var(--red);color:#fff;}
+button.review{background:var(--orange);color:#fff;}
+.live-indicator{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;color:var(--green);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(21,128,61,.45)}70%{box-shadow:0 0 0 7px rgba(21,128,61,0)}100%{box-shadow:0 0 0 0 rgba(21,128,61,0)}}
+.notice,.moment-bar,.block-alert{display:none;margin-bottom:12px;padding:10px 13px;border-radius:10px;font-size:11px;font-weight:800;}
+.notice.show,.moment-bar.show,.block-alert.show{display:block;}
+.notice{border:1px solid #c7d7eb;background:#e6f0fa;}
+.block-alert{border:1px solid var(--redLine);background:var(--redSoft);color:var(--red);}
+.moment-bar{border:1px solid #c7d7eb;background:#e6f0fa;}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 6px 18px rgba(10,37,64,.03);}
+.grid .card{min-height:62px;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;}
+.label{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:900;}
+.value{font-size:13px;line-height:1.05;font-weight:800;letter-spacing:-.02em;color:var(--blue);}
+.ok{color:var(--green)}.reviewText{color:var(--orange)}.bad{color:var(--red)}.muted{color:var(--muted)}
+.panel{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;}
+.feed-header,.row{display:grid;grid-template-columns:150px 135px 135px 1fr;gap:10px;}
+.feed-header{padding:2px 0 8px;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:900;}
+.row{padding:10px 0;border-bottom:1px solid #eef2f7;font-size:11px;line-height:1.35;}
+.row.item{cursor:pointer;}.row.item:hover{background:#f8fbff;}
+.row.active{background:#e6f0fa;border-radius:9px;padding-left:9px;padding-right:9px;outline:1px solid #c7d7eb;}
+.row.realtime-highlight{background:var(--amberSoft);border-radius:9px;padding-left:9px;padding-right:9px;}
+.row.blocked-highlight{background:var(--redSoft);border:1px solid var(--redLine);border-radius:9px;padding-left:9px;padding-right:9px;}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px;}
+code{font-size:10px;word-break:break-all;}
+pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:11px;padding:12px;white-space:pre-wrap;max-height:320px;overflow:auto;font-size:10px;line-height:1.38;}
+.audit-box{margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px;}
+.audit-item{border-bottom:1px solid #eef2f7;padding:9px 0;font-size:11px;line-height:1.45;}
+.audit-item:last-child{border-bottom:0;}
+.audit-action{font-weight:900;color:var(--blue);}
+.state-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:0 0 12px;}
+.state-step{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px;font-size:8px;font-weight:900;color:var(--muted);text-align:center;letter-spacing:.08em;}
+.state-step.on{background:#e6f0fa;color:var(--blue);border-color:#c7d7eb;}
+@media(max-width:1000px){body{padding:22px}.top{display:block}.top div:last-child{margin-top:14px}.grid{grid-template-columns:1fr 1fr}.panel{grid-template-columns:1fr}.feed-header{display:none}.row{grid-template-columns:1fr}.state-flow{grid-template-columns:1fr 1fr}}
 </style>
 </head>
-
 <body>
 
 <div class="top">
@@ -356,7 +79,6 @@ pre{
       <span data-stream-state>Connecting stream...</span>
     </div>
   </div>
-
   <div>
     <a href="/console/">Console</a>
     <button class="secondary" onclick="loadControl(true)">Refresh</button>
@@ -377,64 +99,39 @@ pre{
 </div>
 
 <div class="grid">
-  <div class="card">
-    <div class="label">System state</div>
-    <div id="system" class="value">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Executions</div>
-    <div id="total" class="value">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Approved</div>
-    <div id="approved" class="value ok">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Review / blocked</div>
-    <div id="blocked" class="value reviewText">—</div>
-  </div>
+  <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
+  <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
+  <div class="card"><div class="label">Approved</div><div id="approved" class="value ok">—</div></div>
+  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value reviewText">—</div></div>
 </div>
 
 <div class="panel">
   <div class="card">
     <div class="label">Live execution stream</div>
-
     <div class="feed-header">
-      <div>Time</div>
-      <div>Decision</div>
-      <div>Source</div>
-      <div>Registry proof</div>
+      <div>Time</div><div>Decision</div><div>Source</div><div>Registry proof</div>
     </div>
-
     <div id="stream"></div>
   </div>
 
   <div class="card">
     <div class="label">Execution inspector</div>
-
     <div class="state-flow">
       <div id="statePending" class="state-step">PENDING</div>
       <div id="stateValidating" class="state-step">VALIDATING</div>
       <div id="stateDecided" class="state-step">DECIDED</div>
       <div id="stateLocked" class="state-step">LOCKED</div>
     </div>
-
     <div class="detail-actions">
       <button class="approve" onclick="overrideSelected('APPROVE')">Force approve</button>
       <button class="block" onclick="overrideSelected('BLOCK')">Block</button>
       <button class="review" onclick="overrideSelected('REVIEW')">Send to review</button>
     </div>
-
     <pre id="breakdown">No execution selected.</pre>
-
     <div class="audit-box">
       <div class="label">Latest control action</div>
       <div id="auditTrail" class="muted">No override action yet.</div>
     </div>
-
     <div class="audit-box">
       <div class="label">Execution audit trail</div>
       <div id="auditList" class="muted">No execution selected.</div>
@@ -451,10 +148,11 @@ let loading = false;
 let selectedIndex = 0;
 let selectedExecutionId = null;
 let eventSource = null;
+let reconnectTimer = null;
+let reconnectAttempts = 0;
 let lastChangedId = null;
 let lastBlockedId = null;
 let momentTimeout = null;
-let reconnectTimer = null;
 
 window.__executiaItems = [];
 
@@ -484,12 +182,12 @@ function getSyncedId(){
   return localStorage.getItem(SYNC_KEY);
 }
 
-function mergeExecutions(current = [], incoming = []){
+function mergeExecutions(current=[], incoming=[]){
   const map = new Map();
 
   for(const row of current){
     const id = executionId(row);
-    if(id) map.set(id,row);
+    if(id) map.set(id, row);
   }
 
   for(const row of incoming){
@@ -497,7 +195,7 @@ function mergeExecutions(current = [], incoming = []){
     if(!id) continue;
 
     const existing = map.get(id) || {};
-    map.set(id,{
+    map.set(id, {
       ...existing,
       ...row,
       payload:{
@@ -512,7 +210,7 @@ function mergeExecutions(current = [], incoming = []){
     .slice(0,50);
 }
 
-function setExecutionsMerged(incoming = []){
+function setExecutionsMerged(incoming=[]){
   window.__executiaItems = mergeExecutions(window.__executiaItems || [], incoming);
 }
 
@@ -522,14 +220,14 @@ function upsertExecution(item){
 }
 
 function replaceExecutions(items){
-  setExecutionsMerged(items || []);
+  window.__executiaItems = mergeExecutions([], items || []);
 }
 
 function applySyncedSelection(){
   const syncedId = getSyncedId();
   if(!syncedId) return false;
 
-  const found = window.__executiaItems.findIndex(e => executionId(e) === syncedId);
+  const found = window.__executiaItems.findIndex(e=>executionId(e) === syncedId);
 
   if(found >= 0){
     selectedExecutionId = syncedId;
@@ -953,6 +651,29 @@ async function runControl(){
   }
 }
 
+function scheduleReconnect(reason="stream_reconnect"){
+  const streamState = document.querySelector("[data-stream-state]");
+
+  if(reconnectTimer) return;
+
+  reconnectAttempts += 1;
+
+  const delay = Math.min(1000 * reconnectAttempts, 5000);
+
+  if(streamState){
+    streamState.textContent = "Stream reconnecting...";
+  }
+
+  try{
+    if(eventSource) eventSource.close();
+  }catch{}
+
+  reconnectTimer = setTimeout(()=>{
+    reconnectTimer = null;
+    startLiveStream();
+  }, delay);
+}
+
 function startLiveStream(){
   const streamState = document.querySelector("[data-stream-state]");
 
@@ -961,28 +682,26 @@ function startLiveStream(){
     reconnectTimer = null;
   }
 
-  if(eventSource){
-    eventSource.close();
-  }
+  try{
+    if(eventSource) eventSource.close();
+  }catch{}
 
   eventSource = new EventSource(STREAM_URL);
 
-  eventSource.addEventListener("connected",()=>{
+  eventSource.addEventListener("connected",(e)=>{
+    reconnectAttempts = 0;
     if(streamState) streamState.textContent = "Live stream connected";
+    console.log("EXECUTIA STREAM CONNECTED", e.data);
   });
 
   eventSource.addEventListener("heartbeat",()=>{
     if(streamState) streamState.textContent = "Realtime active";
   });
 
-  eventSource.addEventListener("stream_restart",()=>{
-    if(streamState) streamState.textContent = "Stream restarting...";
-
-    try{
-      eventSource.close();
-    }catch{}
-
-    reconnectTimer = setTimeout(startLiveStream,800);
+  eventSource.addEventListener("stream_restart",(e)=>{
+    if(streamState) streamState.textContent = "Stream rotating...";
+    console.log("EXECUTIA STREAM RESTART", e.data);
+    scheduleReconnect("controlled_stream_rotation");
   });
 
   eventSource.addEventListener("execution",(e)=>{
@@ -1068,14 +787,14 @@ function startLiveStream(){
     },1500);
   });
 
-  eventSource.onerror = ()=>{
-    if(streamState) streamState.textContent = "Stream reconnecting...";
+  eventSource.addEventListener("error",(e)=>{
+    console.warn("EXECUTIA STREAM ERROR", e);
+    scheduleReconnect("stream_error_event");
+  });
 
-    try{
-      eventSource.close();
-    }catch{}
-
-    reconnectTimer = setTimeout(startLiveStream,2000);
+  eventSource.onerror = (e)=>{
+    console.warn("EXECUTIA STREAM ONERROR", e);
+    scheduleReconnect("stream_onerror");
   };
 }
 
@@ -1089,6 +808,12 @@ window.addEventListener("storage",(event)=>{
     setNotice("Dashboard synced from Console — " + event.newValue,"ok");
     focusActiveRow();
   }
+});
+
+window.addEventListener("beforeunload",()=>{
+  try{
+    if(eventSource) eventSource.close();
+  }catch{}
 });
 
 loadControl();
