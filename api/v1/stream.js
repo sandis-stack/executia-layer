@@ -1,32 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
-const STREAM_INTERVAL_MS = 2000;
-const MAX_STREAM_MS = 25000;
-
 export default async function handler(req, res) {
   if (req.method !== "GET") {
-    res.setHeader("Content-Type", "application/json");
-    return res.status(405).json({
-      ok: false,
-      error: "METHOD_NOT_ALLOWED"
-    });
+    return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    res.setHeader("Content-Type", "application/json");
-    return res.status(500).json({
-      ok: false,
-      error: "SUPABASE_ENV_MISSING"
-    });
+    return res.status(500).json({ ok: false, error: "SUPABASE_ENV_MISSING" });
   }
 
   res.writeHead(200, {
-    "Content-Type": "text/event-stream; charset=utf-8",
+    "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache, no-transform",
-    "Connection": "keep-alive",
+    Connection: "keep-alive",
     "X-Accel-Buffering": "no"
   });
 
@@ -40,83 +29,60 @@ export default async function handler(req, res) {
   let closed = false;
   let previousRows = [];
   let previousHash = null;
-  let interval = null;
-  let shutdownTimer = null;
 
-  function safeEnd() {
-    if (closed) return;
-
-    closed = true;
-
-    if (interval) clearInterval(interval);
-    if (shutdownTimer) clearTimeout(shutdownTimer);
-
-    try {
-      res.end();
-    } catch {}
-  }
+  const startedAt = Date.now();
+  const MAX_STREAM_MS = 25_000;
+  const INTERVAL_MS = 2_000;
 
   function send(event, payload) {
     if (closed) return;
-
-    try {
-      res.write(`event: ${event}\n`);
-      res.write(`data: ${JSON.stringify(payload)}\n\n`);
-    } catch {
-      safeEnd();
-    }
+    res.write(`event: ${event}\n`);
+    res.write(`data: ${JSON.stringify(payload)}\n\n`);
   }
 
   function rowId(row) {
-    return row?.execution_id || row?.id || null;
+    return row?.execution_id || row?.id || row?.request_id || null;
   }
 
-  function stableStringify(value) {
-    return JSON.stringify(value);
+  function normalizeRow(row) {
+    return {
+      id: row.id,
+      execution_id: row.execution_id,
+      status: row.status,
+      decision: row.decision,
+      result_status: row.result_status,
+      ledger_decision: row.ledger_decision,
+      authorized: row.authorized,
+      hold_pending: row.hold_pending,
+      reason: row.reason,
+      updated_at: row.updated_at,
+      created_at: row.created_at,
+      truth_hash: row.truth_hash,
+      payload: row.payload
+    };
   }
 
-  function createStateHash(rows) {
-    return stableStringify(
-      (rows || []).map((row) => ({
-        id: row.id,
-        execution_id: row.execution_id,
-        status: row.status,
-        result_status: row.result_status,
-        decision: row.decision,
-        authorized: row.authorized,
-        hold_pending: row.hold_pending,
-        reason: row.reason,
-        source: row.source,
-        updated_at: row.updated_at,
-        created_at: row.created_at,
-        truth_hash: row.truth_hash,
-        payload: row.payload
-      }))
-    );
+  function stableHash(rows) {
+    return JSON.stringify((rows || []).map(normalizeRow));
   }
 
   function findChangedRow(previous, current) {
     const prevMap = new Map(
-      (previous || []).map((row) => [
-        rowId(row),
-        stableStringify(row)
-      ])
+      (previous || []).map((row) => [rowId(row), JSON.stringify(normalizeRow(row))])
     );
 
     for (const row of current || []) {
       const id = rowId(row);
       const oldHash = prevMap.get(id);
-      const newHash = stableStringify(row);
+      const newHash = JSON.stringify(normalizeRow(row));
 
-      if (!oldHash || oldHash !== newHash) {
-        return row;
-      }
+      if (!oldHash || oldHash !== newHash) return row;
     }
 
-    return (current || [])[0] || null;
+    return current?.[0] || null;
   }
 
-  async function fetchExecutions(limit = 25) {
+  async function fetchExecutions(limit = 50) {
     const { data, error } = await supabase
       .from("executions")
       .select("*")
@@ -130,9 +96,23 @@ export default async function handler(req, res) {
   async function checkForChanges() {
     if (closed) return;
 
+    if (Date.now() - startedAt > MAX_STREAM_MS) {
+      send("stream_restart", {
+        ok: true,
+        type: "stream_restart",
+        reason: "VERCEL_STREAM_LIFETIME_LIMIT",
+        reconnect: true,
+        timestamp: new Date().toISOString()
+      });
+
+      closed = true;
+      try { res.end(); } catch {}
+      return;
+    }
+
     try {
-      const executions = await fetchExecutions(25);
-      const currentHash = createStateHash(executions);
+      const executions = await fetchExecutions(50);
+      const currentHash = stableHash(executions);
 
       if (previousHash === null) {
         previousHash = currentHash;
@@ -141,6 +121,7 @@ export default async function handler(req, res) {
         send("execution", {
           ok: true,
           type: "initial_snapshot",
+          mode: "merge_snapshot",
           executions,
           timestamp: new Date().toISOString()
         });
@@ -157,6 +138,7 @@ export default async function handler(req, res) {
         send("change", {
           ok: true,
           type: "deterministic_db_change",
+          mode: "merge_change",
           table: "executions",
           execution: changedRow,
           execution_id: rowId(changedRow),
@@ -168,6 +150,7 @@ export default async function handler(req, res) {
         send("execution", {
           ok: true,
           type: "change_snapshot",
+          mode: "merge_snapshot",
           executions,
           timestamp: new Date().toISOString()
         });
@@ -196,27 +179,18 @@ export default async function handler(req, res) {
     service: "EXECUTIA STREAM",
     mode: "deterministic-db-diff-stream",
     events: ["connected", "execution", "change", "heartbeat", "error", "stream_restart"],
-    interval_ms: STREAM_INTERVAL_MS,
+    interval_ms: INTERVAL_MS,
     max_stream_ms: MAX_STREAM_MS,
     timestamp: new Date().toISOString()
   });
 
   await checkForChanges();
 
-  interval = setInterval(checkForChanges, STREAM_INTERVAL_MS);
-
-  shutdownTimer = setTimeout(() => {
-    send("heartbeat", {
-      ok: true,
-      type: "stream_restart",
-      reason: "VERCEL_TIMEOUT_PREVENTION",
-      timestamp: new Date().toISOString()
-    });
-
-    safeEnd();
-  }, MAX_STREAM_MS);
+  const interval = setInterval(checkForChanges, INTERVAL_MS);
 
   req.on("close", () => {
-    safeEnd();
+    closed = true;
+    clearInterval(interval);
+    try { res.end(); } catch {}
   });
 }
