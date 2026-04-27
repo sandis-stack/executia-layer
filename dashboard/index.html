@@ -412,7 +412,7 @@ async function loadControl(manual=false){
       showBreakdown(selectedIndex);
 
       if(synced){
-        setNotice("Dashboard synced from Console — " + selectedExecutionId,"ok");
+        setNotice("Execution controlled via Console — " + selectedExecutionId,"ok");
         focusActiveRow();
       }
     }else{
@@ -539,9 +539,9 @@ async function overrideSelected(action){
   }
 
   const reasonMap = {
-    APPROVE:"Manual force approve from EXECUTIA Control Interface",
-    BLOCK:"Manual block from EXECUTIA Control Interface",
-    REVIEW:"Manual review request from EXECUTIA Control Interface"
+    APPROVE:"Execution approved by control decision",
+    BLOCK:"Execution blocked by control decision",
+    REVIEW:"Execution routed to review"
   };
 
   try{
@@ -553,7 +553,7 @@ async function overrideSelected(action){
         execution_id:id,
         action,
         operator:"Sandis",
-        reason:reasonMap[action] || "Manual control action"
+        reason:reasonMap[action] || "Control decision executed"
       }
     });
 
@@ -629,7 +629,7 @@ async function runControl(){
         amount:s.amount,
         currency:"EUR",
         context:{
-          source:"control_interface",
+          source:"executia_console",
           legalBlock:s.legalBlock
         }
       }
@@ -730,7 +730,7 @@ function startLiveStream(){
       showBreakdown(selectedIndex);
 
       if(synced){
-        setNotice("Dashboard synced from Console — " + selectedExecutionId,"ok");
+        setNotice("Execution controlled via Console — " + selectedExecutionId,"ok");
         focusActiveRow();
       }
 
@@ -805,7 +805,7 @@ window.addEventListener("storage",(event)=>{
     updateStats();
     renderStream(event.newValue);
     showBreakdown(selectedIndex);
-    setNotice("Dashboard synced from Console — " + event.newValue,"ok");
+    setNotice("Execution controlled via Console — " + event.newValue,"ok");
     focusActiveRow();
   }
 });
