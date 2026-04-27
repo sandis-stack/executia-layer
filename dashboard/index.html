@@ -20,7 +20,10 @@ a{color:var(--blue);text-decoration:none;font-weight:800;margin-right:10px;font-
 button{border:0;border-radius:8px;padding:9px 13px;font-size:12px;font-weight:800;cursor:pointer}
 button:disabled{opacity:.55;cursor:not-allowed}
 .secondary{background:#fff;color:var(--blue);border:1px solid var(--line)}
-.approve{background:var(--blue);color:#fff}.block{background:var(--red);color:#fff}.review{background:var(--orange);color:#fff}
+.approve{background:var(--blue);color:#fff}
+.block{background:var(--red);color:#fff}
+.review{background:var(--orange);color:#fff}
+
 .live-indicator{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:var(--green)}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(21,128,61,.45)}70%{box-shadow:0 0 0 7px rgba(21,128,61,0)}100%{box-shadow:0 0 0 0 rgba(21,128,61,0)}}
@@ -36,13 +39,17 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .grid .card{min-height:74px;padding:12px 16px;display:flex;flex-direction:column;justify-content:center}
 .label{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:900}
 .value{font-size:15px;line-height:1.05;font-weight:800;letter-spacing:-.02em;color:var(--blue)}
-.ok{color:var(--green)}.reviewText{color:var(--orange)}.bad{color:var(--red)}.muted{color:var(--muted)}
+.ok{color:var(--green)}
+.reviewText{color:var(--orange)}
+.bad{color:var(--red)}
+.muted{color:var(--muted)}
 
 .panel{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
 .feed-header,.row{display:grid;grid-template-columns:150px 135px 135px 1fr;gap:10px}
 .feed-header{padding:2px 0 8px;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:900}
 .row{padding:10px 0;border-bottom:1px solid #eef2f7;font-size:11.5px;line-height:1.35}
-.row.item{cursor:pointer}.row.item:hover{background:#f8fbff}
+.row.item{cursor:pointer}
+.row.item:hover{background:#f8fbff}
 .row.active{background:#e6f0fa;border-radius:9px;padding-left:9px;padding-right:9px;outline:1px solid #c7d7eb}
 .row.realtime-highlight{background:var(--amberSoft);border-radius:9px;padding-left:9px;padding-right:9px}
 .row.blocked-highlight{background:var(--redSoft);border:1px solid var(--redLine);border-radius:9px;padding-left:9px;padding-right:9px}
@@ -57,10 +64,16 @@ pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:
 .state-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:0 0 12px}
 .state-step{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px;font-size:8.5px;font-weight:900;color:var(--muted);text-align:center;letter-spacing:.08em}
 .state-step.on{background:#e6f0fa;color:var(--blue);border-color:#c7d7eb}
+
 @media(max-width:1000px){
-  body{padding:22px}.top{display:block}.top div:last-child{margin-top:14px}
-  .grid{grid-template-columns:1fr 1fr}.panel{grid-template-columns:1fr}
-  .feed-header{display:none}.row{grid-template-columns:1fr}.state-flow{grid-template-columns:1fr 1fr}
+  body{padding:22px}
+  .top{display:block}
+  .top div:last-child{margin-top:14px}
+  .grid{grid-template-columns:1fr 1fr}
+  .panel{grid-template-columns:1fr}
+  .feed-header{display:none}
+  .row{grid-template-columns:1fr}
+  .state-flow{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -73,39 +86,63 @@ pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:
     <div class="sub">System state · Live execution stream · Decision control · Truth registry</div>
     <div class="live-indicator"><span class="live-dot"></span><span data-stream-state>Connecting stream...</span></div>
   </div>
+
   <div>
-    <a href="/console/v2.html">Console V2</a>
+    <a href="/console/">Console V2</a>
     <button class="secondary" onclick="loadControl(true)">Refresh</button>
     <button id="runBtn" onclick="runControl()">Run control</button>
   </div>
 </div>
 
 <div id="notice" class="notice"></div>
+
 <div id="blockAlert" class="block-alert">
   <div>BLOCKED execution detected</div>
   <div id="blockAlertMeta" style="font-size:11px;margin-top:6px">Waiting for execution data...</div>
 </div>
+
 <div id="momentBar" class="moment-bar">
   <div>Execution moment</div>
   <div id="momentMeta" style="font-size:11px;margin-top:6px">No live change yet.</div>
 </div>
 
 <div class="grid">
-  <div class="card"><div class="label">System state</div><div id="system" class="value">—</div></div>
-  <div class="card"><div class="label">Executions</div><div id="total" class="value">—</div></div>
-  <div class="card"><div class="label">Approved</div><div id="approved" class="value ok">—</div></div>
-  <div class="card"><div class="label">Review / blocked</div><div id="blocked" class="value reviewText">—</div></div>
+  <div class="card">
+    <div class="label">System state</div>
+    <div id="system" class="value">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Executions</div>
+    <div id="total" class="value">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Approved</div>
+    <div id="approved" class="value ok">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Review / blocked</div>
+    <div id="blocked" class="value reviewText">—</div>
+  </div>
 </div>
 
 <div class="panel">
   <div class="card">
     <div class="label">Live execution stream</div>
-    <div class="feed-header"><div>Time</div><div>Decision</div><div>Source</div><div>Registry proof</div></div>
+    <div class="feed-header">
+      <div>Time</div>
+      <div>Decision</div>
+      <div>Source</div>
+      <div>Registry proof</div>
+    </div>
     <div id="stream"></div>
   </div>
 
   <div class="card">
     <div class="label">Execution inspector</div>
+
     <div class="state-flow">
       <div id="statePending" class="state-step">PENDING</div>
       <div id="stateValidating" class="state-step">VALIDATING</div>
@@ -121,345 +158,105 @@ pre{margin:0;background:var(--soft2);border:1px solid var(--line);border-radius:
 
     <pre id="breakdown">No execution selected.</pre>
 
-    <div class="audit-box"><div class="label">Latest control action</div><div id="auditTrail" class="muted">No override action yet.</div></div>
-    <div class="audit-box"><div class="label">Execution audit trail</div><div id="auditList" class="muted">No execution selected.</div></div>
+    <div class="audit-box">
+      <div class="label">Latest control action</div>
+      <div id="auditTrail" class="muted">No override action yet.</div>
+    </div>
+
+    <div class="audit-box">
+      <div class="label">Execution audit trail</div>
+      <div id="auditList" class="muted">No execution selected.</div>
+    </div>
   </div>
 </div>
 
 <script>
-const API = "https://execution.executia.io/api/v1";
-const STREAM_URL = API + "/stream";
-const SYNC_KEY = "executia_selected_execution_id";
+const API="https://execution.executia.io/api/v1";
+const STREAM_URL=API+"/stream";
+const SYNC_KEY="executia_selected_execution_id";
 
-let loading=false,selectedIndex=0,selectedExecutionId=null,eventSource=null,lastChangedId=null,lastBlockedId=null,momentTimeout=null,reconnectTimer=null;
+let loading=false;
+let selectedIndex=0;
+let selectedExecutionId=null;
+let eventSource=null;
+let lastChangedId=null;
+let lastBlockedId=null;
+let momentTimeout=null;
+let reconnectTimer=null;
+
 window.__executiaItems=[];
 
-function decision(e){return e?.decision||e?.ledger_decision||e?.result_status||e?.status||"UNKNOWN"}
-function source(e){return e?.source||e?.payload?.context?.source||e?.payload?.source||"registry"}
-function hash(e){return e?.truth_hash||e?.payload?.truth_hash||e?.execution_id||e?.request_id||e?.ticket_id||"NO_HASH"}
-function executionId(e){return e?.execution_id||e?.entity_id||e?.request_id||e?.id||null}
-function cls(d){if(d==="APPROVED"||d==="APPROVE"||d==="EXECUTED")return"ok";if(d==="BLOCKED"||d==="BLOCK")return"bad";return"reviewText"}
-function getSyncedId(){return localStorage.getItem(SYNC_KEY)}
+function decision(e){
+  return e?.decision || e?.ledger_decision || e?.result_status || e?.status || "UNKNOWN";
+}
+
+function source(e){
+  return e?.source || e?.payload?.context?.source || e?.payload?.source || "registry";
+}
+
+function hash(e){
+  return e?.truth_hash || e?.payload?.truth_hash || e?.execution_id || e?.request_id || e?.ticket_id || "NO_HASH";
+}
+
+function executionId(e){
+  return e?.execution_id || e?.entity_id || e?.request_id || e?.id || null;
+}
+
+function cls(d){
+  if(d==="APPROVED" || d==="APPROVE" || d==="EXECUTED") return "ok";
+  if(d==="BLOCKED" || d==="BLOCK") return "bad";
+  return "reviewText";
+}
+
+function getSyncedId(){
+  return localStorage.getItem(SYNC_KEY);
+}
 
 function mergeExecutions(current=[],incoming=[]){
   const map=new Map();
-  for(const row of current){const id=executionId(row);if(id)map.set(id,row)}
-  for(const row of incoming){
-    const id=executionId(row);if(!id)continue;
-    const existing=map.get(id)||{};
-    map.set(id,{...existing,...row,payload:{...(existing.payload||{}),...(row.payload||{})}});
+
+  for(const row of current){
+    const id=executionId(row);
+    if(id) map.set(id,row);
   }
+
+  for(const row of incoming){
+    const id=executionId(row);
+    if(!id) continue;
+
+    const existing=map.get(id) || {};
+    map.set(id,{
+      ...existing,
+      ...row,
+      payload:{
+        ...(existing.payload || {}),
+        ...(row.payload || {})
+      }
+    });
+  }
+
   return Array.from(map.values())
-    .sort((a,b)=>new Date(b.created_at||b.updated_at||0)-new Date(a.created_at||a.updated_at||0))
+    .sort((a,b)=>new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0))
     .slice(0,50);
 }
-function setExecutionsMerged(incoming=[]){window.__executiaItems=mergeExecutions(window.__executiaItems||[],incoming)}
-function upsertExecution(item){if(item)setExecutionsMerged([item])}
-function replaceExecutions(items){setExecutionsMerged(items||[])}
+
+function setExecutionsMerged(incoming=[]){
+  window.__executiaItems=mergeExecutions(window.__executiaItems || [], incoming);
+}
+
+function upsertExecution(item){
+  if(item) setExecutionsMerged([item]);
+}
+
+function replaceExecutions(items){
+  setExecutionsMerged(items || []);
+}
 
 function applySyncedSelection(){
-  const syncedId=getSyncedId();if(!syncedId)return false;
+  const syncedId=getSyncedId();
+  if(!syncedId) return false;
+
   const found=window.__executiaItems.findIndex(e=>executionId(e)===syncedId);
-  if(found>=0){selectedExecutionId=syncedId;selectedIndex=found;lastChangedId=syncedId;return true}
-  return false;
-}
 
-function setNotice(msg,type="ok"){
-  const box=document.getElementById("notice");
-  box.textContent=msg;box.className="notice show";
-  if(type==="bad"){box.style.background="#fff1f2";box.style.borderColor="#fecdd3";box.style.color="#991b1b"}
-  else{box.style.background="#e6f0fa";box.style.borderColor="#c7d7eb";box.style.color="#0A2540"}
-}
-function clearNotice(){const box=document.getElementById("notice");box.textContent="";box.className="notice"}
-
-async function json(url,opt={}){
-  const r=await fetch(url,{
-    method:opt.method||"GET",
-    headers:{"Content-Type":"application/json","Accept":"application/json"},
-    body:opt.body?JSON.stringify(opt.body):undefined,
-    cache:"no-store"
-  });
-  const t=await r.text();let d={};
-  try{d=t?JSON.parse(t):{}}catch{throw new Error("NON_JSON_RESPONSE")}
-  if(!r.ok)throw new Error(d.error||d.detail||"REQUEST_FAILED");
-  return d;
-}
-
-function showBlockAlert(execution){
-  const id=executionId(execution)||"unknown";
-  const reason=execution?.reason||execution?.payload?.reason||"Blocked by execution rule";
-  const proof=hash(execution);
-  lastBlockedId=id;
-  document.getElementById("blockAlertMeta").innerHTML=`Execution: <code>${id}</code><br>Reason: ${reason}<br>Proof: <code>${String(proof).substring(0,40)}</code>`;
-  document.getElementById("blockAlert").className="block-alert show";
-}
-
-function showExecutionMoment(execution){
-  const id=executionId(execution)||"unknown";
-  const status=decision(execution);
-  const reason=execution?.reason||execution?.payload?.reason||"Execution state changed";
-  const bar=document.getElementById("momentBar");
-  const meta=document.getElementById("momentMeta");
-  if(momentTimeout)clearTimeout(momentTimeout);
-  meta.innerHTML=`Execution: <code>${id}</code><br>Status: <strong>${status}</strong><br>Reason: ${reason}`;
-  bar.className="moment-bar show";
-  if(status==="BLOCKED"){bar.style.background="#fff1f2";bar.style.borderColor="#fecdd3";bar.style.color="#991b1b"}
-  else if(status==="APPROVED"){bar.style.background="#ecfdf3";bar.style.borderColor="#bbf7d0";bar.style.color="#15803d"}
-  else{bar.style.background="#fff7ed";bar.style.borderColor="#fed7aa";bar.style.color="#b45309"}
-  momentTimeout=setTimeout(()=>bar.classList.remove("show"),4000);
-}
-
-function updateStateFlow(execution){
-  ["statePending","stateValidating","stateDecided","stateLocked"].forEach(id=>document.getElementById(id)?.classList.remove("on"));
-  if(!execution){document.getElementById("statePending")?.classList.add("on");return}
-  const status=decision(execution);
-  document.getElementById("statePending")?.classList.add("on");
-  document.getElementById("stateValidating")?.classList.add("on");
-  if(status==="APPROVED"||status==="BLOCKED"||status==="REQUIRES_REVIEW")document.getElementById("stateDecided")?.classList.add("on");
-  if(status==="APPROVED"||status==="BLOCKED")document.getElementById("stateLocked")?.classList.add("on");
-}
-
-function focusActiveRow(){setTimeout(()=>document.querySelector(".row.active")?.scrollIntoView({behavior:"smooth",block:"center"}),120)}
-
-function updateStats(){
-  const items=window.__executiaItems||[];
-  document.getElementById("system").textContent="ACTIVE";
-  document.getElementById("system").className="value ok";
-  document.getElementById("total").textContent=items.length;
-  let approved=0,reviewBlocked=0;
-  items.forEach(e=>{const d=decision(e);if(d==="APPROVED"||d==="APPROVE"||d==="EXECUTED")approved++;else reviewBlocked++});
-  document.getElementById("approved").textContent=approved;
-  document.getElementById("blocked").textContent=reviewBlocked;
-}
-
-async function loadControl(manual=false){
-  if(loading)return;loading=true;
-  try{
-    await json(API+"/health?ts="+Date.now()).catch(()=>null);
-    const d=await json(API+"/executions?limit=50&ts="+Date.now());
-    replaceExecutions(Array.isArray(d.executions)?d.executions:[]);
-    updateStats();
-
-    const synced=applySyncedSelection();
-    if(!synced){
-      if(selectedExecutionId){
-        const found=window.__executiaItems.findIndex(e=>executionId(e)===selectedExecutionId);
-        selectedIndex=found>=0?found:0;
-      }else{
-        selectedIndex=0;
-        selectedExecutionId=executionId(window.__executiaItems[0]);
-      }
-    }
-
-    renderStream(lastChangedId||lastBlockedId);
-    if(window.__executiaItems[selectedIndex]){
-      showBreakdown(selectedIndex);
-      if(synced){setNotice("Dashboard synced from Console — "+selectedExecutionId,"ok");focusActiveRow()}
-    }else{
-      document.getElementById("breakdown").textContent="No execution selected.";
-      updateStateFlow(null);
-    }
-    if(manual)setNotice("Control interface refreshed.","ok");
-  }catch(err){
-    document.getElementById("system").textContent="OFFLINE";
-    document.getElementById("system").className="value bad";
-    document.getElementById("stream").innerHTML=`<div class="row"><div>SYSTEM ERROR</div><div class="bad">${err.message}</div></div>`;
-    setNotice("Load failed: "+err.message,"bad");
-  }finally{loading=false}
-}
-
-function renderStream(highlightId=null){
-  const stream=document.getElementById("stream");
-  const items=window.__executiaItems||[];
-  stream.innerHTML=items.slice(0,25).map((e,i)=>{
-    const d=decision(e),id=executionId(e);
-    const active=i===selectedIndex?"active":"";
-    const changed=highlightId&&id===highlightId?"realtime-highlight":"";
-    const blocked=lastBlockedId&&id===lastBlockedId?"blocked-highlight":"";
-    return `<div class="row item ${active} ${changed} ${blocked}" onclick="showBreakdown(${i})">
-      <div>${e.created_at||"—"}</div>
-      <div class="${cls(d)}"><strong>${d}</strong></div>
-      <div>${source(e)}</div>
-      <div><code>${String(hash(e)).substring(0,28)}</code></div>
-    </div>`;
-  }).join("");
-}
-
-function showBreakdown(i){
-  const e=(window.__executiaItems||[])[i];if(!e)return;
-  selectedIndex=i;selectedExecutionId=executionId(e);
-  renderStream(lastChangedId||lastBlockedId);
-  updateStateFlow(e);
-  document.getElementById("breakdown").textContent=JSON.stringify({
-    decision:decision(e),status:e.status||e.result_status||null,reason:e.reason||e.payload?.reason||"Execution recorded",
-    authorized:e.authorized??null,hold_pending:e.hold_pending??null,source:source(e),execution_id:executionId(e),
-    truth_hash:e.truth_hash||e.payload?.truth_hash||null,created_at:e.created_at||null,updated_at:e.updated_at||null,payload:e.payload||null
-  },null,2);
-  loadAudit(executionId(e));
-}
-
-async function loadAudit(id){
-  const auditList=document.getElementById("auditList");
-  if(!id){auditList.innerHTML="No execution selected.";return}
-  auditList.innerHTML="Loading audit trail...";
-  try{
-    const data=await json(API+"/audit-log?execution_id="+encodeURIComponent(id)+"&limit=25&ts="+Date.now());
-    const logs=data.audit_logs||[];
-    if(logs.length===0){auditList.innerHTML="No audit records for this execution.";return}
-    auditList.innerHTML=logs.map(log=>{
-      const actor=log.actor_label||log.operator||log.actor_id||"system";
-      const status=log.new_status||log.payload?.new_status||log.payload?.decision||log.decision||log.status||"-";
-      const previous=log.previous_status||log.payload?.previous_status||"-";
-      const time=log.created_at||"-";
-      const reason=log.reason||log.message||log.payload?.reason||"-";
-      return `<div class="audit-item"><div class="audit-action">${log.action||"AUDIT_EVENT"}</div>Actor: ${actor}<br>Status: ${previous} → ${status}<br>Reason: ${reason}<br>Time: ${time}</div>`;
-    }).join("");
-  }catch(err){auditList.innerHTML="Audit load failed: "+err.message}
-}
-
-async function overrideSelected(action){
-  clearNotice();
-  const selected=(window.__executiaItems||[])[selectedIndex];
-  if(!selected){setNotice("No execution selected.","bad");return}
-  const id=executionId(selected);
-  if(!id){setNotice("Selected execution has no execution_id.","bad");return}
-
-  const reasonMap={
-    APPROVE:"Manual force approve from EXECUTIA Control Interface",
-    BLOCK:"Manual block from EXECUTIA Control Interface",
-    REVIEW:"Manual review request from EXECUTIA Control Interface"
-  };
-
-  try{
-    setNotice("Sending control action: "+action+" → "+id,"ok");
-    const d=await json(API+"/override",{method:"POST",body:{execution_id:id,action,operator:"Sandis",reason:reasonMap[action]||"Manual control action"}});
-    if(d.ok===false)throw new Error(d.error||"OVERRIDE_FAILED");
-
-    if(d.execution){
-      upsertExecution(d.execution);
-      lastChangedId=executionId(d.execution);
-      selectedExecutionId=lastChangedId;
-      localStorage.setItem(SYNC_KEY,lastChangedId);
-      selectedIndex=window.__executiaItems.findIndex(x=>executionId(x)===selectedExecutionId);
-      showExecutionMoment(d.execution);
-    }
-
-    if(d.new_status==="BLOCKED")showBlockAlert(d.execution||selected);
-
-    document.getElementById("auditTrail").innerHTML=`<div class="audit-item"><strong>${d.action||action}</strong><br>Execution: <code>${id}</code><br>Status: <strong>${d.previous_status||"—"}</strong> → <strong>${d.new_status||"—"}</strong><br>Operator: Sandis<br>Audit: ${d.audit_ok===false?"non-blocking warning":"ok"}</div>`;
-
-    updateStats();renderStream(lastChangedId||lastBlockedId);showBreakdown(selectedIndex>=0?selectedIndex:0);focusActiveRow();await loadAudit(id);
-    setNotice("Control action completed: "+(d.previous_status||"—")+" → "+(d.new_status||"—"),d.new_status==="BLOCKED"?"bad":"ok");
-    setTimeout(()=>{lastChangedId=null;renderStream(lastBlockedId)},2500);
-  }catch(err){setNotice("Override failed: "+err.message,"bad")}
-}
-
-async function runControl(){
-  clearNotice();
-  const btn=document.getElementById("runBtn");
-  btn.disabled=true;btn.textContent="Running...";
-  try{
-    const scenarios=[{amount:100,legalBlock:false},{amount:15000,legalBlock:false},{amount:0,legalBlock:false},{amount:500,legalBlock:true}];
-    const s=scenarios[Math.floor(Math.random()*scenarios.length)];
-    const d=await json(API+"/execute",{method:"POST",body:{
-      organization_id:"org_norsteel",session_id:"control_"+Date.now(),project_id:"enterprise_control",
-      event_type:"payment",amount:s.amount,currency:"EUR",context:{source:"control_interface",legalBlock:s.legalBlock}
-    }});
-    if(d.ok===false)throw new Error(d.error||"EXECUTION_FAILED");
-    const id=d.execution_id||executionId(d.execution)||executionId(d);
-    if(id)localStorage.setItem(SYNC_KEY,id);
-    setNotice("New execution created.","ok");
-  }catch(err){setNotice("Run control failed: "+err.message,"bad")}
-  finally{btn.disabled=false;btn.textContent="Run control"}
-}
-
-function startLiveStream(){
-  const streamState=document.querySelector("[data-stream-state]");
-  if(reconnectTimer){clearTimeout(reconnectTimer);reconnectTimer=null}
-  if(eventSource)eventSource.close();
-
-  eventSource=new EventSource(STREAM_URL);
-
-  eventSource.addEventListener("connected",()=>{if(streamState)streamState.textContent="Live stream connected"});
-  eventSource.addEventListener("heartbeat",()=>{if(streamState)streamState.textContent="Realtime active"});
-
-  eventSource.addEventListener("stream_restart",()=>{
-    if(streamState)streamState.textContent="Stream restarting...";
-    try{eventSource.close()}catch{}
-    reconnectTimer=setTimeout(startLiveStream,800);
-  });
-
-  eventSource.addEventListener("execution",(e)=>{
-    const payload=JSON.parse(e.data);
-    const executions=payload.executions||[];
-    if(streamState)streamState.textContent="Execution snapshot received";
-    if(executions.length>0){
-      setExecutionsMerged(executions);
-      const synced=applySyncedSelection();
-      if(!synced){
-        if(selectedExecutionId){
-          const found=window.__executiaItems.findIndex(x=>executionId(x)===selectedExecutionId);
-          selectedIndex=found>=0?found:0;
-        }else{
-          selectedIndex=0;
-          selectedExecutionId=executionId(window.__executiaItems[0]);
-        }
-      }
-      updateStats();renderStream(lastChangedId||lastBlockedId);showBreakdown(selectedIndex);
-      if(synced){setNotice("Dashboard synced from Console — "+selectedExecutionId,"ok");focusActiveRow()}
-      setTimeout(()=>{if(streamState)streamState.textContent="Realtime active"},1200);
-    }
-  });
-
-  eventSource.addEventListener("change",async(e)=>{
-    const payload=JSON.parse(e.data);
-    const changed=payload.execution||null;
-    const changedId=executionId(changed)||payload.execution_id||null;
-    if(streamState)streamState.textContent="Realtime update received";
-    if(changed)upsertExecution(changed);
-
-    const syncedId=getSyncedId();
-    const targetId=syncedId||changedId;
-
-    if(targetId){
-      lastChangedId=targetId;
-      selectedExecutionId=targetId;
-      const found=window.__executiaItems.findIndex(x=>executionId(x)===targetId);
-      selectedIndex=found>=0?found:0;
-      const current=window.__executiaItems[selectedIndex];
-
-      if(current)showExecutionMoment(current);
-      if(current&&decision(current)==="BLOCKED"){showBlockAlert(current);setNotice("Realtime alert: BLOCKED execution detected — "+targetId,"bad")}
-      else setNotice((syncedId?"Synced dashboard selection":"Realtime update received")+" — "+targetId,"ok");
-
-      updateStats();renderStream(targetId);showBreakdown(selectedIndex);focusActiveRow();await loadAudit(targetId);
-      setTimeout(()=>{lastChangedId=null;renderStream(lastBlockedId)},2500);
-    }
-
-    setTimeout(()=>{if(streamState)streamState.textContent="Realtime active"},1500);
-  });
-
-  eventSource.onerror=()=>{
-    if(streamState)streamState.textContent="Stream reconnecting...";
-    try{eventSource.close()}catch{}
-    reconnectTimer=setTimeout(startLiveStream,2000);
-  };
-}
-
-window.addEventListener("storage",(event)=>{
-  if(event.key===SYNC_KEY&&event.newValue){
-    selectedExecutionId=event.newValue;
-    applySyncedSelection();
-    updateStats();
-    renderStream(event.newValue);
-    showBreakdown(selectedIndex);
-    setNotice("Dashboard synced from Console — "+event.newValue,"ok");
-    focusActiveRow();
-  }
-});
-
-loadControl();
-startLiveStream();
-</script>
-</body>
-</html>
+  if(found>=0){
+    selected
