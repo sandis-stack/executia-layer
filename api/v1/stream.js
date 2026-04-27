@@ -1,21 +1,86 @@
 import { createClient } from "@supabase/supabase-js";
 
+export const config = {
+  runtime: "nodejs"
+};
+
+const STREAM_INTERVAL_MS = 2000;
+const STREAM_MAX_AGE_MS = 25000;
+const EXECUTION_LIMIT = 25;
+
+function send(res, event, payload) {
+  res.write(`event: ${event}\n`);
+  res.write(`data: ${JSON.stringify(payload)}\n\n`);
+}
+
+function rowId(row) {
+  return row?.execution_id || row?.id || row?.request_id || null;
+}
+
+function stableExecutionState(rows) {
+  return JSON.stringify(
+    (rows || []).map((row) => ({
+      id: row.id,
+      execution_id: row.execution_id,
+      request_id: row.request_id,
+      status: row.status,
+      result_status: row.result_status,
+      decision: row.decision,
+      authorized: row.authorized,
+      hold_pending: row.hold_pending,
+      reason: row.reason,
+      truth_hash: row.truth_hash || row.payload?.truth_hash || null,
+      updated_at: row.updated_at,
+      created_at: row.created_at
+    }))
+  );
+}
+
+function findChangedRow(previousRows, currentRows) {
+  const previousMap = new Map(
+    (previousRows || []).map((row) => [
+      rowId(row),
+      JSON.stringify(row)
+    ])
+  );
+
+  for (const row of currentRows || []) {
+    const id = rowId(row);
+    const oldHash = previousMap.get(id);
+    const newHash = JSON.stringify(row);
+
+    if (!oldHash || oldHash !== newHash) {
+      return row;
+    }
+  }
+
+  return (currentRows || [])[0] || null;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "GET") {
-    return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
+    res.setHeader("Content-Type", "application/json");
+    return res.status(405).json({
+      ok: false,
+      error: "METHOD_NOT_ALLOWED"
+    });
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    return res.status(500).json({ ok: false, error: "SUPABASE_ENV_MISSING" });
+    res.setHeader("Content-Type", "application/json");
+    return res.status(500).json({
+      ok: false,
+      error: "SUPABASE_ENV_MISSING"
+    });
   }
 
   res.writeHead(200, {
-    "Content-Type": "text/event-stream",
+    "Content-Type": "text/event-stream; charset=utf-8",
     "Cache-Control": "no-cache, no-transform",
-    Connection: "keep-alive",
+    "Connection": "keep-alive",
     "X-Accel-Buffering": "no"
   });
 
@@ -29,99 +94,54 @@ export default async function handler(req, res) {
   let closed = false;
   let previousRows = [];
   let previousHash = null;
-
   const startedAt = Date.now();
-  const MAX_STREAM_MS = 25_000;
-  const INTERVAL_MS = 2_000;
 
-  function send(event, payload) {
-    if (closed) return;
-    res.write(`event: ${event}\n`);
-    res.write(`data: ${JSON.stringify(payload)}\n\n`);
-  }
-
-  function rowId(row) {
-    return row?.execution_id || row?.id || row?.request_id || null;
-  }
-
-  function normalizeRow(row) {
-    return {
-      id: row.id,
-      execution_id: row.execution_id,
-      status: row.status,
-      decision: row.decision,
-      result_status: row.result_status,
-      ledger_decision: row.ledger_decision,
-      authorized: row.authorized,
-      hold_pending: row.hold_pending,
-      reason: row.reason,
-      updated_at: row.updated_at,
-      created_at: row.created_at,
-      truth_hash: row.truth_hash,
-      payload: row.payload
-    };
-  }
-
-  function stableHash(rows) {
-    return JSON.stringify((rows || []).map(normalizeRow));
-  }
-
-  function findChangedRow(previous, current) {
-    const prevMap = new Map(
-      (previous || []).map((row) => [rowId(row), JSON.stringify(normalizeRow(row))])
-    );
-
-    for (const row of current || []) {
-      const id = rowId(row);
-      const oldHash = prevMap.get(id);
-      const newHash = JSON.stringify(normalizeRow(row));
-
-      if (!oldHash || oldHash !== newHash) return row;
-    }
-
-    return current?.[0] || null;
-  }
-
-  async function fetchExecutions(limit = 50) {
+  async function fetchExecutions() {
     const { data, error } = await supabase
       .from("executions")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(limit);
+      .limit(EXECUTION_LIMIT);
 
     if (error) throw error;
     return data || [];
   }
 
-  async function checkForChanges() {
+  async function tick() {
     if (closed) return;
 
-    if (Date.now() - startedAt > MAX_STREAM_MS) {
-      send("stream_restart", {
+    const age = Date.now() - startedAt;
+
+    if (age >= STREAM_MAX_AGE_MS) {
+      send(res, "stream_restart", {
         ok: true,
         type: "stream_restart",
-        reason: "VERCEL_STREAM_LIFETIME_LIMIT",
-        reconnect: true,
+        reason: "controlled_stream_rotation",
+        max_stream_ms: STREAM_MAX_AGE_MS,
         timestamp: new Date().toISOString()
       });
 
       closed = true;
-      try { res.end(); } catch {}
+      clearInterval(interval);
+
+      try {
+        res.end();
+      } catch {}
+
       return;
     }
 
     try {
-      const executions = await fetchExecutions(50);
-      const currentHash = stableHash(executions);
+      const executions = await fetchExecutions();
+      const currentHash = stableExecutionState(executions);
 
       if (previousHash === null) {
         previousHash = currentHash;
         previousRows = executions;
 
-        send("execution", {
+        send(res, "execution", {
           ok: true,
           type: "initial_snapshot",
-          mode: "merge_snapshot",
           executions,
           timestamp: new Date().toISOString()
         });
@@ -135,10 +155,9 @@ export default async function handler(req, res) {
         previousHash = currentHash;
         previousRows = executions;
 
-        send("change", {
+        send(res, "change", {
           ok: true,
           type: "deterministic_db_change",
-          mode: "merge_change",
           table: "executions",
           execution: changedRow,
           execution_id: rowId(changedRow),
@@ -147,10 +166,9 @@ export default async function handler(req, res) {
           timestamp: new Date().toISOString()
         });
 
-        send("execution", {
+        send(res, "execution", {
           ok: true,
           type: "change_snapshot",
-          mode: "merge_snapshot",
           executions,
           timestamp: new Date().toISOString()
         });
@@ -158,14 +176,14 @@ export default async function handler(req, res) {
         return;
       }
 
-      send("heartbeat", {
+      send(res, "heartbeat", {
         ok: true,
         type: "heartbeat",
         timestamp: new Date().toISOString()
       });
 
     } catch (err) {
-      send("error", {
+      send(res, "error", {
         ok: false,
         error: "STREAM_CHECK_FAILED",
         detail: err.message || String(err),
@@ -174,23 +192,33 @@ export default async function handler(req, res) {
     }
   }
 
-  send("connected", {
+  send(res, "connected", {
     ok: true,
     service: "EXECUTIA STREAM",
-    mode: "deterministic-db-diff-stream",
-    events: ["connected", "execution", "change", "heartbeat", "error", "stream_restart"],
-    interval_ms: INTERVAL_MS,
-    max_stream_ms: MAX_STREAM_MS,
+    mode: "controlled-db-diff-stream",
+    events: [
+      "connected",
+      "execution",
+      "change",
+      "heartbeat",
+      "stream_restart",
+      "error"
+    ],
+    interval_ms: STREAM_INTERVAL_MS,
+    max_stream_ms: STREAM_MAX_AGE_MS,
     timestamp: new Date().toISOString()
   });
 
-  await checkForChanges();
+  await tick();
 
-  const interval = setInterval(checkForChanges, INTERVAL_MS);
+  const interval = setInterval(tick, STREAM_INTERVAL_MS);
 
   req.on("close", () => {
     closed = true;
     clearInterval(interval);
-    try { res.end(); } catch {}
+
+    try {
+      res.end();
+    } catch {}
   });
 }
