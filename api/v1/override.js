@@ -1,183 +1,206 @@
 import { createClient } from "@supabase/supabase-js";
 
-function getSupabase() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error("SUPABASE_ENV_MISSING");
-  }
-
-  return createClient(supabaseUrl, supabaseKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false
-    }
-  });
+function json(res, status, payload) {
+  res.setHeader("Content-Type", "application/json");
+  return res.status(status).json(payload);
 }
 
-function mapActionToStatus(action) {
-  if (action === "APPROVE") return "APPROVED";
-  if (action === "BLOCK") return "BLOCKED";
-  if (action === "REVIEW") return "REQUIRES_REVIEW";
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function normalizeAction(action) {
+  const value = String(action || "").trim().toUpperCase();
+
+  if (value === "APPROVE" || value === "APPROVED") return "APPROVED";
+  if (value === "BLOCK" || value === "BLOCKED") return "BLOCKED";
+  if (value === "REVIEW" || value === "REQUIRES_REVIEW") return "REQUIRES_REVIEW";
+
   return null;
 }
 
-export default async function handler(req, res) {
-  res.setHeader("Content-Type", "application/json");
-  res.setHeader("Cache-Control", "no-store");
+function getCurrentStatus(row) {
+  return row?.status || row?.result_status || row?.decision || "UNKNOWN";
+}
 
+function buildReason(newStatus, providedReason) {
+  if (providedReason) return providedReason;
+
+  if (newStatus === "APPROVED") {
+    return "Manual force approve from EXECUTIA Control Interface";
+  }
+
+  if (newStatus === "BLOCKED") {
+    return "Manual block from EXECUTIA Control Interface";
+  }
+
+  if (newStatus === "REQUIRES_REVIEW") {
+    return "Manual review request from EXECUTIA Control Interface";
+  }
+
+  return "Manual control action";
+}
+
+export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
+    return json(res, 405, {
       ok: false,
       error: "METHOD_NOT_ALLOWED"
     });
   }
 
-  try {
-    const supabase = getSupabase();
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    const {
-      execution_id,
-      action,
-      operator = "Sandis",
-      reason = "Manual override from EXECUTIA Control Interface"
-    } = req.body || {};
-
-    console.log("OVERRIDE INPUT:", {
-      execution_id,
-      action,
-      operator
+  if (!supabaseUrl || !supabaseKey) {
+    return json(res, 500, {
+      ok: false,
+      error: "SUPABASE_ENV_MISSING"
     });
+  }
 
-    if (!execution_id || !action) {
-      return res.status(400).json({
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false
+    }
+  });
+
+  try {
+    const body = req.body || {};
+
+    const executionId = body.execution_id || body.id || body.request_id;
+    const newStatus = normalizeAction(body.action || body.status);
+    const operator = body.operator || "EXECUTIA Control Interface";
+    const reason = buildReason(newStatus, body.reason);
+
+    if (!executionId) {
+      return json(res, 400, {
         ok: false,
-        error: "MISSING_REQUIRED_FIELDS",
-        required: ["execution_id", "action"]
+        error: "EXECUTION_ID_REQUIRED"
       });
     }
 
-    const new_status = mapActionToStatus(action);
-
-    if (!new_status) {
-      return res.status(400).json({
+    if (!newStatus) {
+      return json(res, 400, {
         ok: false,
         error: "INVALID_ACTION",
         allowed: ["APPROVE", "BLOCK", "REVIEW"]
       });
     }
 
-    const { data: existing, error: fetchError } = await supabase
+    const { data: existing, error: readError } = await supabase
       .from("executions")
       .select("*")
-      .eq("execution_id", execution_id)
-      .order("created_at", { ascending: false })
-      .limit(1)
+      .eq("execution_id", executionId)
       .maybeSingle();
 
-    console.log("FETCH RESULT:", {
-      found: !!existing,
-      fetchError: fetchError?.message || null
-    });
-
-    if (fetchError) {
-      return res.status(500).json({
+    if (readError) {
+      return json(res, 500, {
         ok: false,
-        error: "EXECUTION_FETCH_FAILED",
-        detail: fetchError.message
+        error: "EXECUTION_READ_FAILED",
+        detail: readError.message
       });
     }
 
     if (!existing) {
-      return res.status(404).json({
+      return json(res, 404, {
         ok: false,
         error: "EXECUTION_NOT_FOUND",
-        execution_id
+        execution_id: executionId
       });
     }
 
-    const previous_status =
-      existing.status ||
-      existing.result_status ||
-      existing.decision ||
-      "UNKNOWN";
+    const previousStatus = getCurrentStatus(existing);
 
-    const updatePayload = {
-      status: new_status,
-      result_status: new_status,
-      decision: new_status,
-      authorized: new_status === "APPROVED",
-      hold_pending: new_status === "REQUIRES_REVIEW",
-      operator,
-      reason,
-      updated_at: new Date().toISOString()
+    const updatedPayload = {
+      ...(existing.payload || {}),
+      override: {
+        enabled: true,
+        operator,
+        previous_status: previousStatus,
+        new_status: newStatus,
+        reason,
+        created_at: nowIso()
+      }
     };
 
-    const { data: updatedExecution, error: updateError } = await supabase
+    const updatePatch = {
+      status: newStatus,
+      result_status: newStatus,
+      reason,
+      authorized: newStatus === "APPROVED",
+      hold_pending: newStatus === "REQUIRES_REVIEW",
+      payload: updatedPayload,
+      updated_at: nowIso()
+    };
+
+    const { data: updated, error: updateError } = await supabase
       .from("executions")
-      .update(updatePayload)
-      .eq("execution_id", execution_id)
+      .update(updatePatch)
+      .eq("execution_id", executionId)
       .select("*")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .single();
 
     if (updateError) {
-      return res.status(500).json({
+      return json(res, 500, {
         ok: false,
         error: "EXECUTION_UPDATE_FAILED",
         detail: updateError.message
       });
     }
 
-    const auditPayload = {
-      organization_id: existing.organization_id || "org_norsteel",
-      actor_type: "user",
+    let auditOk = true;
+    let auditError = null;
+
+    const auditRecord = {
+      organization_id: updated.organization_id || existing.organization_id || "org_norsteel",
+      actor_type: "operator",
       actor_id: operator,
       actor_label: operator,
       action: "EXECUTION_OVERRIDE",
       entity: "execution",
-      entity_id: execution_id,
+      entity_id: executionId,
+      request_id: updated.request_id || existing.request_id || null,
       status: "ok",
-      request_id: existing.request_id || null,
+      previous_status: previousStatus,
+      new_status: newStatus,
+      reason,
       payload: {
-        execution_id,
-        action,
-        previous_status,
-        new_status,
+        execution_id: executionId,
+        previous_status: previousStatus,
+        new_status: newStatus,
+        operator,
         reason,
-        operator
+        source: "control_interface"
       },
-      created_at: new Date().toISOString()
+      created_at: nowIso()
     };
 
-    const { error: auditError } = await supabase
+    const { error: auditInsertError } = await supabase
       .from("audit_logs")
-      .insert(auditPayload);
+      .insert(auditRecord);
 
-    if (auditError) {
-      console.error("AUDIT LOG FAILED:", auditError.message);
+    if (auditInsertError) {
+      auditOk = false;
+      auditError = auditInsertError.message;
     }
 
-    return res.status(200).json({
+    return json(res, 200, {
       ok: true,
-      action,
-      execution_id,
-      previous_status,
-      new_status,
-      execution: updatedExecution || {
-        ...existing,
-        ...updatePayload
-      },
-      audit_ok: !auditError,
-      audit_error: auditError?.message || null
+      action: "EXECUTION_OVERRIDE",
+      execution_id: executionId,
+      previous_status: previousStatus,
+      new_status: newStatus,
+      reason,
+      operator,
+      audit_ok: auditOk,
+      audit_error: auditError,
+      execution: updated
     });
 
   } catch (err) {
-    console.error("OVERRIDE SERVER ERROR:", err);
-
-    return res.status(500).json({
+    return json(res, 500, {
       ok: false,
       error: "OVERRIDE_SERVER_ERROR",
       detail: err.message || String(err)
