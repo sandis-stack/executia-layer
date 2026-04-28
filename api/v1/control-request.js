@@ -15,20 +15,49 @@ function requireAuth(req) {
   }
 }
 
-function evaluateExecution(payload) {
-  const { organization, context, outcome } = payload;
+function evaluateCondition(payload, condition) {
+  const { field, operator, value } = condition;
+  const fieldValue = String(payload[field] || "");
 
-  // 🔴 BASIC RULES (tu vari paplašināt vēlāk)
-  if (!organization || !context) {
-    return { decision: "BLOCKED", reason: "MISSING_CORE_FIELDS" };
+  switch (operator) {
+    case "required":
+      return fieldValue.trim().length > 0;
+
+    case "min_length":
+      return fieldValue.length >= Number(value);
+
+    default:
+      return true;
+  }
+}
+
+function resolveDecision(results) {
+  // priority: BLOCK > ESCALATE > APPROVED
+  if (results.some(r => r.effect === "BLOCK")) {
+    return { decision: "BLOCKED", reason: results.find(r => r.effect === "BLOCK").rule_key };
   }
 
-  if (context.length < 5) {
-    return { decision: "ESCALATE", reason: "LOW_CONTEXT_SIGNAL" };
+  if (results.some(r => r.effect === "ESCALATE")) {
+    return { decision: "ESCALATE", reason: results.find(r => r.effect === "ESCALATE").rule_key };
   }
 
-  // 🟢 DEFAULT
-  return { decision: "APPROVED", reason: "BASIC_VALIDATION_OK" };
+  return { decision: "APPROVED", reason: "ALL_RULES_PASSED" };
+}
+
+async function loadRules(db) {
+  const { data, error } = await db
+    .from("execution_rules")
+    .select("rule_key, effect, condition_json")
+    .eq("event_type", "control_request")
+    .eq("active", true)
+    .order("rule_key");
+
+  if (error) {
+    console.error("RULE_FETCH_FAILED:", error);
+    throw new Error("RULE_FETCH_FAILED");
+  }
+
+  return data || [];
 }
 
 async function insertExecution(db, record) {
@@ -61,9 +90,32 @@ export default async function handler(req, res) {
 
     const payload = req.body || {};
 
-    const decisionResult = evaluateExecution(payload);
+    const db = getSupabaseAdmin(); // jau eksistē tavā projektā
 
-    const db = getSupabaseAdmin(); // ⚠️ tev jau ir šī funkcija
+    // 🔥 LOAD RULES FROM DB
+    const rules = await loadRules(db);
+
+    const failedRules = [];
+
+    for (const rule of rules) {
+      let condition = {};
+
+      try {
+        condition = typeof rule.condition_json === "string"
+          ? JSON.parse(rule.condition_json)
+          : rule.condition_json;
+      } catch {
+        continue;
+      }
+
+      const passed = evaluateCondition(payload, condition);
+
+      if (!passed) {
+        failedRules.push(rule);
+      }
+    }
+
+    const decisionResult = resolveDecision(failedRules);
 
     const record = {
       request_id: payload.request_id,
