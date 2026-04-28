@@ -1,62 +1,110 @@
-import { getSupabaseAdmin } from "../../services/supabase-admin.js";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
-      ok: false,
-      error: "METHOD_NOT_ALLOWED"
-    });
-  }
-
-  const auth = req.headers.authorization || "";
-  const token = auth.replace("Bearer ", "");
-
-  if (!process.env.ENGINE_REQUEST_TOKEN || token !== process.env.ENGINE_REQUEST_TOKEN) {
-    return res.status(401).json({
-      ok: false,
-      error: "UNAUTHORIZED"
-    });
+    return res.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
   }
 
   try {
-    const supabase = getSupabaseAdmin();
-
-    const { data, error } = await supabase
-      .from("control_requests")
-      .insert({
-        request_id: req.body.request_id,
-        organization: req.body.organization,
-        operator: req.body.operator,
-        email: req.body.email,
-        sector: req.body.sector,
-        context: req.body.context,
-        outcome: req.body.outcome,
-        source: req.body.source,
-        status: "RECEIVED",
-        received_at: req.body.received_at || new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (error) {
-      return res.status(500).json({
-        ok: false,
-        error: "CONTROL_REQUEST_SAVE_FAILED",
-        message: error.message
-      });
+    // 🔐 AUTH (ENTRY → ENGINE)
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if (!token || token !== process.env.ENGINE_REQUEST_TOKEN) {
+      return res.status(401).json({ ok: false, error: "UNAUTHORIZED" });
     }
+
+    const payload = req.body || {};
+
+    const {
+      request_id,
+      organization,
+      operator,
+      email,
+      sector,
+      context,
+      outcome,
+      source,
+      received_at
+    } = payload;
+
+    // ❗ NAV execution validation
+    // ❗ NAV decision
+    // ❗ NAV ledger commit
+
+    // ✅ tikai intake + registry + review
+
+    const record = {
+      id: `cr_${Date.now()}`,
+      request_id,
+      organization,
+      operator,
+      email,
+      sector,
+      context,
+      outcome,
+      source,
+      status: "RECEIVED",
+      created_at: new Date().toISOString(),
+      received_at
+    };
+
+    // 👉 ieraksts DB (Supabase)
+    await saveControlRequest(record);
+
+    // 👉 audit (optional)
+    await logAudit({
+      type: "CONTROL_REQUEST_RECEIVED",
+      request_id: record.request_id,
+      at: record.created_at
+    });
 
     return res.status(200).json({
       ok: true,
-      mode: "INTAKE_ONLY",
       status: "RECEIVED",
-      request: data
+      id: record.id
     });
-  } catch (error) {
+
+  } catch (err) {
     return res.status(500).json({
       ok: false,
       error: "CONTROL_REQUEST_FAILED",
-      message: error.message
+      message: err.message
     });
   }
+}
+
+/* =========================
+   DB WRITE
+========================= */
+
+async function saveControlRequest(record) {
+  const { createClient } = await import("@supabase/supabase-js");
+
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+
+  const { error } = await supabase
+    .from("control_requests")
+    .insert([record]);
+
+  if (error) {
+    console.error("DB insert failed:", error);
+    throw new Error("DB_INSERT_FAILED");
+  }
+}
+
+/* =========================
+   AUDIT (optional)
+========================= */
+
+async function logAudit(entry) {
+  if (!process.env.SUPABASE_URL) return;
+
+  const { createClient } = await import("@supabase/supabase-js");
+
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+
+  await supabase.from("audit_logs").insert([entry]);
 }
