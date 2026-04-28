@@ -1,26 +1,54 @@
-import { createClient } from "@supabase/supabase-js";
-
-function getSupabaseAdmin() {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("SUPABASE_ENV_MISSING");
-  }
-
-  return createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        persistSession: false
-      }
-    }
-  );
+function setJsonHeaders(res) {
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
 }
 
-function cleanText(value) {
-  return String(value || "").trim();
+function requireAuth(req) {
+  const auth = req.headers.authorization || "";
+  const token = auth.replace("Bearer ", "");
+
+  if (!process.env.ENGINE_REQUEST_TOKEN) {
+    throw new Error("ENGINE_REQUEST_TOKEN_MISSING");
+  }
+
+  if (token !== process.env.ENGINE_REQUEST_TOKEN) {
+    throw new Error("UNAUTHORIZED");
+  }
+}
+
+function evaluateExecution(payload) {
+  const { organization, context, outcome } = payload;
+
+  // 🔴 BASIC RULES (tu vari paplašināt vēlāk)
+  if (!organization || !context) {
+    return { decision: "BLOCKED", reason: "MISSING_CORE_FIELDS" };
+  }
+
+  if (context.length < 5) {
+    return { decision: "ESCALATE", reason: "LOW_CONTEXT_SIGNAL" };
+  }
+
+  // 🟢 DEFAULT
+  return { decision: "APPROVED", reason: "BASIC_VALIDATION_OK" };
+}
+
+async function insertExecution(db, record) {
+  const { data, error } = await db
+    .from("execution_requests")
+    .insert(record)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("DB insert failed:", error);
+    throw new Error("DB_INSERT_FAILED");
+  }
+
+  return data;
 }
 
 export default async function handler(req, res) {
+  setJsonHeaders(res);
+
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
@@ -28,69 +56,44 @@ export default async function handler(req, res) {
     });
   }
 
-  const auth = req.headers.authorization || "";
-  const token = auth.replace("Bearer ", "").trim();
-
-  if (!process.env.ENGINE_REQUEST_TOKEN || token !== process.env.ENGINE_REQUEST_TOKEN) {
-    return res.status(401).json({
-      ok: false,
-      error: "UNAUTHORIZED"
-    });
-  }
-
   try {
-    const body = req.body || {};
+    requireAuth(req);
 
-    const request = {
-      request_id: cleanText(body.request_id),
-      organization: cleanText(body.organization),
-      operator: cleanText(body.operator),
-      email: cleanText(body.email),
-      sector: cleanText(body.sector || "Not specified"),
-      context: cleanText(body.context),
-      outcome: cleanText(body.outcome || "Not specified"),
-      source: cleanText(body.source || "executia.io/request"),
-      mode: "INTAKE_ONLY"
+    const payload = req.body || {};
+
+    const decisionResult = evaluateExecution(payload);
+
+    const db = getSupabaseAdmin(); // ⚠️ tev jau ir šī funkcija
+
+    const record = {
+      request_id: payload.request_id,
+      organization: payload.organization,
+      operator: payload.operator,
+      email: payload.email,
+      sector: payload.sector,
+      context: payload.context,
+      outcome: payload.outcome,
+      source: payload.source,
+      decision: decisionResult.decision,
+      decision_reason: decisionResult.reason,
+      created_at: new Date().toISOString()
     };
 
-    if (!request.request_id || !request.organization || !request.operator || !request.email || !request.context) {
-      return res.status(400).json({
-        ok: false,
-        error: "MISSING_REQUIRED_FIELDS"
-      });
-    }
-
-    const supabase = getSupabaseAdmin();
-
-    const { data, error } = await supabase
-      .from("execution_requests")
-      .insert([request])
-      .select()
-      .single();
-
-    if (error) {
-      console.error("DB insert failed:", error);
-      return res.status(500).json({
-        ok: false,
-        error: "DB_INSERT_FAILED",
-        detail: error.message
-      });
-    }
+    const inserted = await insertExecution(db, record);
 
     return res.status(200).json({
       ok: true,
-      status: "RECEIVED",
-      mode: "INTAKE_ONLY",
-      request_id: request.request_id,
-      record: data
+      decision: decisionResult.decision,
+      reason: decisionResult.reason,
+      id: inserted.id
     });
+
   } catch (error) {
     console.error("CONTROL_REQUEST_FAILED:", error);
 
     return res.status(500).json({
       ok: false,
-      error: "CONTROL_REQUEST_FAILED",
-      message: error.message
+      error: error.message || "CONTROL_REQUEST_FAILED"
     });
   }
 }
