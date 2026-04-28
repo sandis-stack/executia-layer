@@ -1,149 +1,125 @@
-import { createClient } from "@supabase/supabase-js";
-
-function json(res) {
+function setJsonHeaders(res) {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
-}
-
-function getSupabaseAdmin() {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("SUPABASE_ENV_MISSING");
-  }
-
-  return createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    { auth: { persistSession: false } }
-  );
 }
 
 function clean(value) {
   return String(value || "").trim();
 }
 
-function requireAuth(req) {
-  const auth = req.headers.authorization || "";
-  const token = auth.replace("Bearer ", "").trim();
-
-  if (!process.env.ENGINE_REQUEST_TOKEN) {
-    throw new Error("ENGINE_REQUEST_TOKEN_MISSING");
-  }
-
-  if (!token || token !== process.env.ENGINE_REQUEST_TOKEN) {
-    throw new Error("UNAUTHORIZED");
-  }
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-function normalizeEffect(effect) {
-  const e = clean(effect).toUpperCase();
-
-  if (e === "BLOCK" || e === "BLOCKED") return "BLOCK";
-  if (e === "ESCALATE" || e === "REVIEW" || e === "REQUIRES_REVIEW") return "ESCALATE";
-  if (e === "ALLOW" || e === "APPROVE" || e === "APPROVED") return "ALLOW";
-
-  return "ALLOW";
+function isEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(value));
 }
 
-function parseCondition(conditionJson) {
-  if (!conditionJson) return {};
-
-  if (typeof conditionJson === "string") {
-    try {
-      return JSON.parse(conditionJson);
-    } catch {
-      return {};
-    }
+async function sendEmail({ to, subject, html }) {
+  if (!process.env.RESEND_API_KEY) {
+    return { ok: false, skipped: true, error: "RESEND_API_KEY_MISSING" };
   }
 
-  return conditionJson;
-}
+  const recipients = Array.isArray(to) ? to.filter(Boolean) : [to].filter(Boolean);
 
-function evaluateCondition(payload, condition) {
-  const field = condition?.field;
-  const operator = condition?.operator;
-  const value = condition?.value;
-
-  if (!field || !operator) return true;
-
-  const fieldValue = clean(payload[field]);
-
-  switch (operator) {
-    case "required":
-      return fieldValue.length > 0;
-
-    case "min_length":
-      return fieldValue.length >= Number(value || 0);
-
-    case "equals":
-      return fieldValue === String(value);
-
-    case "not_equals":
-      return fieldValue !== String(value);
-
-    default:
-      return true;
+  if (!recipients.length) {
+    return { ok: false, skipped: true, error: "NO_RECIPIENTS" };
   }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      from: process.env.FROM_EMAIL || "EXECUTIA <no-reply@mail.executia.io>",
+      to: recipients,
+      subject,
+      html
+    })
+  });
+
+  const text = await response.text();
+
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = { raw: text };
+  }
+
+  if (!response.ok) {
+    console.error("RESEND_EMAIL_FAILED:", data);
+    return { ok: false, error: data };
+  }
+
+  return { ok: true, data };
 }
 
-function resolveDecision(failedRules) {
-  const block = failedRules.find((r) => normalizeEffect(r.effect) === "BLOCK");
-  if (block) {
+async function forwardToEngine(payload) {
+  const url =
+    process.env.ENGINE_CONTROL_REQUEST_URL ||
+    "https://execution.executia.io/api/v1/control-request";
+
+  const token = process.env.ENGINE_REQUEST_TOKEN;
+
+  if (!token) {
+    console.error("ENGINE_REQUEST_TOKEN_MISSING");
     return {
-      decision: "BLOCKED",
-      decision_reason: block.rule_key || "BLOCK_RULE_MATCHED"
+      ok: false,
+      error: "ENGINE_REQUEST_TOKEN_MISSING"
     };
   }
 
-  const escalate = failedRules.find((r) => normalizeEffect(r.effect) === "ESCALATE");
-  if (escalate) {
+  console.log("FORWARDING_TO_ENGINE:", url);
+  console.log("FORWARD_PAYLOAD_REQUEST_ID:", payload.request_id);
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const text = await response.text();
+
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = { raw: text };
+  }
+
+  console.log("ENGINE_RESPONSE_STATUS:", response.status);
+  console.log("ENGINE_RESPONSE_DATA:", data);
+
+  if (!response.ok || !data.ok) {
+    console.error("ENGINE_FORWARD_FAILED:", data);
+
     return {
-      decision: "ESCALATE",
-      decision_reason: escalate.rule_key || "ESCALATE_RULE_MATCHED"
+      ok: false,
+      status: response.status,
+      error: data.error || "ENGINE_FORWARD_FAILED",
+      data
     };
   }
 
   return {
-    decision: "APPROVED",
-    decision_reason: "ALL_RULES_PASSED"
+    ok: true,
+    status: response.status,
+    data
   };
 }
 
-async function loadRules(db) {
-  const { data, error } = await db
-    .from("execution_rules")
-    .select("rule_key, event_type, effect, condition_json, active")
-    .eq("event_type", "control_request")
-    .eq("active", true)
-    .order("rule_key", { ascending: true });
-
-  if (error) {
-    console.error("RULE_FETCH_FAILED:", error);
-    throw new Error("RULE_FETCH_FAILED");
-  }
-
-  return data || [];
-}
-
-async function insertRequest(db, record) {
-  const { data, error } = await db
-    .from("execution_requests")
-    .insert([record])
-    .select()
-    .single();
-
-  if (error) {
-    console.error("DB_INSERT_FAILED:", error);
-    throw new Error(`DB_INSERT_FAILED: ${error.message}`);
-  }
-
-  return data;
-}
-
 export default async function handler(req, res) {
-  json(res);
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).json({ ok: true });
-  }
+  setJsonHeaders(res);
 
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -153,69 +129,117 @@ export default async function handler(req, res) {
   }
 
   try {
-    requireAuth(req);
-
     const body = req.body || {};
 
-    const payload = {
-      request_id: clean(body.request_id || `REQ-${Date.now()}`),
-      organization: clean(body.organization),
-      operator: clean(body.operator),
-      email: clean(body.email),
-      sector: clean(body.sector || "Not specified"),
-      context: clean(body.context),
-      outcome: clean(body.outcome || "Not specified"),
-      source: clean(body.source || "executia.io/request"),
-      mode: clean(body.mode || "INTAKE_ONLY")
-    };
+    const organization = clean(body.organization || body.company);
+    const operator = clean(body.operator || body.name);
+    const email = clean(body.email);
+    const sector = clean(body.sector || body.area || "Not specified");
+    const context = clean(body.context || body.message);
+    const outcome = clean(body.outcome || "Not specified");
 
-    const db = getSupabaseAdmin();
-    const rules = await loadRules(db);
-
-    const failedRules = [];
-
-    for (const rule of rules) {
-      const condition = parseCondition(rule.condition_json);
-      const passed = evaluateCondition(payload, condition);
-
-      if (!passed) {
-        failedRules.push(rule);
-      }
+    if (!organization || !operator || !email || !context) {
+      return res.status(400).json({
+        ok: false,
+        error: "MISSING_REQUIRED_FIELDS",
+        required: ["organization", "operator", "email", "context"]
+      });
     }
 
-    const decision = resolveDecision(failedRules);
+    if (!isEmail(email)) {
+      return res.status(400).json({
+        ok: false,
+        error: "INVALID_EMAIL"
+      });
+    }
 
-    const record = {
-      request_id: payload.request_id,
-      organization: payload.organization,
-      operator: payload.operator,
-      email: payload.email,
-      sector: payload.sector,
-      context: payload.context,
-      outcome: payload.outcome,
-      source: payload.source,
-      mode: payload.mode,
-      decision: decision.decision,
-      decision_reason: decision.decision_reason
+    const requestId = `REQ-${Date.now()}`;
+
+    const payload = {
+      request_id: requestId,
+      organization,
+      operator,
+      email,
+      sector,
+      context,
+      outcome,
+      source: "executia.io/request",
+      mode: "INTAKE_ONLY",
+      received_at: new Date().toISOString()
     };
 
-    const inserted = await insertRequest(db, record);
+    const engineForward = await forwardToEngine(payload);
 
-    return res.status(200).json({
-      ok: true,
-      status: "RECEIVED",
-      request_id: inserted.request_id,
-      decision: inserted.decision,
-      decision_reason: inserted.decision_reason,
-      failed_rules: failedRules.map((r) => r.rule_key),
-      record_id: inserted.id
+    const operatorEmail = await sendEmail({
+      to: [process.env.OPERATOR_EMAIL].filter(Boolean),
+      subject: `EXECUTIA Pilot Intake — ${organization}`,
+      html: `
+        <h2>EXECUTIA Pilot Intake</h2>
+
+        <p><strong>Request ID:</strong> ${escapeHtml(requestId)}</p>
+        <p><strong>Organization:</strong> ${escapeHtml(organization)}</p>
+        <p><strong>Responsible Operator:</strong> ${escapeHtml(operator)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        <p><strong>Sector:</strong> ${escapeHtml(sector)}</p>
+
+        <hr />
+
+        <p><strong>Execution Context:</strong></p>
+        <p>${escapeHtml(context)}</p>
+
+        <p><strong>Expected Control Outcome:</strong></p>
+        <p>${escapeHtml(outcome)}</p>
+
+        <hr />
+
+        <p><strong>Mode:</strong> INTAKE ONLY</p>
+        <p><strong>Forwarded to ENGINE:</strong> ${engineForward.ok ? "YES" : "NO"}</p>
+        <p><strong>ENGINE decision:</strong> ${escapeHtml(engineForward.data?.decision || "NOT_AVAILABLE")}</p>
+        <p><strong>ENGINE reason:</strong> ${escapeHtml(engineForward.data?.decision_reason || "NOT_AVAILABLE")}</p>
+        <p><strong>Received:</strong> ${escapeHtml(payload.received_at)}</p>
+      `
+    });
+
+    const userEmail = await sendEmail({
+      to: [email],
+      subject: "EXECUTIA pilot request received",
+      html: `
+        <h2>Request received</h2>
+
+        <p>Your EXECUTIA pilot intake has been received.</p>
+
+        <p><strong>Request ID:</strong> ${escapeHtml(requestId)}</p>
+        <p><strong>Status:</strong> UNDER REVIEW</p>
+        <p><strong>Engine forwarded:</strong> ${engineForward.ok ? "YES" : "NO"}</p>
+
+        <hr />
+
+        <p>
+          This request does not create an execution decision inside the entry layer.
+          Execution decisions are made only by the EXECUTIA Engine.
+        </p>
+      `
+    });
+
+    return res.status(engineForward.ok ? 200 : 502).json({
+      ok: engineForward.ok,
+      request_id: requestId,
+      status: engineForward.ok ? "UNDER_REVIEW" : "ENGINE_FORWARD_FAILED",
+      mode: "INTAKE_ONLY",
+      engine_forwarded: engineForward.ok,
+      engine_status: engineForward.status || null,
+      engine_response: engineForward.data || null,
+      email_operator_sent: operatorEmail.ok,
+      email_user_sent: userEmail.ok,
+      message: engineForward.ok ? "REQUEST_RECEIVED" : "REQUEST_NOT_FORWARDED_TO_ENGINE"
     });
   } catch (error) {
-    console.error("CONTROL_REQUEST_FAILED:", error);
+    console.error("REQUEST_HANDLER_FAILED:", error);
 
-    return res.status(error.message === "UNAUTHORIZED" ? 401 : 500).json({
+    return res.status(500).json({
       ok: false,
-      error: error.message || "CONTROL_REQUEST_FAILED"
+      error: "REQUEST_FAILED",
+      message: error.message
     });
   }
 }
