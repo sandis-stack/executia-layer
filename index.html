@@ -1,48 +1,106 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EXECUTIA Live AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>EXECUTIA Engine</title>
+  <meta
+    name="description"
+    content="EXECUTIA Engine — execution control, validation and registry."
+  />
+
+  <meta http-equiv="refresh" content="0; url=/dashboard" />
+
+  <link rel="canonical" href="https://execution.executia.io/dashboard" />
+
   <style>
-    :root{--bg:#f6f8fc;--card:#fff;--ink:#0a1f44;--muted:#51627d;--border:#d8e1ef;}
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-    main{max-width:980px;margin:0 auto;padding:48px 20px 72px} h1{font-size:44px;line-height:1.05;margin:0 0 10px}
-    p{line-height:1.65;color:var(--muted)} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:24px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px} h2{font-size:18px;margin:0 0 10px}
-    code{background:#eef3fb;padding:2px 6px;border-radius:8px} a{color:var(--ink);font-weight:600} ul{margin:0;padding-left:18px;color:var(--muted)}
+    :root {
+      --bg: #ffffff;
+      --bg-soft: #f6f8fa;
+      --border: #e5e7eb;
+      --blue: #1e3a5f;
+      --text: #1f2937;
+      --muted: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 560px;
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      padding: 34px;
+    }
+
+    .label {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      color: var(--blue);
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    p {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    a {
+      display: inline-flex;
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #ffffff;
+      padding: 13px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    a:hover {
+      background: #294d78;
+    }
   </style>
 </head>
+
 <body>
-  <main>
-    <h1>EXECUTIA Live AI</h1>
-    <p>Canonical live deployment package for the EXECUTIA engine, immutable ledger, live operator console, and AI-assisted rule governance.</p>
-    <div class="grid">
-      <section class="card">
-        <h2>Console</h2>
-        <p>Open the live operator console.</p>
-        <p><a href="/console/">/console/</a></p>
-      </section>
-      <section class="card">
-        <h2>Execution API</h2>
-        <ul>
-          <li><code>/api/v1/health</code></li>
-          <li><code>/api/v1/execute-event</code></li>
-          <li><code>/api/v1/execute-and-dispatch</code></li>
-          <li><code>/api/v1/ledger</code></li>
-          <li><code>/api/v1/executions</code></li>
-          <li><code>/api/v1/reconciliation</code></li>
-        </ul>
-      </section>
-      <section class="card">
-        <h2>AI Governance</h2>
-        <ul>
-          <li><code>/api/v1/generate-rule</code></li>
-          <li>AI never publishes directly</li>
-          <li>Generated → validated → human review → published</li>
-        </ul>
-      </section>
-    </div>
+  <main class="shell">
+    <div class="label">EXECUTIA ENGINE</div>
+    <h1>Redirecting to Execution Status Engine.</h1>
+    <p>
+      If the redirect does not start automatically, enter the EXECUTIA Engine manually.
+    </p>
+    <a href="/dashboard">Enter Engine</a>
   </main>
+
+  <script>
+    window.location.replace("/dashboard");
+  </script>
 </body>
 </html>
