@@ -1,5 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
+function json(res) {
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+}
+
 function getSupabaseAdmin() {
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error("SUPABASE_ENV_MISSING");
@@ -8,19 +12,11 @@ function getSupabaseAdmin() {
   return createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        persistSession: false
-      }
-    }
+    { auth: { persistSession: false } }
   );
 }
 
-function setJsonHeaders(res) {
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-}
-
-function cleanText(value) {
+function clean(value) {
   return String(value || "").trim();
 }
 
@@ -37,6 +33,30 @@ function requireAuth(req) {
   }
 }
 
+function normalizeEffect(effect) {
+  const e = clean(effect).toUpperCase();
+
+  if (e === "BLOCK" || e === "BLOCKED") return "BLOCK";
+  if (e === "ESCALATE" || e === "REVIEW" || e === "REQUIRES_REVIEW") return "ESCALATE";
+  if (e === "ALLOW" || e === "APPROVE" || e === "APPROVED") return "ALLOW";
+
+  return "ALLOW";
+}
+
+function parseCondition(conditionJson) {
+  if (!conditionJson) return {};
+
+  if (typeof conditionJson === "string") {
+    try {
+      return JSON.parse(conditionJson);
+    } catch {
+      return {};
+    }
+  }
+
+  return conditionJson;
+}
+
 function evaluateCondition(payload, condition) {
   const field = condition?.field;
   const operator = condition?.operator;
@@ -44,14 +64,14 @@ function evaluateCondition(payload, condition) {
 
   if (!field || !operator) return true;
 
-  const fieldValue = String(payload[field] || "");
+  const fieldValue = clean(payload[field]);
 
   switch (operator) {
     case "required":
-      return fieldValue.trim().length > 0;
+      return fieldValue.length > 0;
 
     case "min_length":
-      return fieldValue.trim().length >= Number(value || 0);
+      return fieldValue.length >= Number(value || 0);
 
     case "equals":
       return fieldValue === String(value);
@@ -64,48 +84,33 @@ function evaluateCondition(payload, condition) {
   }
 }
 
-function normalizeEffect(effect) {
-  const e = String(effect || "").toUpperCase();
-
-  if (e === "BLOCK" || e === "BLOCKED") return "BLOCK";
-  if (e === "ESCALATE" || e === "REVIEW" || e === "REQUIRES_REVIEW") return "ESCALATE";
-  if (e === "ALLOW" || e === "APPROVE" || e === "APPROVED") return "ALLOW";
-
-  return "ALLOW";
-}
-
 function resolveDecision(failedRules) {
-  const normalized = failedRules.map((rule) => ({
-    ...rule,
-    effect: normalizeEffect(rule.effect)
-  }));
-
-  const blockRule = normalized.find((rule) => rule.effect === "BLOCK");
-  if (blockRule) {
+  const block = failedRules.find((r) => normalizeEffect(r.effect) === "BLOCK");
+  if (block) {
     return {
       decision: "BLOCKED",
-      reason: blockRule.rule_key || "BLOCK_RULE_MATCHED"
+      decision_reason: block.rule_key || "BLOCK_RULE_MATCHED"
     };
   }
 
-  const escalateRule = normalized.find((rule) => rule.effect === "ESCALATE");
-  if (escalateRule) {
+  const escalate = failedRules.find((r) => normalizeEffect(r.effect) === "ESCALATE");
+  if (escalate) {
     return {
       decision: "ESCALATE",
-      reason: escalateRule.rule_key || "ESCALATE_RULE_MATCHED"
+      decision_reason: escalate.rule_key || "ESCALATE_RULE_MATCHED"
     };
   }
 
   return {
     decision: "APPROVED",
-    reason: "ALL_RULES_PASSED"
+    decision_reason: "ALL_RULES_PASSED"
   };
 }
 
 async function loadRules(db) {
   const { data, error } = await db
     .from("execution_rules")
-    .select("rule_key, effect, condition_json, event_type, active")
+    .select("rule_key, event_type, effect, condition_json, active")
     .eq("event_type", "control_request")
     .eq("active", true)
     .order("rule_key", { ascending: true });
@@ -118,7 +123,7 @@ async function loadRules(db) {
   return data || [];
 }
 
-async function insertExecutionRequest(db, record) {
+async function insertRequest(db, record) {
   const { data, error } = await db
     .from("execution_requests")
     .insert([record])
@@ -127,14 +132,18 @@ async function insertExecutionRequest(db, record) {
 
   if (error) {
     console.error("DB_INSERT_FAILED:", error);
-    throw new Error("DB_INSERT_FAILED");
+    throw new Error(`DB_INSERT_FAILED: ${error.message}`);
   }
 
   return data;
 }
 
 export default async function handler(req, res) {
-  setJsonHeaders(res);
+  json(res);
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).json({ ok: true });
+  }
 
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -149,15 +158,15 @@ export default async function handler(req, res) {
     const body = req.body || {};
 
     const payload = {
-      request_id: cleanText(body.request_id || `REQ-${Date.now()}`),
-      organization: cleanText(body.organization),
-      operator: cleanText(body.operator),
-      email: cleanText(body.email),
-      sector: cleanText(body.sector || "Not specified"),
-      context: cleanText(body.context),
-      outcome: cleanText(body.outcome || "Not specified"),
-      source: cleanText(body.source || "manual"),
-      mode: cleanText(body.mode || "INTAKE_ONLY")
+      request_id: clean(body.request_id || `REQ-${Date.now()}`),
+      organization: clean(body.organization),
+      operator: clean(body.operator),
+      email: clean(body.email),
+      sector: clean(body.sector || "Not specified"),
+      context: clean(body.context),
+      outcome: clean(body.outcome || "Not specified"),
+      source: clean(body.source || "executia.io/request"),
+      mode: clean(body.mode || "INTAKE_ONLY")
     };
 
     const db = getSupabaseAdmin();
@@ -166,17 +175,7 @@ export default async function handler(req, res) {
     const failedRules = [];
 
     for (const rule of rules) {
-      let condition = rule.condition_json || {};
-
-      if (typeof condition === "string") {
-        try {
-          condition = JSON.parse(condition);
-        } catch {
-          console.error("INVALID_RULE_JSON:", rule.rule_key);
-          continue;
-        }
-      }
-
+      const condition = parseCondition(rule.condition_json);
       const passed = evaluateCondition(payload, condition);
 
       if (!passed) {
@@ -184,7 +183,7 @@ export default async function handler(req, res) {
       }
     }
 
-    const decisionResult = resolveDecision(failedRules);
+    const decision = resolveDecision(failedRules);
 
     const record = {
       request_id: payload.request_id,
@@ -196,31 +195,25 @@ export default async function handler(req, res) {
       outcome: payload.outcome,
       source: payload.source,
       mode: payload.mode,
-      decision: decisionResult.decision,
-      decision_reason: decisionResult.reason
+      decision: decision.decision,
+      decision_reason: decision.decision_reason
     };
 
-    const inserted = await insertExecutionRequest(db, record);
+    const inserted = await insertRequest(db, record);
 
     return res.status(200).json({
       ok: true,
       status: "RECEIVED",
-      mode: "INTAKE_ONLY",
       request_id: inserted.request_id,
       decision: inserted.decision,
       decision_reason: inserted.decision_reason,
-      failed_rules: failedRules.map((rule) => rule.rule_key),
+      failed_rules: failedRules.map((r) => r.rule_key),
       record_id: inserted.id
     });
   } catch (error) {
     console.error("CONTROL_REQUEST_FAILED:", error);
 
-    const status =
-      error.message === "UNAUTHORIZED" ? 401 :
-      error.message === "ENGINE_REQUEST_TOKEN_MISSING" ? 500 :
-      500;
-
-    return res.status(status).json({
+    return res.status(error.message === "UNAUTHORIZED" ? 401 : 500).json({
       ok: false,
       error: error.message || "CONTROL_REQUEST_FAILED"
     });
