@@ -1,0 +1,62 @@
+import { getSupabaseAdmin } from "../../services/supabase-admin.js";
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      ok: false,
+      error: "METHOD_NOT_ALLOWED"
+    });
+  }
+
+  const auth = req.headers.authorization || "";
+  const token = auth.replace("Bearer ", "");
+
+  if (!process.env.ENGINE_REQUEST_TOKEN || token !== process.env.ENGINE_REQUEST_TOKEN) {
+    return res.status(401).json({
+      ok: false,
+      error: "UNAUTHORIZED"
+    });
+  }
+
+  try {
+    const supabase = getSupabaseAdmin();
+
+    const { data, error } = await supabase
+      .from("control_requests")
+      .insert({
+        request_id: req.body.request_id,
+        organization: req.body.organization,
+        operator: req.body.operator,
+        email: req.body.email,
+        sector: req.body.sector,
+        context: req.body.context,
+        outcome: req.body.outcome,
+        source: req.body.source,
+        status: "RECEIVED",
+        received_at: req.body.received_at || new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({
+        ok: false,
+        error: "CONTROL_REQUEST_SAVE_FAILED",
+        message: error.message
+      });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      mode: "INTAKE_ONLY",
+      status: "RECEIVED",
+      request: data
+    });
+  } catch (error) {
+    return res.status(500).json({
+      ok: false,
+      error: "CONTROL_REQUEST_FAILED",
+      message: error.message
+    });
+  }
+}
