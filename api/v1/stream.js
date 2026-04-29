@@ -13,7 +13,9 @@ function getSupabaseAdmin() {
   return createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
-    { auth: { persistSession: false } }
+    {
+      auth: { persistSession: false }
+    }
   );
 }
 
@@ -28,39 +30,34 @@ export default async function handler(req, res) {
   }
 
   try {
-    const limit = Math.min(Number(req.query.limit || 20), 50);
     const db = getSupabaseAdmin();
 
+    const limit = Number(req.query.limit || 25);
+
     const { data, error } = await db
-      .from("execution_requests")
-      .select(
-        "id, request_id, organization, operator, email, sector, context, outcome, source, mode, decision, decision_reason, created_at"
-      )
+      .from("execution_ledger")
+      .select("*")
       .order("created_at", { ascending: false })
       .limit(limit);
 
     if (error) {
       console.error("STREAM_FETCH_FAILED:", error);
-      return res.status(500).json({
-        ok: false,
-        error: "STREAM_FETCH_FAILED",
-        detail: error.message
-      });
+      throw new Error("STREAM_FETCH_FAILED");
     }
 
     return res.status(200).json({
       ok: true,
-      type: "EXECUTION_STREAM",
-      mode: "SHORT_POLLING",
-      count: data.length,
-      records: data
+      executions: data || [],
+      count: (data || []).length,
+      at: new Date().toISOString()
     });
+
   } catch (error) {
-    console.error("STREAM_HANDLER_FAILED:", error);
+    console.error("STREAM_ERROR:", error);
 
     return res.status(500).json({
       ok: false,
-      error: error.message || "STREAM_HANDLER_FAILED"
+      error: error.message || "STREAM_ERROR"
     });
   }
 }
