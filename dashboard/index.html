@@ -1,1273 +1,1175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<title>EXECUTIA Engine — Execution Status</title>
-
-<style>
-:root{
-  --bg:#F7FAFD;
-  --surf:#FFFFFF;
-  --surf2:#F2F7FB;
-  --line:#D6E1EC;
-  --line2:#C4D3E1;
-
-  --ink:#0A2540;
-  --ink2:#18324B;
-  --ink3:#46617B;
-  --ink4:#7E96AD;
-
-  --green:#157347;
-  --green-bg:#EDF8F1;
-  --green-line:#A9D5BE;
-
-  --red:#B54747;
-  --red-bg:#FBF0F0;
-  --red-line:#E6B9B9;
-
-  --amber:#8B6B16;
-  --amber-bg:#FCF8EA;
-  --amber-line:#E4D39C;
-
-  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  --wrap:1180px;
-}
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:var(--sans);
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-}
-
-a{color:inherit;text-decoration:none}
-button{font:inherit}
-
-.wrap{
-  width:min(100% - 48px,var(--wrap));
-  margin:0 auto;
-}
-
-.topbar{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:rgba(247,250,253,.94);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--line);
-}
-
-.nav{
-  min-height:72px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:24px;
-}
-
-.logo{
-  display:flex;
-  align-items:baseline;
-  gap:10px;
-  font-weight:800;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-}
-
-.logo span{
-  font-family:var(--mono);
-  font-size:10px;
-  color:var(--ink3);
-  letter-spacing:.18em;
-}
-
-.navlinks{
-  display:flex;
-  gap:26px;
-  align-items:center;
-}
-
-.navlinks a{
-  font-family:var(--mono);
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--ink3);
-}
-
-.navlinks a:hover{color:var(--ink)}
-
-.livebar{
-  border-bottom:1px solid var(--line);
-  background:linear-gradient(180deg,#F7FAFD 0%,#EFF5FA 100%);
-}
-
-.livebar-inner{
-  min-height:44px;
-  display:flex;
-  align-items:center;
-  gap:24px;
-  flex-wrap:wrap;
-  font-family:var(--mono);
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--ink3);
-}
-
-.live-group{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-}
-
-.live-dot{
-  width:7px;
-  height:7px;
-  border-radius:999px;
-  background:var(--green);
-  animation:pulse 1.8s infinite;
-}
-
-@keyframes pulse{
-  0%{opacity:1;transform:scale(1)}
-  50%{opacity:.45;transform:scale(1.55)}
-  100%{opacity:1;transform:scale(1)}
-}
-
-main{
-  padding:56px 0 80px;
-}
-
-.hero{
-  display:flex;
-  justify-content:space-between;
-  gap:40px;
-  align-items:flex-start;
-  margin-bottom:32px;
-}
-
-.label{
-  font-family:var(--mono);
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:var(--ink3);
-  margin-bottom:14px;
-}
-
-h1{
-  margin:0;
-  font-size:clamp(2.3rem,4.6vw,4.2rem);
-  line-height:1.02;
-  letter-spacing:-.045em;
-  font-weight:650;
-}
-
-.hero p{
-  max-width:520px;
-  margin:18px 0 0;
-  color:var(--ink3);
-  font-size:16px;
-  line-height:1.7;
-}
-
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:42px;
-  padding:0 16px;
-  border-radius:8px;
-  border:1px solid var(--ink);
-  background:var(--ink);
-  color:#fff;
-  font-family:var(--mono);
-  font-size:10.5px;
-  font-weight:800;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  cursor:pointer;
-}
-
-.btn.secondary{
-  background:#fff;
-  color:var(--ink);
-  border-color:var(--line2);
-}
-
-.btn.warn{
-  background:var(--amber);
-  border-color:var(--amber);
-}
-
-.btn.danger{
-  background:var(--red);
-  border-color:var(--red);
-}
-
-.btn:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.status-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-  margin-bottom:20px;
-}
-
-.card{
-  background:var(--surf);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:22px;
-  box-shadow:0 10px 28px rgba(10,37,64,.04);
-}
-
-.metric{
-  min-height:92px;
-}
-
-.metric-label{
-  font-family:var(--mono);
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.15em;
-  text-transform:uppercase;
-  color:var(--ink4);
-  margin-bottom:10px;
-}
-
-.metric-value{
-  font-size:28px;
-  font-weight:800;
-  letter-spacing:-.03em;
-}
-
-.ok{color:var(--green)}
-.bad{color:var(--red)}
-.review{color:var(--amber)}
-.muted{color:var(--ink4)}
-
-.layout{
-  display:grid;
-  grid-template-columns:1.15fr .85fr;
-  gap:18px;
-}
-
-.panel-title{
-  font-family:var(--mono);
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:var(--ink4);
-  margin-bottom:18px;
-}
-
-.feed-header,.row{
-  display:grid;
-  grid-template-columns:150px 125px 130px 1fr;
-  gap:12px;
-}
-
-.feed-header{
-  padding:0 0 10px;
-  font-family:var(--mono);
-  font-size:9px;
-  font-weight:800;
-  letter-spacing:.15em;
-  text-transform:uppercase;
-  color:var(--ink4);
-}
-
-.row{
-  padding:12px 0;
-  border-bottom:1px solid #EEF2F7;
-  font-size:12px;
-  line-height:1.4;
-}
-
-.row.item{
-  cursor:pointer;
-}
-
-.row.item:hover{
-  background:#F8FBFF;
-}
-
-.row.active{
-  background:#E8F0F8;
-  border-radius:10px;
-  padding-left:10px;
-  padding-right:10px;
-  outline:1px solid #C7D7EB;
-}
-
-.row.blocked-highlight{
-  background:var(--red-bg);
-  border:1px solid var(--red-line);
-  border-radius:10px;
-  padding-left:10px;
-  padding-right:10px;
-}
-
-.row.realtime-highlight{
-  background:var(--amber-bg);
-  border-radius:10px;
-  padding-left:10px;
-  padding-right:10px;
-}
-
-code{
-  font-family:var(--mono);
-  font-size:10px;
-  word-break:break-all;
-}
-
-.state-flow{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  margin-bottom:16px;
-}
-
-.state-step{
-  border:1px solid var(--line);
-  background:#fff;
-  border-radius:10px;
-  padding:10px 8px;
-  font-family:var(--mono);
-  font-size:9px;
-  font-weight:900;
-  text-align:center;
-  letter-spacing:.1em;
-  color:var(--ink4);
-}
-
-.state-step.on{
-  background:#E8F0F8;
-  border-color:#C7D7EB;
-  color:var(--ink);
-}
-
-.action-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:16px;
-}
-
-pre{
-  margin:0;
-  background:var(--surf2);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:14px;
-  min-height:220px;
-  max-height:360px;
-  overflow:auto;
-  white-space:pre-wrap;
-  font-family:var(--mono);
-  font-size:10.5px;
-  line-height:1.45;
-}
-
-.audit-box{
-  margin-top:14px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:14px;
-  background:#fff;
-}
-
-.audit-item{
-  padding:10px 0;
-  border-bottom:1px solid #EEF2F7;
-  font-size:12px;
-  line-height:1.55;
-}
-
-.audit-item:last-child{
-  border-bottom:none;
-}
-
-.notice,.moment,.alert{
-  display:none;
-  margin:0 0 16px;
-  border-radius:12px;
-  padding:13px 16px;
-  font-size:12px;
-  font-weight:800;
-}
-
-.notice.show,.moment.show,.alert.show{display:block}
-
-.notice{
-  background:#E8F0F8;
-  border:1px solid #C7D7EB;
-}
-
-.alert{
-  background:var(--red-bg);
-  border:1px solid var(--red-line);
-  color:var(--red);
-}
-
-.moment{
-  background:var(--green-bg);
-  border:1px solid var(--green-line);
-  color:var(--green);
-}
-
-.footer-note{
-  margin-top:24px;
-  font-family:var(--mono);
-  font-size:10px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--ink4);
-}
-
-@media(max-width:1000px){
-  .hero{display:block}
-  .hero-actions{margin-top:20px}
-  .status-grid{grid-template-columns:1fr 1fr}
-  .layout{grid-template-columns:1fr}
-  .feed-header{display:none}
-  .row{grid-template-columns:1fr}
-  .state-flow{grid-template-columns:1fr 1fr}
-}
-
-@media(max-width:640px){
-  .wrap{width:min(100% - 32px,var(--wrap))}
-  .nav{align-items:flex-start;flex-direction:column;padding:18px 0}
-  .navlinks{flex-wrap:wrap;gap:16px}
-  .status-grid{grid-template-columns:1fr}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>EXECUTIA™ Engine — Execution Status Dashboard</title>
+  <meta
+    name="description"
+    content="EXECUTIA Engine dashboard for execution status, rule decisions, registry proof, operator review and live execution control."
+  />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#f7fafd" />
+
+  <style>
+    :root {
+      --bg: #f7fafd;
+      --surface: #ffffff;
+      --surface-soft: #f2f7fb;
+      --surface-blue: #eaf2fa;
+      --surface-selected: #f8fbfe;
+
+      --ink: #0a2540;
+      --ink-2: #18324b;
+      --ink-3: #46617b;
+      --ink-4: #7e96ad;
+
+      --blue: #0a2540;
+      --blue-2: #163b66;
+      --blue-3: #2b5c8a;
+
+      --border: #d6e1ec;
+      --border-2: #c4d3e1;
+
+      --green: #157347;
+      --green-bg: #edf8f1;
+      --green-border: #a9d5be;
+
+      --red: #b54747;
+      --red-bg: #fbf0f0;
+      --red-border: #e6b9b9;
+
+      --amber: #8b6b16;
+      --amber-bg: #fcf8ea;
+      --amber-border: #e4d39c;
+
+      --graphite: #334155;
+      --graphite-bg: #eef2f6;
+      --graphite-border: #cbd5e1;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      --wrap: 1180px;
+      --gutter: 24px;
+      --radius: 10px;
+      --radius-lg: 16px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    .wrap {
+      width: min(100% - var(--gutter) * 2, var(--wrap));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(247, 250, 253, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand-suffix {
+      color: var(--blue-3);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      margin-left: auto;
+    }
+
+    .site-nav a {
+      position: relative;
+      color: var(--ink-3);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 7px 0;
+    }
+
+    .site-nav a:hover,
+    .site-nav a.active {
+      color: var(--blue);
+    }
+
+    .site-nav a.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -18px;
+      height: 2px;
+      background: var(--blue);
+    }
+
+    .live-strip {
+      background: linear-gradient(180deg, #f7fafd 0%, #edf4fb 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .live-inner {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .live-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--ink-2);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .live-muted {
+      color: var(--ink-4);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--green);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.45;
+        transform: scale(1.55);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    main {
+      min-height: calc(100vh - 120px);
+    }
+
+    .hero {
+      padding: 52px 0 26px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .kicker,
+    .panel-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--blue-3);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .kicker {
+      margin-bottom: 22px;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--blue-2);
+    }
+
+    .hero-title {
+      max-width: 780px;
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(44px, 5vw, 68px);
+      line-height: 1.03;
+      letter-spacing: -0.055em;
+      font-weight: 760;
+    }
+
+    .hero-subtitle {
+      max-width: 680px;
+      margin: 24px 0 0;
+      color: var(--ink-3);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      padding-top: 4px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-2);
+      border-color: var(--blue-2);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      border-color: var(--border-2);
+      color: var(--blue);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-soft);
+      border-color: var(--blue-3);
+    }
+
+    .btn-approve {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn-approve:hover {
+      background: var(--blue-2);
+      border-color: var(--blue-2);
+    }
+
+    .btn-block {
+      background: var(--red);
+      border-color: var(--red);
+      color: #ffffff;
+    }
+
+    .btn-block:hover {
+      background: #9f3939;
+      border-color: #9f3939;
+    }
+
+    .btn-review {
+      background: var(--graphite-bg);
+      border-color: var(--graphite-border);
+      color: var(--graphite);
+    }
+
+    .btn-review:hover {
+      background: #e2e8f0;
+      border-color: #b7c4d2;
+      color: var(--blue);
+    }
+
+    .engine-note {
+      margin-top: 32px;
+      padding: 12px 16px;
+      background: var(--surface-blue);
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .kpi-card {
+      min-height: 74px;
+      padding: 15px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .kpi-label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--ink-4);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      display: block;
+      color: var(--ink);
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 760;
+      letter-spacing: -0.045em;
+    }
+
+    .kpi-value.active,
+    .kpi-value.approved {
+      color: var(--green);
+    }
+
+    .kpi-value.review {
+      color: var(--amber);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.95fr);
+      gap: 18px;
+      padding: 20px 0 80px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .stream-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 14px;
+    }
+
+    .stream-table th {
+      padding: 0 10px 10px;
+      color: var(--ink-4);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .stream-table td {
+      padding: 13px 10px;
+      border-top: 1px solid var(--surface-line);
+      color: var(--ink-2);
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    .stream-table tr {
+      cursor: pointer;
+    }
+
+    .stream-table tr.selected td {
+      background: var(--surface-selected);
+      border-top: 1px solid var(--border-2);
+      border-bottom: 1px solid var(--border-2);
+    }
+
+    .stream-table tr.selected td:first-child {
+      border-left: 1px solid var(--border-2);
+      border-radius: 10px 0 0 10px;
+    }
+
+    .stream-table tr.selected td:last-child {
+      border-right: 1px solid var(--border-2);
+      border-radius: 0 10px 10px 0;
+    }
+
+    .decision {
+      font-weight: 800;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .decision.approved {
+      color: var(--green);
+    }
+
+    .decision.review,
+    .decision.requires_review,
+    .decision.escalate {
+      color: var(--amber);
+    }
+
+    .decision.blocked {
+      color: var(--red);
+    }
+
+    .proof {
+      max-width: 230px;
+      color: var(--ink-2);
+      font-family: var(--mono);
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+
+    .inspector-state {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .state-pill {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-blue);
+      border: 1px solid var(--border-2);
+      border-radius: 9px;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .json-box {
+      margin-top: 16px;
+      max-height: 360px;
+      overflow: auto;
+      padding: 18px;
+      background: var(--surface-blue);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--ink-2);
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .subpanel {
+      margin-top: 14px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
+    .subpanel-title {
+      color: var(--blue-3);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .subpanel-text {
+      margin: 14px 0 0;
+      color: var(--ink-4);
+      font-size: 15px;
+    }
+
+    .audit-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .audit-item {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-soft);
+      color: var(--ink-3);
+      font-size: 13px;
+    }
+
+    .audit-item strong {
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .site-footer {
+      padding: 34px 0;
+      border-top: 1px solid var(--border);
+      background: linear-gradient(180deg, #f8fbfe 0%, #eef5fb 100%);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: var(--ink-4);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 980px) {
+      .header-inner {
+        min-height: auto;
+        padding: 18px 0;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .site-nav {
+        margin-left: 0;
+        flex-wrap: wrap;
+      }
+
+      .site-nav a.active::after {
+        bottom: -8px;
+      }
+
+      .hero-grid,
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-actions {
+        justify-content: flex-start;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --gutter: 18px;
+      }
+
+      .brand {
+        font-size: 14px;
+      }
+
+      .site-nav {
+        gap: 16px;
+      }
+
+      .site-nav a {
+        font-size: 10px;
+      }
+
+      .kpi-grid,
+      .inspector-state {
+        grid-template-columns: 1fr;
+      }
+
+      .stream-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .hero-title {
+        font-size: 42px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<header class="topbar">
-  <div class="wrap nav">
-    <a class="logo" href="/">
-      EXECUTIA™ <span>ENGINE</span>
-    </a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="https://executia.io" aria-label="EXECUTIA Entry">
+        EXECUTIA™ <span class="brand-suffix">ENGINE</span>
+      </a>
 
-    <nav class="navlinks">
-      <a href="https://executia.io">Entry</a>
-      <a href="/console/">Console</a>
-      <a href="https://executia.io/request.html">Request</a>
-    </nav>
-  </div>
-</header>
-
-<div class="livebar">
-  <div class="wrap livebar-inner">
-    <div class="live-group">
-      <span class="live-dot"></span>
-      <span data-stream-state>Connecting stream...</span>
+      <nav class="site-nav" aria-label="Engine navigation">
+        <a href="https://executia.io">ENTRY</a>
+        <a href="/console/">CONSOLE</a>
+        <a href="https://executia.io/request.html">REQUEST</a>
+      </nav>
     </div>
-    <span>Decision Engine Active</span>
-    <span>Registry Online</span>
-    <span class="muted">Execution truth observed in real time</span>
-  </div>
-</div>
+  </header>
 
-<main>
-  <div class="wrap">
-    <section class="hero">
-      <div>
-        <div class="label">EXECUTION STATUS ENGINE</div>
-        <h1>
-          Execution is controlled<br />
-          before action proceeds.
-        </h1>
-        <p>
-          EXECUTIA validates rules, responsibility and execution readiness,
-          then records the decision into the registry.
-        </p>
+  <div class="live-strip" aria-label="Engine status">
+    <div class="wrap live-inner">
+      <div class="live-item">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span id="stream-state">STREAM CONNECTING...</span>
       </div>
 
-      <div class="hero-actions">
-        <button id="runBtn" class="btn" onclick="runControl()">Run Execution Check</button>
-        <button class="btn secondary" onclick="loadControl(true)">Refresh Registry</button>
+      <div class="live-item">DECISION ENGINE ACTIVE</div>
+      <div class="live-item">REGISTRY ONLINE</div>
+      <div class="live-item live-muted">EXECUTION TRUTH OBSERVED IN REAL TIME</div>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <div class="kicker">EXECUTION STATUS ENGINE</div>
+
+            <h1 class="hero-title">
+              Execution is controlled<br />
+              before action proceeds.
+            </h1>
+
+            <p class="hero-subtitle">
+              EXECUTIA validates rules, responsibility and execution readiness, then records the decision into the registry.
+            </p>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="run-check" type="button">
+              RUN EXECUTION CHECK
+            </button>
+
+            <button class="btn btn-secondary" id="refresh-registry" type="button">
+              REFRESH REGISTRY
+            </button>
+          </div>
+        </div>
+
+        <div class="engine-note" id="engine-note">
+          Registry connection pending.
+        </div>
+
+        <div class="kpi-grid" aria-label="Execution summary">
+          <div class="kpi-card">
+            <span class="kpi-label">SYSTEM STATE</span>
+            <span class="kpi-value active" id="kpi-state">ACTIVE</span>
+          </div>
+
+          <div class="kpi-card">
+            <span class="kpi-label">EXECUTIONS</span>
+            <span class="kpi-value" id="kpi-executions">0</span>
+          </div>
+
+          <div class="kpi-card">
+            <span class="kpi-label">APPROVED</span>
+            <span class="kpi-value approved" id="kpi-approved">0</span>
+          </div>
+
+          <div class="kpi-card">
+            <span class="kpi-label">REVIEW / BLOCKED</span>
+            <span class="kpi-value review" id="kpi-review">0</span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <div id="notice" class="notice"></div>
+    <section class="wrap dashboard-grid">
+      <section class="panel" aria-label="Live execution stream">
+        <div class="panel-kicker">LIVE EXECUTION STREAM</div>
 
-    <div id="blockAlert" class="alert">
-      <div>BLOCKED EXECUTION DETECTED</div>
-      <div id="blockAlertMeta" style="font-size:11px;margin-top:7px;">Waiting for execution data...</div>
-    </div>
+        <table class="stream-table">
+          <thead>
+            <tr>
+              <th>TIME</th>
+              <th>DECISION</th>
+              <th>SOURCE</th>
+              <th>REGISTRY PROOF</th>
+            </tr>
+          </thead>
 
-    <div id="momentBar" class="moment">
-      <div>EXECUTION STATE CHANGED</div>
-      <div id="momentMeta" style="font-size:11px;margin-top:7px;">No live change yet.</div>
-    </div>
+          <tbody id="stream-body">
+            <tr>
+              <td colspan="4">Loading registry...</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-    <div class="status-grid">
-      <div class="card metric">
-        <div class="metric-label">System state</div>
-        <div id="system" class="metric-value">—</div>
-      </div>
+      <aside class="panel" aria-label="Execution inspector">
+        <div class="panel-kicker">EXECUTION INSPECTOR</div>
 
-      <div class="card metric">
-        <div class="metric-label">Executions</div>
-        <div id="total" class="metric-value">—</div>
-      </div>
-
-      <div class="card metric">
-        <div class="metric-label">Approved</div>
-        <div id="approved" class="metric-value ok">—</div>
-      </div>
-
-      <div class="card metric">
-        <div class="metric-label">Review / blocked</div>
-        <div id="blocked" class="metric-value review">—</div>
-      </div>
-    </div>
-
-    <div class="layout">
-      <div class="card">
-        <div class="panel-title">Live execution stream</div>
-
-        <div class="feed-header">
-          <div>Time</div>
-          <div>Decision</div>
-          <div>Source</div>
-          <div>Registry proof</div>
+        <div class="inspector-state">
+          <span class="state-pill">PENDING</span>
+          <span class="state-pill">VALIDATING</span>
+          <span class="state-pill">DECIDED</span>
+          <span class="state-pill">LOCKED</span>
         </div>
 
-        <div id="stream"></div>
-      </div>
-
-      <div class="card">
-        <div class="panel-title">Execution inspector</div>
-
-        <div class="state-flow">
-          <div id="statePending" class="state-step">PENDING</div>
-          <div id="stateValidating" class="state-step">VALIDATING</div>
-          <div id="stateDecided" class="state-step">DECIDED</div>
-          <div id="stateLocked" class="state-step">LOCKED</div>
+        <div class="control-buttons">
+          <button class="btn btn-approve" id="approve-action" type="button">APPROVE</button>
+          <button class="btn btn-block" id="block-action" type="button">BLOCK</button>
+          <button class="btn btn-review" id="review-action" type="button">REVIEW</button>
         </div>
 
-        <div class="action-row">
-          <button class="btn" onclick="overrideSelected('APPROVE')">Approve</button>
-          <button class="btn danger" onclick="overrideSelected('BLOCK')">Block</button>
-          <button class="btn warn" onclick="overrideSelected('REVIEW')">Review</button>
+        <pre class="json-box" id="inspector-json">{
+  "status": "AWAITING_REGISTRY",
+  "message": "Execution stream loading"
+}</pre>
+
+        <div class="subpanel">
+          <div class="subpanel-title">LATEST CONTROL ACTION</div>
+          <p class="subpanel-text" id="control-action-text">
+            No control action yet.
+          </p>
         </div>
 
-        <pre id="breakdown">No execution selected.</pre>
-
-        <div class="audit-box">
-          <div class="panel-title">Latest control action</div>
-          <div id="auditTrail" class="muted">No control action yet.</div>
+        <div class="subpanel">
+          <div class="subpanel-title">EXECUTION AUDIT TRAIL</div>
+          <div class="audit-list" id="audit-list">
+            <div class="audit-item">
+              <strong>STATUS</strong><br />
+              Registry observation pending.
+            </div>
+          </div>
         </div>
+      </aside>
+    </section>
+  </main>
 
-        <div class="audit-box">
-          <div class="panel-title">Execution audit trail</div>
-          <div id="auditList" class="muted">No execution selected.</div>
-        </div>
-      </div>
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <span>EXECUTIA™ ENGINE</span>
+      <span>ENTRY DESCRIBES · ENGINE DECIDES · REGISTRY RECORDS</span>
     </div>
+  </footer>
 
-    <div class="footer-note">
-      ENGINE decides · REGISTRY records · ENTRY never executes
-    </div>
-  </div>
-</main>
+  <script>
+    const API_STREAM = "/api/v1/stream?limit=50";
+    const API_EXECUTE = "/api/v1/execute";
+    const API_AUDIT = "/api/v1/audit-log";
 
-<script>
-const API = "https://execution.executia.io/api/v1";
-const STREAM_URL = API + "/stream";
-const SYNC_KEY = "executia_selected_execution_id";
+    const streamState = document.getElementById("stream-state");
+    const streamBody = document.getElementById("stream-body");
+    const inspectorJson = document.getElementById("inspector-json");
+    const engineNote = document.getElementById("engine-note");
 
-let loading = false;
-let selectedIndex = 0;
-let selectedExecutionId = null;
-let eventSource = null;
-let reconnectTimer = null;
-let reconnectAttempts = 0;
-let lastChangedId = null;
-let lastBlockedId = null;
-let momentTimeout = null;
+    const kpiState = document.getElementById("kpi-state");
+    const kpiExecutions = document.getElementById("kpi-executions");
+    const kpiApproved = document.getElementById("kpi-approved");
+    const kpiReview = document.getElementById("kpi-review");
 
-window.__executiaItems = [];
+    const controlActionText = document.getElementById("control-action-text");
+    const auditList = document.getElementById("audit-list");
 
-function decision(e){
-  return e?.decision || e?.ledger_decision || e?.result_status || e?.status || "UNKNOWN";
-}
+    const runCheckButton = document.getElementById("run-check");
+    const refreshRegistryButton = document.getElementById("refresh-registry");
+    const approveButton = document.getElementById("approve-action");
+    const blockButton = document.getElementById("block-action");
+    const reviewButton = document.getElementById("review-action");
 
-function source(e){
-  return e?.source || e?.payload?.context?.source || e?.payload?.source || "registry";
-}
+    let selectedExecution = null;
+    let latestRecords = [];
 
-function hash(e){
-  return e?.truth_hash || e?.payload?.truth_hash || e?.execution_id || e?.request_id || e?.ticket_id || "NO_HASH";
-}
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-function executionId(e){
-  return e?.execution_id || e?.entity_id || e?.request_id || e?.id || null;
-}
+    function normalizeDecision(value) {
+      const decision = String(value || "RECEIVED").trim().toUpperCase();
 
-function cls(d){
-  if(d === "APPROVED" || d === "APPROVE" || d === "EXECUTED") return "ok";
-  if(d === "BLOCKED" || d === "BLOCK") return "bad";
-  return "review";
-}
+      if (decision === "APPROVE") return "APPROVED";
+      if (decision === "ALLOW") return "APPROVED";
+      if (decision === "ESCALATE") return "REQUIRES_REVIEW";
+      if (decision === "REVIEW") return "REQUIRES_REVIEW";
+      if (decision === "REQUIRES REVIEW") return "REQUIRES_REVIEW";
+      if (decision === "BLOCK") return "BLOCKED";
 
-function getSyncedId(){
-  return localStorage.getItem(SYNC_KEY);
-}
+      return decision || "RECEIVED";
+    }
 
-function mergeExecutions(current=[], incoming=[]){
-  const map = new Map();
+    function decisionClass(value) {
+      const decision = normalizeDecision(value).toLowerCase();
 
-  for(const row of current){
-    const id = executionId(row);
-    if(id) map.set(id, row);
-  }
+      if (decision === "approved") return "approved";
+      if (decision === "blocked") return "blocked";
+      if (decision === "requires_review" || decision === "escalate") return "review";
 
-  for(const row of incoming){
-    const id = executionId(row);
-    if(!id) continue;
+      return "review";
+    }
 
-    const existing = map.get(id) || {};
-    map.set(id, {
-      ...existing,
-      ...row,
-      payload:{
-        ...(existing.payload || {}),
-        ...(row.payload || {})
+    function getRecords(payload) {
+      if (Array.isArray(payload.records)) return payload.records;
+      if (Array.isArray(payload.executions)) return payload.executions;
+      if (Array.isArray(payload.data)) return payload.data;
+      return [];
+    }
+
+    function getRecordDecision(record) {
+      return normalizeDecision(record.decision || record.status || record.result || record.decision_status || "RECEIVED");
+    }
+
+    function getRecordSource(record) {
+      return record.source || record.origin || record.mode || record.event_type || "registry";
+    }
+
+    function getRecordProof(record) {
+      return (
+        record.truth_hash ||
+        record.registry_proof ||
+        record.request_id ||
+        record.execution_id ||
+        record.id ||
+        "pending"
+      );
+    }
+
+    function getRecordTime(record) {
+      return record.created_at || record.updated_at || record.received_at || record.timestamp || new Date().toISOString();
+    }
+
+    function getRecordReason(record) {
+      return record.decision_reason || record.reason || record.error || record.message || "TRACEABLE";
+    }
+
+    function renderInspector(record) {
+      selectedExecution = record || null;
+
+      if (!record) {
+        inspectorJson.textContent = JSON.stringify(
+          {
+            status: "AWAITING_REGISTRY",
+            message: "No execution selected"
+          },
+          null,
+          2
+        );
+
+        auditList.innerHTML = `
+          <div class="audit-item">
+            <strong>STATUS</strong><br />
+            Registry observation pending.
+          </div>
+        `;
+        return;
       }
-    });
-  }
 
-  return Array.from(map.values())
-    .sort((a,b)=>new Date(b.created_at || b.updated_at || 0) - new Date(a.created_at || a.updated_at || 0))
-    .slice(0,50);
-}
+      inspectorJson.textContent = JSON.stringify(record, null, 2);
 
-function setExecutionsMerged(incoming=[]){
-  window.__executiaItems = mergeExecutions(window.__executiaItems || [], incoming);
-}
+      auditList.innerHTML = `
+        <div class="audit-item">
+          <strong>DECISION</strong><br />
+          ${escapeHtml(getRecordDecision(record))}
+        </div>
+        <div class="audit-item">
+          <strong>REASON</strong><br />
+          ${escapeHtml(getRecordReason(record))}
+        </div>
+        <div class="audit-item">
+          <strong>REGISTRY PROOF</strong><br />
+          ${escapeHtml(getRecordProof(record))}
+        </div>
+      `;
+    }
 
-function upsertExecution(item){
-  if(!item) return;
-  setExecutionsMerged([item]);
-}
+    function renderKpis(records) {
+      const total = records.length;
 
-function replaceExecutions(items){
-  window.__executiaItems = mergeExecutions([], items || []);
-}
+      const approved = records.filter((record) => {
+        return getRecordDecision(record) === "APPROVED";
+      }).length;
 
-function applySyncedSelection(){
-  const syncedId = getSyncedId();
-  if(!syncedId) return false;
+      const reviewOrBlocked = records.filter((record) => {
+        const decision = getRecordDecision(record);
 
-  const found = window.__executiaItems.findIndex(e=>executionId(e) === syncedId);
+        return (
+          decision === "REQUIRES_REVIEW" ||
+          decision === "BLOCKED" ||
+          decision === "ESCALATE"
+        );
+      }).length;
 
-  if(found >= 0){
-    selectedExecutionId = syncedId;
-    selectedIndex = found;
-    lastChangedId = syncedId;
-    return true;
-  }
+      kpiState.textContent = "ACTIVE";
+      kpiExecutions.textContent = String(total);
+      kpiApproved.textContent = String(approved);
+      kpiReview.textContent = String(reviewOrBlocked);
+    }
 
-  return false;
-}
-
-function setNotice(msg,type="ok"){
-  const box = document.getElementById("notice");
-  box.textContent = msg;
-  box.className = "notice show";
-
-  if(type === "bad"){
-    box.style.background = "#FBF0F0";
-    box.style.borderColor = "#E6B9B9";
-    box.style.color = "#B54747";
-  }else{
-    box.style.background = "#E8F0F8";
-    box.style.borderColor = "#C7D7EB";
-    box.style.color = "#0A2540";
-  }
-}
-
-function clearNotice(){
-  const box = document.getElementById("notice");
-  box.textContent = "";
-  box.className = "notice";
-}
-
-async function json(url,opt={}){
-  const r = await fetch(url,{
-    method:opt.method || "GET",
-    headers:{
-      "Content-Type":"application/json",
-      "Accept":"application/json"
-    },
-    body:opt.body ? JSON.stringify(opt.body) : undefined,
-    cache:"no-store"
-  });
-
-  const t = await r.text();
-  let d = {};
-
-  try{
-    d = t ? JSON.parse(t) : {};
-  }catch{
-    throw new Error("NON_JSON_RESPONSE");
-  }
-
-  if(!r.ok){
-    throw new Error(d.error || d.detail || "REQUEST_FAILED");
-  }
-
-  return d;
-}
-
-function showBlockAlert(execution){
-  const id = executionId(execution) || "unknown";
-  const reason = execution?.reason || execution?.payload?.reason || "Blocked by execution rule";
-  const proof = hash(execution);
-
-  lastBlockedId = id;
-
-  document.getElementById("blockAlertMeta").innerHTML =
-    `Execution: <code>${id}</code><br>Reason: ${reason}<br>Proof: <code>${String(proof).substring(0,40)}</code>`;
-
-  document.getElementById("blockAlert").className = "alert show";
-}
-
-function showExecutionMoment(execution){
-  const id = executionId(execution) || "unknown";
-  const status = decision(execution);
-  const reason = execution?.reason || execution?.payload?.reason || "Execution state changed";
-
-  const bar = document.getElementById("momentBar");
-  const meta = document.getElementById("momentMeta");
-
-  if(momentTimeout) clearTimeout(momentTimeout);
-
-  meta.innerHTML = `Execution: <code>${id}</code><br>Status: <strong>${status}</strong><br>Reason: ${reason}`;
-  bar.className = "moment show";
-
-  if(status === "BLOCKED"){
-    bar.style.background = "#FBF0F0";
-    bar.style.borderColor = "#E6B9B9";
-    bar.style.color = "#B54747";
-  }else if(status === "APPROVED"){
-    bar.style.background = "#EDF8F1";
-    bar.style.borderColor = "#A9D5BE";
-    bar.style.color = "#157347";
-  }else{
-    bar.style.background = "#FCF8EA";
-    bar.style.borderColor = "#E4D39C";
-    bar.style.color = "#8B6B16";
-  }
-
-  momentTimeout = setTimeout(()=>bar.classList.remove("show"),4000);
-}
-
-function updateStateFlow(execution){
-  ["statePending","stateValidating","stateDecided","stateLocked"].forEach(id=>{
-    document.getElementById(id)?.classList.remove("on");
-  });
-
-  if(!execution){
-    document.getElementById("statePending")?.classList.add("on");
-    return;
-  }
-
-  const status = decision(execution);
-
-  document.getElementById("statePending")?.classList.add("on");
-  document.getElementById("stateValidating")?.classList.add("on");
-
-  if(status === "APPROVED" || status === "BLOCKED" || status === "REQUIRES_REVIEW"){
-    document.getElementById("stateDecided")?.classList.add("on");
-  }
-
-  if(status === "APPROVED" || status === "BLOCKED"){
-    document.getElementById("stateLocked")?.classList.add("on");
-  }
-}
-
-function focusActiveRow(){
-  setTimeout(()=>{
-    document.querySelector(".row.active")?.scrollIntoView({behavior:"smooth",block:"center"});
-  },120);
-}
-
-function updateStats(){
-  const items = window.__executiaItems || [];
-
-  const system = document.getElementById("system");
-  system.textContent = "ACTIVE";
-  system.className = "metric-value ok";
-
-  document.getElementById("total").textContent = items.length;
-
-  let approved = 0;
-  let reviewBlocked = 0;
-
-  items.forEach(e=>{
-    const d = decision(e);
-    if(d === "APPROVED" || d === "APPROVE" || d === "EXECUTED") approved++;
-    else reviewBlocked++;
-  });
-
-  document.getElementById("approved").textContent = approved;
-  document.getElementById("blocked").textContent = reviewBlocked;
-}
-
-async function loadControl(manual=false){
-  if(loading) return;
-  loading = true;
-
-  try{
-    await json(API + "/health?ts=" + Date.now()).catch(()=>null);
-
-    const d = await json(API + "/executions?limit=50&ts=" + Date.now());
-    replaceExecutions(Array.isArray(d.executions) ? d.executions : []);
-    updateStats();
-
-    const synced = applySyncedSelection();
-
-    if(!synced){
-      if(selectedExecutionId){
-        const found = window.__executiaItems.findIndex(e=>executionId(e) === selectedExecutionId);
-        selectedIndex = found >= 0 ? found : 0;
-      }else{
-        selectedIndex = 0;
-        selectedExecutionId = executionId(window.__executiaItems[0]);
+    function renderStream(records) {
+      if (!records.length) {
+        streamBody.innerHTML = '<tr><td colspan="4">No execution records yet.</td></tr>';
+        renderInspector(null);
+        return;
       }
+
+      streamBody.innerHTML = "";
+
+      records.forEach((record, index) => {
+        const decision = getRecordDecision(record);
+        const row = document.createElement("tr");
+
+        if (index === 0) {
+          row.className = "selected";
+        }
+
+        row.innerHTML = `
+          <td>${escapeHtml(getRecordTime(record))}</td>
+          <td><span class="decision ${decisionClass(decision)}">${escapeHtml(decision)}</span></td>
+          <td>${escapeHtml(getRecordSource(record))}</td>
+          <td><div class="proof">${escapeHtml(getRecordProof(record))}</div></td>
+        `;
+
+        row.addEventListener("click", () => {
+          document.querySelectorAll(".stream-table tbody tr").forEach((item) => {
+            item.classList.remove("selected");
+          });
+
+          row.classList.add("selected");
+          renderInspector(record);
+        });
+
+        streamBody.appendChild(row);
+      });
+
+      renderInspector(records[0]);
     }
 
-    renderStream(lastChangedId || lastBlockedId);
+    async function loadStream() {
+      try {
+        streamState.textContent = "STREAM ACTIVE";
 
-    if(window.__executiaItems[selectedIndex]){
-      showBreakdown(selectedIndex);
+        const response = await fetch(API_STREAM, {
+          method: "GET",
+          cache: "no-store"
+        });
 
-      if(synced){
-        setNotice("Execution controlled via Console — " + selectedExecutionId,"ok");
-        focusActiveRow();
-      }
-    }else{
-      document.getElementById("breakdown").textContent = "No execution selected.";
-      updateStateFlow(null);
-    }
+        const payload = await response.json().catch(() => {
+          return {};
+        });
 
-    if(manual) setNotice("Registry refreshed.","ok");
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || "STREAM_FAILED");
+        }
 
-  }catch(err){
-    document.getElementById("system").textContent = "OFFLINE";
-    document.getElementById("system").className = "metric-value bad";
-    document.getElementById("stream").innerHTML =
-      `<div class="row"><div>SYSTEM ERROR</div><div class="bad">${err.message}</div></div>`;
-    setNotice("Load failed: " + err.message,"bad");
-  }finally{
-    loading = false;
-  }
-}
+        const records = getRecords(payload);
+        latestRecords = records;
 
-function renderStream(highlightId=null){
-  const stream = document.getElementById("stream");
-  const items = window.__executiaItems || [];
+        streamState.textContent = "STREAM ACTIVE";
 
-  stream.innerHTML = items.slice(0,25).map((e,i)=>{
-    const d = decision(e);
-    const id = executionId(e);
+        engineNote.textContent = records[0]
+          ? "Execution controlled via " + getRecordSource(records[0]) + " — " + getRecordProof(records[0])
+          : "Registry online. Awaiting execution records.";
 
-    const active = i === selectedIndex ? "active" : "";
-    const changed = highlightId && id === highlightId ? "realtime-highlight" : "";
-    const blocked = lastBlockedId && id === lastBlockedId ? "blocked-highlight" : "";
+        renderKpis(records);
+        renderStream(records);
+      } catch (error) {
+        streamState.textContent = "STREAM RECONNECTING...";
+        engineNote.textContent = "Registry reconnecting. Last known records remain visible.";
 
-    return `<div class="row item ${active} ${changed} ${blocked}" onclick="showBreakdown(${i})">
-      <div>${e.created_at || "—"}</div>
-      <div class="${cls(d)}"><strong>${d}</strong></div>
-      <div>${source(e)}</div>
-      <div><code>${String(hash(e)).substring(0,28)}</code></div>
-    </div>`;
-  }).join("");
-}
-
-function showBreakdown(i){
-  const e = (window.__executiaItems || [])[i];
-  if(!e) return;
-
-  selectedIndex = i;
-  selectedExecutionId = executionId(e);
-
-  renderStream(lastChangedId || lastBlockedId);
-  updateStateFlow(e);
-
-  document.getElementById("breakdown").textContent = JSON.stringify({
-    decision:decision(e),
-    status:e.status || e.result_status || null,
-    reason:e.reason || e.payload?.reason || "Execution recorded",
-    authorized:e.authorized ?? null,
-    hold_pending:e.hold_pending ?? null,
-    source:source(e),
-    execution_id:executionId(e),
-    truth_hash:e.truth_hash || e.payload?.truth_hash || null,
-    created_at:e.created_at || null,
-    updated_at:e.updated_at || null,
-    payload:e.payload || null
-  },null,2);
-
-  loadAudit(executionId(e));
-}
-
-async function loadAudit(id){
-  const auditList = document.getElementById("auditList");
-
-  if(!id){
-    auditList.innerHTML = "No execution selected.";
-    return;
-  }
-
-  auditList.innerHTML = "Loading audit trail...";
-
-  try{
-    const data = await json(API + "/audit-log?execution_id=" + encodeURIComponent(id) + "&limit=25&ts=" + Date.now());
-    const logs = data.audit_logs || [];
-
-    if(logs.length === 0){
-      auditList.innerHTML = "No audit records for this execution.";
-      return;
-    }
-
-    auditList.innerHTML = logs.map(log=>{
-      const actor = log.actor_label || log.operator || log.actor_id || "system";
-      const status = log.new_status || log.payload?.new_status || log.payload?.decision || log.decision || log.status || "-";
-      const previous = log.previous_status || log.payload?.previous_status || "-";
-      const time = log.created_at || "-";
-      const reason = log.reason || log.message || log.payload?.reason || "-";
-
-      return `<div class="audit-item">
-        <strong>${log.action || "AUDIT_EVENT"}</strong><br>
-        Actor: ${actor}<br>
-        Status: ${previous} → ${status}<br>
-        Reason: ${reason}<br>
-        Time: ${time}
-      </div>`;
-    }).join("");
-
-  }catch(err){
-    auditList.innerHTML = "Audit load failed: " + err.message;
-  }
-}
-
-async function overrideSelected(action){
-  clearNotice();
-
-  const selected = (window.__executiaItems || [])[selectedIndex];
-
-  if(!selected){
-    setNotice("No execution selected.","bad");
-    return;
-  }
-
-  const id = executionId(selected);
-
-  if(!id){
-    setNotice("Selected execution has no execution_id.","bad");
-    return;
-  }
-
-  const reasonMap = {
-    APPROVE:"Execution approved by control decision",
-    BLOCK:"Execution blocked by control decision",
-    REVIEW:"Execution routed to review"
-  };
-
-  try{
-    setNotice("Sending control action: " + action + " → " + id,"ok");
-
-    const d = await json(API + "/override",{
-      method:"POST",
-      body:{
-        execution_id:id,
-        action,
-        operator:"Operator",
-        reason:reasonMap[action] || "Control decision executed"
-      }
-    });
-
-    if(d.ok === false) throw new Error(d.error || "OVERRIDE_FAILED");
-
-    if(d.execution){
-      upsertExecution(d.execution);
-      lastChangedId = executionId(d.execution);
-      selectedExecutionId = lastChangedId;
-      localStorage.setItem(SYNC_KEY,lastChangedId);
-      selectedIndex = window.__executiaItems.findIndex(x=>executionId(x) === selectedExecutionId);
-      showExecutionMoment(d.execution);
-    }
-
-    if(d.new_status === "BLOCKED"){
-      showBlockAlert(d.execution || selected);
-    }
-
-    document.getElementById("auditTrail").innerHTML =
-      `<div class="audit-item">
-        <strong>${d.action || action}</strong><br>
-        Execution: <code>${id}</code><br>
-        Status: <strong>${d.previous_status || "—"}</strong> → <strong>${d.new_status || "—"}</strong><br>
-        Operator: Operator<br>
-        Audit: ${d.audit_ok === false ? "non-blocking warning" : "ok"}
-      </div>`;
-
-    updateStats();
-    renderStream(lastChangedId || lastBlockedId);
-    showBreakdown(selectedIndex >= 0 ? selectedIndex : 0);
-    focusActiveRow();
-    await loadAudit(id);
-
-    setNotice(
-      "Control action completed: " + (d.previous_status || "—") + " → " + (d.new_status || "—"),
-      d.new_status === "BLOCKED" ? "bad" : "ok"
-    );
-
-    setTimeout(()=>{
-      lastChangedId = null;
-      renderStream(lastBlockedId);
-    },2500);
-
-  }catch(err){
-    setNotice("Override failed: " + err.message,"bad");
-  }
-}
-
-async function runControl(){
-  clearNotice();
-
-  const btn = document.getElementById("runBtn");
-  btn.disabled = true;
-  btn.textContent = "Running...";
-
-  try{
-    const scenarios = [
-      {amount:100,legalBlock:false},
-      {amount:15000,legalBlock:false},
-      {amount:0,legalBlock:false},
-      {amount:500,legalBlock:true}
-    ];
-
-    const s = scenarios[Math.floor(Math.random()*scenarios.length)];
-
-    const d = await json(API + "/execute",{
-      method:"POST",
-      body:{
-        organization_id:"org_executia",
-        session_id:"engine_" + Date.now(),
-        project_id:"execution_status_engine",
-        event_type:"payment",
-        amount:s.amount,
-        currency:"EUR",
-        context:{
-          source:"execution_status_engine",
-          legalBlock:s.legalBlock
+        if (latestRecords.length) {
+          renderKpis(latestRecords);
+          renderStream(latestRecords);
         }
       }
-    });
+    }
 
-    if(d.ok === false) throw new Error(d.error || "EXECUTION_FAILED");
+    async function runExecutionCheck() {
+      runCheckButton.disabled = true;
+      engineNote.textContent = "Running controlled execution check...";
 
-    const id = d.execution_id || executionId(d.execution) || executionId(d);
+      try {
+        const response = await fetch(API_EXECUTE, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            amount: 1,
+            currency: "EUR",
+            context: {
+              source: "dashboard",
+              reason: "manual execution check"
+            }
+          })
+        });
 
-    if(id) localStorage.setItem(SYNC_KEY,id);
+        const result = await response.json().catch(() => {
+          return {};
+        });
 
-    setNotice("Execution check submitted to engine.","ok");
-    await loadControl();
-
-  }catch(err){
-    setNotice("Execution check failed: " + err.message,"bad");
-  }finally{
-    btn.disabled = false;
-    btn.textContent = "Run Execution Check";
-  }
-}
-
-function scheduleReconnect(){
-  const streamState = document.querySelector("[data-stream-state]");
-
-  if(reconnectTimer) return;
-
-  reconnectAttempts += 1;
-  const delay = Math.min(1000 * reconnectAttempts, 5000);
-
-  if(streamState){
-    streamState.textContent = "Stream reconnecting...";
-  }
-
-  try{
-    if(eventSource) eventSource.close();
-  }catch{}
-
-  reconnectTimer = setTimeout(()=>{
-    reconnectTimer = null;
-    startLiveStream();
-  }, delay);
-}
-
-function startLiveStream(){
-  const streamState = document.querySelector("[data-stream-state]");
-
-  if(reconnectTimer){
-    clearTimeout(reconnectTimer);
-    reconnectTimer = null;
-  }
-
-  try{
-    if(eventSource) eventSource.close();
-  }catch{}
-
-  eventSource = new EventSource(STREAM_URL);
-
-  eventSource.addEventListener("connected",(e)=>{
-    reconnectAttempts = 0;
-    if(streamState) streamState.textContent = "Live stream connected";
-    console.log("EXECUTIA STREAM CONNECTED", e.data);
-  });
-
-  eventSource.addEventListener("heartbeat",()=>{
-    if(streamState) streamState.textContent = "Realtime active";
-  });
-
-  eventSource.addEventListener("stream_restart",(e)=>{
-    if(streamState) streamState.textContent = "Stream rotating...";
-    console.log("EXECUTIA STREAM RESTART", e.data);
-    scheduleReconnect();
-  });
-
-  eventSource.addEventListener("execution",(e)=>{
-    const payload = JSON.parse(e.data);
-    const executions = payload.executions || [];
-
-    if(streamState) streamState.textContent = "Execution snapshot received";
-
-    if(executions.length > 0){
-      setExecutionsMerged(executions);
-
-      const synced = applySyncedSelection();
-
-      if(!synced){
-        if(selectedExecutionId){
-          const found = window.__executiaItems.findIndex(x=>executionId(x) === selectedExecutionId);
-          selectedIndex = found >= 0 ? found : 0;
-        }else{
-          selectedIndex = 0;
-          selectedExecutionId = executionId(window.__executiaItems[0]);
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || "EXECUTION_CHECK_FAILED");
         }
+
+        engineNote.textContent = "Execution check completed. Registry refresh pending.";
+        await loadStream();
+      } catch (error) {
+        engineNote.textContent = "Execution check could not be completed.";
+      } finally {
+        runCheckButton.disabled = false;
       }
-
-      updateStats();
-      renderStream(lastChangedId || lastBlockedId);
-      showBreakdown(selectedIndex);
-
-      if(synced){
-        setNotice("Execution controlled via Console — " + selectedExecutionId,"ok");
-        focusActiveRow();
-      }
-
-      setTimeout(()=>{
-        if(streamState) streamState.textContent = "Realtime active";
-      },1200);
-    }
-  });
-
-  eventSource.addEventListener("change",async(e)=>{
-    const payload = JSON.parse(e.data);
-    const changed = payload.execution || null;
-    const changedId = executionId(changed) || payload.execution_id || null;
-
-    if(streamState) streamState.textContent = "Realtime update received";
-
-    if(changed) upsertExecution(changed);
-
-    const syncedId = getSyncedId();
-    const targetId = syncedId || changedId;
-
-    if(targetId){
-      lastChangedId = targetId;
-      selectedExecutionId = targetId;
-
-      const found = window.__executiaItems.findIndex(x=>executionId(x) === targetId);
-      selectedIndex = found >= 0 ? found : 0;
-
-      const current = window.__executiaItems[selectedIndex];
-
-      if(current) showExecutionMoment(current);
-
-      if(current && decision(current) === "BLOCKED"){
-        showBlockAlert(current);
-        setNotice("Realtime alert: BLOCKED execution detected — " + targetId,"bad");
-      }else{
-        setNotice((syncedId ? "Synced dashboard selection" : "Realtime update received") + " — " + targetId,"ok");
-      }
-
-      updateStats();
-      renderStream(targetId);
-      showBreakdown(selectedIndex);
-      focusActiveRow();
-      await loadAudit(targetId);
-
-      setTimeout(()=>{
-        lastChangedId = null;
-        renderStream(lastBlockedId);
-      },2500);
     }
 
-    setTimeout(()=>{
-      if(streamState) streamState.textContent = "Realtime active";
-    },1500);
-  });
+    async function loadAudit() {
+      try {
+        const response = await fetch(API_AUDIT, {
+          method: "GET",
+          cache: "no-store"
+        });
 
-  eventSource.addEventListener("error",()=>{
-    scheduleReconnect();
-  });
+        const payload = await response.json().catch(() => {
+          return {};
+        });
 
-  eventSource.onerror = ()=>{
-    scheduleReconnect();
-  };
-}
+        if (!response.ok || !payload.ok) {
+          return;
+        }
 
-window.addEventListener("storage",(event)=>{
-  if(event.key === SYNC_KEY && event.newValue){
-    selectedExecutionId = event.newValue;
-    applySyncedSelection();
-    updateStats();
-    renderStream(event.newValue);
-    showBreakdown(selectedIndex);
-    setNotice("Execution controlled via Console — " + event.newValue,"ok");
-    focusActiveRow();
-  }
-});
+        const records = getRecords(payload).slice(0, 3);
 
-window.addEventListener("beforeunload",()=>{
-  try{
-    if(eventSource) eventSource.close();
-  }catch{}
-});
+        if (!records.length) {
+          return;
+        }
 
-loadControl();
-startLiveStream();
-</script>
+        auditList.innerHTML = records
+          .map((record) => {
+            return `
+              <div class="audit-item">
+                <strong>${escapeHtml(record.action || record.event_type || "AUDIT")}</strong><br />
+                ${escapeHtml(record.created_at || record.timestamp || "")}
+              </div>
+            `;
+          })
+          .join("");
+      } catch (error) {
+      }
+    }
+
+    function setControlAction(action) {
+      const proof = selectedExecution ? getRecordProof(selectedExecution) : "no selected execution";
+      controlActionText.textContent = action + " requested for " + proof + ".";
+    }
+
+    runCheckButton.addEventListener("click", runExecutionCheck);
+    refreshRegistryButton.addEventListener("click", loadStream);
+
+    approveButton.addEventListener("click", () => setControlAction("APPROVE"));
+    blockButton.addEventListener("click", () => setControlAction("BLOCK"));
+    reviewButton.addEventListener("click", () => setControlAction("REVIEW"));
+
+    loadStream();
+    loadAudit();
+
+    window.setInterval(loadStream, 6000);
+    window.setInterval(loadAudit, 12000);
+  </script>
 </body>
 </html>
