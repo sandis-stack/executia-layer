@@ -33,51 +33,44 @@ body{
   font-size:12px;
 }
 
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:18px;
-  margin-bottom:16px;
+.engine-header {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: -26px -26px 20px;
 }
 
-.brand{
-  display:flex;
-  gap:10px;
-  align-items:center;
+.engine-brand {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--blue);
+  letter-spacing: 0.04em;
 }
 
-.logo{
-  width:30px;
-  height:30px;
-  border-radius:8px;
-  background:var(--blue);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  font-size:13px;
+.engine-nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
 }
 
-h1{
-  margin:0;
-  font-size:20px;
-  letter-spacing:-.04em;
+.engine-nav a {
+  color: var(--blue);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
 }
 
-.sub{
-  color:var(--muted);
-  margin-top:4px;
-  font-size:11px;
-}
-
-.actions{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap:wrap;
-}
+.engine-nav a:hover { background: #f0f4f9; }
+.engine-nav a.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 
 button{
   border:0;
@@ -346,24 +339,22 @@ pre,.preview{
 
 <body>
 
-<div class="top">
-  <div class="brand">
-    <div class="logo">E</div>
-    <div>
-      <h1>EXECUTIA Console</h1>
-      <div class="sub">Execution input · rule decision · dispatch · ledger proof</div>
-    </div>
-  </div>
-
-  <div class="actions">
-    <span class="badge"><span class="dot"></span> Core engine</span>
-    <button class="secondary" onclick="window.location.href='/dashboard'">Dashboard</button>
-    <button id="refreshBtn" class="secondary" onclick="refreshData(true)">Refresh</button>
-    <button id="executeBtn" class="primary" onclick="executeScenario()">Execute</button>
-  </div>
-</div>
+<header class="engine-header">
+  <div class="engine-brand">EXECUTIA · ENGINE</div>
+  <nav class="engine-nav">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/console/operator.html">Operator</a>
+    <a href="/console/audit.html">Audit</a>
+    <a href="https://executia.io">Entry</a>
+  </nav>
+</header>
 
 <div id="notice" class="notice"></div>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+  <button id="refreshBtn" class="secondary" onclick="refreshData(true)">Refresh</button>
+  <button id="executeBtn" class="primary" onclick="executeScenario()">Execute</button>
+</div>
 
 <div class="grid">
   <div class="card">

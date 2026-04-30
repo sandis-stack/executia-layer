@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXECUTIA — Operator Console</title>
+
+  <style>
+    :root {
+      --blue: #1E3A5F;
+      --bg: #f7f9fc;
+      --line: #dfe5ec;
+      --text: #18222f;
+      --muted: #657386;
+      --card: #ffffff;
+      --ok: #0f7a3d;
+      --warn: #a66a00;
+      --bad: #a12727;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ── ENGINE HEADER ── */
+    .engine-header {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .engine-brand {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--blue);
+      letter-spacing: 0.04em;
+    }
+
+    .engine-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .engine-nav a {
+      color: var(--blue);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .engine-nav a:hover { background: #f0f4f9; }
+    .engine-nav a.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .title {
+      margin-bottom: 24px;
+    }
+
+    .title h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: var(--blue);
+    }
+
+    .title p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--blue);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #edf2f7;
+      color: var(--blue);
+      border: 1px solid var(--line);
+    }
+
+    button.approve { background: var(--ok); }
+    button.reject  { background: var(--bad); }
+    button.review  { background: var(--warn); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 11px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #f3f6fa;
+    }
+
+    tr:hover { background: #f8fbff; }
+
+    .selected {
+      outline: 2px solid var(--blue);
+      outline-offset: -2px;
+      background: #f2f7ff;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #edf2f7;
+      color: var(--blue);
+    }
+
+    .approved      { color: var(--ok); }
+    .review-status { color: var(--warn); }
+    .blocked       { color: var(--bad); }
+
+    .notice {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .result {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f3f6fa;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 760px) {
+      .row { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+      .title h1 { font-size: 23px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header engine-header">
+    <div class="header-inner">
+      <a class="brand" href="/dashboard">EXECUTIA<sup>™</sup><span class="engine-mark">ENGINE</span></a>
+      <nav class="site-nav">
+        <a href="https://executia.io">Entry</a>
+        <a href="/console/operator.html">Console</a>
+        <a href="/console/audit.html">Audit</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="title">
+      <h1>Operator Override Console</h1>
+      <p>
+        Operator decisions do not replace the engine. They are recorded as controlled overrides
+        with reason, actor, timestamp and audit trail.
+      </p>
+    </section>
+
+    <section class="grid">
+
+      <!-- Step 1: Auth + Load -->
+      <div class="card">
+        <div class="row">
+          <div>
+            <label for="token">Operator Token</label>
+            <input id="token" type="password" placeholder="Enter OPERATOR_TOKEN" />
+          </div>
+          <div>
+            <label for="actor">Operator Actor</label>
+            <input id="actor" type="text" placeholder="Sandis / Operator / Admin" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button onclick="loadExecutions()">Load Executions</button>
+          <button class="secondary" onclick="clearSelection()">Clear Selection</button>
+        </div>
+
+        <div class="notice">
+          Token is used only in this browser request header.
+          Execution decisions remain inside the ENGINE.
+        </div>
+      </div>
+
+      <!-- Step 2: Execution list -->
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>ID</th>
+              <th>Result</th>
+              <th>Validation</th>
+              <th>Status</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody id="executionsTable">
+            <tr>
+              <td colspan="6">Load executions to begin operator review.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Step 3: Override form -->
+      <div class="card">
+        <div class="row">
+          <div>
+            <label for="executionId">Selected Execution ID</label>
+            <input id="executionId" type="text" readonly placeholder="No execution selected" />
+          </div>
+          <div>
+            <label for="override">Override Decision</label>
+            <select id="override">
+              <option value="APPROVED">APPROVED</option>
+              <option value="REJECTED">REJECTED</option>
+              <option value="REVIEW_REQUIRED">REVIEW_REQUIRED</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <label for="reason">Operator Reason</label>
+          <textarea id="reason" placeholder="Write the reason for this operator override."></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="approve" onclick="submitOverride('APPROVED')">Approve</button>
+          <button class="reject"  onclick="submitOverride('REJECTED')">Reject</button>
+          <button class="review"  onclick="submitOverride('REVIEW_REQUIRED')">Keep Review</button>
+        </div>
+
+        <div id="result" class="result">No operator action recorded.</div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    let selectedRow = null;
+
+    function statusClass(value) {
+      const v = String(value || "").toUpperCase();
+      if (v.includes("APPROVED") || v.includes("COMMITTED") || v.includes("PASSED")) return "approved";
+      if (v.includes("REVIEW")   || v.includes("PENDING"))                           return "review-status";
+      if (v.includes("BLOCK")    || v.includes("REJECT"))                            return "blocked";
+      return "";
+    }
+
+    async function loadExecutions() {
+      const table  = document.getElementById("executionsTable");
+      const result = document.getElementById("result");
+
+      table.innerHTML = `<tr><td colspan="6">Loading registry records...</td></tr>`;
+
+      try {
+        const response = await fetch("/api/v1/executions");
+        const data = await response.json();
+
+        if (!data.ok) {
+          table.innerHTML = `<tr><td colspan="6">Could not load executions.</td></tr>`;
+          result.textContent = JSON.stringify(data, null, 2);
+          return;
+        }
+
+        if (!data.executions || data.executions.length === 0) {
+          table.innerHTML = `<tr><td colspan="6">No execution records found.</td></tr>`;
+          return;
+        }
+
+        table.innerHTML = data.executions.map(item => {
+          const created = item.created_at
+            ? new Date(item.created_at).toLocaleString()
+            : "";
+
+          return `
+            <tr onclick="selectExecution(this, '${item.id}')">
+              <td><span class="pill">Select</span></td>
+              <td>${item.id}</td>
+              <td class="${statusClass(item.result)}">${item.result || ""}</td>
+              <td class="${statusClass(item.validation)}">${item.validation || ""}</td>
+              <td class="${statusClass(item.status)}">${item.status || ""}</td>
+              <td>${created}</td>
+            </tr>
+          `;
+        }).join("");
+
+        result.textContent = "Executions loaded from EXECUTIA Engine registry.";
+
+      } catch (error) {
+        table.innerHTML = `<tr><td colspan="6">Registry connection unavailable.</td></tr>`;
+        result.textContent = error.message;
+      }
+    }
+
+    function selectExecution(row, id) {
+      if (selectedRow) selectedRow.classList.remove("selected");
+      selectedRow = row;
+      selectedRow.classList.add("selected");
+      document.getElementById("executionId").value = id;
+      document.getElementById("result").textContent = "Selected execution: " + id;
+    }
+
+    function clearSelection() {
+      if (selectedRow) selectedRow.classList.remove("selected");
+      selectedRow = null;
+      document.getElementById("executionId").value = "";
+      document.getElementById("reason").value = "";
+      document.getElementById("result").textContent = "Selection cleared.";
+    }
+
+    async function submitOverride(decision) {
+      const token       = document.getElementById("token").value.trim();
+      const actor       = document.getElementById("actor").value.trim() || "OPERATOR";
+      const executionId = document.getElementById("executionId").value.trim();
+      const reason      = document.getElementById("reason").value.trim();
+      const result      = document.getElementById("result");
+
+      if (!token)       { result.textContent = "Missing operator token.";     return; }
+      if (!executionId) { result.textContent = "No execution selected.";       return; }
+      if (!reason)      { result.textContent = "Operator reason is required."; return; }
+
+      document.getElementById("override").value = decision;
+      result.textContent = "Submitting operator override...";
+
+      try {
+        const response = await fetch("/api/v1/override", {
+          method: "POST",
+          headers: {
+            "Content-Type":    "application/json",
+            "x-operator-token": token
+          },
+          body: JSON.stringify({ execution_id: executionId, override: decision, reason, actor })
+        });
+
+        const data = await response.json();
+
+        if (!data.ok) {
+          result.textContent = JSON.stringify(data, null, 2);
+          return;
+        }
+
+        result.textContent =
+          "Operator override recorded:\n" + JSON.stringify(data, null, 2);
+
+        await loadExecutions();
+
+      } catch (error) {
+        result.textContent = error.message;
+      }
+    }
+  </script>
+</body>
+</html>

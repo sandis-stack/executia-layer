@@ -1,2 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXECUTIA — Audit Log</title>
 
-<!doctype html><html><head><meta charset="utf-8"><title>EXECUTIA Audit</title><style>body{font-family:Arial,sans-serif;background:#fff;color:#0a1f44;padding:24px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #dbe3f0;padding:8px;text-align:left}</style></head><body><h1>Audit Log</h1><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Entity</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table><script>async function load(){const token=localStorage.getItem('executia_session_token');const org=localStorage.getItem('executia_org');const r=await fetch('/api/v1/audit?limit=50',{headers:{authorization:'Bearer '+token,'x-organization-id':org}});const j=await r.json();const rows=document.getElementById('rows');(j.items||[]).forEach(it=>{const tr=document.createElement('tr');[it.created_at,it.actor_label||it.actor_id||'',it.action,it.entity,it.status].forEach(v=>{const td=document.createElement('td');td.textContent=v||'';tr.appendChild(td);});rows.appendChild(tr);});}load();</script></body></html>
+  <style>
+    :root {
+      --blue:  #1E3A5F;
+      --bg:    #f7f9fc;
+      --line:  #dfe5ec;
+      --text:  #18222f;
+      --muted: #657386;
+      --card:  #ffffff;
+      --ok:    #0f7a3d;
+      --warn:  #a66a00;
+      --bad:   #a12727;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ── ENGINE HEADER ── */
+    .engine-header {
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .engine-brand {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--blue);
+      letter-spacing: 0.04em;
+    }
+
+    .engine-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .engine-nav a {
+      color: var(--blue);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .engine-nav a:hover { background: #f0f4f9; }
+    .engine-nav a.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+    /* ── PAGE ── */
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .page-title {
+      margin-bottom: 24px;
+    }
+
+    .page-title h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: var(--blue);
+    }
+
+    .page-title p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .toolbar input {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 13px;
+      background: #fff;
+      color: var(--text);
+      width: 320px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      background: var(--blue);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #edf2f7;
+      color: var(--blue);
+      border: 1px solid var(--line);
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 13px;
+      margin-left: auto;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      text-align: left;
+      padding: 11px 13px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: #f3f6fa;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 13px;
+      border-bottom: 1px solid #f0f3f7;
+      vertical-align: top;
+      max-width: 280px;
+      overflow-wrap: break-word;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fbff; }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .event-type {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .actor {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .message {
+      color: #3a4a5c;
+      line-height: 1.45;
+    }
+
+    .time {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .status-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--ok);
+    }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 760px) {
+      .toolbar input { width: 100%; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+      .page-title h1 { font-size: 23px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header engine-header">
+    <div class="header-inner">
+      <a class="brand" href="/dashboard">EXECUTIA<sup>™</sup><span class="engine-mark">ENGINE</span></a>
+      <nav class="site-nav">
+        <a href="https://executia.io">Entry</a>
+        <a href="/console/operator.html">Console</a>
+        <a href="/console/audit.html">Audit</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-title">
+      <h1>Audit Log</h1>
+      <p>
+        Every execution event — decision, override, commitment — recorded in sequence.
+        Registry truth is observed here, not reconstructed.
+      </p>
+    </div>
+
+    <div class="toolbar">
+      <input
+        id="filterInput"
+        type="text"
+        placeholder="Filter by execution ID, event type or actor…"
+        oninput="applyFilter()"
+      />
+      <button onclick="loadAudit()">Refresh</button>
+      <button class="secondary" onclick="clearFilter()">Clear</button>
+      <span class="count" id="countLabel"></span>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Audit ID</th>
+            <th>Execution ID</th>
+            <th>Event Type</th>
+            <th>Actor</th>
+            <th>Message</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="auditTable">
+          <tr>
+            <td colspan="6" class="empty">Loading audit records…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="status-bar">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusLabel">Connecting to registry…</span>
+    </div>
+  </main>
+
+  <script>
+    let allRecords = [];
+
+    function escapeHtml(v) {
+      return String(v || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function shortId(id) {
+      if (!id) return "—";
+      return String(id).length > 12 ? String(id).slice(0, 8) + "…" : id;
+    }
+
+    function renderRows(records) {
+      const tbody = document.getElementById("auditTable");
+      document.getElementById("countLabel").textContent =
+        records.length + " record" + (records.length === 1 ? "" : "s");
+
+      if (!records.length) {
+        tbody.innerHTML = `<tr><td colspan="6" class="empty">No audit records match the filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = records.map(r => {
+        const time = r.created_at
+          ? new Date(r.created_at).toLocaleString()
+          : "—";
+
+        return `
+          <tr>
+            <td class="mono" title="${escapeHtml(r.id)}">${escapeHtml(shortId(r.id))}</td>
+            <td class="mono" title="${escapeHtml(r.execution_id)}">${escapeHtml(shortId(r.execution_id))}</td>
+            <td><span class="event-type">${escapeHtml(r.event_type || "—")}</span></td>
+            <td><span class="actor">${escapeHtml(r.actor || "—")}</span></td>
+            <td class="message">${escapeHtml(r.message || "—")}</td>
+            <td class="time">${escapeHtml(time)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function applyFilter() {
+      const q = document.getElementById("filterInput").value.trim().toLowerCase();
+      if (!q) {
+        renderRows(allRecords);
+        return;
+      }
+      const filtered = allRecords.filter(r =>
+        (r.id           || "").toLowerCase().includes(q) ||
+        (r.execution_id || "").toLowerCase().includes(q) ||
+        (r.event_type   || "").toLowerCase().includes(q) ||
+        (r.actor        || "").toLowerCase().includes(q) ||
+        (r.message      || "").toLowerCase().includes(q)
+      );
+      renderRows(filtered);
+    }
+
+    function clearFilter() {
+      document.getElementById("filterInput").value = "";
+      renderRows(allRecords);
+    }
+
+    function setStatus(ok, label) {
+      document.getElementById("statusDot").style.background = ok ? "var(--ok)" : "var(--bad)";
+      document.getElementById("statusLabel").textContent = label;
+    }
+
+    async function loadAudit() {
+      setStatus(true, "Loading audit records…");
+
+      try {
+        const response = await fetch("/api/v1/audit-log?limit=100", { cache: "no-store" });
+        const data = await response.json();
+
+        if (!data.ok) {
+          setStatus(false, "Registry error: " + (data.error || "unknown"));
+          document.getElementById("auditTable").innerHTML =
+            `<tr><td colspan="6" class="empty">Could not load audit records.</td></tr>`;
+          return;
+        }
+
+        allRecords = data.audit || [];
+        renderRows(allRecords);
+        setStatus(true, "Registry connected · last refreshed " + new Date().toLocaleTimeString());
+
+      } catch (err) {
+        setStatus(false, "Registry connection unavailable.");
+        document.getElementById("auditTable").innerHTML =
+          `<tr><td colspan="6" class="empty">Registry connection unavailable.</td></tr>`;
+      }
+    }
+
+    loadAudit();
+    window.setInterval(loadAudit, 15000);
+  </script>
+</body>
+</html>

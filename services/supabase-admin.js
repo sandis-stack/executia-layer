@@ -11,10 +11,10 @@ export function createSupabaseAdmin() {
   if (_client) return _client;
 
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
-    throw new Error("SUPABASE_URL and SUPABASE_SERVICE_KEY required");
+    throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required");
   }
 
   _client = createClient(url, key, {

@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const REQUIRED_ENV = [
   "SUPABASE_URL",
-  "SUPABASE_SERVICE_KEY",
+  "SUPABASE_SERVICE_ROLE_KEY",
   "EXECUTIA_OPERATOR_BOOTSTRAP_PASSWORD_HASH",
 ];
 
@@ -64,13 +64,13 @@ export function checkRequiredEnv() {
 }
 
 export function getServiceSupabaseClient() {
-  const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = process.env;
+  const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error("Missing Supabase runtime configuration");
   }
 
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+  return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }

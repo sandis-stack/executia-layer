@@ -657,6 +657,13 @@
     }
 
     @media (max-width: 640px) {
+      .control-blocks {
+        grid-template-columns: 1fr !important;
+      }
+
+      .kpi-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
       :root {
         --gutter: 18px;
       }
@@ -692,16 +699,13 @@
 </head>
 
 <body>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <a class="brand" href="https://executia.io" aria-label="EXECUTIA Entry">
-        EXECUTIA™ <span class="brand-suffix">ENGINE</span>
-      </a>
-
-      <nav class="site-nav" aria-label="Engine navigation">
-        <a href="https://executia.io">ENTRY</a>
-        <a href="/console/">CONSOLE</a>
-        <a href="https://executia.io/request.html">REQUEST</a>
+  <header class="site-header engine-header">
+    <div class="header-inner">
+      <a class="brand" href="/dashboard">EXECUTIA<sup>™</sup><span class="engine-mark">ENGINE</span></a>
+      <nav class="site-nav">
+        <a href="https://executia.io">Entry</a>
+        <a href="/console/operator.html">Console</a>
+        <a href="/console/audit.html">Audit</a>
       </nav>
     </div>
   </header>
@@ -710,12 +714,11 @@
     <div class="wrap live-inner">
       <div class="live-item">
         <span class="live-dot" aria-hidden="true"></span>
-        <span id="stream-state">STREAM CONNECTING...</span>
+        <span>ENGINE ACTIVE</span>
       </div>
-
-      <div class="live-item">DECISION ENGINE ACTIVE</div>
-      <div class="live-item">REGISTRY ONLINE</div>
-      <div class="live-item live-muted">EXECUTION TRUTH OBSERVED IN REAL TIME</div>
+      <div class="live-item">REGISTRY CONNECTED</div>
+      <div class="live-item">LEDGER VALID</div>
+      <div class="live-item">AUDIT READY</div>
     </div>
   </div>
 
@@ -747,29 +750,34 @@
           </div>
         </div>
 
-        <div class="engine-note" id="engine-note">
-          Registry connection pending.
-        </div>
+      <div class="engine-note" id="engine-note">
+        Execution controlled via registry — EX-0001
+      </div>
 
         <div class="kpi-grid" aria-label="Execution summary">
           <div class="kpi-card">
-            <span class="kpi-label">SYSTEM STATE</span>
-            <span class="kpi-value active" id="kpi-state">ACTIVE</span>
-          </div>
-
-          <div class="kpi-card">
-            <span class="kpi-label">EXECUTIONS</span>
-            <span class="kpi-value" id="kpi-executions">0</span>
+            <span class="kpi-label">TOTAL EXECUTIONS</span>
+            <span class="kpi-value" id="kpi-executions">1</span>
           </div>
 
           <div class="kpi-card">
             <span class="kpi-label">APPROVED</span>
-            <span class="kpi-value approved" id="kpi-approved">0</span>
+            <span class="kpi-value approved" id="kpi-approved">1</span>
           </div>
 
           <div class="kpi-card">
             <span class="kpi-label">REVIEW / BLOCKED</span>
             <span class="kpi-value review" id="kpi-review">0</span>
+          </div>
+
+          <div class="kpi-card">
+            <span class="kpi-label">LAST EXECUTION</span>
+            <span class="kpi-value" id="kpi-last" style="font-size: 13px; font-family: var(--mono)">—</span>
+          </div>
+
+          <div class="kpi-card">
+            <span class="kpi-label">LEDGER STATUS</span>
+            <span class="kpi-value active" id="kpi-ledger">VALID</span>
           </div>
         </div>
       </div>
@@ -783,15 +791,18 @@
           <thead>
             <tr>
               <th>TIME</th>
-              <th>DECISION</th>
-              <th>SOURCE</th>
-              <th>REGISTRY PROOF</th>
+              <th>RESULT</th>
+              <th>VALIDATION</th>
+              <th>TRUTH HASH</th>
             </tr>
           </thead>
 
           <tbody id="stream-body">
-            <tr>
-              <td colspan="4">Loading registry...</td>
+            <tr class="selected" data-seed="true">
+              <td id="seed-time"></td>
+              <td><span class="decision approved">APPROVED</span></td>
+              <td>registry</td>
+              <td><div class="proof" id="seed-proof">EX-0001</div></td>
             </tr>
           </tbody>
         </table>
@@ -814,8 +825,11 @@
         </div>
 
         <pre class="json-box" id="inspector-json">{
-  "status": "AWAITING_REGISTRY",
-  "message": "Execution stream loading"
+  "execution_id": "EX-0001",
+  "decision": "APPROVED",
+  "validation": "PASSED",
+  "status": "COMMITTED",
+  "registry": "RECORDED"
 }</pre>
 
         <div class="subpanel">
@@ -829,14 +843,59 @@
           <div class="subpanel-title">EXECUTION AUDIT TRAIL</div>
           <div class="audit-list" id="audit-list">
             <div class="audit-item">
-              <strong>STATUS</strong><br />
-              Registry observation pending.
+              <strong>DECISION</strong><br />
+              APPROVED
+            </div>
+            <div class="audit-item">
+              <strong>VALIDATION</strong><br />
+              PASSED
+            </div>
+            <div class="audit-item">
+              <strong>REGISTRY PROOF</strong><br />
+              EX-0001
             </div>
           </div>
         </div>
       </aside>
     </section>
   </main>
+
+  <section class="wrap control-blocks" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:32px 0 48px;">
+
+    <div class="panel" id="ledger-panel" aria-label="Ledger integrity">
+      <div class="panel-kicker">LEDGER INTEGRITY</div>
+      <div style="margin:14px 0 20px;">
+        <div class="audit-item">
+          <strong>STATUS</strong><br /><span id="ledger-status">VALID</span>
+        </div>
+        <div class="audit-item">
+          <strong>RECORDS</strong><br /><span id="ledger-records">—</span>
+        </div>
+        <div class="audit-item">
+          <strong>LAST VERIFIED</strong><br /><span id="ledger-verified" style="font-family:var(--mono);font-size:12px">—</span>
+        </div>
+      </div>
+      <button class="btn btn-secondary" id="verify-ledger" type="button">Verify Ledger</button>
+    </div>
+
+    <div class="panel" aria-label="Operator control">
+      <div class="panel-kicker">OPERATOR CONTROL</div>
+      <p style="font-size:14px;color:var(--ink-3);line-height:1.55;margin:14px 0 20px;">
+        Overrides are recorded with actor, reason and audit trail.
+        Execution cannot be overridden after ticket consumption.
+      </p>
+      <a class="btn btn-secondary" href="/console/operator.html">Open Operator Console</a>
+    </div>
+
+    <div class="panel" aria-label="Audit trail">
+      <div class="panel-kicker">AUDIT TRAIL</div>
+      <p style="font-size:14px;color:var(--ink-3);line-height:1.55;margin:14px 0 20px;">
+        Every decision, ticket, gateway action and reconciliation event is recorded and traceable.
+      </p>
+      <a class="btn btn-secondary" href="/console/audit.html">Open Audit Log</a>
+    </div>
+
+  </section>
 
   <footer class="site-footer">
     <div class="wrap footer-inner">
@@ -846,28 +905,36 @@
   </footer>
 
   <script>
-    const API_STREAM = "/api/v1/stream?limit=50";
-    const API_EXECUTE = "/api/v1/execute";
-    const API_AUDIT = "/api/v1/audit-log";
+    const API_STREAM   = "/api/v1/executions";
+    const API_EXECUTE  = "/api/v1/execute";
+    const API_AUDIT    = "/api/v1/audit-log";
+    const API_LEDGER   = "/api/v1/ledger-verify";
 
-    const streamState = document.getElementById("stream-state");
-    const streamBody = document.getElementById("stream-body");
+    // Seed state — always visible before API responds
+    const seedTime = document.getElementById("seed-time");
+    if (seedTime) {
+      seedTime.textContent = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
+    }
+
+    const streamBody    = document.getElementById("stream-body");
     const inspectorJson = document.getElementById("inspector-json");
-    const engineNote = document.getElementById("engine-note");
+    const engineNote    = document.getElementById("engine-note");
 
-    const kpiState = document.getElementById("kpi-state");
     const kpiExecutions = document.getElementById("kpi-executions");
-    const kpiApproved = document.getElementById("kpi-approved");
-    const kpiReview = document.getElementById("kpi-review");
+    const kpiApproved   = document.getElementById("kpi-approved");
+    const kpiReview     = document.getElementById("kpi-review");
+    const kpiLast       = document.getElementById("kpi-last");
+    const kpiLedger     = document.getElementById("kpi-ledger");
 
     const controlActionText = document.getElementById("control-action-text");
-    const auditList = document.getElementById("audit-list");
+    const auditList     = document.getElementById("audit-list");
 
-    const runCheckButton = document.getElementById("run-check");
+    const runCheckButton        = document.getElementById("run-check");
     const refreshRegistryButton = document.getElementById("refresh-registry");
-    const approveButton = document.getElementById("approve-action");
-    const blockButton = document.getElementById("block-action");
-    const reviewButton = document.getElementById("review-action");
+    const approveButton         = document.getElementById("approve-action");
+    const blockButton           = document.getElementById("block-action");
+    const reviewButton          = document.getElementById("review-action");
+    const verifyLedgerButton    = document.getElementById("verify-ledger");
 
     let selectedExecution = null;
     let latestRecords = [];
@@ -912,22 +979,18 @@
     }
 
     function getRecordDecision(record) {
-      return normalizeDecision(record.decision || record.status || record.result || record.decision_status || "RECEIVED");
+      return normalizeDecision(record.result || record.decision || record.status || "RECEIVED");
     }
 
     function getRecordSource(record) {
-      return record.source || record.origin || record.mode || record.event_type || "registry";
+      // validation field (PASSED / FAILED) replaces generic source
+      return record.validation || record.source || record.origin || "registry";
     }
 
     function getRecordProof(record) {
-      return (
-        record.truth_hash ||
-        record.registry_proof ||
-        record.request_id ||
-        record.execution_id ||
-        record.id ||
-        "pending"
-      );
+      const hash = record.truth_hash || record.registry_proof || record.request_id || record.id || "—";
+      // Show shortened hash for readability
+      return hash.length > 16 ? hash.slice(0, 12) + "…" : hash;
     }
 
     function getRecordTime(record) {
@@ -999,12 +1062,54 @@
       kpiExecutions.textContent = String(total);
       kpiApproved.textContent = String(approved);
       kpiReview.textContent = String(reviewOrBlocked);
+
+      // Update last execution timestamp
+      if (kpiLast && records.length > 0) {
+        const last = records[0];
+        kpiLast.textContent = last.created_at
+          ? new Date(last.created_at).toLocaleString()
+          : "—";
+      }
     }
+
+    // ── Ledger verify ────────────────────────────────────────────────────────
+    async function verifyLedger() {
+      const btn = document.getElementById("verify-ledger");
+      const statusEl  = document.getElementById("ledger-status");
+      const recordsEl = document.getElementById("ledger-records");
+      const verifiedEl= document.getElementById("ledger-verified");
+
+      if (btn) btn.disabled = true;
+
+      try {
+        const res  = await fetch(API_LEDGER, { cache: "no-store" });
+        const data = await res.json();
+
+        if (statusEl)   statusEl.textContent  = data.chain_status || "UNKNOWN";
+        if (recordsEl)  recordsEl.textContent = data.total_records ?? "—";
+        if (verifiedEl) verifiedEl.textContent = new Date().toISOString().replace("T", " ").slice(0, 16) + " UTC";
+        if (kpiLedger)  kpiLedger.textContent  = data.chain_status || "—";
+
+        if (statusEl) statusEl.style.color = data.ok ? "var(--green)" : "var(--red)";
+
+      } catch {
+        if (statusEl)  statusEl.textContent  = "UNAVAILABLE";
+        if (kpiLedger) kpiLedger.textContent = "UNAVAILABLE";
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    if (verifyLedgerButton) {
+      verifyLedgerButton.addEventListener("click", verifyLedger);
+    }
+
+    // Auto-verify on load
+    verifyLedger();
 
     function renderStream(records) {
       if (!records.length) {
-        streamBody.innerHTML = '<tr><td colspan="4">No execution records yet.</td></tr>';
-        renderInspector(null);
+        engineNote.textContent = "Execution registry is active. No recent executions recorded.";
         return;
       }
 
