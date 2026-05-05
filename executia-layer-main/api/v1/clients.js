@@ -1,5 +1,0 @@
-import { ok } from "../../shared/response.js";
-
-export default function handler(req, res) {
-  return ok(res, { clients: [] });
-}
