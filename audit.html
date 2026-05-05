@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script src="/components/enterprise.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>History — EXECUTIA™</title>
+  <meta name="description" content="EXECUTIA™ execution engine." />
+  <link rel="stylesheet" href="/components/enterprise.css" />
+</head>
+<body>
+  <div class="ex-header-shell" data-ex-header>
+    <header class="ex-header">
+      <div class="ex-brand"><span class="ex-brand-name">EXECUTIA™</span><span class="ex-brand-context">EXECUTION ENGINE</span></div>
+      <button class="ex-mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-ex-menu-toggle><span></span><span></span></button>
+      <nav class="ex-nav" aria-label="Engine navigation"><a href="/dashboard">LIVE</a><a href="/control">CONTROL</a><a href="/history" class="active" aria-current="page">HISTORY</a><a href="/operations">OPS</a><a href="/demo">DEMO</a></nav>
+      <a class="ex-header-action" href="https://executia.io">Entry ↗</a>
+    </header>
+    <div class="ex-statusbar" aria-label="Engine status">
+      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
+      <span class="ex-status-item">Registry Locked</span>
+      <span class="ex-status-item">Ledger Verified</span>
+      <span class="ex-status-item">Audit Recording</span>
+    </div>
+  </div>
+  <main class="ex-main">
+    <section class="ex-section-tight">
+      <p class="ex-kicker">Audit history</p>
+      <h1 class="ex-title system-title">Execution proof</h1>
+      <p class="ex-lead">Committed, blocked and pending actions remain traceable across registry, ledger and audit events.</p>
+    </section>
+    <section class="ex-section">
+      <div class="ex-table-wrap">
+        <table class="ex-table">
+          <thead><tr><th>Case</th><th>Status</th><th>Decision</th><th>Proof</th></tr></thead>
+          <tbody>
+            <tr><td>dry-run-001</td><td><span class="ex-pill ok">Approved</span></td><td>APPROVE</td><td>Ledger event</td></tr>
+            <tr><td>dry-run-002</td><td><span class="ex-pill warn">Pending</span></td><td>REVIEW</td><td>Operator review</td></tr>
+            <tr><td>dry-run-003</td><td><span class="ex-pill block">Blocked</span></td><td>BLOCK</td><td>Rule failure</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <section class="ex-card" style="margin-top:20px">
+        <div class="ex-panel-header"><div><h2 class="ex-panel-title">Audit feed</h2><p class="ex-panel-subtitle">Latest execution records.</p></div><span class="ex-pill ok">Traceable</span></div>
+        <pre id="historyJson" class="ex-json">Loading audit history...</pre>
+      </section>
+    </section>
+  </main>
+  <script>executiaFetchJson('/api/v1/history','historyJson');</script>
+</body>
+</html>

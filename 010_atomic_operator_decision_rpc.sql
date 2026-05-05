@@ -1,0 +1,101 @@
+-- EXECUTIA™ Atomic Operator Decision RPC
+-- Run AFTER sql/001_schema.sql and sql/009_atomic_execution_rpc.sql
+-- Operator review resolution must be atomic: execution update + ledger entry + audit event in one DB transaction.
+
+CREATE OR REPLACE FUNCTION commit_operator_decision(
+  p_execution_id uuid,
+  p_decision text,
+  p_actor text DEFAULT 'operator',
+  p_reason text DEFAULT NULL
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_normalized text;
+  v_status text;
+  v_prev_hash text;
+  v_hash text;
+  v_existing record;
+BEGIN
+  v_normalized := CASE WHEN upper(coalesce(p_decision,'')) = 'APPROVE' THEN 'APPROVE' ELSE 'BLOCK' END;
+  v_status := CASE WHEN v_normalized = 'APPROVE' THEN 'APPROVED' ELSE 'BLOCKED' END;
+
+  PERFORM pg_advisory_xact_lock(hashtext('executia_ledger'));
+
+  SELECT * INTO v_existing
+    FROM execution_results
+   WHERE execution_id = p_execution_id
+   FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'EXECUTION_NOT_FOUND';
+  END IF;
+
+  IF v_existing.status <> 'PENDING_REVIEW' THEN
+    RAISE EXCEPTION 'EXECUTION_NOT_PENDING_REVIEW';
+  END IF;
+
+  SELECT COALESCE(entry_hash, 'GENESIS')
+    INTO v_prev_hash
+    FROM ledger_entries
+   ORDER BY created_at DESC
+   LIMIT 1;
+  v_prev_hash := COALESCE(v_prev_hash, 'GENESIS');
+
+  v_hash := encode(sha256((p_execution_id::text || v_status || v_normalized || v_prev_hash)::bytea), 'hex');
+
+  UPDATE execution_results
+     SET status = v_status,
+         decision = v_normalized,
+         reason = COALESCE(p_reason, 'OPERATOR_' || v_normalized),
+         prev_hash = v_prev_hash,
+         hash = v_hash,
+         updated_at = now()
+   WHERE execution_id = p_execution_id;
+
+  INSERT INTO ledger_entries (execution_id, status, previous_hash, entry_hash, payload, created_at)
+  VALUES (
+    p_execution_id,
+    v_status,
+    v_prev_hash,
+    v_hash,
+    jsonb_build_object(
+      'event', 'OPERATOR_DECISION',
+      'decision', v_normalized,
+      'status', v_status,
+      'actor', COALESCE(p_actor, 'operator'),
+      'reason', COALESCE(p_reason, 'OPERATOR_' || v_normalized)
+    ),
+    now()
+  );
+
+  INSERT INTO audit_events (event_type, execution_id, actor, payload, created_at)
+  VALUES (
+    'OPERATOR_DECISION_COMMITTED',
+    p_execution_id,
+    COALESCE(p_actor, 'operator'),
+    jsonb_build_object(
+      'status', v_status,
+      'decision', v_normalized,
+      'reason', COALESCE(p_reason, 'OPERATOR_' || v_normalized),
+      'hash', v_hash,
+      'prev_hash', v_prev_hash
+    ),
+    now()
+  );
+
+  RETURN jsonb_build_object(
+    'ok', true,
+    'execution_id', p_execution_id,
+    'status', v_status,
+    'decision', v_normalized,
+    'reason', COALESCE(p_reason, 'OPERATOR_' || v_normalized),
+    'hash', v_hash,
+    'prev_hash', v_prev_hash
+  );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION commit_operator_decision(uuid, text, text, text) TO service_role;
