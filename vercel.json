@@ -1,9 +1,12 @@
 {
   "routes": [
     { "src": "/dashboard", "dest": "/dashboard/index.html" },
-    { "src": "/control", "dest": "/console/index.html" },
-    { "src": "/history", "dest": "/dashboard/history.html" },
-    { "src": "/operations", "dest": "/dashboard/operations.html" },
+    { "src": "/control", "dest": "/console/operator.html" },
+    { "src": "/history", "dest": "/console/audit.html" },
+    { "src": "/operations", "dest": "/console/operations.html" },
+    { "src": "/ops", "dest": "/console/operations.html" },
+    { "src": "/ledger", "dest": "/console/ledger.html" },
+    { "src": "/audit-ledger", "dest": "/console/audit-ledger.html" },
     { "src": "/demo", "dest": "/demo/index.html" },
     { "src": "/", "dest": "/index.html" }
   ]
