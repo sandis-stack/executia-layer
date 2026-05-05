@@ -1,0 +1,20 @@
+{
+  "name": "executia-layer",
+  "version": "8.0.0",
+  "description": "EXECUTIA™ Final Full Execution Truth Engine",
+  "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "ws": "^8.20.0"
+  },
+  "scripts": {
+    "test": "node scripts/test-runner.js",
+    "check": "find . -name '*.js' -not -path './node_modules/*' -print0 | xargs -0 -I{} node --check {}",
+    "verify": "npm run check && npm test",
+    "health": "curl -sf https://execution.executia.io/api/v1/health",
+    "smoke": "node scripts/smoke-live.js"
+  }
+}

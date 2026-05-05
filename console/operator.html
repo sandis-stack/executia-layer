@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA Operator Console</title>
+  <link rel="stylesheet" href="/components/enterprise.css" />
+<script>
+  (function () {
+    var STORAGE_KEY = "executia_api_key";
+    function getKey() { return sessionStorage.getItem(STORAGE_KEY) || ""; }
+    function setKey(k) { sessionStorage.setItem(STORAGE_KEY, k); window.__EXECUTIA_KEY__ = k; }
+    window.__EXECUTIA_KEY__ = getKey();
+    window.__executiaSetKey = function(k) { setKey(k.trim()); return !!k.trim(); };
+    window.addEventListener("DOMContentLoaded", function () {
+      if (getKey()) return;
+      var banner = document.createElement("div");
+      banner.id = "ex-key-banner";
+      banner.style.cssText = "position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;color:#e2e8f0;padding:12px 20px;display:flex;align-items:center;gap:10px;z-index:9999;font-family:monospace;font-size:13px;border-top:1px solid #334155";
+      banner.innerHTML = '<span style="opacity:.7">API KEY</span><input id="ex-key-input" type="password" placeholder="Paste EXECUTIA_API_KEY here" style="flex:1;padding:6px 10px;background:#0f172a;color:#e2e8f0;border:1px solid #475569;border-radius:4px;font-family:monospace;font-size:13px"/><button onclick="var v=document.getElementById(\'ex-key-input\').value;if(window.__executiaSetKey(v)){document.getElementById(\'ex-key-banner\').remove();}" style="padding:6px 14px;background:#3b82f6;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">Set Key</button>';
+      document.body.appendChild(banner);
+    });
+  })();
+</script>
+<script>
+  async function executiaFetchJson(url, options) {
+    options = options || {};
+    var res = await fetch(url, {
+      headers: { "Content-Type": "application/json", "x-api-key": window.__EXECUTIA_KEY__ || "" },
+      ...options
+    });
+    var data = await res.json().catch(function() { return {}; });
+    if (!res.ok) throw new Error((data && data.error && data.error.code) || (data && data.error) || ("HTTP " + res.status));
+    return data;
+  }
+</script>
+</head>
+<body>
+<header style="padding:20px 40px; border-bottom:1px solid #eee; background:#fff;">
+  <div style="display:flex; justify-content:space-between; align-items:center; max-width:1200px; margin:0 auto;">
+    <div style="font-weight:600; font-size:18px;">EXECUTIA™</div>
+    <nav style="display:flex; gap:20px; font-size:14px;">
+      <a href="https://executia.io" style="text-decoration:none; color:#333;">Entry</a>
+      <a href="https://execution.executia.io/control" style="text-decoration:none; color:#333;">Engine</a>
+      <a href="https://executia.io/request" style="text-decoration:none; color:#333;">Request</a>
+    </nav>
+  </div>
+</header>
+
+
+  <main class="ex-shell">
+    <section class="ex-card">
+      <p class="ex-kicker">EXECUTIA CONTROL</p>
+      <h1>Operator Queue</h1>
+      <p class="ex-muted">Review pending executions and commit an operator decision.</p>
+    </section>
+
+    <section class="ex-card" style="margin-top:22px">
+      <div id="queueList" class="ex-stack">Loading...</div>
+    </section>
+
+    <section class="ex-card" style="margin-top:22px">
+      <pre id="queueJson" class="ex-json">Loading...</pre>
+    </section>
+  </main>
+
+  <script>
+    const queueList = document.getElementById("queueList");
+    const queueJson = document.getElementById("queueJson");
+
+    async function loadQueue() {
+      queueList.textContent = "Loading...";
+      queueJson.textContent = "Loading...";
+
+      try {
+        const data = await executiaFetchJson("/api/v1/operator-queue");
+
+        queueJson.textContent = JSON.stringify(data, null, 2);
+
+        if (!data.ok) {
+          queueList.textContent = "Operator queue error.";
+          return;
+        }
+
+        if (!Array.isArray(data.items) || data.items.length === 0) {
+          queueList.textContent = "No pending cases.";
+          queueJson.textContent = "No pending cases.";
+          return;
+        }
+
+        queueList.innerHTML = "";
+
+        data.items.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "ex-card";
+          card.style.marginTop = "14px";
+
+          const executionId = item.execution_id || "";
+          const requestType = item.request_type || "UNKNOWN_REQUEST";
+          const actor = item.actor || "unknown";
+          const subject = item.subject || "unknown";
+          const reason = item.reason || "";
+          const status = item.status || "PENDING_REVIEW";
+
+          card.innerHTML = `
+            <p class="ex-kicker">${status}</p>
+            <h3>${requestType}</h3>
+            <p class="ex-muted"><strong>Execution ID:</strong> ${executionId}</p>
+            <p class="ex-muted"><strong>Actor:</strong> ${actor}</p>
+            <p class="ex-muted"><strong>Subject:</strong> ${subject}</p>
+            <p class="ex-muted"><strong>Reason:</strong> ${reason || "—"}</p>
+
+            <div style="display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;">
+              <button class="ex-button" data-action="approve" data-id="${executionId}">
+                Approve
+              </button>
+              <button class="ex-button ex-button-secondary" data-action="block" data-id="${executionId}">
+                Block
+              </button>
+            </div>
+          `;
+
+          queueList.appendChild(card);
+        });
+
+      } catch (err) {
+        queueList.textContent = "Connection error.";
+        queueJson.textContent = err.message || "Connection error.";
+      }
+    }
+
+    async function sendDecision(action, executionId) {
+      const endpoint =
+        action === "approve"
+          ? "/api/v1/operator-approve"
+          : "/api/v1/operator-block";
+
+      const reason =
+        action === "approve"
+          ? "Operator approved execution"
+          : "Operator blocked execution";
+
+      const data = await executiaFetchJson(endpoint, {
+        method: "POST",
+        body: JSON.stringify({
+          execution_id: executionId,
+          actor: "operator",
+          reason
+        })
+      });
+      queueJson.textContent = JSON.stringify(data, null, 2);
+      await loadQueue();
+    }
+
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+
+      button.disabled = true;
+      button.textContent = "Processing...";
+
+      const action = button.dataset.action;
+      const executionId = button.dataset.id;
+
+      try {
+        await sendDecision(action, executionId);
+      } catch (err) {
+        queueJson.textContent = err.message || "Decision failed.";
+      }
+    });
+
+    loadQueue();
+  </script>
+</body>
+</html>
