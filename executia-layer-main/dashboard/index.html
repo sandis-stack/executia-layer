@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EXECUTIA™ — Final Full Execution Engine</title>
+  <meta name="description" content="EXECUTIA™ final full execution engine layer.">
+  <link rel="stylesheet" href="/components/enterprise.css">
+<script>
+  // EXECUTIA Key Manager — shared across all pages
+  (function () {
+    const STORAGE_KEY = "executia_api_key";
+
+    function getKey() {
+      return sessionStorage.getItem(STORAGE_KEY) || "";
+    }
+
+    function setKey(k) {
+      sessionStorage.setItem(STORAGE_KEY, k);
+      window.__EXECUTIA_KEY__ = k;
+    }
+
+    // Boot: load from session
+    window.__EXECUTIA_KEY__ = getKey();
+
+    // Expose setter for UI
+    window.__executiaSetKey = function(k) {
+      setKey(k.trim());
+      return !!k.trim();
+    };
+
+    // Banner: show if key is missing
+    window.addEventListener("DOMContentLoaded", function () {
+      if (getKey()) return;
+
+      const banner = document.createElement("div");
+      banner.id = "ex-key-banner";
+      banner.style.cssText = [
+        "position:fixed", "bottom:0", "left:0", "right:0",
+        "background:#1a1a2e", "color:#e2e8f0",
+        "padding:12px 20px", "display:flex", "align-items:center",
+        "gap:10px", "z-index:9999", "font-family:monospace",
+        "font-size:13px", "border-top:1px solid #334155"
+      ].join(";");
+
+      banner.innerHTML = \`
+        <span style="opacity:.7">API KEY</span>
+        <input id="ex-key-input" type="password"
+          placeholder="Paste EXECUTIA_API_KEY here"
+          style="flex:1;padding:6px 10px;background:#0f172a;color:#e2e8f0;
+                 border:1px solid #475569;border-radius:4px;font-family:monospace;font-size:13px"
+        />
+        <button onclick="
+          const v = document.getElementById('ex-key-input').value;
+          if (window.__executiaSetKey(v)) {
+            document.getElementById('ex-key-banner').remove();
+          }
+        " style="padding:6px 14px;background:#3b82f6;color:#fff;border:none;
+                 border-radius:4px;cursor:pointer;font-size:13px">
+          Set Key
+        </button>
+      \`;
+
+      document.body.appendChild(banner);
+    });
+  })();
+</script>
+  <script>
+    async function executiaFetchJson(url, options = {}) {
+      const res = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": window.__EXECUTIA_KEY__ || ""
+        },
+        ...options
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error?.code || data?.error || `HTTP ${res.status}`);
+      return data;
+    }
+  </script>
+</head>
+<body>
+  <div class="ex-header-shell" data-ex-header>
+    <header class="ex-header">
+      <div class="ex-brand">
+        <span class="ex-brand-name">EXECUTIA™</span>
+        <span class="ex-brand-context">EXECUTION ENGINE</span>
+      </div>
+      <button class="ex-mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-ex-menu-toggle><span></span><span></span></button>
+      <nav class="ex-nav" aria-label="Engine navigation"><a class="active" aria-current="page" href="/dashboard">LIVE</a><a href="/control">CONTROL</a><a href="/history">HISTORY</a><a href="/operations">OPS</a><a href="/demo">DEMO</a></nav>
+      <a class="ex-header-action" href="https://executia.io">Entry ↗</a>
+    </header>
+    <div class="ex-statusbar" aria-label="Engine status">
+      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
+      <span class="ex-status-item">Registry Locked</span>
+      <span class="ex-status-item">Ledger Verified</span>
+      <span class="ex-status-item">Audit Recording</span>
+    </div>
+  </div>
+  <main class="ex-main">
+    <section class="ex-section-tight">
+      <p class="ex-kicker">Bank-level execution truth layer</p>
+      <h1 class="ex-title">Final Full Execution Engine</h1>
+      <p class="ex-lead">Validation, decision, registry, ledger and audit proof in one controlled execution flow.</p>
+    </section>
+
+    <section class="ex-section">
+      <div class="ex-console-shell">
+        <aside class="ex-sidebar">
+          <div class="ex-sidebar-title">Engine console</div>
+          <a class="ex-side-link active" href="/dashboard">Live <span class="ex-side-badge">12</span></a>
+          <a class="ex-side-link" href="/control">Operator queue <span class="ex-side-badge">3</span></a>
+          <a class="ex-side-link" href="/history">Audit trail <span class="ex-side-badge">84</span></a>
+          <a class="ex-side-link" href="/operations">Operations <span class="ex-side-badge">6</span></a>
+          <a class="ex-side-link" href="/demo">Demo <span class="ex-side-badge">1</span></a>
+        </aside>
+
+        <div class="ex-grid">
+          <div class="ex-grid ex-grid-4">
+            <article class="ex-card ex-metric"><span class="ex-metric-value">99.2%</span><span class="ex-metric-label">Validation integrity</span></article>
+            <article class="ex-card ex-metric"><span class="ex-metric-value">12</span><span class="ex-metric-label">Live requests</span></article>
+            <article class="ex-card ex-metric"><span class="ex-metric-value">3</span><span class="ex-metric-label">Pending review</span></article>
+            <article class="ex-card ex-metric"><span class="ex-metric-value">0</span><span class="ex-metric-label">Ledger breaks</span></article>
+          </div>
+
+          <section class="ex-card system">
+            <div class="ex-card-label"><span class="ex-dot"></span>Execution flow</div>
+            <div class="ex-flow">
+              <div class="ex-flow-step"><strong>Request</strong><span>Input received</span></div>
+              <div class="ex-flow-step"><strong>Validation</strong><span>Rules checked</span></div>
+              <div class="ex-flow-step"><strong>Decision</strong><span>Approve / block / review</span></div>
+              <div class="ex-flow-step"><strong>Registry</strong><span>Result committed</span></div>
+              <div class="ex-flow-step"><strong>Ledger</strong><span>Hash verified</span></div>
+              <div class="ex-flow-step"><strong>Audit</strong><span>Proof recorded</span></div>
+            </div>
+          </section>
+
+          <section class="ex-card">
+            <div class="ex-card-label">Live API</div>
+            <pre id="healthJson" class="ex-json">Loading...</pre>
+            <div class="ex-actions">
+              <a class="ex-btn primary" href="/api/v1/health">Health JSON</a>
+              <a class="ex-btn" href="/api/v1/ledger-verify">Ledger verify</a>
+              <a class="ex-btn" href="/api/v1/execute">Execution list</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/components/enterprise.js"></script>
+  <script>executiaFetchJson('/api/v1/health', 'healthJson');</script>
+</body>
+</html>
