@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script>window.__EXECUTIA_PUBLIC_PAGE__ = true;</script>
+  <script src="/components/enterprise.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Demo — EXECUTIA™</title>
+  <meta name="description" content="EXECUTIA™ execution engine." />
+  <link rel="stylesheet" href="/components/enterprise.css" />
+</head>
+<body>
+  <div class="ex-header-shell" data-ex-header>
+    <header class="ex-header">
+      <div class="ex-brand"><span class="ex-brand-name">EXECUTIA™</span><span class="ex-brand-context">EXECUTION ENGINE</span></div>
+      <button class="ex-mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-ex-menu-toggle><span></span><span></span></button>
+      <nav class="ex-nav" aria-label="Engine navigation"><a href="/dashboard">LIVE</a><a href="/control">CONTROL</a><a href="/history">HISTORY</a><a href="/operations">OPS</a><a href="/demo" class="active" aria-current="page">DEMO</a></nav>
+      <a class="ex-header-action" href="https://executia.io">Entry ↗</a>
+    </header>
+    <div class="ex-statusbar" aria-label="Engine status">
+      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
+      <span class="ex-status-item">Registry Locked</span>
+      <span class="ex-status-item">Ledger Verified</span>
+      <span class="ex-status-item">Audit Recording</span>
+    </div>
+  </div>
+  <main class="ex-main">
+    <section class="ex-section-tight">
+      <p class="ex-kicker">Execution test</p>
+      <h1 class="ex-title system-title">Controlled request demo</h1>
+      <p class="ex-lead">Submit a test request, run validation and inspect the execution proof returned by the engine.</p>
+    </section>
+    <section class="ex-section">
+      <div class="ex-demo-grid">
+        <section class="ex-card system">
+          <div class="ex-panel-header"><div><h2 class="ex-panel-title">Test request</h2><p class="ex-panel-subtitle">Public submit endpoint. No browser API key required.</p></div><span class="ex-pill ok">Demo</span></div>
+          <form class="ex-form" id="demoForm">
+            <div class="ex-field">
+              <label class="ex-label" for="demoPayload">Payload</label>
+              <textarea class="ex-textarea" id="demoPayload">{"request_type":"PAYMENT","actor":"operator","subject":"invoice-001","amount":100,"rule_context":{"approval_limit":1000}}</textarea>
+            </div>
+            <button class="ex-btn primary" type="button" id="runDemo">Run validation</button>
+          </form>
+        </section>
+        <section class="ex-card">
+          <div class="ex-panel-header"><div><h2 class="ex-panel-title">Execution result</h2><p class="ex-panel-subtitle">Decision, reason, mode and raw proof response.</p></div><span class="ex-pill">Proof</span></div>
+          <div class="ex-proof-list" id="proofList">
+            <div class="ex-proof-item"><span>Status</span><strong>Waiting</strong></div>
+            <div class="ex-proof-item"><span>Decision</span><strong>—</strong></div>
+            <div class="ex-proof-item"><span>Audit</span><strong>—</strong></div>
+          </div>
+          <pre id="demoJson" class="ex-json" style="margin-top:16px">Result will appear here.</pre>
+        </section>
+      </div>
+    </section>
+    <script>
+      function renderProof(data) {
+        document.getElementById('proofList').innerHTML = [
+          ['Execution ID', data.execution_id || '—'],
+          ['Status', data.status || '—'],
+          ['Decision', data.decision || '—'],
+          ['Reason', data.reason || '—'],
+          ['Mode', data.mode || '—']
+        ].map(([k,v]) => `<div class="ex-proof-item"><span>${k}</span><strong>${v}</strong></div>`).join('');
+      }
+      document.getElementById('runDemo').addEventListener('click', async () => {
+        const out = document.getElementById('demoJson');
+        const btn = document.getElementById('runDemo');
+        btn.disabled = true; btn.textContent = 'Running...'; out.textContent = 'Sending to EXECUTIA engine...';
+        try {
+          const payload = JSON.parse(document.getElementById('demoPayload').value);
+          const res = await fetch('/api/v1/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          const data = await res.json();
+          renderProof(data);
+          out.textContent = JSON.stringify(data, null, 2);
+        } catch (e) { out.textContent = 'Error: ' + (e.message || 'Unknown error'); }
+        finally { btn.disabled = false; btn.textContent = 'Run validation'; }
+      });
+    </script>
+  </main>
+</body>
+</html>

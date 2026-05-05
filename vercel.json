@@ -1,74 +1,10 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "**/*",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
-    {
-      "src": "^/operations$",
-      "dest": "/console/operations.html"
-    },
-    {
-      "src": "^/history$",
-      "dest": "/console/audit.html"
-    },
-    {
-      "src": "^/control$",
-      "dest": "/console/operator.html"
-    },
-    {
-      "src": "^/demo/?$",
-      "dest": "/demo/index.html"
-    },
-    {
-      "src": "^/dashboard$",
-      "dest": "/dashboard/index.html"
-    },
-    {
-      "src": "^/api/v1/(.*)$",
-      "dest": "/api/v1/$1.js"
-    },
-    {
-      "src": "^/ops$",
-      "dest": "/console/operations.html"
-    },
-    {
-      "src": "^/(.*)$",
-      "dest": "/$1"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
-    }
+    { "src": "/dashboard", "dest": "/dashboard/index.html" },
+    { "src": "/control", "dest": "/console/index.html" },
+    { "src": "/history", "dest": "/dashboard/history.html" },
+    { "src": "/operations", "dest": "/dashboard/operations.html" },
+    { "src": "/demo", "dest": "/demo/index.html" },
+    { "src": "/", "dest": "/index.html" }
   ]
 }

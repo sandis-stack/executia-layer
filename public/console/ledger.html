@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script src="/components/enterprise.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Core Ledger — EXECUTIA™</title>
+  <link rel="stylesheet" href="/components/enterprise.css" />
+<script>
+  (function () {
+    var STORAGE_KEY = "executia_api_key";
+    function getKey() { return sessionStorage.getItem(STORAGE_KEY) || ""; }
+    function setKey(k) { sessionStorage.setItem(STORAGE_KEY, k); window.__EXECUTIA_KEY__ = k; }
+    window.__EXECUTIA_KEY__ = getKey();
+    window.__executiaSetKey = function(k) { setKey(k.trim()); return !!k.trim(); };
+    window.addEventListener("DOMContentLoaded", function () {
+      if (getKey()) return;
+      var banner = document.createElement("div");
+      banner.id = "ex-key-banner";
+      banner.style.cssText = "position:fixed;bottom:0;left:0;right:0;background:#F4F7FB;color:#1E3A5F;padding:12px 20px;display:flex;align-items:center;gap:10px;z-index:9999;font-family:monospace;font-size:13px;border-top:1px solid #E6ECF2";
+      banner.innerHTML = '<span style="opacity:.7">API KEY</span><input id="ex-key-input" type="password" placeholder="Paste EXECUTIA_API_KEY here" style="flex:1;padding:6px 10px;background:#fff;color:#1E3A5F;border:1px solid #475569;border-radius:4px;font-family:monospace;font-size:13px"/><button onclick="var v=document.getElementById(\'ex-key-input\').value;if(window.__executiaSetKey(v)){document.getElementById(\'ex-key-banner\').remove();}" style="padding:6px 14px;background:#3b82f6;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px">Set Key</button>';
+      document.body.appendChild(banner);
+    });
+  })();
+</script>
+</head>
+<body>
+  <div class="ex-header-shell" data-ex-header>
+    <header class="ex-header">
+      <div class="ex-brand">
+        <span class="ex-brand-name">EXECUTIA™</span>
+        <span class="ex-brand-context">CORE LEDGER</span>
+      </div>
+      <nav class="ex-nav" aria-label="Engine navigation">
+        <a href="/dashboard">LIVE</a>
+        <a href="/control">CONTROL</a>
+        <a href="/history">HISTORY</a>
+        <a href="/operations">OPS</a>
+        <a href="/demo">DEMO</a>
+        <a class="active" aria-current="page" href="/console/ledger.html">LEDGER</a>
+      </nav>
+    </header>
+    <div class="ex-statusbar" aria-label="Engine status">
+      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
+      <span class="ex-status-item">Registry Locked</span>
+      <span class="ex-status-item">Ledger Verified</span>
+      <span class="ex-status-item">Audit Recording</span>
+    </div>
+  </div>
+
+  <main class="ex-main">
+    <section class="ex-section-tight">
+      <p class="ex-kicker">Immutable truth layer</p>
+      <h1 class="ex-title">Core Ledger</h1>
+      <p class="ex-lead">Every committed execution — as a permanent, hashed, auditable record.</p>
+    </section>
+
+    <section class="ex-section">
+      <!-- Integrity status banner -->
+      <div class="ex-grid ex-grid-3" style="margin-bottom:22px">
+        <article class="ex-card" id="verifyCard">
+          <h2 class="ex-card-title">Chain Integrity</h2>
+          <p class="ex-card-subtitle" id="verifyStatus">Checking...</p>
+          <span class="ex-pill" id="verifyPill">—</span>
+        </article>
+        <article class="ex-card">
+          <h2 class="ex-card-title">Total Entries</h2>
+          <p class="ex-card-subtitle">Committed transactions in chain</p>
+          <span class="ex-pill ok" id="entryCount">—</span>
+        </article>
+        <article class="ex-card">
+          <h2 class="ex-card-title">Hash Algorithm</h2>
+          <p class="ex-card-subtitle">SHA-256 · deterministic · sorted keys</p>
+          <span class="ex-pill ok">Active</span>
+        </article>
+      </div>
+
+      <!-- Ledger entries -->
+      <section class="ex-card">
+        <h2 class="ex-card-title" style="margin-bottom:14px">Ledger Entries</h2>
+        <div id="ledgerList" class="ex-stack">Loading...</div>
+      </section>
+
+      <!-- Raw JSON debug -->
+      <section class="ex-card" style="margin-top:22px">
+        <h2 class="ex-card-title" style="margin-bottom:10px">Raw Chain Data</h2>
+        <pre id="ledgerJson" class="ex-json">Loading...</pre>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const verifyStatus = document.getElementById("verifyStatus");
+    const verifyPill   = document.getElementById("verifyPill");
+    const entryCount   = document.getElementById("entryCount");
+    const ledgerList   = document.getElementById("ledgerList");
+    const ledgerJson   = document.getElementById("ledgerJson");
+
+    function formatAmount(net, tax, gross, currency = "EUR") {
+      const fmt = (n) => Number(n || 0).toLocaleString("en-EU", { minimumFractionDigits: 2 });
+      return `Net: ${fmt(net)} ${currency} · Tax: ${fmt(tax)} ${currency} · Gross: ${fmt(gross)} ${currency}`;
+    }
+
+    function statusPill(status) {
+      const map = { COMMITTED: "ok", APPROVED: "ok", BLOCKED: "block", PENDING_REVIEW: "warn" };
+      return map[status] || "warn";
+    }
+
+    async function loadLedger() {
+      try {
+        // 1. Verify chain integrity
+        const verify = await fetch("/api/v1/core-ledger-verify").then(r => r.json());
+
+        entryCount.textContent = verify.entries ?? "—";
+
+        if (verify.verified) {
+          verifyStatus.textContent = "All entries verified — chain intact";
+          verifyPill.textContent   = "VERIFIED";
+          verifyPill.className     = "ex-pill ok";
+        } else {
+          verifyStatus.textContent = verify.tampered_id
+            ? `Tampered entry detected: ${verify.tampered_id}`
+            : "Chain integrity FAILED";
+          verifyPill.textContent = "INVALID";
+          verifyPill.className   = "ex-pill block";
+        }
+
+        // 2. Load entries
+        const res  = await fetch("/api/v1/core-ledger-verify");
+        // Use history endpoint for actual rows — verify only checks hashes
+        const rows = await fetch("/api/v1/history").then(r => r.json());
+
+        ledgerJson.textContent = JSON.stringify({ verify, history: rows }, null, 2);
+
+        // 3. Render entry cards from history (execution_results)
+        if (!rows.ok || !Array.isArray(rows.items) || rows.items.length === 0) {
+          ledgerList.textContent = "No committed entries yet.";
+          return;
+        }
+
+        ledgerList.innerHTML = "";
+
+        rows.items.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "ex-card";
+          card.style.marginTop = "10px";
+
+          const ts = item.created_at
+            ? new Date(item.created_at).toLocaleString("en-GB")
+            : "—";
+
+          card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+              <div>
+                <p class="ex-kicker">${item.request_type || "UNKNOWN"}</p>
+                <p class="ex-muted" style="font-size:11px; margin:2px 0 6px; font-family:monospace">${item.execution_id || "—"}</p>
+                <p class="ex-muted"><strong>Actor:</strong> ${item.actor || "—"} &nbsp;·&nbsp; <strong>Subject:</strong> ${item.subject || "—"}</p>
+                <p class="ex-muted" style="font-size:11px; margin-top:4px; font-family:monospace">
+                  hash: ${item.hash ? item.hash.slice(0, 16) + "…" : "—"}
+                </p>
+                <p class="ex-muted" style="font-size:11px; font-family:monospace">
+                  prev: ${item.prev_hash ? item.prev_hash.slice(0, 16) + "…" : "GENESIS"}
+                </p>
+              </div>
+              <div style="text-align:right">
+                <span class="ex-pill ${statusPill(item.status)}">${item.status || "—"}</span>
+                <p class="ex-muted" style="font-size:11px; margin-top:6px">${ts}</p>
+              </div>
+            </div>
+          `;
+
+          ledgerList.appendChild(card);
+        });
+
+      } catch (err) {
+        verifyStatus.textContent = "Connection error";
+        verifyPill.textContent   = "ERROR";
+        verifyPill.className     = "ex-pill block";
+        ledgerList.textContent   = err.message || "Failed to load.";
+        ledgerJson.textContent   = err.message || "Failed to load.";
+      }
+    }
+
+    loadLedger();
+  </script>
+
+</body>
+</html>
