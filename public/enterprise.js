@@ -160,3 +160,31 @@ window.executiaFetchJson = async function executiaFetchJson(url, optionsOrTarget
     throw err;
   }
 };
+
+/* FINAL CLEANUP — REMOVE LEGACY OPERATOR FOOTER */
+(function removeLegacyOperatorFooter() {
+  function clean() {
+    document.querySelectorAll("body *").forEach((el) => {
+      const text = (el.textContent || "").trim();
+      const style = window.getComputedStyle(el);
+
+      const isFixedBottom =
+        style.position === "fixed" &&
+        (style.bottom === "0px" || style.bottom === "0");
+
+      const looksLikeLegacyLogin =
+        text.includes("Operator login") &&
+        text.includes("Login") &&
+        !text.includes("Protected verification access");
+
+      if (isFixedBottom && looksLikeLegacyLogin) {
+        el.remove();
+      }
+    });
+  }
+
+  window.addEventListener("load", clean);
+  setTimeout(clean, 250);
+  setTimeout(clean, 1000);
+  setInterval(clean, 2000);
+})();

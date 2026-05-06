@@ -1653,3 +1653,16 @@ button {
 body {
   padding-bottom: 0 !important;
 }
+
+/* FINAL CLEANUP — REMOVE OLD ENGINE DUPLICATE */
+.ex-kicker,
+.ex-title,
+.ex-lead,
+.ex-console-shell {
+  display: none !important;
+}
+
+/* REMOVE LEGACY BOTTOM LOGIN VISUALLY */
+body {
+  padding-bottom: 0 !important;
+}
