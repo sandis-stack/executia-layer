@@ -1627,4 +1627,29 @@ pre {
 body {
   padding-bottom: 0 !important;
 }
+/* FINAL LOGIN BAR REMOVAL */
 
+body > div[style*="position:fixed"],
+body > section[style*="position:fixed"],
+body > footer[style*="position:fixed"] {
+  display: none !important;
+}
+
+div[class*="login-bar"],
+div[class*="operator-login"],
+div[class*="bottom-bar"],
+div[class*="session-bar"] {
+  display: none !important;
+}
+
+input[placeholder*="EXECUTIA_API_KEY"] {
+  display: none !important;
+}
+
+button {
+  position: relative;
+}
+
+body {
+  padding-bottom: 0 !important;
+}
