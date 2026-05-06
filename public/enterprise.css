@@ -982,3 +982,306 @@ body > div[class*="bottom-bar"],
 body {
   padding-bottom: 0 !important;
 }
+
+/* =========================================================
+   EXECUTIA FINAL INSTITUTIONAL OVERRIDE
+   Light system UI + deep blue authority layer.
+   NEVER BLACK.
+   This is an override layer only — it preserves the original full CSS.
+   ========================================================= */
+
+:root {
+  --ex-blue: #173a5d;
+  --ex-blue-2: #20486f;
+  --ex-page: #f4f7fb;
+  --ex-card: #fbfcfe;
+  --ex-line: #d9e3ee;
+  --ex-muted: #6f8198;
+  --ex-muted-2: #8da0b5;
+}
+
+/* Global system tone */
+html,
+body {
+  background: var(--ex-page) !important;
+  color: #17314d !important;
+}
+
+/* No black backgrounds anywhere */
+body,
+main,
+section,
+.ex-card,
+.ex-proof-card,
+.ex-crossborder,
+.ex-consequence,
+.ex-continuity-card,
+.ex-proof-item,
+.ex-stat-card,
+.ex-flow-step,
+.ex-stream,
+.ex-stream-row,
+.ex-stream-header,
+pre,
+code,
+#healthJson {
+  box-shadow: none !important;
+}
+
+/* Deep blue authority layer only */
+.ex-authority {
+  background: linear-gradient(180deg, #183a5f 0%, #173553 100%) !important;
+  border-radius: 22px !important;
+  padding: 26px 30px !important;
+  margin: 14px 0 18px !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+
+.ex-authority h1,
+.ex-authority p,
+.ex-authority-node,
+.ex-authority-pill {
+  color: #fff !important;
+}
+
+.ex-authority h1 {
+  font-size: 38px !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.ex-authority p {
+  font-size: 16px !important;
+  line-height: 1.55 !important;
+  max-width: 820px !important;
+  color: #d7e3f0 !important;
+}
+
+.ex-authority-pill,
+.ex-authority-node {
+  background: rgba(255,255,255,.055) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+}
+
+/* Institutional cards — not SaaS marketing */
+.ex-card,
+.ex-proof-card,
+.ex-crossborder,
+.ex-consequence {
+  border-radius: 10px !important;
+  border: 1px solid #d9e3ee !important;
+  background: #fbfcfe !important;
+  box-shadow: none !important;
+  padding: 22px !important;
+  margin-bottom: 16px !important;
+}
+
+/* Compact system metrics */
+.ex-stat-card {
+  min-height: 82px !important;
+  padding: 14px 16px !important;
+  border-radius: 10px !important;
+  background: #fbfcfe !important;
+  border: 1px solid #d9e3ee !important;
+  box-shadow: none !important;
+}
+
+.ex-stat-card span {
+  font-size: 10px !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase !important;
+  color: #8da0b5 !important;
+  font-weight: 800 !important;
+}
+
+.ex-stat-card strong {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  font-family: "SF Mono", "IBM Plex Mono", Menlo, Monaco, Consolas, monospace !important;
+  color: #173a5d !important;
+}
+
+/* Section typography */
+.ex-section-head h2 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #173a5d !important;
+}
+
+.ex-section-head p {
+  font-size: 13px !important;
+  color: #6f8198 !important;
+}
+
+/* System strip */
+.ex-system-strip {
+  border-radius: 10px !important;
+  background: #fbfcfe !important;
+  border: 1px solid #d9e3ee !important;
+  box-shadow: none !important;
+}
+
+/* Operator flow */
+.ex-operator-flow {
+  gap: 10px !important;
+  margin: 16px 0 18px !important;
+}
+
+.ex-flow-step {
+  border-radius: 10px !important;
+  background: #fbfcfe !important;
+  border: 1px solid #d9e3ee !important;
+  box-shadow: none !important;
+}
+
+.ex-flow-step strong {
+  font-size: 13px !important;
+  color: #173a5d !important;
+}
+
+.ex-flow-step span {
+  font-size: 12px !important;
+  color: #6f8198 !important;
+}
+
+/* Stream table */
+.ex-stream {
+  border-radius: 10px !important;
+  border: 1px solid #d9e3ee !important;
+  background: #fff !important;
+  overflow: hidden !important;
+}
+
+.ex-stream-header,
+.ex-stream-row {
+  display: grid !important;
+  grid-template-columns: 120px 1fr 180px 320px !important;
+  gap: 14px !important;
+  align-items: center !important;
+}
+
+.ex-stream-header {
+  padding: 10px 14px !important;
+  background: #f8fbff !important;
+  border-bottom: 1px solid #d9e3ee !important;
+  font-size: 10px !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
+  font-weight: 800 !important;
+  color: #8da0b5 !important;
+}
+
+.ex-stream-row {
+  padding: 12px 14px !important;
+  border-bottom: 1px solid #e8eef5 !important;
+  background: #fff !important;
+  font-size: 13px !important;
+}
+
+.ex-stream-status {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: #1f6b45 !important;
+  letter-spacing: .12em !important;
+}
+
+/* Proof / continuity cells */
+.ex-proof-item,
+.ex-continuity-card,
+.ex-route-meta div,
+.ex-consequence-box {
+  border-radius: 10px !important;
+  background: #fff !important;
+  border: 1px solid #e8eef5 !important;
+  box-shadow: none !important;
+}
+
+/* Buttons and inputs */
+.ex-btn,
+button {
+  background: #173a5d !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  border: 1px solid #173a5d !important;
+}
+
+input,
+textarea,
+select {
+  border-radius: 10px !important;
+  border: 1px solid #d9e3ee !important;
+  background: #fff !important;
+  color: #17314d !important;
+  box-shadow: none !important;
+}
+
+/* Hide legacy fixed login footer only */
+body > div[style*="position: fixed"][style*="bottom"],
+body > div[style*="position:fixed"][style*="bottom"],
+body > section[style*="position: fixed"][style*="bottom"],
+body > section[style*="position:fixed"][style*="bottom"],
+body > footer[style*="position: fixed"],
+body > footer[style*="position:fixed"],
+.ex-login-bar,
+.operator-login,
+.bottom-login,
+.footer-login,
+.session-bar,
+.bottom-bar,
+.ex-bottom-login,
+.ex-session-bar,
+.ex-footer-login,
+#operatorLogin,
+#operator-login {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Keep real dashboard controls visible */
+#operatorKeyInput,
+#execSubject,
+#execAmount,
+#operatorKeyStatus,
+#execRunStatus {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .ex-stream-header,
+  .ex-stream-row {
+    grid-template-columns: 100px 1fr 120px !important;
+  }
+
+  .ex-stream-header span:last-child,
+  .ex-stream-row small {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .ex-authority h1 {
+    font-size: 30px !important;
+  }
+
+  .ex-operator-flow,
+  .ex-metric-grid,
+  .ex-proof-grid,
+  .ex-continuity-grid,
+  .ex-route-meta,
+  .ex-consequence-flow {
+    grid-template-columns: 1fr !important;
+  }
+}
+
