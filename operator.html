@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta name="executia-demo-key" content="">
+  <script src="/components/enterprise.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Control — EXECUTIA™</title>
+  <meta name="description" content="EXECUTIA™ execution engine." />
+  <link rel="stylesheet" href="/components/enterprise.css" />
+</head>
+<body>
+  <div class="ex-header-shell" data-ex-header>
+    <header class="ex-header">
+      <div class="ex-brand"><span class="ex-brand-name">EXECUTIA™</span><span class="ex-brand-context">EXECUTION ENGINE</span></div>
+      <button class="ex-mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-ex-menu-toggle><span></span><span></span></button>
+      <nav class="ex-nav" aria-label="Engine navigation"><a href="/dashboard">LIVE</a><a href="/control" class="active" aria-current="page">CONTROL</a><a href="/history">HISTORY</a><a href="/operations">OPS</a><a href="/demo">DEMO</a></nav>
+      <a class="ex-header-action" href="https://executia.io">Entry ↗</a>
+    </header>
+    <div class="ex-statusbar" aria-label="Engine status">
+      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
+      <span class="ex-status-item">Registry Locked</span>
+      <span class="ex-status-item">Ledger Verified</span>
+      <span class="ex-status-item">Audit Recording</span>
+    </div>
+  </div>
+  <main class="ex-main">
+    <section class="ex-section-tight">
+      <p class="ex-kicker">Execution control</p>
+      <h1 class="ex-title system-title">Operator console</h1>
+      <p class="ex-lead">Review pending executions and commit one controlled operator decision through the atomic decision path.</p>
+    </section>
+
+    <section class="ex-section">
+      <div class="ex-control-strip">
+        <div class="ex-control-cell"><span>Queue state</span><strong>Pending</strong></div>
+        <div class="ex-control-cell"><span>Decision path</span><strong>Atomic RPC</strong></div>
+        <div class="ex-control-cell"><span>Audit mode</span><strong>Recording</strong></div>
+        <div class="ex-control-cell"><span>Ledger state</span><strong>Verified</strong></div>
+      </div>
+      <div class="ex-enterprise-grid">
+        <section class="ex-card">
+          <div class="ex-panel-header"><div><h2 class="ex-panel-title">Pending review</h2><p class="ex-panel-subtitle">Operator decisions are committed as controlled audit events.</p></div><span class="ex-pill warn">Queue</span></div>
+          <div id="queueList" class="ex-stack">Loading queue...</div>
+        </section>
+        <section class="ex-card">
+          <div class="ex-panel-header"><div><h2 class="ex-panel-title">Decision response</h2><p class="ex-panel-subtitle">Last queue or decision endpoint response.</p></div><span class="ex-pill ok">Live</span></div>
+          <pre id="queueJson" class="ex-json">Loading response...</pre>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const queueList = document.getElementById("queueList");
+    const queueJson = document.getElementById("queueJson");
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>'"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    async function loadQueue() {
+      queueList.textContent = "Loading queue...";
+      queueJson.textContent = "Loading response...";
+      try {
+        const data = await executiaFetchJson("/api/v1/operator-queue");
+        queueJson.textContent = JSON.stringify(data, null, 2);
+        if (!data.ok) { queueList.textContent = "Operator queue error."; return; }
+        if (!Array.isArray(data.items) || data.items.length === 0) {
+          queueList.innerHTML = '<div class="ex-card ex-queue-card"><span class="ex-pill ok">Clear</span><h3 class="ex-queue-title">No pending cases</h3><p class="ex-panel-subtitle">The operator queue is currently clear.</p></div>';
+          queueJson.textContent = "No pending cases.";
+          return;
+        }
+        queueList.innerHTML = "";
+        data.items.forEach((item) => {
+          const executionId = escapeHtml(item.execution_id || "");
+          const requestType = escapeHtml(item.request_type || "UNKNOWN_REQUEST");
+          const actor = escapeHtml(item.actor || "unknown");
+          const subject = escapeHtml(item.subject || "unknown");
+          const reason = escapeHtml(item.reason || "—");
+          const status = escapeHtml(item.status || "PENDING_REVIEW");
+          const card = document.createElement("div");
+          card.className = "ex-queue-card";
+          card.innerHTML = `
+            <div class="ex-queue-top">
+              <div><span class="ex-pill warn">${status}</span><h3 class="ex-queue-title">${requestType}</h3></div>
+              <span class="ex-pill">Review</span>
+            </div>
+            <div class="ex-queue-meta">
+              <strong>Execution ID</strong><span class="ex-mono">${executionId}</span>
+              <strong>Actor</strong><span>${actor}</span>
+              <strong>Subject</strong><span>${subject}</span>
+              <strong>Reason</strong><span>${reason}</span>
+            </div>
+            <div class="ex-actions">
+              <button class="ex-btn primary compact" data-action="approve" data-id="${executionId}">Approve</button>
+              <button class="ex-btn compact danger" data-action="block" data-id="${executionId}">Block</button>
+            </div>`;
+          queueList.appendChild(card);
+        });
+      } catch (err) {
+        queueList.textContent = "Connection error.";
+        queueJson.textContent = err.message || "Connection error.";
+      }
+    }
+
+    async function sendDecision(action, executionId) {
+      const endpoint = action === "approve" ? "/api/v1/operator-approve" : "/api/v1/operator-block";
+      const reason = action === "approve" ? "Operator approved execution" : "Operator blocked execution";
+      const data = await executiaFetchJson(endpoint, { method: "POST", body: JSON.stringify({ execution_id: executionId, actor: "operator", reason }) });
+      queueJson.textContent = JSON.stringify(data, null, 2);
+      await loadQueue();
+    }
+
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const original = button.textContent;
+      button.disabled = true;
+      button.textContent = "Processing...";
+      try { await sendDecision(button.dataset.action, button.dataset.id); }
+      catch (err) { queueJson.textContent = err.message || "Decision failed."; }
+      finally { button.disabled = false; button.textContent = original; }
+    });
+    loadQueue();
+  </script>
+</body>
+</html>
