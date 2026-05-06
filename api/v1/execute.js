@@ -1,6 +1,7 @@
 import { createExecution, listExecutions } from "../../services/execution.js";
 import { ok, fail } from "../../shared/response.js";
 import { requireInternalKey } from "../../services/auth.js";
+import { resolveEnterpriseContext, requirePermission } from "../../services/enterprise-auth.js";
 
 export default async function handler(req, res) {
   try {
@@ -28,7 +29,7 @@ export default async function handler(req, res) {
 
     // POST: requires auth
     if (req.method === "POST") {
-      const auth = requireInternalKey(req);
+      const auth = await resolveEnterpriseContext(req);
 
       if (!auth.ok) {
         // Debug: log what was expected vs received (visible in Vercel logs)
@@ -44,7 +45,17 @@ export default async function handler(req, res) {
         return fail(res, auth.error, "Invalid API key. Check x-api-key or x-executia-key header.", 401);
       }
 
-      const result = await createExecution(req.body || {});
+      const permission = requirePermission(auth, "execute");
+      if (!permission.ok) {
+        return fail(res, permission.error, permission.reason || "Forbidden.", permission.status || 403);
+      }
+
+      const body = {
+        ...(req.body || {}),
+        organization_id: auth.organization_id || req.body?.organization_id || null
+      };
+
+      const result = await createExecution(body);
       return ok(res, result, 201);
     }
 
