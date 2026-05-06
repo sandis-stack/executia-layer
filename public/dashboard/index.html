@@ -88,16 +88,19 @@ async function loadExecutiaLive() {
 
     const stream = document.getElementById('executionStream');
     if (stream && history.executions) {
-      stream.innerHTML = history.executions.map(e => `
+      stream.innerHTML = `
+        <div class="ex-stream-header">
+          <span>Status</span>
+          <span>Subject</span>
+          <span>Amount</span>
+          <span>Execution ID</span>
+        </div>
+      ` + history.executions.map(e => `
         <div class="ex-stream-row">
-          <div>
-            <strong>${e.subject || 'Execution'}</strong>
-            <small>${e.execution_id}</small>
-          </div>
-          <div>
-            <span class="ex-pill ex-pill-green">${e.status}</span>
-            <small>€${Number(e.amount || 0).toLocaleString()}</small>
-          </div>
+          <span class="ex-stream-status">${e.status}</span>
+          <strong>${e.subject || 'Execution'}</strong>
+          <span>€${Number(e.amount || 0).toLocaleString()}</span>
+          <small>${e.execution_id}</small>
         </div>
       `).join('');
     }

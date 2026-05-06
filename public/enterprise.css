@@ -1186,3 +1186,44 @@ pre {
   opacity: 0.82;
 }
 
+
+.ex-stream-header {
+  display: grid;
+  grid-template-columns: 120px 1fr 180px 320px;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ex-line);
+  color: var(--ex-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ex-stream-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 180px 320px;
+  gap: 14px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #edf3f8;
+  align-items: center;
+  background: #fff;
+}
+
+.ex-stream-status {
+  font-size: 11px;
+  font-weight: 800;
+  color: #1f6b45;
+  letter-spacing: 0.12em;
+}
+
+.ex-stream-row strong {
+  font-size: 13px;
+}
+
+.ex-stream-row small {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
