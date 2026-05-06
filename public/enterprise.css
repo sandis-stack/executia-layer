@@ -945,3 +945,91 @@ body {
   .ex-title, .ex-title.system-title { font-size: 30px; }
   .ex-control-strip { grid-template-columns: 1fr; }
 }
+
+.ex-live-panel {
+  margin-top: 48px;
+}
+
+.ex-section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.ex-section-head h2 {
+  margin: 6px 0 6px;
+  font-size: 28px;
+  letter-spacing: -0.04em;
+  color: var(--ex-blue);
+}
+
+.ex-section-head p {
+  margin: 0;
+  color: var(--ex-muted);
+}
+
+.ex-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ex-stat-card {
+  border: 1px solid var(--ex-line);
+  border-radius: 16px;
+  padding: 22px;
+  background: #fff;
+}
+
+.ex-stat-card span {
+  display: block;
+  color: var(--ex-muted);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.ex-stat-card strong {
+  display: block;
+  color: var(--ex-blue);
+  font-size: 32px;
+  letter-spacing: -0.05em;
+}
+
+.ex-stream {
+  display: grid;
+  gap: 12px;
+}
+
+.ex-stream-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  border: 1px solid var(--ex-line);
+  border-radius: 16px;
+  padding: 18px 20px;
+  background: #fff;
+}
+
+.ex-stream-row strong {
+  display: block;
+  color: var(--ex-blue);
+  margin-bottom: 6px;
+}
+
+.ex-stream-row small {
+  display: block;
+  color: var(--ex-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (max-width: 900px) {
+  .ex-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
