@@ -1227,3 +1227,47 @@ pre {
   text-overflow: ellipsis;
 }
 
+
+/* EXECUTIA OPERATOR FLOW */
+.ex-operator-flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+
+.ex-flow-step {
+  border: 1px solid #dfe7f2;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fbfcfe;
+}
+
+.ex-flow-step small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7b8aa0;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.ex-flow-step strong {
+  display: block;
+  font-size: 13px;
+  color: #183a5f;
+}
+
+.ex-flow-step span {
+  display: block;
+  font-size: 12px;
+  color: #6e7f95;
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .ex-operator-flow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
