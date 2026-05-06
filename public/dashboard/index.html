@@ -118,6 +118,50 @@ async function runLiveExecution() {
 }
 </script>
 
+
+<section class="ex-card" style="margin-top:18px">
+  <div class="ex-section-head">
+    <div>
+      <div class="ex-eyebrow">TRUTH VERIFICATION</div>
+      <h2>Ledger verification</h2>
+      <p>Verify execution chain, ledger chain and audit state against Supabase.</p>
+    </div>
+    <button class="ex-btn" onclick="verifyLedgerNow()">Verify now</button>
+  </div>
+
+  <div id="ledgerVerifyResult" class="ex-stream-row">
+    <strong>Verification state</strong>
+    <span>Waiting for operator session</span>
+    <small>Protected endpoint</small>
+  </div>
+</section>
+
+<script>
+async function verifyLedgerNow() {
+  const box = document.getElementById('ledgerVerifyResult');
+  const key = localStorage.getItem('executia_api_key') || '';
+
+  if (!key) {
+    box.innerHTML = '<strong>LOGIN REQUIRED</strong><span>Activate operator session first</span><small>ledger-verify</small>';
+    return;
+  }
+
+  box.innerHTML = '<strong>VERIFYING</strong><span>Checking ledger chain...</span><small>ledger-verify</small>';
+
+  const res = await fetch('/api/v1/ledger-verify', {
+    headers: { 'x-api-key': key }
+  });
+
+  const data = await res.json();
+
+  box.innerHTML = `
+    <strong>${data.verified ? 'VERIFIED' : 'NOT VERIFIED'}</strong>
+    <span>Ledger: ${data.ledger_chain?.verified ? 'OK' : 'CHECK'} · Execution: ${data.execution_chain?.verified ? 'OK' : 'CHECK'}</span>
+    <small>Entries: ${data.execution_chain?.entries ?? 0}</small>
+  `;
+}
+</script>
+
 <section class="ex-card ex-live-panel" style="margin-top:48px">
   <div class="ex-section-head">
     <div>
