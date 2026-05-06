@@ -161,3 +161,23 @@ window.executiaFetchJson = async function executiaFetchJson(url, optionsOrTarget
   }
 };
 
+
+/* EXECUTIA SHARED AUTH API HELPER */
+window.executiaApi = async function executiaApi(path, options = {}) {
+  const key = localStorage.getItem("executia_api_key") || "";
+
+  const headers = {
+    ...(options.headers || {}),
+    ...(key ? { "x-api-key": key } : {})
+  };
+
+  return fetch(path, {
+    ...options,
+    headers
+  });
+};
+
+window.executiaGetJson = async function executiaGetJson(path) {
+  const res = await window.executiaApi(path);
+  return res.json();
+};
