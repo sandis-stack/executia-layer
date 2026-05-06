@@ -1157,3 +1157,14 @@ body {
   font-size: 13px;
 }
 
+
+/* EXECUTIA CONTROL SURFACE */
+.ex-live-panel { margin-top: 14px; }
+.ex-stream-panel { margin-top: 12px; padding-top: 12px; }
+.ex-metric-grid { gap: 10px; }
+.ex-stat-card { min-height: 82px; padding: 14px 16px; }
+.ex-stat-card strong { font-size: 20px; font-weight: 700; }
+.ex-section-head h2 { font-size: 18px; }
+.ex-section-head p { font-size: 13px; }
+.ex-stream-row { padding: 10px 0; font-size: 13px; }
+
