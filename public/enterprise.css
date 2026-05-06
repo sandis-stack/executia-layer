@@ -1033,3 +1033,58 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* FINAL SYSTEM FEEL TUNING */
+.ex-stat-card {
+  min-height: 104px;
+  padding: 18px 20px;
+}
+
+.ex-stat-card span {
+  font-size: 11px;
+  letter-spacing: 0.20em;
+  color: #6f7f94;
+}
+
+.ex-stat-card strong {
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.ex-section-head h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.ex-section-head p {
+  font-size: 15px;
+}
+
+.ex-metric-grid {
+  gap: 14px;
+}
+
+.ex-live-panel {
+  margin-top: 36px;
+}
+
+.ex-stream-row {
+  padding: 15px 18px;
+}
+
+.ex-stream-row strong {
+  font-size: 15px;
+}
+
+.ex-pill {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+}
+
+/* keep very large values calmer */
+.ex-stat-card strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
