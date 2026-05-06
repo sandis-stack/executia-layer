@@ -1666,3 +1666,20 @@ body {
 body {
   padding-bottom: 0 !important;
 }
+
+/* FINAL HARD REMOVE — LEGACY LOGIN FOOTER */
+body > div[style*="position: fixed"][style*="bottom"],
+body > section[style*="position: fixed"][style*="bottom"],
+body > footer[style*="position: fixed"][style*="bottom"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+div[class*="login"],
+div[id*="login"],
+div[class*="operator"] {
+  display: none !important;
+}
+
