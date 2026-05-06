@@ -59,6 +59,65 @@ function saveOperatorKey() {
 }
 </script>
 
+
+<section class="ex-card" style="margin-top:18px">
+  <div class="ex-section-head">
+    <div>
+      <div class="ex-eyebrow">LIVE EXECUTION TEST</div>
+      <h2>Commit strategic execution</h2>
+      <p>Create a real execution result in Supabase and update the live stream.</p>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 180px 160px; gap:10px">
+    <input id="execSubject" value="Strategic Energy Corridor" style="padding:12px 14px; border:1px solid var(--ex-line); border-radius:12px">
+    <input id="execAmount" value="1200000000" style="padding:12px 14px; border:1px solid var(--ex-line); border-radius:12px">
+    <button class="ex-btn" onclick="runLiveExecution()">Commit execution</button>
+  </div>
+
+  <small id="execRunStatus" style="display:block; margin-top:10px; color:var(--ex-muted)">Ready to commit execution.</small>
+</section>
+
+<script>
+async function runLiveExecution() {
+  const status = document.getElementById('execRunStatus');
+  const key = localStorage.getItem('executia_api_key') || '';
+  const subject = document.getElementById('execSubject').value || 'Strategic Energy Corridor';
+  const amount = Number(document.getElementById('execAmount').value || 1200000000);
+
+  if (!key) {
+    status.textContent = 'Activate operator session first.';
+    return;
+  }
+
+  status.textContent = 'Committing execution...';
+
+  const res = await fetch('/api/v1/execute', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key
+    },
+    body: JSON.stringify({
+      request_type: 'PROJECT_EXECUTION',
+      actor: 'operator',
+      subject,
+      amount
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.ok) {
+    status.textContent = data.error?.message || 'Execution failed';
+    return;
+  }
+
+  status.textContent = `Execution committed: ${data.execution_id}`;
+  loadExecutiaLive();
+}
+</script>
+
 <section class="ex-card ex-live-panel" style="margin-top:48px">
   <div class="ex-section-head">
     <div>
