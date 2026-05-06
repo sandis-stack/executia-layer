@@ -1,23 +1,44 @@
 {
-  "cleanUrls": true,
+  "version": 2,
+  "builds": [
+    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "public/**/*", "use": "@vercel/static" }
+  ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "^/api/v1/(.*)$", "dest": "/api/v1/$1.js" },
 
-    { "src": "/", "dest": "/index.html" },
+    { "src": "^/$", "dest": "/public/index.html" },
+    { "src": "^/index.html$", "dest": "/public/index.html" },
 
-    { "src": "/dashboard", "dest": "/public/dashboard/index.html" },
-    { "src": "/live", "dest": "/public/dashboard/index.html" },
+    { "src": "^/components/(.*)$", "dest": "/public/components/$1" },
 
-    { "src": "/demo", "dest": "/public/demo/index.html" },
+    { "src": "^/dashboard/?$", "dest": "/public/dashboard/index.html" },
+    { "src": "^/live/?$", "dest": "/public/dashboard/index.html" },
 
-    { "src": "/control", "dest": "/public/console/operator.html" },
-    { "src": "/proof", "dest": "/public/console/audit.html" },
-    { "src": "/history", "dest": "/public/console/audit.html" },
+    { "src": "^/demo/?$", "dest": "/public/demo/index.html" },
 
-    { "src": "/operations", "dest": "/public/console/operations.html" },
-    { "src": "/ops", "dest": "/public/console/operations.html" },
+    { "src": "^/control/?$", "dest": "/public/console/operator.html" },
+    { "src": "^/proof/?$", "dest": "/public/console/audit.html" },
+    { "src": "^/history/?$", "dest": "/public/console/audit.html" },
 
-    { "src": "/ledger", "dest": "/public/console/ledger.html" },
-    { "src": "/audit-ledger", "dest": "/public/console/audit-ledger.html" }
+    { "src": "^/operations/?$", "dest": "/public/console/operations.html" },
+    { "src": "^/ops/?$", "dest": "/public/console/operations.html" },
+
+    { "src": "^/ledger/?$", "dest": "/public/console/ledger.html" },
+    { "src": "^/audit-ledger/?$", "dest": "/public/console/audit-ledger.html" },
+
+    { "src": "^/(.*)$", "dest": "/public/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    }
   ]
 }
