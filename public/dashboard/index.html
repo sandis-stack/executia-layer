@@ -25,6 +25,40 @@
     </div>
   </div>
   <main class="ex-main">
+
+<section class="ex-card" style="margin-top:18px">
+  <div class="ex-section-head">
+    <div>
+      <div class="ex-eyebrow">OPERATOR SESSION</div>
+      <h2>Protected verification access</h2>
+      <p>Enter the EXECUTIA internal key to enable ledger verification and protected history views.</p>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px; align-items:center">
+    <input id="operatorKeyInput" type="password" placeholder="EXECUTIA_API_KEY" style="flex:1; padding:12px 14px; border:1px solid var(--ex-line); border-radius:12px">
+    <button class="ex-btn" onclick="saveOperatorKey()">Activate session</button>
+  </div>
+  <small id="operatorKeyStatus" style="display:block; margin-top:10px; color:var(--ex-muted)">Session not activated</small>
+</section>
+
+<script>
+function saveOperatorKey() {
+  const input = document.getElementById('operatorKeyInput');
+  const status = document.getElementById('operatorKeyStatus');
+  const key = (input.value || '').trim();
+
+  if (!key) {
+    status.textContent = 'No key entered';
+    return;
+  }
+
+  localStorage.setItem('executia_api_key', key);
+  status.textContent = 'Operator session activated';
+  loadExecutiaLive();
+}
+</script>
+
 <section class="ex-card ex-live-panel" style="margin-top:48px">
   <div class="ex-section-head">
     <div>
