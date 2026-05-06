@@ -205,6 +205,36 @@ async function verifyLedgerNow() {
 }
 </script>
 
+
+<section class="ex-proof-card">
+  <div class="ex-section-head">
+    <div>
+      <div class="ex-eyebrow">SYSTEM PROOF</div>
+      <h2>Execution integrity proof</h2>
+      <p>Protected verification state across ledger, execution chain and audit controls.</p>
+    </div>
+  </div>
+
+  <div class="ex-proof-grid">
+    <div class="ex-proof-item">
+      <small>Ledger chain</small>
+      <strong id="proofLedger">Protected</strong>
+    </div>
+    <div class="ex-proof-item">
+      <small>Execution chain</small>
+      <strong id="proofExecution">Protected</strong>
+    </div>
+    <div class="ex-proof-item">
+      <small>Account audit</small>
+      <strong id="proofAudit">Protected</strong>
+    </div>
+    <div class="ex-proof-item">
+      <small>Truth anchors</small>
+      <strong id="proofAnchors">Protected</strong>
+    </div>
+  </div>
+</section>
+
 <section class="ex-card ex-live-panel" style="margin-top:48px">
   <div class="ex-section-head">
     <div>
@@ -257,6 +287,16 @@ async function loadExecutiaLive() {
       badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED'; const topLedger = document.getElementById('ledgerTopState'); if (topLedger) topLedger.textContent = ledger.verified ? 'VERIFIED' : 'PROTECTED';
       badge.className = ledger.verified ? 'ex-pill ex-pill-green' : 'ex-pill';
     }
+
+    const proofLedger = document.getElementById('proofLedger');
+    const proofExecution = document.getElementById('proofExecution');
+    const proofAudit = document.getElementById('proofAudit');
+    const proofAnchors = document.getElementById('proofAnchors');
+
+    if (proofLedger) proofLedger.textContent = ledger.ledger_chain?.verified ? 'VERIFIED' : 'Protected';
+    if (proofExecution) proofExecution.textContent = ledger.execution_chain?.verified ? 'VERIFIED' : 'Protected';
+    if (proofAudit) proofAudit.textContent = ledger.account_audit?.verified ? 'VERIFIED' : 'Protected';
+    if (proofAnchors) proofAnchors.textContent = ledger.truth_anchors?.verified ? 'VERIFIED' : 'Protected';
 
     const stats = document.getElementById('liveStats');
     if (stats) {
@@ -392,6 +432,16 @@ async function loadExecutiaLive() {
       badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED'; const topLedger = document.getElementById('ledgerTopState'); if (topLedger) topLedger.textContent = ledger.verified ? 'VERIFIED' : 'PROTECTED';
       badge.className = ledger.verified ? 'ex-pill ex-pill-green' : 'ex-pill';
     }
+
+    const proofLedger = document.getElementById('proofLedger');
+    const proofExecution = document.getElementById('proofExecution');
+    const proofAudit = document.getElementById('proofAudit');
+    const proofAnchors = document.getElementById('proofAnchors');
+
+    if (proofLedger) proofLedger.textContent = ledger.ledger_chain?.verified ? 'VERIFIED' : 'Protected';
+    if (proofExecution) proofExecution.textContent = ledger.execution_chain?.verified ? 'VERIFIED' : 'Protected';
+    if (proofAudit) proofAudit.textContent = ledger.account_audit?.verified ? 'VERIFIED' : 'Protected';
+    if (proofAnchors) proofAnchors.textContent = ledger.truth_anchors?.verified ? 'VERIFIED' : 'Protected';
 
     const stats = document.getElementById('liveStats');
     if (stats) {
