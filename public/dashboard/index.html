@@ -135,7 +135,7 @@ async function runLiveExecution() {
 
   status.textContent = 'Committing execution...';
 
-  const res = await fetch('/api/v1/execute', {
+  const res = await window.executiaApi('/api/v1/execute', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ async function verifyLedgerNow() {
 
   box.innerHTML = '<strong>VERIFYING</strong><span>Checking ledger chain...</span><small>ledger-verify</small>';
 
-  const res = await fetch('/api/v1/ledger-verify', {
+  const res = await window.executiaApi('/api/v1/ledger-verify', {
     headers: { 'x-api-key': key }
   });
 
@@ -350,18 +350,18 @@ async function verifyLedgerNow() {
 <script>
 async function loadExecutiaLive() {
   try {
-    const stateRes = await fetch('/api/v1/live-state');
+    const stateRes = await window.executiaApi('/api/v1/live-state');
     const state = await stateRes.json();
 
     let ledger = { verified: false };
     try {
-      const ledgerRes = await fetch('/api/v1/ledger-verify', {
+      const ledgerRes = await window.executiaApi('/api/v1/ledger-verify', {
         headers: { 'x-api-key': localStorage.getItem('executia_api_key') || '' }
       });
       ledger = await ledgerRes.json();
     } catch (_) {}
 
-    const historyRes = await fetch('/api/v1/history', {
+    const historyRes = await window.executiaApi('/api/v1/history', {
       headers: {
         'x-api-key': localStorage.getItem('executia_api_key') || ''
       }
@@ -495,18 +495,18 @@ window.addEventListener('load', () => {
 <script>
 async function loadExecutiaLive() {
   try {
-    const stateRes = await fetch('/api/v1/live-state');
+    const stateRes = await window.executiaApi('/api/v1/live-state');
     const state = await stateRes.json();
 
     let ledger = { verified: false };
     try {
-      const ledgerRes = await fetch('/api/v1/ledger-verify', {
+      const ledgerRes = await window.executiaApi('/api/v1/ledger-verify', {
         headers: { 'x-api-key': localStorage.getItem('executia_api_key') || '' }
       });
       ledger = await ledgerRes.json();
     } catch (_) {}
 
-    const historyRes = await fetch('/api/v1/history', {
+    const historyRes = await window.executiaApi('/api/v1/history', {
       headers: {
         'x-api-key': localStorage.getItem('executia_api_key') || ''
       }
