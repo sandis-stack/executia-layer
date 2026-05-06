@@ -26,6 +26,24 @@
   </div>
   <main class="ex-main">
 
+<section class="ex-system-strip">
+  <span>UTC <strong id="utcClock">--:--:--</strong></span>
+  <span>Ledger <strong id="ledgerTopState">VERIFYING</strong></span>
+  <span>Execution State <strong>LIVE</strong></span>
+  <span>Synchronization <strong>MATCHED</strong></span>
+</section>
+
+<script>
+function updateUtcClock() {
+  const el = document.getElementById('utcClock');
+  if (el) el.textContent = new Date().toISOString().slice(11, 19);
+}
+setInterval(updateUtcClock, 1000);
+window.addEventListener('load', updateUtcClock);
+</script>
+
+
+
 <section class="ex-operator-flow">
   <div class="ex-flow-step">
     <small>01 SESSION</small>
@@ -236,7 +254,7 @@ async function loadExecutiaLive() {
 
     const badge = document.getElementById('ledgerBadge');
     if (badge) {
-      badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED';
+      badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED'; const topLedger = document.getElementById('ledgerTopState'); if (topLedger) topLedger.textContent = ledger.verified ? 'VERIFIED' : 'PROTECTED';
       badge.className = ledger.verified ? 'ex-pill ex-pill-green' : 'ex-pill';
     }
 
@@ -371,7 +389,7 @@ async function loadExecutiaLive() {
 
     const badge = document.getElementById('ledgerBadge');
     if (badge) {
-      badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED';
+      badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED'; const topLedger = document.getElementById('ledgerTopState'); if (topLedger) topLedger.textContent = ledger.verified ? 'VERIFIED' : 'PROTECTED';
       badge.className = ledger.verified ? 'ex-pill ex-pill-green' : 'ex-pill';
     }
 

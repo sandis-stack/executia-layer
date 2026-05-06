@@ -1271,3 +1271,30 @@ pre {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* EXECUTIA LIVE SYSTEM CLOCK */
+.ex-system-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0 18px;
+  padding: 10px 14px;
+  border: 1px solid #dfe7f2;
+  border-radius: 14px;
+  background: #fbfcfe;
+  font-size: 12px;
+  color: #60738c;
+}
+
+.ex-system-strip strong {
+  color: #183a5f;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+
+.ex-system-strip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
