@@ -1335,3 +1335,46 @@ pre {
   font-size: 13px;
   color: #183a5f;
 }
+
+/* OPERATIONAL CONTINUITY PANEL */
+.ex-continuity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.ex-continuity-card {
+  border: 1px solid #dfe7f2;
+  border-radius: 18px;
+  padding: 18px;
+  background: #fbfcfe;
+}
+
+.ex-continuity-card small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7b8aa0;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.ex-continuity-card strong {
+  display: block;
+  font-size: 14px;
+  color: #183a5f;
+  margin-bottom: 6px;
+}
+
+.ex-continuity-card span {
+  font-size: 12px;
+  color: #60738c;
+}
+
+@media (max-width: 900px) {
+  .ex-continuity-grid {
+    grid-template-columns: 1fr;
+  }
+}
