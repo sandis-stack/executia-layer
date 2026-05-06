@@ -1575,3 +1575,43 @@ pre {
     font-size:16px;
   }
 }
+
+/* AUTHORITY LAYER COMPACT MODE */
+.ex-authority {
+  padding: 26px 30px;
+  margin-top: 14px;
+  border-radius: 24px;
+}
+
+.ex-authority h1 {
+  font-size: 38px;
+  letter-spacing: -0.035em;
+}
+
+.ex-authority p {
+  font-size: 16px;
+  line-height: 1.55;
+  margin-top: 12px;
+  max-width: 780px;
+}
+
+.ex-authority-top {
+  margin-bottom: 16px;
+}
+
+.ex-authority-flow {
+  margin-top: 18px;
+  gap: 10px;
+}
+
+.ex-authority-node {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 11px;
+}
+
+.ex-authority-pill {
+  padding: 8px 13px;
+  font-size: 10px;
+}
+
