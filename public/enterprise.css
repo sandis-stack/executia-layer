@@ -1438,3 +1438,65 @@ pre {
   color:#183a5f;
   font-size:13px;
 }
+
+/* EXECUTION CONSEQUENCE PANEL */
+.ex-consequence {
+  border: 1px solid #dfe7f2;
+  border-radius: 18px;
+  padding: 18px;
+  background: #fbfcfe;
+  margin-top: 18px;
+}
+
+.ex-consequence-flow {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 14px;
+}
+
+.ex-consequence-box {
+  border: 1px solid #e5edf5;
+  border-radius: 16px;
+  padding: 16px;
+  background: #fff;
+}
+
+.ex-consequence-box small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #7b8aa0;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.ex-consequence-box strong {
+  display: block;
+  color: #183a5f;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.ex-consequence-box span {
+  display: block;
+  color: #60738c;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.ex-consequence-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7b8aa0;
+  font-size: 18px;
+}
+
+@media (max-width: 900px) {
+  .ex-consequence-flow {
+    grid-template-columns: 1fr;
+  }
+}
