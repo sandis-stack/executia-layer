@@ -32,7 +32,7 @@
       <h2>Operational execution state</h2>
       <p>Real-time data from EXECUTIA execution ledger.</p>
     </div>
-    <span class="ex-pill ex-pill-green">LIVE VERIFIED</span>
+    <span id="ledgerBadge" class="ex-pill ex-pill-green">VERIFYING</span>
   </div>
 
   <div id="liveStats" class="ex-metric-grid"></div>
@@ -56,6 +56,14 @@ async function loadExecutiaLive() {
     const stateRes = await fetch('/api/v1/live-state');
     const state = await stateRes.json();
 
+    let ledger = { verified: false };
+    try {
+      const ledgerRes = await fetch('/api/v1/ledger-verify', {
+        headers: { 'x-api-key': localStorage.getItem('executia_api_key') || '' }
+      });
+      ledger = await ledgerRes.json();
+    } catch (_) {}
+
     const historyRes = await fetch('/api/v1/history', {
       headers: {
         'x-api-key': localStorage.getItem('executia_api_key') || ''
@@ -63,6 +71,12 @@ async function loadExecutiaLive() {
     });
 
     const history = await historyRes.json();
+
+    const badge = document.getElementById('ledgerBadge');
+    if (badge) {
+      badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED';
+      badge.className = ledger.verified ? 'ex-pill ex-pill-green' : 'ex-pill';
+    }
 
     const stats = document.getElementById('liveStats');
     if (stats) {
@@ -177,6 +191,14 @@ async function loadExecutiaLive() {
     const stateRes = await fetch('/api/v1/live-state');
     const state = await stateRes.json();
 
+    let ledger = { verified: false };
+    try {
+      const ledgerRes = await fetch('/api/v1/ledger-verify', {
+        headers: { 'x-api-key': localStorage.getItem('executia_api_key') || '' }
+      });
+      ledger = await ledgerRes.json();
+    } catch (_) {}
+
     const historyRes = await fetch('/api/v1/history', {
       headers: {
         'x-api-key': localStorage.getItem('executia_api_key') || ''
@@ -184,6 +206,12 @@ async function loadExecutiaLive() {
     });
 
     const history = await historyRes.json();
+
+    const badge = document.getElementById('ledgerBadge');
+    if (badge) {
+      badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED';
+      badge.className = ledger.verified ? 'ex-pill ex-pill-green' : 'ex-pill';
+    }
 
     const stats = document.getElementById('liveStats');
     if (stats) {
