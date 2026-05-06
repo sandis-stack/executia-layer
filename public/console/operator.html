@@ -96,6 +96,7 @@
               <button class="ex-btn primary compact" data-action="approve" data-id="${executionId}">Approve</button>
               <button class="ex-btn compact danger" data-action="block" data-id="${executionId}">Block</button>
               <button class="ex-btn compact" data-action="timeline" data-id="${executionId}">View timeline</button>
+              <button class="ex-btn compact" data-action="timeline" data-id="${executionId}">View timeline</button>
             </div>`;
           queueList.appendChild(card);
         });
@@ -103,6 +104,11 @@
         queueList.textContent = "Connection error.";
         queueJson.textContent = err.message || "Connection error.";
       }
+    }
+
+    async function loadTimeline(executionId) {
+      const data = await executiaFetchJson(`/api/v1/timeline?execution_id=${encodeURIComponent(executionId)}`);
+      queueJson.textContent = JSON.stringify(data, null, 2);
     }
 
     async function loadTimeline(executionId) {
