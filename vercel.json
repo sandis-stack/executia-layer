@@ -1,90 +1,23 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "**/*",
-      "use": "@vercel/static"
-    }
-  ],
+  "cleanUrls": true,
   "routes": [
-    {
-      "src": "^/operations$",
-      "dest": "/console/operations.html"
-    },
-    {
-      "src": "^/history$",
-      "dest": "/console/audit.html"
-    },
-    {
-      "src": "^/control$",
-      "dest": "/console/operator.html"
-    },
-    {
-      "src": "^/demo/?$",
-      "dest": "/demo/index.html"
-    },
-    {
-      "src": "^/dashboard$",
-      "dest": "/dashboard/index.html"
-    },
-    {
-      "src": "^/api/v1/(.*)$",
-      "dest": "/api/v1/$1.js"
-    },
-    {
-      "src": "^/ops$",
-      "dest": "/console/operations.html"
-    },
-    {
-      "src": "^/live/?$",
-      "dest": "/dashboard/index.html"
-    },
-    {
-      "src": "^/proof/?$",
-      "dest": "/console/audit.html"
-    },
-    {
-      "src": "^/ledger/?$",
-      "dest": "/console/ledger.html"
-    },
-    {
-      "src": "^/audit-ledger/?$",
-      "dest": "/console/audit-ledger.html"
-    },
-    {
-      "src": "^/(.*)$",
-      "dest": "/$1"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-store"
-        }
-      ]
-    }
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+
+    { "src": "/", "dest": "/index.html" },
+
+    { "src": "/dashboard", "dest": "/public/dashboard/index.html" },
+    { "src": "/live", "dest": "/public/dashboard/index.html" },
+
+    { "src": "/demo", "dest": "/public/demo/index.html" },
+
+    { "src": "/control", "dest": "/public/console/operator.html" },
+    { "src": "/proof", "dest": "/public/console/audit.html" },
+    { "src": "/history", "dest": "/public/console/audit.html" },
+
+    { "src": "/operations", "dest": "/public/console/operations.html" },
+    { "src": "/ops", "dest": "/public/console/operations.html" },
+
+    { "src": "/ledger", "dest": "/public/console/ledger.html" },
+    { "src": "/audit-ledger", "dest": "/public/console/audit-ledger.html" }
   ]
 }
