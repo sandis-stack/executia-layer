@@ -79,5 +79,70 @@
     </section>
   </main>
   <script>executiaFetchJson('/api/v1/health', 'healthJson');</script>
+
+<script>
+async function loadExecutiaLive() {
+  try {
+    const stateRes = await fetch('/api/v1/live-state');
+    const state = await stateRes.json();
+
+    const historyRes = await fetch('/api/v1/history', {
+      headers: {
+        'x-api-key': localStorage.getItem('executia_api_key') || ''
+      }
+    });
+
+    const history = await historyRes.json();
+
+    const stats = document.getElementById('liveStats');
+    if (stats) {
+      stats.innerHTML = `
+        <div class="card">
+          <h3>Approved Executions</h3>
+          <div class="metric">${state.approved}</div>
+        </div>
+
+        <div class="card">
+          <h3>Total Volume</h3>
+          <div class="metric">€${Number(state.total_volume).toLocaleString()}</div>
+        </div>
+
+        <div class="card">
+          <h3>Integrity</h3>
+          <div class="metric">${state.integrity}</div>
+        </div>
+      `;
+    }
+
+    const stream = document.getElementById('executionStream');
+
+    if (stream && history.executions) {
+      stream.innerHTML = history.executions.map(e => `
+        <div class="stream-entry">
+          <strong>${e.subject}</strong><br/>
+          ${e.status} — €${Number(e.amount).toLocaleString()}<br/>
+          <small>${e.execution_id}</small>
+        </div>
+      `).join('');
+    }
+
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+window.addEventListener('load', loadExecutiaLive);
+</script>
+
+<section style="margin-top:40px">
+  <h2>LIVE EXECUTION STATE</h2>
+  <div id="liveStats" class="grid"></div>
+</section>
+
+<section style="margin-top:40px">
+  <h2>LIVE EXECUTION STREAM</h2>
+  <div id="executionStream"></div>
+</section>
+
 </body>
 </html>
