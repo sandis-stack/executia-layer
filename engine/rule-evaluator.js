@@ -1,4 +1,5 @@
 import { DECISIONS } from "../shared/statuses.js";
+import { calculateRiskScore } from "./risk-engine.js";
 
 export function validateExecutionRequest(body = {}) {
   const errors = [];
@@ -13,6 +14,7 @@ export function validateExecutionRequest(body = {}) {
 
 export function evaluateRules(body = {}) {
   const validation = validateExecutionRequest(body);
+  const risk = calculateRiskScore(body);
 
   if (!validation.valid) {
     return {
@@ -41,9 +43,19 @@ export function evaluateRules(body = {}) {
     };
   }
 
+  if (risk.level === "HIGH") {
+    return {
+      decision: DECISIONS.REVIEW,
+      reason: "HIGH_RISK_REQUIRES_REVIEW",
+      validation,
+      risk
+    };
+  }
+
   return {
     decision: DECISIONS.APPROVE,
     reason: "RULES_PASSED",
-    validation
+    validation,
+    risk
   };
 }
