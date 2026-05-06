@@ -1168,3 +1168,21 @@ body {
 .ex-section-head p { font-size: 13px; }
 .ex-stream-row { padding: 10px 0; font-size: 13px; }
 
+
+/* Move technical debug into secondary proof layer */
+.ex-debug-panel,
+#healthJson,
+pre {
+  font-size: 12px;
+}
+
+#healthJson {
+  max-height: 180px;
+  overflow: auto;
+}
+
+.ex-api-state,
+.ex-health-panel {
+  opacity: 0.82;
+}
+
