@@ -30,22 +30,22 @@
   <div class="ex-flow-step">
     <small>01 SESSION</small>
     <strong>Activate operator access</strong>
-    <span>x-session / protected verification</span>
+    <span>Protected operator session</span>
   </div>
   <div class="ex-flow-step">
     <small>02 EXECUTION</small>
     <strong>Commit strategic execution</strong>
-    <span>Atomic RPC → Supabase ledger</span>
+    <span>Atomic execution commitment</span>
   </div>
   <div class="ex-flow-step">
     <small>03 VERIFICATION</small>
     <strong>Verify execution chain</strong>
-    <span>Ledger + execution hash matched</span>
+    <span>Truth chain verification</span>
   </div>
   <div class="ex-flow-step">
     <small>04 LIVE STATE</small>
     <strong>Update operational stream</strong>
-    <span>Dashboard reflects DB state</span>
+    <span>Operational state synchronized</span>
   </div>
 </section>
 
@@ -56,12 +56,12 @@
     <div>
       <div class="ex-eyebrow">OPERATOR SESSION</div>
       <h2>Protected verification access</h2>
-      <p>Enter the EXECUTIA internal key to enable ledger verification and protected history views.</p>
+      <p>Activate protected operator access for ledger verification and execution controls.</p>
     </div>
   </div>
 
   <div style="display:flex; gap:10px; align-items:center">
-    <input id="operatorKeyInput" type="password" placeholder="EXECUTIA_API_KEY" style="flex:1; padding:12px 14px; border:1px solid var(--ex-line); border-radius:12px">
+    <input id="operatorKeyInput" type="password" placeholder="Operator access key" style="flex:1; padding:12px 14px; border:1px solid var(--ex-line); border-radius:12px">
     <button class="ex-btn" onclick="saveOperatorKey()">Activate session</button>
   </div>
   <small id="operatorKeyStatus" style="display:block; margin-top:10px; color:var(--ex-muted)">Session not activated</small>
