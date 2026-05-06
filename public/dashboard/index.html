@@ -25,6 +25,94 @@
     </div>
   </div>
   <main class="ex-main">
+<section class="ex-card ex-live-panel" style="margin-top:48px">
+  <div class="ex-section-head">
+    <div>
+      <div class="ex-eyebrow">LIVE EXECUTION STATE</div>
+      <h2>Operational execution state</h2>
+      <p>Real-time data from EXECUTIA execution ledger.</p>
+    </div>
+    <span class="ex-pill ex-pill-green">LIVE VERIFIED</span>
+  </div>
+
+  <div id="liveStats" class="ex-metric-grid"></div>
+</section>
+
+<section class="ex-card" style="margin-top:24px">
+  <div class="ex-section-head">
+    <div>
+      <div class="ex-eyebrow">EXECUTION STREAM</div>
+      <h2>Latest execution commitments</h2>
+      <p>Approved, blocked and pending execution results from Supabase.</p>
+    </div>
+  </div>
+
+  <div id="executionStream" class="ex-stream"></div>
+</section>
+
+<script>
+async function loadExecutiaLive() {
+  try {
+    const stateRes = await fetch('/api/v1/live-state');
+    const state = await stateRes.json();
+
+    const historyRes = await fetch('/api/v1/history', {
+      headers: {
+        'x-api-key': localStorage.getItem('executia_api_key') || ''
+      }
+    });
+
+    const history = await historyRes.json();
+
+    const stats = document.getElementById('liveStats');
+    if (stats) {
+      stats.innerHTML = `
+        <div class="ex-stat-card">
+          <span>Approved executions</span>
+          <strong>${state.approved}</strong>
+        </div>
+        <div class="ex-stat-card">
+          <span>Total execution volume</span>
+          <strong>€${Number(state.total_volume || 0).toLocaleString()}</strong>
+        </div>
+        <div class="ex-stat-card">
+          <span>Integrity</span>
+          <strong>${state.integrity}</strong>
+        </div>
+        <div class="ex-stat-card">
+          <span>Pending review</span>
+          <strong>${state.pending_review}</strong>
+        </div>
+      `;
+    }
+
+    const stream = document.getElementById('executionStream');
+    if (stream && history.executions) {
+      stream.innerHTML = history.executions.map(e => `
+        <div class="ex-stream-row">
+          <div>
+            <strong>${e.subject || 'Execution'}</strong>
+            <small>${e.execution_id}</small>
+          </div>
+          <div>
+            <span class="ex-pill ex-pill-green">${e.status}</span>
+            <small>€${Number(e.amount || 0).toLocaleString()}</small>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+window.addEventListener('load', () => {
+  loadExecutiaLive();
+  setInterval(loadExecutiaLive, 5000);
+});
+</script>
+
+
     <section class="ex-section-tight">
       <p class="ex-kicker">Execution truth layer</p>
       <h1 class="ex-title system-title">Execution Engine</h1>
@@ -135,90 +223,4 @@ window.addEventListener('load', loadExecutiaLive);
 </script>
 
 
-<section class="ex-card ex-live-panel" style="margin-top:48px">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">LIVE EXECUTION STATE</div>
-      <h2>Operational execution state</h2>
-      <p>Real-time data from EXECUTIA execution ledger.</p>
-    </div>
-    <span class="ex-pill ex-pill-green">LIVE VERIFIED</span>
-  </div>
-
-  <div id="liveStats" class="ex-metric-grid"></div>
-</section>
-
-<section class="ex-card" style="margin-top:24px">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">EXECUTION STREAM</div>
-      <h2>Latest execution commitments</h2>
-      <p>Approved, blocked and pending execution results from Supabase.</p>
-    </div>
-  </div>
-
-  <div id="executionStream" class="ex-stream"></div>
-</section>
-
-<script>
-async function loadExecutiaLive() {
-  try {
-    const stateRes = await fetch('/api/v1/live-state');
-    const state = await stateRes.json();
-
-    const historyRes = await fetch('/api/v1/history', {
-      headers: {
-        'x-api-key': localStorage.getItem('executia_api_key') || ''
-      }
-    });
-
-    const history = await historyRes.json();
-
-    const stats = document.getElementById('liveStats');
-    if (stats) {
-      stats.innerHTML = `
-        <div class="ex-stat-card">
-          <span>Approved executions</span>
-          <strong>${state.approved}</strong>
-        </div>
-        <div class="ex-stat-card">
-          <span>Total execution volume</span>
-          <strong>€${Number(state.total_volume || 0).toLocaleString()}</strong>
-        </div>
-        <div class="ex-stat-card">
-          <span>Integrity</span>
-          <strong>${state.integrity}</strong>
-        </div>
-        <div class="ex-stat-card">
-          <span>Pending review</span>
-          <strong>${state.pending_review}</strong>
-        </div>
-      `;
-    }
-
-    const stream = document.getElementById('executionStream');
-    if (stream && history.executions) {
-      stream.innerHTML = history.executions.map(e => `
-        <div class="ex-stream-row">
-          <div>
-            <strong>${e.subject || 'Execution'}</strong>
-            <small>${e.execution_id}</small>
-          </div>
-          <div>
-            <span class="ex-pill ex-pill-green">${e.status}</span>
-            <small>€${Number(e.amount || 0).toLocaleString()}</small>
-          </div>
-        </div>
-      `).join('');
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-window.addEventListener('load', () => {
-  loadExecutiaLive();
-  setInterval(loadExecutiaLive, 5000);
-});
-</script>
 </body>
