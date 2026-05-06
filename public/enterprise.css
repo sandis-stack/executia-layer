@@ -1378,3 +1378,63 @@ pre {
     grid-template-columns: 1fr;
   }
 }
+
+/* CROSS-BORDER EXECUTION PANEL */
+.ex-crossborder {
+  border: 1px solid #dfe7f2;
+  border-radius: 18px;
+  padding: 18px;
+  background: #fbfcfe;
+  margin-top: 18px;
+}
+
+.ex-route {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  color: #183a5f;
+  font-weight: 700;
+}
+
+.ex-route-node {
+  border: 1px solid #dfe7f2;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #fff;
+  font-size: 12px;
+}
+
+.ex-route-arrow {
+  color: #7b8aa0;
+  font-size: 14px;
+}
+
+.ex-route-meta {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.ex-route-meta div {
+  border: 1px solid #e5edf5;
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+}
+
+.ex-route-meta small {
+  display:block;
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#7b8aa0;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.ex-route-meta strong {
+  color:#183a5f;
+  font-size:13px;
+}
