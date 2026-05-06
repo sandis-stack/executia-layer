@@ -1615,3 +1615,16 @@ pre {
   font-size: 10px;
 }
 
+
+/* Hide legacy bottom operator bar */
+.ex-login-bar,
+.operator-login,
+#operatorLogin,
+.ex-bottom-login {
+  display: none !important;
+}
+
+body {
+  padding-bottom: 0 !important;
+}
+
