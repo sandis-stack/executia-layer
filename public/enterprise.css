@@ -1683,3 +1683,25 @@ div[class*="operator"] {
   display: none !important;
 }
 
+
+/* FIX OVER-AGGRESSIVE LOGIN HIDING */
+.ex-card,
+#operatorKeyInput,
+#operatorKeyStatus,
+#execSubject,
+#execAmount {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* HIDE ONLY LEGACY FIXED FOOTER LOGIN */
+body > div[style*="position: fixed"][style*="bottom"],
+body > div[style*="position:fixed"][style*="bottom"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+}
