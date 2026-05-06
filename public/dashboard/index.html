@@ -269,14 +269,14 @@ async function loadExecutiaLive() {
           <span>Status</span>
           <span>Subject</span>
           <span>Amount</span>
-          <span>Execution ID</span>
+          <span>Truth Hash</span>
         </div>
       ` + history.executions.map(e => `
         <div class="ex-stream-row">
           <span class="ex-stream-status">${e.status}</span>
           <strong>${e.subject || 'Execution'}</strong>
           <span>€${Number(e.amount || 0).toLocaleString()}</span>
-          <small>${e.execution_id}</small>
+          <small>${(e.hash || e.execution_id || '').slice(0, 18)}...</small>
         </div>
       `).join('');
     }
@@ -402,7 +402,7 @@ async function loadExecutiaLive() {
         <div class="stream-entry">
           <strong>${e.subject}</strong><br/>
           ${e.status} — €${Number(e.amount).toLocaleString()}<br/>
-          <small>${e.execution_id}</small>
+          <small>${(e.hash || e.execution_id || '').slice(0, 18)}...</small>
         </div>
       `).join('');
     }
