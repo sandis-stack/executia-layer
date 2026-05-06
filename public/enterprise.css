@@ -1088,3 +1088,72 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+
+/* EXECUTIA DENSITY MODE */
+
+.ex-live-panel {
+  margin-top: 22px;
+}
+
+.ex-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.ex-stat-card {
+  min-height: 82px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #fbfcfe;
+  border: 1px solid #dfe7f2;
+}
+
+.ex-stat-card span {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: #7f8da3;
+}
+
+.ex-stat-card strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #16355b;
+}
+
+.ex-section-head h2 {
+  font-size: 18px;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.ex-section-head p {
+  font-size: 13px;
+  color: #71839b;
+}
+
+.ex-live-badge {
+  height: 30px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+}
+
+.ex-stream-panel {
+  margin-top: 14px;
+}
+
+.ex-stream-panel h2 {
+  font-size: 18px;
+}
+
+.ex-stream-panel p {
+  font-size: 13px;
+}
+
