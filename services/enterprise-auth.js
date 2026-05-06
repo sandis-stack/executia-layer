@@ -63,7 +63,17 @@ export async function resolveEnterpriseContext(req) {
     .single();
 
   if (orgError || !org) {
-    return { ok: false, error: "ORGANIZATION_NOT_FOUND", status: 404 };
+    console.error("[EXECUTIA ORG LOOKUP FAILED]", {
+      organization_id,
+      orgError,
+      org
+    });
+
+    return {
+      ok: false,
+      error: "ORGANIZATION_NOT_FOUND",
+      status: 404
+    };
   }
   if (org.status !== "ACTIVE") {
     return { ok: false, error: "ORGANIZATION_SUSPENDED", status: 403 };
