@@ -1,12 +1,10 @@
-import { sha256, stableStringify } from "../shared/crypto.js";
+import { sha256 } from "../shared/crypto.js";
 
 export function buildExecutionHash(entry, prevHash = "GENESIS") {
-  return sha256(stableStringify({
-    execution_id: entry.execution_id,
-    status:       entry.status,
-    decision:     entry.decision || null,
-    prev_hash:    prevHash
-  }));
+  const executionId = entry.execution_id;
+  const status = entry.status;
+  const decision = entry.decision || "REVIEW";
+  return sha256(`${executionId}${status}${decision}${prevHash}`);
 }
 
 import { db, hasSupabaseEnv } from "./db.js";
