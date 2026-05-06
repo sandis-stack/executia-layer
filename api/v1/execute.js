@@ -42,7 +42,7 @@ export default async function handler(req, res) {
           error: auth.error
         });
 
-        return fail(res, auth.error, "Invalid API key. Check x-api-key or x-executia-key header.", 401);
+        return fail(res, auth.error, auth.error || "Authentication failed.", auth.status || 401);
       }
 
       const permission = requirePermission(auth, "execute");
