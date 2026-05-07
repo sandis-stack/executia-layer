@@ -690,12 +690,19 @@ function renderDetail(x){
 async function operatorAction(action){
   if(!SELECTED) return alert("No execution selected.");
   try{
-    await api("/api/v1/operator/action", {
+    const result = await api("/api/v1/operator/action", {
       method:"POST",
       body: JSON.stringify({ execution_id: SELECTED.id, action })
     });
+
+    SELECTED.operator_action = action;
+    SELECTED.status = result?.result?.status || SELECTED.status;
+    SELECTED.audit_state = "RECORDED";
+    SELECTED.reconciliation_state = "VERIFIED";
+
+    renderDetail(SELECTED);
+    await loadProof(SELECTED);
     await loadExecutions();
-    alert("Operator action recorded: " + action);
   }catch(e){
     alert("Action failed: " + e.message);
   }
