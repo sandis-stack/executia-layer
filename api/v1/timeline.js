@@ -1,14 +1,23 @@
 import { db } from "../../services/db.js";
-import { requireInternalKey } from "../../services/auth.js";
+import { resolveEnterpriseContext, requirePermission } from "../../services/enterprise-auth.js";
 
 export default async function handler(req, res) {
   try {
-    const auth = requireInternalKey(req);
+    const auth = await resolveEnterpriseContext(req);
 
     if (!auth.ok) {
-      return res.status(401).json({
+      return res.status(auth.status || 401).json({
         ok: false,
-        error: "UNAUTHORIZED"
+        error: auth.error || "UNAUTHORIZED"
+      });
+    }
+
+    const permission = requirePermission(auth, "view");
+    if (!permission.ok) {
+      return res.status(permission.status || 403).json({
+        ok: false,
+        error: permission.error || "FORBIDDEN",
+        reason: permission.reason
       });
     }
 
@@ -18,6 +27,25 @@ export default async function handler(req, res) {
       return res.status(400).json({
         ok: false,
         error: "EXECUTION_ID_REQUIRED"
+      });
+    }
+
+    let execQuery = db()
+      .from("execution_results")
+      .select("execution_id, organization_id")
+      .eq("execution_id", execution_id)
+      .single();
+
+    if (auth.organization_id) {
+      execQuery = execQuery.eq("organization_id", auth.organization_id);
+    }
+
+    const { data: execution, error: execError } = await execQuery;
+
+    if (execError || !execution) {
+      return res.status(404).json({
+        ok: false,
+        error: "EXECUTION_NOT_FOUND"
       });
     }
 
@@ -36,6 +64,8 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       ok: true,
+      mode: auth.mode,
+      organization_id: auth.organization_id,
       execution_id,
       timeline: data || []
     });
