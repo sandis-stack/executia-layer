@@ -1900,3 +1900,43 @@ body > div[style*="position:fixed"][style*="bottom"] {
 .operator-auth-active #sessionInfo {
   display: none;
 }
+
+/* EXECUTIA Operator Console — stable authenticated layout reset */
+.operator-auth-active .ex-section > .ex-enterprise-grid:first-child {
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.72fr) !important;
+  margin-bottom: 22px !important;
+}
+
+.operator-auth-active .ex-section > .ex-enterprise-grid:first-child .ex-card:first-child {
+  height: auto !important;
+  min-height: 118px !important;
+  overflow: visible !important;
+}
+
+.operator-auth-active .ex-section > .ex-enterprise-grid:first-child .ex-card:nth-child(2) {
+  height: auto !important;
+  max-height: 360px !important;
+  overflow: hidden !important;
+}
+
+.operator-auth-active .ex-section > .ex-enterprise-grid:nth-of-type(2) {
+  margin-top: 0 !important;
+  transform: none !important;
+  grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.65fr) !important;
+}
+
+.operator-auth-active .ex-section > .ex-enterprise-grid:nth-of-type(2) .ex-card:first-child {
+  min-height: 420px !important;
+}
+
+.operator-auth-active #queueList .ex-queue-card {
+  min-height: 300px !important;
+}
+
+.operator-auth-active .ex-main {
+  padding-top: 46px !important;
+}
+
+.operator-auth-active .ex-json {
+  max-height: 260px !important;
+}
