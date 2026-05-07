@@ -72,11 +72,11 @@ header{
     .state{font-size:12px;color:var(--muted);letter-spacing:.08em}
     main{display:grid;grid-template-columns:280px 1fr 420px;gap:12px;padding:12px;height:calc(100vh - 64px)}
     section{background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-    .pad{padding:16px}
+    .pad{padding:14px}
     h2{margin:0 0 14px;font-size:12px;letter-spacing:.14em;color:var(--blue)}
     label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.08em}
     input{
-      width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);
+      width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);
       font-size:13px;
     }
     button{
@@ -88,17 +88,17 @@ header{
     .rail{display:grid;gap:10px}
     .block{border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:10px}
     .k{font-size:10px;color:var(--muted);letter-spacing:.13em}
-    .v{font-size:16px;font-weight:800;margin-top:4px;letter-spacing:.02em}
+    .v{font-size:15px;font-weight:800;margin-top:4px;letter-spacing:.02em}
     .stream{display:flex;flex-direction:column;height:100%;background:#fbfdff}
     .stream-head{border-bottom:1px solid var(--line);padding:14px 16px;display:flex;justify-content:space-between}
     .rows{overflow:auto}
     .row{
-min-height:82px;
+min-height:72px;
 background:linear-gradient(to right,#ffffff,#f8fbff);
 transition:.12s ease;
 border-left:4px solid transparent;
 
-      display:grid;grid-template-columns:1.2fr .9fr .8fr .8fr;gap:12px;padding:14px 16px;
+      display:grid;grid-template-columns:1.45fr .75fr .75fr .9fr;gap:12px;padding:14px 16px;
       border-bottom:1px solid var(--line);cursor:pointer;align-items:center;
     }
     .row:hover{background:#edf4fb;border-left:4px solid var(--blue)}
@@ -193,6 +193,12 @@ AUTHORIZE WITH TOKEN
       <h2>EXECUTION REGISTRY</h2>
       <button class="secondary" onclick="loadExecutions()">REFRESH</button>
     </div>
+    <div class="row" style="min-height:38px;background:#f4f7fb;cursor:default;border-left:4px solid transparent;">
+      <div class="k">EXECUTION ID</div>
+      <div class="k">STATUS</div>
+      <div class="k">VALIDATION</div>
+      <div class="k">TIMESTAMP</div>
+    </div>
     <div id="rows" class="rows">
       <div class="lock">
         <div>
@@ -212,6 +218,18 @@ AUTHORIZE WITH TOKEN
       <div class="block">
         <div class="k">STATE</div>
         <div class="v">AWAITING SELECTION</div>
+        <div class="small" style="margin-top:8px;">
+          Select an execution to inspect validation, audit trail, ledger linkage,
+          reconciliation proof and hash integrity.
+        </div>
+      </div>
+      <div class="block">
+        <div class="k">DETAIL SURFACE</div>
+        <div class="v">READY</div>
+      </div>
+      <div class="block">
+        <div class="k">PROOF ENGINE</div>
+        <div class="v">STANDBY</div>
       </div>
     </div>
   </section>
