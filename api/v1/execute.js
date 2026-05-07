@@ -1,5 +1,4 @@
-cat > api/v1/execute.js <<'EOF'
-import { createExecution, listExecutions } from "../../services/execution.js";
+import { createExecution } from "../../services/execution.js";
 import { ok, fail } from "../../shared/response.js";
 import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 
@@ -66,4 +65,3 @@ export default async function handler(req, res) {
     );
   }
 }
-EOF
