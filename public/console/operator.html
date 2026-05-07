@@ -264,6 +264,16 @@ border-left:4px solid transparent;
 }
 
 
+
+
+@media (max-width: 900px){
+
+  button[onclick="authorize()"]{
+    width:100% !important;
+  }
+
+}
+
 </style>
 </head>
 <body>
@@ -318,7 +328,7 @@ border-left:4px solid transparent;
 <label>ACCESS TOKEN</label>
 <input id="token" placeholder="JWT access token" />
 
-<button class="secondary token-btn" style="width:100%;margin-top:10px;" onclick="authorize()">
+<button class="secondary token-btn" style="width:100%;margin-top:10px;" data-token-btn="1" onclick="authorize()">
 AUTHORIZE WITH TOKEN
 </button>
 
