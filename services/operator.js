@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 const ALLOWED = ["COMMITTED","BLOCKED","PENDING_REVIEW","FAILED","APPROVED"];
 
@@ -6,7 +7,9 @@ function db() {
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error("SUPABASE_ENV_MISSING");
   }
-  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    realtime: { transport: ws }
+  });
 }
 
 export async function requireOperator(req) {
