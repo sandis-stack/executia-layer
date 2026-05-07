@@ -62,6 +62,19 @@ export default async function handler(req, res) {
         created_at: new Date().toISOString()
       });
 
+    
+    if (verification?.verified && execution_id) {
+      await supabase
+        .from("execution_results")
+        .update({
+          reconciliation_state: "VERIFIED",
+          hash_verified: true,
+          audit_state: "RECORDED",
+          ledger_state: "HASH_LINKED"
+        })
+        .eq("execution_id", execution_id);
+    }
+
     return res.status(200).json({
       ok: true,
       mode: "EXECUTION_TRUTH",
