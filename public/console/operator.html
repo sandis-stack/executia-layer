@@ -1,347 +1,280 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EXECUTIA™ Operator Control</title>
-<style>
-body{margin:0;background:linear-gradient(180deg,#fff,#f8fbff);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#102f4f}
-.header{height:58px;display:flex;align-items:center;justify-content:space-between;max-width:1220px;margin:auto;padding:0 18px}
-.brand{font-weight:900;letter-spacing:.18em;font-size:12px}.brand span{margin-left:10px;font-size:10px;letter-spacing:.22em}
-.nav{display:flex;gap:26px}.nav a{text-decoration:none;color:#102f4f;font-weight:800;font-size:12px;letter-spacing:.16em}.nav .active{border-bottom:2px solid #102f4f;padding-bottom:12px}
-.entry{border:1px solid #d6e1ed;border-radius:999px;padding:11px 20px;text-decoration:none;color:#102f4f;font-weight:800}
-.state{height:26px;border-top:1px solid #edf2f7;border-bottom:1px solid #e5edf5;background:#f8fbff;display:flex;justify-content:center;gap:38px;align-items:center;font-size:10px;font-weight:900;letter-spacing:.2em;color:#4d6680}
-.shell{max-width:1220px;margin:14px auto 30px;padding:0 18px}
-.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(360px,.9fr);gap:24px;align-items:start}.grid+.grid{margin-top:24px}
-.card{background:#fff;border:1px solid #dce6f1;border-radius:16px;box-shadow:0 16px 38px rgba(15,53,93,.045);padding:18px}
-.head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}
-.label{font-size:10px;font-weight:900;letter-spacing:.2em;color:#71869b;margin:0 0 6px}
-h1,h2,h3{margin:0;color:#0f355d}h1,h2{font-size:18px}h3{font-size:22px;letter-spacing:-.02em}
-p{margin:6px 0 0;color:#64798f;font-size:13px;line-height:1.45}
-.pill{display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:999px;background:#f4f8fc;color:#12365d;font-size:10px;font-weight:900;letter-spacing:.2em}
-.ok{background:#eaf8f1;color:#0e6745}.warn{background:#fff7e8;color:#8a5d00}
-.auth{min-height:64px}.authrow{display:flex;gap:12px;margin-top:20px}.authrow button,.cmd{border:0;border-radius:14px;height:44px;padding:0 20px;font-weight:900;letter-spacing:.12em;font-size:10px;cursor:pointer}
-.authrow button{background:#f6f9fc;border:1px solid #dce6f1;color:#12365d}
-.telegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tile{background:#f8fbff;border:1px solid #edf2f7;border-radius:14px;padding:12px}.tile span{display:block;color:#6f8499;font-size:10px;font-weight:900;letter-spacing:.16em;margin-bottom:6px}.tile strong{display:block;color:#0f355d;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.summary{margin-top:14px;background:#f6f9fd;border-radius:16px;padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.55;color:#243a52;max-height:52px;overflow:auto}
-.stream{min-height:90px}.execution{border:1px solid #dce6f1;border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff);padding:22px}.top{display:flex;justify-content:space-between;margin-bottom:18px}
-.meta{margin-top:24px;display:grid;grid-template-columns:140px 1fr;gap:12px 18px}.meta span{font-size:13px;color:#49657e;font-weight:850}.meta strong{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#2c4660;font-size:13px}
-.cmdrow{display:flex;gap:12px;margin-top:26px}.commit{background:#12365d;color:#fff;box-shadow:0 10px 24px rgba(15,53,93,.13)}.reject{background:#fff;color:#a83434;border:1px solid #d9a7a7}
-.registry{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.login{display:none;grid-template-columns:1.1fr 1.2fr 1fr auto;gap:10px;margin-top:16px;align-items:center}.login input{height:38px;border:1px solid #d6e1ed;border-radius:10px;padding:0 12px;background:#fbfdff;color:#12365d;font-size:13px;font-weight:700;min-width:0}.login button{height:36px;background:#12365d;color:white;border:0;border-radius:12px;padding:0 12px;font-size:10px;font-weight:900;letter-spacing:.14em;box-shadow:0 4px 12px rgba(15,53,93,.10)}
-body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display:none}
-@media(max-width:960px){.grid{grid-template-columns:1fr}.state{gap:18px;overflow:auto;justify-content:flex-start;padding:0 20px}.login{grid-template-columns:1fr}}
-
-.rail{display:flex;align-items:center;gap:10px;margin:18px 0 24px}
-.rail-line{flex:1;height:1px;background:#dbe5f0;min-width:28px}
-.rail-step{display:flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border-radius:999px;border:1px solid #dbe5f0;background:#fff;color:#6c8197;font-size:10px;font-weight:900;letter-spacing:.28em;opacity:.72}
-.rail-step.active{background:#edf7ff;border-color:#cfe2f7;color:#0f355d}
-.rail-step.review{background:#fff7e8;border-color:#f3dfb4;color:#8a5d00}
-
-
-.empty-authority{
-  display:grid;
-  gap:8px;
-  min-height:92px;
-  padding:14px 18px;
-  border:1px dashed #d6e1ed;
-  border-radius:16px;
-  background:linear-gradient(180deg,#ffffff,#f8fbff);
-}
-.empty-authority strong{
-  font-size:13px;
-  font-weight:900;
-  letter-spacing:.14em;
-  color:#0f355d;
-}
-.empty-authority span{
-  font-size:13px;
-  color:#60778f;
-}
-.empty-authority span:last-child{
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:.18em;
-  color:#7a8fa4;
-}
-.auth .head{
-  margin-bottom:12px;
-}
-.auth .pill{
-  transform:translateY(-2px);
-}
-.registry .tile{
-  min-height:58px;
-  padding:18px;
-  gap:8px;
-  border-radius:18px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-}
-.telemetry-empty{font-size:9px;letter-spacing:.16em;opacity:.5;font-weight:900;}
-.registry .tile strong{
-  letter-spacing:.04em;
-}
-
-/* EXECUTIA final control surface layer */
-body{
-  background:
-    linear-gradient(rgba(15,53,93,.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15,53,93,.018) 1px, transparent 1px),
-    linear-gradient(180deg,#ffffff,#f8fbff);
-  background-size: 42px 42px, 42px 42px, auto;
-}
-.card{
-  position:relative;
-}
-.card::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:18px;
-  bottom:18px;
-  width:2px;
-  border-radius:999px;
-  background:rgba(15,53,93,.16);
-}
-.auth::before{
-  background:#12365d;
-}
-.stream::before{
-  background:#8a5d00;
-}
-.pill.locked{
-  background:#eef3f8;
-  color:#49657e;
-}
-.authorized .pill.locked,
-.pill.ok{
-  background:#e6f7ef;
-  color:#0e6745;
-}
-.authority-rail{
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-  flex-wrap:wrap;
-}
-.authority-rail span{
-  border:1px solid #dbe5f0;
-  border-radius:999px;
-  padding:6px 10px;
-  font-size:9px;
-  font-weight:900;
-  letter-spacing:.16em;
-  color:#6f8499;
-  background:#fbfdff;
-}
-.login button{
-  min-width:106px;
-  box-shadow:none!important;
-}
-.empty-authority{
-  min-height:74px!important;
-  padding:13px 16px!important;
-  border-style:solid!important;
-  background:
-    linear-gradient(90deg, rgba(138,93,0,.06), transparent),
-    #fff;
-}
-.empty-authority strong{
-  color:#8a5d00!important;
-}
-.registry .tile{
-  min-height:48px!important;
-  padding:14px!important;
-  border-radius:14px!important;
-  background:#fbfdff!important;
-}
-.registry .tile span{
-  font-size:9px!important;
-}
-.registry .tile strong{
-  font-size:13px!important;
-}
-.rawBox summary{
-  color:#49657e!important;
-}
-.state{
-  letter-spacing:.28em!important;
-  opacity:.76;
-}
-.entry{
-  padding:9px 18px!important;
-}
-
-/* EXECUTIA FINAL PRODUCTION POLISH */
-
-body{
-  background-size:48px 48px,48px 48px,auto!important;
-}
-
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:
-    linear-gradient(rgba(15,53,93,.010) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15,53,93,.010) 1px, transparent 1px);
-  background-size:48px 48px;
-  pointer-events:none;
-}
-
-.card::before{
-  width:1px!important;
-  opacity:.52;
-}
-
-.empty-authority{
-  border:1px solid #d7e0ea!important;
-  background:
-    linear-gradient(90deg, rgba(15,53,93,.022), transparent),
-    #fbfdff!important;
-}
-
-.pill,
-.status-pill,
-.queue-pill{
-  border-radius:10px!important;
-  padding:6px 11px!important;
-  letter-spacing:.16em!important;
-}
-
-.login button{
-  height:34px!important;
-  min-width:98px!important;
-  border-radius:11px!important;
-  font-size:11px!important;
-  letter-spacing:.12em!important;
-}
-
-.telemetry .tile,
-.telemetry-tile,
-.metric{
-  min-height:56px!important;
-  padding:12px 14px!important;
-}
-
-.telemetry .tile strong,
-.metric strong{
-  font-size:13px!important;
-}
-
-.registry .tile{
-  min-height:42px!important;
-  padding:12px 14px!important;
-  border-radius:12px!important;
-}
-
-.registry .tile strong{
-  font-size:12px!important;
-}
-
-.registry .tile span{
-  font-size:9px!important;
-}
-
-.rawBox summary{
-  opacity:.74!important;
-}
-
-.authority-rail span{
-  border-radius:10px!important;
-  padding:5px 9px!important;
-}
-
-.entry{
-  border-radius:14px!important;
-  padding:8px 16px!important;
-}
-
-.topbar,
-.subnav{
-  backdrop-filter:blur(8px);
-}
-
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA Operator Console</title>
+  <style>
+    :root{
+      --bg:#f5f7fa;--panel:#ffffff;--line:#d8dee8;--text:#162232;--muted:#667386;
+      --blue:#1e3a5f;--graphite:#2c3440;--soft:#eef3f8;--ok:#1f7a4d;--bad:#9b2c2c;--warn:#9a6a00;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Inter,Arial,sans-serif;background:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px),var(--bg);
+      background-size:40px 40px;color:var(--text);
+    }
+    header{
+      height:64px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.92);
+      display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+    }
+    .brand{font-weight:800;letter-spacing:.08em;color:var(--blue)}
+    .state{font-size:12px;color:var(--muted);letter-spacing:.08em}
+    main{display:grid;grid-template-columns:280px 1fr 420px;gap:16px;padding:16px;height:calc(100vh - 64px)}
+    section{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    .pad{padding:16px}
+    h2{margin:0 0 14px;font-size:12px;letter-spacing:.14em;color:var(--blue)}
+    label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.08em}
+    input{
+      width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);
+      font-size:13px;
+    }
+    button{
+      border:1px solid var(--blue);background:var(--blue);color:#fff;border-radius:10px;padding:10px 12px;
+      font-size:11px;letter-spacing:.08em;font-weight:700;cursor:pointer;
+    }
+    button.secondary{background:#fff;color:var(--blue)}
+    button.danger{background:var(--bad);border-color:var(--bad)}
+    .rail{display:grid;gap:10px}
+    .block{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:12px}
+    .k{font-size:10px;color:var(--muted);letter-spacing:.13em}
+    .v{font-size:14px;font-weight:800;margin-top:4px}
+    .stream{display:flex;flex-direction:column;height:100%}
+    .stream-head{border-bottom:1px solid var(--line);padding:14px 16px;display:flex;justify-content:space-between}
+    .rows{overflow:auto}
+    .row{
+      display:grid;grid-template-columns:1.2fr .9fr .8fr .8fr;gap:12px;padding:14px 16px;
+      border-bottom:1px solid var(--line);cursor:pointer;align-items:center;
+    }
+    .row:hover{background:#f0f4f9}
+    .row.active{background:#e8eef6}
+    .small{font-size:12px;color:var(--muted)}
+    .status{font-size:11px;font-weight:800;letter-spacing:.08em}
+    .APPROVED,.COMMITTED{color:var(--ok)}.BLOCKED,.FAILED{color:var(--bad)}.PENDING_REVIEW{color:var(--warn)}
+    .drawer{display:flex;flex-direction:column;height:100%}
+    .drawer-head{padding:16px;border-bottom:1px solid var(--line)}
+    .drawer-body{overflow:auto;padding:16px;display:grid;gap:14px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .timeline{border-left:2px solid var(--blue);margin-left:8px;padding-left:16px;display:grid;gap:14px}
+    .event{position:relative}
+    .event:before{content:"";position:absolute;left:-23px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--blue)}
+    pre{
+      margin:0;white-space:pre-wrap;background:#f7f9fc;border:1px solid var(--line);border-radius:12px;
+      padding:12px;font-size:11px;color:#253244;max-height:220px;overflow:auto;
+    }
+    .lock{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted)}
+  </style>
 </head>
 <body>
-<header class="header">
-  <div class="brand">EXECUTIA™ <span>OPERATOR CONTROL</span></div>
-  <nav class="nav"><a href="/dashboard">LIVE</a><a class="active" href="/console/operator.html">OPERATOR</a><a href="/demo">DEMO</a></nav>
-  <a class="entry" href="https://executia.io">Entry ↗</a>
+<header>
+  <div class="brand">EXECUTIA™ OPERATOR CONSOLE</div>
+  <div class="state" id="systemState">SYSTEM LOCK</div>
 </header>
-<div class="state"><span>● JWT SESSION</span><span>TENANT ISOLATED</span><span>ROLE GOVERNED</span><span>AUDIT RECORDING</span></div>
 
-<main class="shell">
-  <section class="grid">
-    <div class="card auth">
-      <div class="head"><div><p class="label">AUTHORITY</p><h1>Operator authority</h1><p id="sessionInfo">Operator authority not verified.</p><div class="authority-rail"><span>SESSION</span><span>TENANT</span><span>ROLE</span><span>ACCESS</span></div></div><span id="sessionPill" class="pill locked">LOCKED</span></div>
-      <p class="label" style="margin:14px 0 6px">ACCESS TOKEN</p><div class="login"><input id="apiKey" type="password" placeholder="••••••••••••" aria-label="ACCESS TOKEN"><input id="organizationId" placeholder="ORG VERIFIED" value="f0063ff5-8558-47fc-9ca1-9da48b13bf54"><input id="userEmail" value="operator@executia.io"><button id="loginBtn">AUTHORIZE</button></div>
-      <div class="authrow"><button id="refreshBtn">SYNC</button><button id="logoutBtn">LOGOUT</button></div>
-    </div>
-    <div class="card">
-      <div class="head"><div><p class="label">TELEMETRY</p><h2>Execution telemetry</h2></div><span class="pill ok">LIVE</span></div>
-      <div class="telegrid"><div class="tile"><span>MODE</span><strong id="modeValue"><span class="telemetry-empty">SESSION REQUIRED</span></strong></div><div class="tile"><span>TENANT</span><strong id="tenantValue"><span class="telemetry-empty">SESSION REQUIRED</span></strong></div><div class="tile"><span>ROLE</span><strong id="roleValue"><span class="telemetry-empty">SESSION REQUIRED</span></strong></div><div class="tile"><span>QUEUE</span><strong id="queueCount"><span class="telemetry-empty">SESSION REQUIRED</span></strong></div></div>
-      <details class="rawBox"><summary style="font-size:10px;opacity:.62;letter-spacing:.18em;cursor:pointer">RAW TELEMETRY</summary><pre id="queueJson" class="summary">Waiting for session...</pre></details>
+<main>
+  <section>
+    <div class="pad rail">
+      <h2>AUTHORITY SURFACE</h2>
+      <div>
+        <label>ACCESS TOKEN</label>
+        <input id="token" placeholder="Operator JWT" />
+      </div>
+      <button onclick="authorize()">AUTHORIZE</button>
+
+      <div class="block"><div class="k">OPERATOR</div><div class="v" id="operator">UNVERIFIED</div></div>
+      <div class="block"><div class="k">AUTH</div><div class="v" id="auth">LOCKED</div></div>
+      <div class="block"><div class="k">VALIDATION</div><div class="v">ACTIVE</div></div>
+      <div class="block"><div class="k">LEDGER</div><div class="v">HASH CHAIN</div></div>
+      <div class="block"><div class="k">AUDIT</div><div class="v">RECORDED</div></div>
     </div>
   </section>
 
-  <section class="grid">
-    <div class="card stream">
-      <div class="head"><div><p class="label">EXECUTION STREAM</p><h2>Live execution stream</h2></div><span class="pill warn">QUEUE</span></div>
-      <div id="queueList"><div class="empty-authority"><strong>SYSTEM LOCK</strong><span>Execution stream is unavailable until operator authority is verified.</span><span>JWT LOCK · TENANT REQUIRED · ROLE REQUIRED · AUDIT STANDBY</span></div></div>
+  <section class="stream">
+    <div class="stream-head">
+      <h2>EXECUTION REGISTRY</h2>
+      <button class="secondary" onclick="loadExecutions()">REFRESH</button>
     </div>
-    <aside class="card">
-      <div class="head"><div><p class="label">REGISTRY</p><h2>Execution registry</h2></div><span class="pill">CONTROL</span></div>
-      <div class="registry"><div class="tile"><span>AUTH</span><strong>Bearer JWT</strong></div><div class="tile"><span>VALIDATION</span><strong>ACTIVE</strong></div><div class="tile"><span>LEDGER</span><strong>VERIFIED</strong></div><div class="tile"><span>AUDIT</span><strong>RECORDING</strong></div></div>
-    </aside>
+    <div id="rows" class="rows">
+      <div class="lock">
+        <div>
+          <h2>SYSTEM LOCK</h2>
+          <p>Execution stream is unavailable until operator authority is verified.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="drawer">
+    <div class="drawer-head">
+      <h2>EXECUTION DETAIL</h2>
+      <div class="small" id="detailId">No execution selected</div>
+    </div>
+    <div class="drawer-body" id="detail">
+      <div class="block">
+        <div class="k">STATE</div>
+        <div class="v">AWAITING SELECTION</div>
+      </div>
+    </div>
   </section>
 </main>
 
 <script>
-const TOKEN_KEY="executia_operator_jwt";
-const $=id=>document.getElementById(id);
-function token(){return localStorage.getItem(TOKEN_KEY)}
-function decode(t){try{return JSON.parse(atob(t.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))}catch{return {}}}
-function clean(v,f){v=String(v||"").trim();return(!v||v.toLowerCase()==="unknown")?f:v}
-function reason(v){v=clean(v,"EXECUTION REVIEW REQUIRED");return v==="VALIDATION_INCOMPLETE"?"VERIFICATION REQUIRED":v.replaceAll("_"," ")}
-function render(){
- const t=token();
- if(!t){document.body.classList.remove("authorized");$("sessionPill").className="pill warn";$("sessionPill").textContent="NOT SIGNED IN";$("sessionInfo").textContent="Operator authority not verified.";$("modeValue").textContent=$("tenantValue").textContent=$("roleValue").textContent=$("queueCount").textContent="—";return}
- const p=decode(t),u=p.user||{};
- document.body.classList.add("authorized");$("sessionPill").className="pill ok";$("sessionPill").textContent="AUTHORIZED";$("sessionInfo").textContent=`${u.email||"operator"} · ${p.role||u.role||"OPERATOR"} · ${(p.organization_id||"tenant").slice(0,8)}…`;$("modeValue").textContent=p.mode||"ENTERPRISE";$("tenantValue").textContent="VERIFIED";$("roleValue").textContent=p.role||u.role||"OPERATOR";
+const API_BASE = "https://execution.executia.io";
+let TOKEN = localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") || "";
+let SELECTED = null;
+let ITEMS = [];
+
+document.getElementById("token").value = TOKEN;
+
+function statusClass(s){ return String(s || "PENDING_REVIEW").replaceAll(" ","_"); }
+
+async function api(path, options = {}) {
+  const res = await fetch(API_BASE + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + TOKEN,
+      ...(options.headers || {})
+    }
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.ok === false) throw new Error(data?.error?.message || data?.error || "REQUEST_FAILED");
+  return data;
 }
-async function api(path,opt={}){
- const h={"Content-Type":"application/json",...(opt.headers||{})}; if(token())h.Authorization=`Bearer ${token()}`;
- const r=await fetch(path,{...opt,headers:h}); const tx=await r.text(); try{return JSON.parse(tx)}catch{return{ok:false,error:tx}}
+
+async function authorize(){
+  TOKEN = document.getElementById("token").value.trim();
+  localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
+  try{
+    const me = await api("/api/v1/operator/me");
+    document.getElementById("systemState").textContent = "AUTHORITY VERIFIED";
+    document.getElementById("operator").textContent = me?.user?.email || "OPERATOR";
+    document.getElementById("auth").textContent = me?.mode || "ENTERPRISE";
+    await loadExecutions();
+  }catch(e){
+    document.getElementById("systemState").textContent = "SYSTEM LOCK";
+    alert("Authority verification failed: " + e.message);
+  }
 }
-async function login(){
- const r=await fetch("/api/v1/login",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":$("apiKey").value.trim(),"x-organization-id":$("organizationId").value.trim(),"x-user-email":$("userEmail").value.trim()},body:"{}"});
- const d=await r.json(); $("queueJson").textContent=JSON.stringify(d,null,2); if(!d.ok||!d.token)return; localStorage.setItem(TOKEN_KEY,d.token); $("apiKey").value=""; render(); loadQueue();
+
+async function loadExecutions(){
+  try{
+    const data = await api("/api/v1/operator/executions");
+    ITEMS = data.items || data.executions || [];
+    renderRows();
+  }catch(e){
+    document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>${e.message}</p></div></div>`;
+  }
 }
-async function loadQueue(){
- if(!token()){$("queueList").innerHTML='<div class="empty-authority"><strong>SYSTEM LOCK</strong><span>Execution stream is unavailable until operator authority is verified.</span><span>JWT LOCK · TENANT REQUIRED · ROLE REQUIRED · AUDIT STANDBY</span></div>';$("queueJson").textContent="Waiting for session...";return}
- $("queueList").textContent="Synchronizing execution stream...";
- const d=await api("/api/v1/operator-queue"); $("queueJson").textContent=JSON.stringify(d,null,2);
- const items=Array.isArray(d.items)?d.items:[]; $("queueCount").textContent=`${items.length} PENDING`;
- if(!items.length){$("queueList").innerHTML='<div class="execution"><span class="pill ok">QUEUE CLEAR</span><h3>No active executions</h3><p>No execution requires operator action.</p></div>';return}
- $("queueList").innerHTML="";
- items.forEach(item=>{
-  const id=item.execution_id||item.id||"NO_EXECUTION_ID";
-  const title=clean(item.request_type||item.type,"TENANT EXECUTION");
-  const actor=clean(item.actor||item.operator_email||item.user_email,"SYSTEM_OPERATOR");
-  const status=clean(item.status,"PENDING");
-  const card=document.createElement("article"); card.className="execution";
-  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3>${title}</h3><div class="rail"><div class="rail-step active">REQUESTED</div><div class="rail-line"></div><div class="rail-step review">REVIEW</div><div class="rail-line"></div><div class="rail-step">COMMIT</div></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
-  $("queueList").appendChild(card);
- })
+
+function renderRows(){
+  if(!ITEMS.length){
+    document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>Execution stream is unavailable until operator authority is verified.</p></div></div>`;
+    return;
+  }
+  document.getElementById("rows").innerHTML = ITEMS.map(x => `
+    <div class="row ${SELECTED?.id===x.id ? "active":""}" onclick="selectExecution('${x.id}')">
+      <div><b>${x.id || "EXECUTION"}</b><div class="small">${x.actor || x.user || "actor:not declared"}</div></div>
+      <div class="status ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div>
+      <div class="small">${x.validation_result || x.validation || "VALIDATION"}</div>
+      <div class="small">${x.created_at || x.timestamp || "NO TIMESTAMP"}</div>
+    </div>
+  `).join("");
 }
-async function decide(a,id){await api(a==="approve"?"/api/v1/operator-approve":"/api/v1/operator-block",{method:"POST",body:JSON.stringify({execution_id:id,reason:a==="approve"?"Committed by enterprise operator":"Rejected by enterprise operator"})});loadQueue()}
-$("loginBtn").onclick=login;$("logoutBtn").onclick=()=>{localStorage.removeItem(TOKEN_KEY);render();loadQueue()};$("refreshBtn").onclick=loadQueue;
-document.addEventListener("click",e=>{const b=e.target.closest("button[data-action]");if(b)decide(b.dataset.action,b.dataset.id)});
-render();loadQueue();
+
+function selectExecution(id){
+  SELECTED = ITEMS.find(x => String(x.id) === String(id));
+  renderRows();
+  renderDetail(SELECTED);
+}
+
+function timeline(x){
+  const now = x.created_at || x.timestamp || "not recorded";
+  const hash = x.ledger_hash || x.hash || "not anchored";
+  return `
+    <div class="timeline">
+      ${["REQUESTED","VALIDATED","REVIEWED","COMMITTED","RECORDED"].map(step => `
+        <div class="event">
+          <div class="k">${step}</div>
+          <div class="small">timestamp: ${now}</div>
+          <div class="small">operator: ${x.operator || "authority layer"}</div>
+          <div class="small">ledger hash: ${hash}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderDetail(x){
+  if(!x) return;
+  document.getElementById("detailId").textContent = x.id || "execution";
+  document.getElementById("detail").innerHTML = `
+    <div class="grid2">
+      <div class="block"><div class="k">ACTOR</div><div class="v">${x.actor || x.user || "NOT DECLARED"}</div></div>
+      <div class="block"><div class="k">STATUS</div><div class="v ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div></div>
+      <div class="block"><div class="k">VALIDATION</div><div class="v">${x.validation_result || x.validation || "UNCLEAR"}</div></div>
+      <div class="block"><div class="k">RISK</div><div class="v">${x.risk || x.risk_level || "CONTROLLED"}</div></div>
+      <div class="block"><div class="k">LEDGER</div><div class="v">${x.ledger_state || "HASH LINKED"}</div></div>
+      <div class="block"><div class="k">AUDIT</div><div class="v">${x.audit_state || "RECORDED"}</div></div>
+    </div>
+
+    <div class="block">
+      <h2>CORE LEDGER LINKAGE</h2>
+      <div class="grid2">
+        <div><div class="k">LEDGER STATE</div><div class="v">${x.ledger_state || "ACTIVE"}</div></div>
+        <div><div class="k">DOUBLE ENTRY</div><div class="v">${x.double_entry ? "VERIFIED" : "PENDING"}</div></div>
+        <div><div class="k">SETTLEMENT</div><div class="v">${x.settlement_state || "UNSETTLED"}</div></div>
+        <div><div class="k">RECONCILIATION</div><div class="v">${x.reconciliation_state || "PENDING"}</div></div>
+        <div><div class="k">HASH VERIFIED</div><div class="v">${x.hash_verified ? "YES" : "PENDING"}</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>AUDIT TIMELINE RAIL</h2>
+      ${timeline(x)}
+    </div>
+
+    <div class="block">
+      <h2>OPERATOR ACTIONS</h2>
+      <div class="actions">
+        <button onclick="operatorAction('APPROVE')">APPROVE</button>
+        <button class="danger" onclick="operatorAction('REJECT')">REJECT</button>
+        <button class="secondary" onclick="operatorAction('ESCALATE')">ESCALATE</button>
+        <button class="secondary" onclick="operatorAction('FREEZE')">FREEZE</button>
+        <button class="secondary" onclick="operatorAction('REPLAY')">REPLAY</button>
+        <button class="danger" onclick="operatorAction('ROLLBACK_BLOCK')">ROLLBACK BLOCK</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>PAYLOAD</h2>
+      <pre>${escapeHtml(JSON.stringify(x.payload || x, null, 2))}</pre>
+    </div>
+  `;
+}
+
+async function operatorAction(action){
+  if(!SELECTED) return alert("No execution selected.");
+  try{
+    await api("/api/v1/operator/action", {
+      method:"POST",
+      body: JSON.stringify({ execution_id: SELECTED.id, action })
+    });
+    await loadExecutions();
+    alert("Operator action recorded: " + action);
+  }catch(e){
+    alert("Action failed: " + e.message);
+  }
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+if(TOKEN) authorize();
 </script>
 </body>
 </html>
