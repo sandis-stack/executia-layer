@@ -462,58 +462,117 @@ async function loadProof(x){
   }
 }
 
+
 function renderDetail(x){
-  if(!x) return;
-  document.getElementById("detailId").textContent = x.id || "execution";
-  document.getElementById("detail").innerHTML = `
-    <div class="grid2">
-      <div class="block"><div class="k">ACTOR</div><div class="v">${x.actor || x.user || "NOT DECLARED"}</div></div>
-      <div class="block"><div class="k">STATUS</div><div class="v ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div></div>
-      <div class="block"><div class="k">VALIDATION</div><div class="v">${x.validation_result || x.validation || "UNCLEAR"}</div></div>
-      <div class="block"><div class="k">RISK</div><div class="v">${x.risk || x.risk_level || "CONTROLLED"}</div></div>
-      <div class="block"><div class="k">LEDGER</div><div class="v">${x.ledger_state || "HASH LINKED"}</div></div>
-      <div class="block"><div class="k">AUDIT</div><div class="v">${x.audit_state || "RECORDED"}</div></div>
-    </div>
+  const el = document.getElementById("detail");
 
-    <div class="block">
-      <h2>CORE LEDGER LINKAGE</h2>
+  if(!x){
+    el.innerHTML = `
+      <div class="drawer-body">
+        <div class="block">
+          <div class="k">STATE</div>
+          <div class="v">AWAITING SELECTION</div>
+          <div class="small" style="margin-top:8px;">
+            Select an execution to inspect validation, audit trail, ledger linkage,
+            reconciliation proof and hash integrity.
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="k">DETAIL SURFACE</div>
+          <div class="v">READY</div>
+        </div>
+
+        <div class="block">
+          <div class="k">PROOF ENGINE</div>
+          <div class="v">STANDBY</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="drawer-body">
+
+      <div class="block">
+        <div class="k">EXECUTION ID</div>
+        <div class="v">${escapeHtml(x.execution_id || x.id || "-")}</div>
+      </div>
+
       <div class="grid2">
-        <div><div class="k">LEDGER STATE</div><div class="v">${x.ledger_state || "ACTIVE"}</div></div>
-        <div><div class="k">DOUBLE ENTRY</div><div class="v">${x.double_entry ? "VERIFIED" : "PENDING"}</div></div>
-        <div><div class="k">SETTLEMENT</div><div class="v">${x.settlement_state || "UNSETTLED"}</div></div>
-        <div><div class="k">RECONCILIATION</div><div class="v">${x.reconciliation_state || "PENDING"}</div></div>
-        <div><div class="k">HASH VERIFIED</div><div class="v">${x.hash_verified ? "YES" : "PENDING"}</div></div>
+
+        <div class="block">
+          <div class="k">STATUS</div>
+          <div class="v">${escapeHtml(x.status || "-")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">VALIDATION</div>
+          <div class="v">${escapeHtml(x.validation_result || "-")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">ACTOR</div>
+          <div class="v">${escapeHtml(x.actor || "-")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">REQUEST TYPE</div>
+          <div class="v">${escapeHtml(x.request_type || "-")}</div>
+        </div>
+
       </div>
-    </div>
 
-    <div class="block">
-      <h2>AUDIT TIMELINE RAIL</h2>
-      ${timeline(x)}
-    </div>
-
-    <div class="block" id="proofPanel">
-      <h2>EXECUTION PROOF</h2>
-      <div class="small">Loading proof...</div>
-    </div>
-
-    <div class="block">
-      <h2>OPERATOR ACTIONS</h2>
-      <div class="actions">
-        <button onclick="operatorAction('APPROVE')">APPROVE</button>
-        <button class="danger" onclick="operatorAction('REJECT')">REJECT</button>
-        <button class="secondary" onclick="operatorAction('ESCALATE')">ESCALATE</button>
-        <button class="secondary" onclick="operatorAction('FREEZE')">FREEZE</button>
-        <button class="secondary" onclick="operatorAction('REPLAY')">REPLAY</button>
-        <button class="danger" onclick="operatorAction('ROLLBACK_BLOCK')">ROLLBACK BLOCK</button>
+      <div class="block">
+        <div class="k">SUBJECT</div>
+        <div class="v">${escapeHtml(x.subject || "-")}</div>
       </div>
-    </div>
 
-    <div class="block">
-      <h2>PAYLOAD</h2>
-      <pre>${escapeHtml(JSON.stringify(x.payload || x, null, 2))}</pre>
+      <div class="grid2">
+
+        <div class="block">
+          <div class="k">LEDGER</div>
+          <div class="v">${escapeHtml(x.ledger_state || "HASH_LINKED")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">AUDIT</div>
+          <div class="v">${escapeHtml(x.audit_state || "RECORDED")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">RECONCILIATION</div>
+          <div class="v">${escapeHtml(x.reconciliation_state || "VERIFIED")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">HASH</div>
+          <div class="v">${x.hash ? "VERIFIED" : "MISSING"}</div>
+        </div>
+
+      </div>
+
+      <div id="proofPanel" class="block">
+        <div class="k">EXECUTION PROOF</div>
+        <div class="v">LOADING...</div>
+      </div>
+
+      <div class="block">
+        <div class="k">OPERATOR ACTIONS</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+          <button>APPROVE</button>
+          <button class="secondary">ESCALATE</button>
+          <button class="danger">REJECT</button>
+          <button class="secondary">FREEZE</button>
+        </div>
+      </div>
+
     </div>
   `;
 }
+
 
 async function operatorAction(action){
   if(!SELECTED) return alert("No execution selected.");
