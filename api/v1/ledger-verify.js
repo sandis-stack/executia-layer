@@ -1,16 +1,15 @@
 import { verifyLedgerChain } from "../../services/ledger.js";
 import { requireInternalKey } from "../../services/auth.js";
-import { resolveJwtContext } from "../../services/jwt-auth.js";
+import { requireOperator } from "../../services/operator.js";
 
 // Accepts: EXECUTIA_API_KEY (x-api-key) OR Supabase operator JWT (Authorization: Bearer)
 async function requireAuth(req) {
   const internalAuth = requireInternalKey(req);
   if (internalAuth.ok) return internalAuth;
 
-  // Fallback: Supabase JWT (operator console)
   try {
-    const jwtAuth = await resolveJwtContext(req);
-    if (jwtAuth.ok) return jwtAuth;
+    const operatorAuth = await requireOperator(req);
+    if (operatorAuth?.user) return { ok: true, mode: "OPERATOR_JWT", user: operatorAuth.user };
   } catch (_) {}
 
   return { ok: false, error: "UNAUTHORIZED" };
