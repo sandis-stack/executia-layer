@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -11,22 +11,33 @@ function json(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
-function verifyOperator(req) {
-  const authHeader = req.headers.authorization || "";
-  const token = authHeader.replace("Bearer ", "").trim();
+function b64url(input) {
+  return Buffer.from(input).toString("base64url");
+}
 
+function verifyJwtHS256(token) {
   if (!token || !JWT_SECRET) return null;
 
-  const decoded = jwt.verify(token, JWT_SECRET);
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
 
-  if (!decoded || !["OPERATOR", "ADMIN"].includes(decoded.role)) {
-    return null;
-  }
+  const [headerB64, payloadB64, signatureB64] = parts;
+  const expected = crypto
+    .createHmac("sha256", JWT_SECRET)
+    .update(`${headerB64}.${payloadB64}`)
+    .digest("base64url");
+
+  if (expected !== signatureB64) return null;
+
+  const payload = JSON.parse(Buffer.from(payloadB64, "base64url").toString("utf8"));
+
+  if (payload.exp && Date.now() >= payload.exp * 1000) return null;
+  if (!["OPERATOR", "ADMIN"].includes(payload.role)) return null;
 
   return {
-    id: decoded.id || decoded.sub || null,
-    email: decoded.email || null,
-    role: decoded.role
+    id: payload.id || payload.sub || null,
+    email: payload.email || null,
+    role: payload.role
   };
 }
 
@@ -58,45 +69,30 @@ function transitionFor(action) {
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
-      return json(res, 405, {
-        ok: false,
-        error: { code: "METHOD_NOT_ALLOWED", message: "POST required." }
-      });
+      return json(res, 405, { ok: false, error: { code: "METHOD_NOT_ALLOWED", message: "POST required." } });
     }
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      return json(res, 500, {
-        ok: false,
-        error: { code: "SUPABASE_ENV_MISSING", message: "Supabase env missing." }
-      });
+      return json(res, 500, { ok: false, error: { code: "SUPABASE_ENV_MISSING", message: "Supabase env missing." } });
     }
 
-    const operator = verifyOperator(req);
+    const token = String(req.headers.authorization || "").replace("Bearer ", "").trim();
+    const operator = verifyJwtHS256(token);
 
     if (!operator) {
-      return json(res, 401, {
-        ok: false,
-        error: { code: "UNAUTHORIZED", message: "Operator authority required." }
-      });
+      return json(res, 401, { ok: false, error: { code: "UNAUTHORIZED", message: "Operator authority required." } });
     }
 
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const execution_id = body.execution_id;
-    const reason = body.reason || null;
     const transition = transitionFor(body.action);
 
-    if (!execution_id) {
-      return json(res, 400, {
-        ok: false,
-        error: { code: "EXECUTION_ID_REQUIRED", message: "execution_id required." }
-      });
+    if (!execution_id || execution_id === "PASTE_EXECUTION_ID_HERE") {
+      return json(res, 400, { ok: false, error: { code: "EXECUTION_ID_REQUIRED", message: "Real execution_id required." } });
     }
 
     if (!transition) {
-      return json(res, 400, {
-        ok: false,
-        error: { code: "INVALID_ACTION", message: "Invalid operator action." }
-      });
+      return json(res, 400, { ok: false, error: { code: "INVALID_ACTION", message: "Invalid operator action." } });
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -110,10 +106,7 @@ export default async function handler(req, res) {
     if (readError || !current) {
       return json(res, 404, {
         ok: false,
-        error: {
-          code: "EXECUTION_NOT_FOUND",
-          message: readError?.message || "Execution not found."
-        }
+        error: { code: "EXECUTION_NOT_FOUND", message: readError?.message || "Execution not found." }
       });
     }
 
@@ -126,10 +119,7 @@ export default async function handler(req, res) {
       .eq("id", execution_id);
 
     if (updateError) {
-      return json(res, 500, {
-        ok: false,
-        error: { code: "STATE_UPDATE_FAILED", message: updateError.message }
-      });
+      return json(res, 500, { ok: false, error: { code: "STATE_UPDATE_FAILED", message: updateError.message } });
     }
 
     const trace = transition.trace.map((state) => ({
@@ -148,7 +138,7 @@ export default async function handler(req, res) {
         next_state: transition.next_state,
         actor_email: operator.email,
         actor_role: operator.role,
-        reason,
+        reason: body.reason || null,
         trace,
         metadata: {
           source: "operator_console",
@@ -156,14 +146,11 @@ export default async function handler(req, res) {
           materialized: true
         }
       })
-      .select()
+      .select("id")
       .single();
 
     if (auditError) {
-      return json(res, 500, {
-        ok: false,
-        error: { code: "AUDIT_EVENT_FAILED", message: auditError.message }
-      });
+      return json(res, 500, { ok: false, error: { code: "AUDIT_EVENT_FAILED", message: auditError.message } });
     }
 
     return json(res, 200, {
@@ -173,16 +160,13 @@ export default async function handler(req, res) {
       action: transition.action,
       previous_state,
       next_state: transition.next_state,
-      trace,
-      audit_event_id: auditEvent.id
+      audit_event_id: auditEvent.id,
+      trace
     });
   } catch (err) {
     return json(res, 500, {
       ok: false,
-      error: {
-        code: "OPERATOR_ACTION_FAILED",
-        message: err.message
-      }
+      error: { code: "OPERATOR_ACTION_FAILED", message: err.message }
     });
   }
 }
