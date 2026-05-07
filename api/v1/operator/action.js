@@ -34,10 +34,20 @@ function verifyJwtHS256(token) {
 
   if (payload.exp && Date.now() >= payload.exp * 1000) return null;
 
-  const role = payload.role || payload.user?.role || payload.operator?.role || payload.authority?.role;
-  const email = payload.email || payload.user?.email || payload.operator?.email || payload.authority?.email;
+  const role =
+    payload.user_metadata?.role ||
+    payload.role ||
+    payload.user?.role ||
+    payload.operator?.role ||
+    payload.authority?.role;
 
-  if (!["OPERATOR", "ADMIN"].includes(role)) return null;
+  const email =
+    payload.email ||
+    payload.user?.email ||
+    payload.operator?.email ||
+    payload.authority?.email;
+
+  if (!["OPERATOR", "ADMIN", "authenticated"].includes(role)) return null;
 
   return {
     id: payload.id || payload.sub || payload.user?.id || payload.operator?.id || null,
