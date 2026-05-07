@@ -2550,3 +2550,39 @@ body > div[style*="position:fixed"][style*="bottom"] {
     grid-template-columns: 1fr;
   }
 }
+
+/* EXECUTIA command surface final polish */
+.rawBox{
+  margin-top:14px;
+}
+.rawBox summary{
+  cursor:pointer;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.18em;
+  color:#49657e;
+  margin-bottom:10px;
+}
+.rail{
+  display:flex;
+  gap:8px;
+  margin-top:16px;
+  margin-bottom:6px;
+}
+.rail span{
+  border:1px solid #dbe5f0;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.16em;
+  color:#49657e;
+  background:#f8fbff;
+}
+.rail span:nth-child(2){
+  background:#fff7e8;
+  color:#8a5d00;
+}
+.summary{
+  max-height:52px!important;
+}

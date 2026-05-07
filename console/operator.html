@@ -20,11 +20,11 @@ h1,h2,h3{margin:0;color:#0f355d}h1,h2{font-size:18px}h3{font-size:22px;letter-sp
 p{margin:6px 0 0;color:#64798f;font-size:13px;line-height:1.45}
 .pill{display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:999px;background:#f4f8fc;color:#12365d;font-size:10px;font-weight:900;letter-spacing:.2em}
 .ok{background:#eaf8f1;color:#0e6745}.warn{background:#fff7e8;color:#8a5d00}
-.auth{min-height:78px}.authrow{display:flex;gap:12px;margin-top:20px}.authrow button,.cmd{border:0;border-radius:14px;height:44px;padding:0 20px;font-weight:900;letter-spacing:.12em;font-size:10px;cursor:pointer}
+.auth{min-height:64px}.authrow{display:flex;gap:12px;margin-top:20px}.authrow button,.cmd{border:0;border-radius:14px;height:44px;padding:0 20px;font-weight:900;letter-spacing:.12em;font-size:10px;cursor:pointer}
 .authrow button{background:#f6f9fc;border:1px solid #dce6f1;color:#12365d}
 .telegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tile{background:#f8fbff;border:1px solid #edf2f7;border-radius:14px;padding:12px}.tile span{display:block;color:#6f8499;font-size:10px;font-weight:900;letter-spacing:.16em;margin-bottom:6px}.tile strong{display:block;color:#0f355d;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.summary{margin-top:14px;background:#f6f9fd;border-radius:16px;padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.55;color:#243a52;max-height:72px;overflow:auto}
-.stream{min-height:120px}.execution{border:1px solid #dce6f1;border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff);padding:22px}.top{display:flex;justify-content:space-between;margin-bottom:18px}
+.summary{margin-top:14px;background:#f6f9fd;border-radius:16px;padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.55;color:#243a52;max-height:52px;overflow:auto}
+.stream{min-height:90px}.execution{border:1px solid #dce6f1;border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff);padding:22px}.top{display:flex;justify-content:space-between;margin-bottom:18px}
 .meta{margin-top:24px;display:grid;grid-template-columns:140px 1fr;gap:12px 18px}.meta span{font-size:13px;color:#49657e;font-weight:850}.meta strong{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#2c4660;font-size:13px}
 .cmdrow{display:flex;gap:12px;margin-top:26px}.commit{background:#12365d;color:#fff;box-shadow:0 10px 24px rgba(15,53,93,.13)}.reject{background:#fff;color:#a83434;border:1px solid #d9a7a7}
 .registry{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -51,7 +51,7 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
     <div class="card">
       <div class="head"><div><p class="label">TELEMETRY</p><h2>Execution telemetry</h2></div><span class="pill ok">LIVE</span></div>
       <div class="telegrid"><div class="tile"><span>MODE</span><strong id="modeValue">—</strong></div><div class="tile"><span>TENANT</span><strong id="tenantValue">—</strong></div><div class="tile"><span>ROLE</span><strong id="roleValue">—</strong></div><div class="tile"><span>QUEUE</span><strong id="queueCount">—</strong></div></div>
-      <pre id="queueJson" class="summary">Waiting for session...</pre>
+      <details class="rawBox"><summary>RAW TELEMETRY</summary><pre id="queueJson" class="summary">Waiting for session...</pre></details>
     </div>
   </section>
 
@@ -101,7 +101,7 @@ async function loadQueue(){
   const actor=clean(item.actor||item.operator_email||item.user_email,"SYSTEM_OPERATOR");
   const status=clean(item.status,"PENDING");
   const card=document.createElement("article"); card.className="execution";
-  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3>${title}</h3><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
+  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3></h3><div class="rail"><span>REQUESTED</span><span>REVIEW</span><span>COMMIT</span></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
   $("queueList").appendChild(card);
  })
 }
