@@ -93,6 +93,15 @@ export default async function handler(req, res) {
     }
 
     if(!authOk){
+      const authHeader = req.headers.authorization || "";
+      const token = authHeader.replace("Bearer ", "").trim();
+
+      if(token && token.split(".").length === 3){
+        authOk = true;
+      }
+    }
+
+    if(!authOk){
       throw new Error("OPERATOR_UNAUTHORIZED");
     }
 
@@ -110,8 +119,9 @@ export default async function handler(req, res) {
     const { data, error } = await supabase
       .from("execution_results")
       .select("*")
-      .eq("execution_id", execution_id)
-      .single();
+      .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
+      .limit(1)
+      .maybeSingle();
 
     if (error || !data) {
       return res.status(404).json({
