@@ -842,10 +842,15 @@ async function renderRuleSurface(x){
 
   try{
     const data = await api("/api/v1/rules/evaluate?execution_id=" + encodeURIComponent(x.execution_id));
+
+    window.__LAST_RULE_RESPONSE = data;
     const rules = data.rules || [];
 
     const summaryPanel = document.getElementById("decisionSummaryPanel");
-    const summary = data.decision_summary || {};
+    const summary =
+      data.decision_summary ||
+      window.__LAST_RULE_RESPONSE?.decision_summary ||
+      {};
 
     if(summaryPanel){
       const decision = summary.overall_decision || "UNKNOWN";
