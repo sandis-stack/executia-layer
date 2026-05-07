@@ -544,7 +544,7 @@ async function loadExecutions(){
 }
 
 function renderRows(){
-  if(!ITEMS.length){
+  if(!visibleItems.length){
     document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>Execution stream is unavailable until operator authority is verified.</p></div></div>`;
     return;
   }
