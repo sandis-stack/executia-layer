@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 let cached = null;
 
@@ -25,6 +26,9 @@ export function db() {
           persistSession: false,
           autoRefreshToken: false,
           detectSessionInUrl: false
+        },
+        realtime: {
+          transport: ws
         }
       }
     );

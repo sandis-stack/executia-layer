@@ -1,7 +1,7 @@
 {
   "name": "executia-layer",
   "version": "8.1.0-production-candidate",
-  "description": "EXECUTIA\u2122 Production Candidate \u2014 Atomic Execution Truth Engine",
+  "description": "EXECUTIA™ Production Candidate — Atomic Execution Truth Engine",
   "type": "module",
   "engines": {
     "node": "20.x"
