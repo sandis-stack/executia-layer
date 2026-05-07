@@ -2091,3 +2091,61 @@ body > div[style*="position:fixed"][style*="bottom"] {
 .ex-panel-title{
   letter-spacing:-0.02em!important;
 }
+
+
+/* EXECUTIA authority command layer */
+
+.ex-btn{
+  text-transform:uppercase!important;
+  letter-spacing:.14em!important;
+  font-weight:760!important;
+  min-height:52px!important;
+  border-radius:14px!important;
+  transition:all .18s ease!important;
+}
+
+.ex-btn.primary{
+  background:#16324f!important;
+  border:1px solid #16324f!important;
+  color:#fff!important;
+  box-shadow:0 8px 22px rgba(15,53,93,.14)!important;
+}
+
+.ex-btn.primary:hover{
+  background:#10263d!important;
+  border-color:#10263d!important;
+  transform:translateY(-1px);
+}
+
+.ex-btn.danger{
+  background:#fff!important;
+  border:1px solid #c94747!important;
+  color:#a92f2f!important;
+}
+
+.ex-btn.danger:hover{
+  background:#fff5f5!important;
+  border-color:#a92f2f!important;
+}
+
+.ex-actions{
+  gap:14px!important;
+}
+
+.ex-queue-card{
+  border-radius:18px!important;
+  border:1px solid #d8e2ee!important;
+  box-shadow:0 10px 26px rgba(15,53,93,.04)!important;
+}
+
+.ex-queue-title{
+  text-transform:uppercase!important;
+  letter-spacing:.02em!important;
+  font-size:24px!important;
+}
+
+.ex-pill{
+  text-transform:uppercase!important;
+  letter-spacing:.12em!important;
+  font-weight:760!important;
+}
