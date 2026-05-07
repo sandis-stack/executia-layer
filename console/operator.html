@@ -11,7 +11,7 @@ body{margin:0;background:linear-gradient(180deg,#fff,#f8fbff);font-family:-apple
 .nav{display:flex;gap:42px}.nav a{text-decoration:none;color:#102f4f;font-weight:800;font-size:12px;letter-spacing:.16em}.nav .active{border-bottom:2px solid #102f4f;padding-bottom:12px}
 .entry{border:1px solid #d6e1ed;border-radius:999px;padding:11px 20px;text-decoration:none;color:#102f4f;font-weight:800}
 .state{height:34px;border-top:1px solid #edf2f7;border-bottom:1px solid #e5edf5;background:#f8fbff;display:flex;justify-content:center;gap:70px;align-items:center;font-size:11px;font-weight:900;letter-spacing:.2em;color:#4d6680}
-.shell{max-width:1220px;margin:42px auto 70px;padding:0 24px}
+.shell{max-width:1220px;margin:24px auto 48px;padding:0 24px}
 .grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(360px,.9fr);gap:24px;align-items:start}.grid+.grid{margin-top:24px}
 .card{background:#fff;border:1px solid #dce6f1;border-radius:22px;box-shadow:0 16px 38px rgba(15,53,93,.045);padding:24px}
 .head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}
@@ -23,8 +23,8 @@ p{margin:6px 0 0;color:#64798f;font-size:13px;line-height:1.45}
 .auth{min-height:118px}.authrow{display:flex;gap:12px;margin-top:20px}.authrow button,.cmd{border:0;border-radius:14px;height:44px;padding:0 20px;font-weight:900;letter-spacing:.12em;font-size:11px;cursor:pointer}
 .authrow button{background:#f6f9fc;border:1px solid #dce6f1;color:#12365d}
 .telegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tile{background:#f8fbff;border:1px solid #edf2f7;border-radius:14px;padding:12px}.tile span{display:block;color:#6f8499;font-size:10px;font-weight:900;letter-spacing:.16em;margin-bottom:6px}.tile strong{display:block;color:#0f355d;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.summary{margin-top:14px;background:#f6f9fd;border-radius:16px;padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.55;color:#243a52;max-height:150px;overflow:auto}
-.stream{min-height:360px}.execution{border:1px solid #dce6f1;border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff);padding:22px}.top{display:flex;justify-content:space-between;margin-bottom:18px}
+.summary{margin-top:14px;background:#f6f9fd;border-radius:16px;padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.55;color:#243a52;max-height:110px;overflow:auto}
+.stream{min-height:220px}.execution{border:1px solid #dce6f1;border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff);padding:22px}.top{display:flex;justify-content:space-between;margin-bottom:18px}
 .meta{margin-top:24px;display:grid;grid-template-columns:140px 1fr;gap:12px 18px}.meta span{font-size:13px;color:#49657e;font-weight:850}.meta strong{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#2c4660;font-size:13px}
 .cmdrow{display:flex;gap:12px;margin-top:26px}.commit{background:#12365d;color:#fff;box-shadow:0 10px 24px rgba(15,53,93,.13)}.reject{background:#fff;color:#a83434;border:1px solid #d9a7a7}
 .registry{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -49,7 +49,7 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
       <div class="authrow"><button id="refreshBtn">SYNC QUEUE</button><button id="logoutBtn">LOGOUT</button></div>
     </div>
     <div class="card">
-      <div class="head"><div><p class="label">TELEMETRY</p><h2>System state</h2></div><span class="pill ok">LIVE</span></div>
+      <div class="head"><div><p class="label">TELEMETRY</p><h2>Raw telemetry</h2></div><span class="pill ok">LIVE</span></div>
       <div class="telegrid"><div class="tile"><span>MODE</span><strong id="modeValue">—</strong></div><div class="tile"><span>TENANT</span><strong id="tenantValue">—</strong></div><div class="tile"><span>ROLE</span><strong id="roleValue">—</strong></div><div class="tile"><span>QUEUE</span><strong id="queueCount">—</strong></div></div>
       <pre id="queueJson" class="summary">Waiting for session...</pre>
     </div>
@@ -57,11 +57,11 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
 
   <section class="grid">
     <div class="card stream">
-      <div class="head"><div><p class="label">EXECUTION STREAM</p><h2>Active executions</h2></div><span class="pill warn">QUEUE</span></div>
+      <div class="head"><div><p class="label">EXECUTION STREAM</p><h2>Execution stream</h2></div><span class="pill warn">QUEUE</span></div>
       <div id="queueList">Sign in to load execution stream.</div>
     </div>
     <aside class="card">
-      <div class="head"><div><p class="label">REGISTRY</p><h2>Authority context</h2></div><span class="pill">CONTROL</span></div>
+      <div class="head"><div><p class="label">REGISTRY</p><h2>Authority registry</h2></div><span class="pill">CONTROL</span></div>
       <div class="registry"><div class="tile"><span>AUTH</span><strong>Bearer JWT</strong></div><div class="tile"><span>VALIDATION</span><strong>ACTIVE</strong></div><div class="tile"><span>LEDGER</span><strong>VERIFIED</strong></div><div class="tile"><span>AUDIT</span><strong>RECORDING</strong></div></div>
     </aside>
   </section>
