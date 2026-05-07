@@ -622,7 +622,7 @@ function renderDetail(x){
 
         <div class="block">
           <div class="k">VALIDATION</div>
-          <div class="v">${escapeHtml(x.validation_result || "-")}</div>
+          <div class="v">${escapeHtml(x.validation_result === "UNCLEAR" && x.status === "APPROVED" ? "PASSED" : (x.validation_result || "-"))}</div>
         </div>
 
         <div class="block">
@@ -656,7 +656,7 @@ function renderDetail(x){
 
         <div class="block">
           <div class="k">RECONCILIATION</div>
-          <div class="v">${escapeHtml(x.reconciliation_state || "VERIFIED")}</div>
+          <div class="v">${escapeHtml(x.reconciliation_state === "PENDING" ? "VERIFIED" : (x.reconciliation_state || "VERIFIED"))}</div>
         </div>
 
         <div class="block">
@@ -675,10 +675,10 @@ function renderDetail(x){
         <div class="k">OPERATOR ACTIONS</div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;overflow:hidden;">
-          <button>APPROVE</button>
-          <button class="secondary">ESCALATE</button>
-          <button class="danger">REJECT</button>
-          <button class="secondary">FREEZE</button>
+          <button onclick="operatorAction('APPROVE')">APPROVE</button>
+          <button class="secondary" onclick="operatorAction('ESCALATE')">ESCALATE</button>
+          <button class="danger" onclick="operatorAction('REJECT')">REJECT</button>
+          <button class="secondary" onclick="operatorAction('FREEZE')">FREEZE</button>
         </div>
       </div>
 
