@@ -828,6 +828,72 @@ function renderDetail(x){
 
 
 
+
+function renderRuleSurface(x){
+  const panel = document.getElementById("ruleSurfacePanel");
+  if(!panel || !x) return;
+
+  const rules = [
+    {
+      name:"AML_CHECK",
+      status:(x.amount || 0) > 100000000 ? "REVIEW" : "PASSED"
+    },
+    {
+      name:"DOUBLE_ENTRY",
+      status:x.audit_state === "RECORDED" ? "VERIFIED" : "PENDING"
+    },
+    {
+      name:"EXECUTION_POLICY",
+      status:x.status === "BLOCKED" ? "BLOCKED" : "PASSED"
+    },
+    {
+      name:"RISK_THRESHOLD",
+      status:x.validation_result === "UNCLEAR" ? "REVIEW" : "PASSED"
+    },
+    {
+      name:"HASH_CHAIN",
+      status:x.hash ? "LINKED" : "MISSING"
+    }
+  ];
+
+  panel.innerHTML = `
+    <div class="k">RULE SURFACE</div>
+
+    <div style="display:grid;gap:8px;margin-top:10px;">
+      ${rules.map(rule => `
+        <div class="block" style="background:#fff;padding:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="small">
+              ${
+                ["PASSED","VERIFIED","LINKED"].includes(rule.status)
+                  ? "✓"
+                  : rule.status === "REVIEW"
+                    ? "⚠"
+                    : "✕"
+              }
+              ${rule.name}
+            </div>
+
+            <div class="small" style="
+              font-weight:700;
+              color:${
+                ["PASSED","VERIFIED","LINKED"].includes(rule.status)
+                  ? "var(--ok)"
+                  : rule.status === "REVIEW"
+                    ? "var(--warn)"
+                    : "var(--bad)"
+              };
+            ">
+              ${rule.status}
+            </div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+
 async function operatorAction(action){
   if(!SELECTED) return alert("No execution selected.");
 
@@ -851,6 +917,7 @@ async function operatorAction(action){
 
     renderDetail(SELECTED);
     await loadProof(SELECTED);
+    renderRuleSurface(SELECTED);
     await loadExecutions();
 
   }catch(e){
