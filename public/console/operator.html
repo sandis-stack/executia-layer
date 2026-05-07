@@ -320,6 +320,64 @@ border-left:4px solid transparent;
     transform:translateY(0);
   }
 }
+
+.row.new-row{
+  animation:newRowFlash 3s ease;
+}
+@keyframes newRowFlash{
+  0%{
+    background:#dff7e8;
+    transform:translateX(6px);
+  }
+  100%{
+    background:transparent;
+    transform:translateX(0);
+  }
+}
+.row.PENDING_REVIEW{
+  position:relative;
+}
+.row.PENDING_REVIEW::after{
+  content:"";
+  position:absolute;
+  right:0;
+  top:0;
+  width:3px;
+  height:100%;
+  background:#d69e2e;
+  animation:pendingPulse 1.6s infinite;
+}
+@keyframes pendingPulse{
+  0%{opacity:.35}
+  50%{opacity:1}
+  100%{opacity:.35}
+}
+.live-header{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  padding:10px 14px;
+  border-bottom:1px solid var(--line);
+  background:#f7fbff;
+}
+.live-card{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  padding:10px;
+}
+.live-card span{
+  display:block;
+  font-size:9px;
+  letter-spacing:.14em;
+  color:var(--muted);
+}
+.live-card strong{
+  display:block;
+  margin-top:4px;
+  font-size:14px;
+}
+
 </style>
 </head>
 <body>
@@ -414,8 +472,30 @@ AUTHORIZE WITH TOKEN
 
   <section class="stream">
     <div class="stream-head">
-      <h2>EXECUTION REGISTRY</h2>
+      <h2>LIVE EXECUTION STREAM</h2>
       <button class="secondary" onclick="loadExecutions()">REFRESH</button>
+    </div>
+
+    <div class="live-header">
+      <div class="live-card">
+        <span>STREAM</span>
+        <strong id="streamState">LIVE</strong>
+      </div>
+
+      <div class="live-card">
+        <span>TOTAL</span>
+        <strong id="totalCount">0</strong>
+      </div>
+
+      <div class="live-card">
+        <span>PENDING</span>
+        <strong id="pendingCount">0</strong>
+      </div>
+
+      <div class="live-card">
+        <span>BLOCKED</span>
+        <strong id="blockedCount">0</strong>
+      </div>
     </div>
     <div class="row" style="min-height:38px;background:#f4f7fb;cursor:default;border-left:4px solid transparent;">
       <div class="k">EXECUTION ID</div>
@@ -464,6 +544,7 @@ const API_BASE = "https://execution.executia.io";
 let TOKEN = localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") || "";
 let SELECTED = null;
 let ITEMS = [];
+let PREVIOUS_IDS = new Set();
 
 document.getElementById("token").value = TOKEN;
 
@@ -548,14 +629,28 @@ function renderRows(){
     document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>Execution stream is unavailable until operator authority is verified.</p></div></div>`;
     return;
   }
-  document.getElementById("rows").innerHTML = ITEMS.map(x => `
+  document.getElementById("totalCount").textContent = ITEMS.length;
+  document.getElementById("pendingCount").textContent =
+    ITEMS.filter(x => x.status === "PENDING_REVIEW").length;
+
+  document.getElementById("blockedCount").textContent =
+    ITEMS.filter(x => x.status === "BLOCKED").length;
+
+  document.getElementById("rows").innerHTML = ITEMS.map(x => {
+
+    const isNew = !PREVIOUS_IDS.has(x.id);
+
+    return `
     <div class="row ${SELECTED?.id===x.id ? "active":""}" onclick="selectExecution('${x.id}')">
       <div><b>${x.id || "EXECUTION"}</b><div class="small">${x.actor || x.user || "actor:not declared"}</div></div>
       <div class="status ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div>
       <div class="small">${x.validation_result || x.validation || "VALIDATION"}</div>
       <div class="small">${x.created_at || x.timestamp || "NO TIMESTAMP"}</div>
     </div>
-  `).join("");
+  ``;
+  }).join("");
+
+  PREVIOUS_IDS = currentIds;
 }
 
 async function selectExecution(id){
