@@ -315,7 +315,7 @@ border-left:4px solid transparent;
 
 <header>
   <div class="brand">EXECUTIA™ OPERATOR CONSOLE</div>
-  <div class="state" id="systemState">SYSTEM LOCK</div>
+  <div class="state" id="systemState">SYSTEM LOCK</div><div class="state" id="lastSync">SYNC: OFF</div>
 </header>
 
 <main>
@@ -569,8 +569,9 @@ async function selectExecution(id){
   renderRows();
   renderDetail(SELECTED);
   await loadProof(SELECTED);
-    await loadAuditTimeline(SELECTED);
   await loadAuditTimeline(SELECTED);
+  if(typeof renderRuleSurface === "function") await renderRuleSurface(SELECTED);
+  if(typeof loadExecutionTrace === "function") await loadExecutionTrace(SELECTED);
 }
 
 function timeline(x){
@@ -757,6 +758,21 @@ function renderDetail(x){
         <div class="small">Loading timeline...</div>
       </div>
 
+      <div id="decisionSummaryPanel" class="block">
+        <div class="k">DECISION SUMMARY</div>
+        <div class="v">LOADING</div>
+      </div>
+
+      <div id="ruleSurfacePanel" class="block">
+        <div class="k">RULE SURFACE</div>
+        <div class="small">Loading rules...</div>
+      </div>
+
+      <div id="executionTracePanel" class="block">
+        <div class="k">EXECUTION TRACE</div>
+        <div class="small">Trace loading...</div>
+      </div>
+
       <div class="block">
         <div class="k">OPERATOR ACTIONS</div>
 
@@ -774,6 +790,73 @@ function renderDetail(x){
 
 
 
+
+async function renderRuleSurface(x){
+  const panel = document.getElementById("ruleSurfacePanel");
+  if(!panel || !x?.execution_id) return;
+  try{
+    const data = await api("/api/v1/rules/evaluate?execution_id=" + encodeURIComponent(x.execution_id));
+    const rules = data.rules || [];
+    const summary = data.decision_summary || {};
+    const summaryPanel = document.getElementById("decisionSummaryPanel");
+
+    if(summaryPanel){
+      summaryPanel.innerHTML = `
+        <div class="k">DECISION SUMMARY</div>
+        <div class="v">${escapeHtml(summary.overall_decision || "UNKNOWN")}</div>
+        <div class="small">blocking: ${summary.blocking_rules ?? 0} · review: ${summary.review_rules ?? 0} · integrity: ${escapeHtml(summary.integrity || "PARTIAL")}</div>
+      `;
+    }
+
+    panel.innerHTML = `
+      <div class="k">RULE SURFACE</div>
+      <div style="display:grid;gap:8px;margin-top:10px;">
+        ${rules.map(rule => `
+          <div class="block" style="background:#fff;padding:10px;">
+            <div style="display:flex;justify-content:space-between;gap:10px;">
+              <div class="small">${["PASSED","VERIFIED","LINKED"].includes(rule.status) ? "✓" : rule.status === "REVIEW" ? "⚠" : "×"} ${escapeHtml(rule.rule)}</div>
+              <div class="small" style="font-weight:800;color:${["PASSED","VERIFIED","LINKED"].includes(rule.status) ? "var(--ok)" : rule.status === "REVIEW" ? "var(--warn)" : "var(--bad)"};">${escapeHtml(rule.status)} · ${Math.round((rule.confidence || 0)*100)}%</div>
+            </div>
+            <div class="small">impact: ${escapeHtml(rule.impact || "execution_control")}</div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }catch(e){
+    panel.innerHTML = `<div class="k">RULE SURFACE</div><div class="small">Rule engine unavailable: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+async function loadExecutionTrace(x){
+  const panel = document.getElementById("executionTracePanel");
+  if(!panel || !x?.execution_id) return;
+  try{
+    const data = await api("/api/v1/trace/execution?execution_id=" + encodeURIComponent(x.execution_id));
+    const trace = data.trace || [];
+    panel.innerHTML = `
+      <div class="k">EXECUTION TRACE</div>
+      <div class="timeline" style="margin-top:12px;">
+        ${trace.map(step => {
+          const materialized = String(step.step || "").startsWith("OPERATOR_") || ["LEDGER_COMMITTED","AUDIT_RECORDED","POLICY_STATE_CHANGED"].includes(step.step);
+          return `
+            <div class="event">
+              <div style="display:flex;justify-content:space-between;gap:10px;">
+                <div class="k">${escapeHtml(step.step || "STEP")}</div>
+                <div class="small" style="font-weight:800;color:${["PASSED","VERIFIED","LINKED","RECORDED","APPROVED"].includes(step.state) || materialized ? "var(--ok)" : step.state === "REVIEW" || step.state === "PENDING_REVIEW" || step.state === "UNCLEAR" ? "var(--warn)" : "var(--bad)"};">${escapeHtml(step.state || "INFO")}</div>
+              </div>
+              <div class="small">${escapeHtml(step.detail || "")}</div>
+              ${materialized ? `<div class="small" style="margin-top:4px;font-weight:800;color:var(--ok);">MATERIALIZED EXECUTION EVENT</div>` : ""}
+              <div class="small">${escapeHtml(step.timestamp || "")}</div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }catch(e){
+    panel.innerHTML = `<div class="k">EXECUTION TRACE</div><div class="small">Trace unavailable: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
 async function operatorAction(action){
   if(!SELECTED) return alert("No execution selected.");
 
@@ -788,16 +871,28 @@ async function operatorAction(action){
 
     SELECTED.operator_action = action;
 
-    if(result?.result?.status){
-      SELECTED.status = result.result.status;
+    if(result?.next_state){
+      SELECTED.status = result.next_state;
     }
 
     SELECTED.audit_state = "RECORDED";
     SELECTED.reconciliation_state = "VERIFIED";
 
+    await loadExecutions();
+
+    const fresh =
+      ITEMS.find(item => String(item.id) === String(SELECTED.id)) ||
+      ITEMS.find(item => String(item.execution_id) === String(SELECTED.execution_id)) ||
+      SELECTED;
+
+    SELECTED = fresh;
+
+    renderRows();
     renderDetail(SELECTED);
     await loadProof(SELECTED);
-    await loadExecutions();
+    await loadAuditTimeline(SELECTED);
+    await renderRuleSurface(SELECTED);
+    await loadExecutionTrace(SELECTED);
 
   }catch(e){
     alert("Action failed: " + e.message);
