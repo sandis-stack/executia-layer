@@ -283,6 +283,30 @@ border-left:4px solid transparent;
   letter-spacing:.12em;
 }
 
+
+.live-dot{
+  display:inline-block;
+  width:9px;
+  height:9px;
+  margin-right:8px;
+  border-radius:999px;
+  background:#18c66a;
+  box-shadow:0 0 0 0 rgba(24,198,106,.55);
+  animation:livePulse 1.6s infinite;
+  vertical-align:middle;
+}
+
+@keyframes livePulse{
+  0%{box-shadow:0 0 0 0 rgba(24,198,106,.55);transform:scale(1);}
+  60%{box-shadow:0 0 0 10px rgba(24,198,106,0);transform:scale(1.08);}
+  100%{box-shadow:0 0 0 0 rgba(24,198,106,0);transform:scale(1);}
+}
+
+.state.live{
+  color:#0b8f48;
+  font-weight:800;
+}
+
 </style>
 </head>
 <body>
@@ -504,6 +528,8 @@ async function authorize(){
 function setSyncState(label, live){
   const el = document.getElementById("lastSync");
   if(!el) return;
+
+  el.classList.toggle("live", !!live);
   el.innerHTML = live
     ? `<span class="live-dot"></span>${label}`
     : label;
