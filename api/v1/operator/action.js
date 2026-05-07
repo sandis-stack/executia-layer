@@ -4,6 +4,7 @@ import crypto from "crypto";
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const JWT_SECRET = process.env.JWT_SECRET || process.env.EXECUTIA_JWT_SECRET;
+const EXECUTIA_API_KEY = process.env.EXECUTIA_API_KEY || process.env.EXECUTIA_INTERNAL_KEY;
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -80,8 +81,19 @@ export default async function handler(req, res) {
       return json(res, 500, { ok: false, error: { code: "SUPABASE_ENV_MISSING", message: "Supabase env missing." } });
     }
 
-    const token = String(req.headers.authorization || "").replace("Bearer ", "").trim();
-    const operator = verifyJwtHS256(token);
+    const incomingKey = req.headers["x-api-key"] || req.headers["x-executia-key"];
+    let operator = null;
+
+    if (EXECUTIA_API_KEY && incomingKey === EXECUTIA_API_KEY) {
+      operator = {
+        id: "system",
+        email: "system@executia.io",
+        role: "ADMIN"
+      };
+    } else {
+      const token = String(req.headers.authorization || "").replace("Bearer ", "").trim();
+      operator = verifyJwtHS256(token);
+    }
 
     if (!operator) {
       return json(res, 401, { ok: false, error: { code: "UNAUTHORIZED", message: "Operator authority required." } });
