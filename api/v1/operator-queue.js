@@ -1,13 +1,13 @@
 import { db } from "../../services/db.js";
 import { ok, fail } from "../../shared/response.js";
-import { resolveEnterpriseContext, requirePermission } from "../../services/enterprise-auth.js";
+import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 
 export default async function handler(req, res) {
   try {
-    const auth = await resolveEnterpriseContext(req);
-    if (!auth.ok) return fail(res, auth.error, auth.error || "Authentication failed.", auth.status || 401);
+    const auth = await resolveJwtContext(req);
+    if (!auth.ok) return fail(res, auth.error, auth.error || "JWT auth failed.", auth.status || 401);
 
-    const permission = requirePermission(auth, "view");
+    const permission = requireJwtPermission(auth, "view");
     if (!permission.ok) {
       return fail(res, permission.error, permission.reason || "Forbidden.", permission.status || 403);
     }
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
     return ok(res, {
       mode: auth.mode,
       organization_id: auth.organization_id,
+      user: auth.user,
       items: data || []
     });
   } catch (error) {
