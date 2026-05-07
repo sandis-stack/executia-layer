@@ -1705,3 +1705,68 @@ body > div[style*="position:fixed"][style*="bottom"] {
   pointer-events: none !important;
   height: 0 !important;
 }
+
+/* EXECUTIA Operator Console — institutional layout */
+.ex-main {
+  max-width: 1280px;
+}
+
+.ex-enterprise-grid {
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.ex-card {
+  border: 1px solid rgba(30, 58, 95, 0.13);
+  box-shadow: 0 18px 44px rgba(15, 53, 93, 0.055);
+}
+
+.ex-json {
+  max-height: 520px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.55;
+  background: #f7faff;
+  border: 1px solid rgba(30, 58, 95, 0.11);
+}
+
+.ex-queue-card {
+  border: 1px solid rgba(30, 58, 95, 0.14);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  padding: 26px;
+}
+
+.ex-queue-title {
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.ex-queue-meta {
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 10px 18px;
+  margin-top: 18px;
+}
+
+.ex-actions {
+  margin-top: 22px;
+}
+
+.ex-control-strip {
+  gap: 14px;
+}
+
+.ex-control-cell {
+  min-height: 88px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+@media (max-width: 920px) {
+  .ex-enterprise-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ex-json {
+    max-height: 360px;
+  }
+}
