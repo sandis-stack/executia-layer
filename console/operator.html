@@ -38,6 +38,46 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
 .rail-step.active{background:#edf7ff;border-color:#cfe2f7;color:#0f355d}
 .rail-step.review{background:#fff7e8;border-color:#f3dfb4;color:#8a5d00}
 
+
+.empty-authority{
+  display:grid;
+  gap:8px;
+  padding:18px 20px;
+  border:1px dashed #d6e1ed;
+  border-radius:16px;
+  background:linear-gradient(180deg,#ffffff,#f8fbff);
+}
+.empty-authority strong{
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.14em;
+  color:#0f355d;
+}
+.empty-authority span{
+  font-size:13px;
+  color:#60778f;
+}
+.empty-authority span:last-child{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.18em;
+  color:#7a8fa4;
+}
+.auth .head{
+  margin-bottom:12px;
+}
+.auth .pill{
+  transform:translateY(-2px);
+}
+.registry .tile{
+  min-height:58px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.registry .tile strong{
+  letter-spacing:.04em;
+}
 </style>
 </head>
 <body>
@@ -65,7 +105,7 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
   <section class="grid">
     <div class="card stream">
       <div class="head"><div><p class="label">EXECUTION STREAM</p><h2>Live execution stream</h2></div><span class="pill warn">QUEUE</span></div>
-      <div id="queueList">Operator session required. Execution stream unavailable until authority is verified.</div>
+      <div id="queueList"><div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div></div>
     </div>
     <aside class="card">
       <div class="head"><div><p class="label">REGISTRY</p><h2>Execution registry</h2></div><span class="pill">CONTROL</span></div>
@@ -96,7 +136,7 @@ async function login(){
  const d=await r.json(); $("queueJson").textContent=JSON.stringify(d,null,2); if(!d.ok||!d.token)return; localStorage.setItem(TOKEN_KEY,d.token); $("apiKey").value=""; render(); loadQueue();
 }
 async function loadQueue(){
- if(!token()){$("queueList").textContent="Operator session required. Execution stream unavailable until authority is verified.";$("queueJson").textContent="Waiting for session...";return}
+ if(!token()){$("queueList").textContent="<div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div>";$("queueJson").textContent="Waiting for session...";return}
  $("queueList").textContent="Synchronizing execution stream...";
  const d=await api("/api/v1/operator-queue"); $("queueJson").textContent=JSON.stringify(d,null,2);
  const items=Array.isArray(d.items)?d.items:[]; $("queueCount").textContent=`${items.length} PENDING`;
