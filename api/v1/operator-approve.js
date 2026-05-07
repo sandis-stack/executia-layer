@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { requireJwtPermission } from "../../services/jwt-auth.js";
+import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 
 function db() {
   return createClient(
@@ -20,10 +20,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const auth = await requireJwtPermission(req, "approve");
+    const context = await resolveJwtContext(req);
+    const permission = requireJwtPermission(context, "approve");
 
-    if (!auth.ok) {
-      return res.status(auth.status || 401).json(auth);
+    if (!permission.ok) {
+      return res.status(permission.status || 401).json(permission);
     }
 
     const supabase = db();
@@ -43,8 +44,8 @@ export default async function handler(req, res) {
       });
     }
 
-    const organization_id = auth.organization_id;
-    const operator = auth.user;
+    const organization_id = context.organization_id;
+    const operator = context.user;
 
     const { data: execution, error: fetchError } = await supabase
       .from("execution_results")
