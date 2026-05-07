@@ -123,7 +123,7 @@ border-left:4px solid transparent;
     }
     .lock{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted)}
   
-@media (max-width: 520px){
+@media (max-width: 900px){
   .topbar{
     height:auto;
     min-height:56px;
@@ -266,7 +266,7 @@ border-left:4px solid transparent;
 
 
 
-@media (max-width: 520px){
+@media (max-width: 900px){
 
   button[onclick="authorize()"]{
     width:100% !important;
@@ -283,43 +283,6 @@ border-left:4px solid transparent;
   letter-spacing:.12em;
 }
 
-.live-dot{
-  display:inline-block;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--ok);
-  margin-right:8px;
-  box-shadow:0 0 0 0 rgba(31,122,77,.45);
-  animation:livePulse 1.6s infinite;
-}
-
-@keyframes livePulse{
-  0%{box-shadow:0 0 0 0 rgba(31,122,77,.45)}
-  70%{box-shadow:0 0 0 8px rgba(31,122,77,0)}
-  100%{box-shadow:0 0 0 0 rgba(31,122,77,0)}
-}
-
-.row.active{
-  box-shadow:
-    inset 4px 0 0 var(--blue),
-    0 0 0 1px rgba(30,58,95,.08);
-}
-
-.detail-fade{
-  animation:detailFade .18s ease-out;
-}
-
-@keyframes detailFade{
-  from{
-    opacity:.45;
-    transform:translateY(4px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
 </style>
 </head>
 <body>
@@ -352,7 +315,7 @@ border-left:4px solid transparent;
 
 <header>
   <div class="brand">EXECUTIA™ OPERATOR CONSOLE</div>
-  <div class="state" id="systemState">SYSTEM LOCK</div><div class="state" id="lastSync">SYNC: OFF</div>
+  <div class="state" id="systemState">SYSTEM LOCK</div>
 </header>
 
 <main>
@@ -423,18 +386,6 @@ AUTHORIZE WITH TOKEN
       <div class="k">VALIDATION</div>
       <div class="k">TIMESTAMP</div>
     </div>
-    
-<div style="padding:10px 14px;border-bottom:1px solid var(--line);background:#fbfdff;">
-  <input id="executionSearch" placeholder="Search execution id, actor, subject, status..." oninput="FILTER=this.value.toLowerCase();renderRows();" />
-
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;">
-    <button class="secondary" onclick="STATUS_FILTER='ALL';renderRows();">ALL</button>
-    <button class="secondary" onclick="STATUS_FILTER='APPROVED';renderRows();">APPROVED</button>
-    <button class="secondary" onclick="STATUS_FILTER='BLOCKED';renderRows();">BLOCKED</button>
-    <button class="secondary" onclick="STATUS_FILTER='PENDING_REVIEW';renderRows();">PENDING</button>
-  </div>
-</div>
-
     <div id="rows" class="rows">
       <div class="lock">
         <div>
@@ -476,8 +427,9 @@ const API_BASE = "https://execution.executia.io";
 let TOKEN = localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") || "";
 let SELECTED = null;
 let ITEMS = [];
-let FILTER = "";
 let STATUS_FILTER = "ALL";
+let LIVE_SYNC_TIMER = null;
+let LIVE_SYNC_ACTIVE = false;
 
 document.getElementById("token").value = TOKEN;
 
@@ -537,14 +489,54 @@ async function authorize(){
   localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
   try{
     const me = await api("/api/v1/operator/me");
-    document.getElementById("systemState").innerHTML = '<span class="live-dot"></span>AUTHORITY VERIFIED · LIVE';
+    document.getElementById("systemState").textContent = "AUTHORITY VERIFIED";
     const operatorEl = document.getElementById("operator"); if(operatorEl) operatorEl.textContent = me?.user?.email || "OPERATOR";
     const authEl = document.getElementById("auth"); if(authEl) authEl.textContent = me?.mode || "ENTERPRISE";
     await loadExecutions();
+    startLiveSync();
   }catch(e){
     document.getElementById("systemState").textContent = "SYSTEM LOCK";
     alert("Authority verification failed: " + e.message);
   }
+}
+
+
+function setSyncState(label, live){
+  const el = document.getElementById("lastSync");
+  if(!el) return;
+  el.innerHTML = live
+    ? `<span class="live-dot"></span>${label}`
+    : label;
+}
+
+function startLiveSync(){
+  if(LIVE_SYNC_ACTIVE) return;
+  LIVE_SYNC_ACTIVE = true;
+  setSyncState("SYNC: LIVE", true);
+  LIVE_SYNC_TIMER = setInterval(async () => {
+    try{
+      const selectedId = SELECTED?.id;
+      const data = await api("/api/v1/operator/executions");
+      ITEMS = data.items || data.executions || [];
+      renderRows();
+      if(selectedId){
+        const fresh =
+          ITEMS.find(x => String(x.id) === String(selectedId)) ||
+          ITEMS.find(x => String(x.execution_id) === String(selectedId));
+        if(fresh){
+          SELECTED = fresh;
+          renderDetail(SELECTED);
+          await loadProof(SELECTED);
+          await loadAuditTimeline(SELECTED);
+          if(typeof renderRuleSurface === "function") await renderRuleSurface(SELECTED);
+          if(typeof loadExecutionTrace === "function") await loadExecutionTrace(SELECTED);
+        }
+      }
+      setSyncState("SYNC: LIVE", true);
+    }catch(e){
+      setSyncState("SYNC: DEGRADED", false);
+    }
+  }, 7000);
 }
 
 async function loadExecutions(){
@@ -558,29 +550,12 @@ async function loadExecutions(){
 }
 
 function renderRows(){
-  const visibleItems = ITEMS.filter(x => {
-    if(STATUS_FILTER !== "ALL" && x.status !== STATUS_FILTER) return false;
-
-    const q = FILTER;
-    if(!q) return true;
-
-    return [
-      x.id,
-      x.execution_id,
-      x.actor,
-      x.subject,
-      x.status,
-      x.request_type
-    ].join(" ").toLowerCase().includes(q);
-  });
-
-  if(!visibleItems.length){
-    document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>NO EXECUTIONS</h2><p>No records match current filter.</p></div></div>`;
+  if(!ITEMS.length){
+    document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>Execution stream is unavailable until operator authority is verified.</p></div></div>`;
     return;
   }
-
-  document.getElementById("rows").innerHTML = visibleItems.map(x => `
-    <div class="row ${statusClass(x.status)} ${SELECTED?.id===x.id ? "active":""}" onclick="selectExecution('${x.id}')">
+  document.getElementById("rows").innerHTML = ITEMS.map(x => `
+    <div class="row ${SELECTED?.id===x.id ? "active":""}" onclick="selectExecution('${x.id}')">
       <div><b>${x.id || "EXECUTION"}</b><div class="small">${x.actor || x.user || "actor:not declared"}</div></div>
       <div class="status ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div>
       <div class="small">${x.validation_result || x.validation || "VALIDATION"}</div>
@@ -594,9 +569,8 @@ async function selectExecution(id){
   renderRows();
   renderDetail(SELECTED);
   await loadProof(SELECTED);
+    await loadAuditTimeline(SELECTED);
   await loadAuditTimeline(SELECTED);
-  await renderRuleSurface(SELECTED);
-  await loadExecutionTrace(SELECTED);
 }
 
 function timeline(x){
@@ -688,7 +662,7 @@ function renderDetail(x){
 
   if(!x){
     el.innerHTML = `
-      <div class="drawer-body detail-fade">
+      <div class="drawer-body">
         <div class="block">
           <div class="k">STATE</div>
           <div class="v">AWAITING SELECTION</div>
@@ -713,7 +687,7 @@ function renderDetail(x){
   }
 
   el.innerHTML = `
-    <div class="drawer-body detail-fade">
+    <div class="drawer-body">
 
       <div class="block">
         <div class="k">EXECUTION ID</div>
@@ -783,47 +757,6 @@ function renderDetail(x){
         <div class="small">Loading timeline...</div>
       </div>
 
-      <div id="decisionSummaryPanel" class="block">
-        <div class="k">DECISION SUMMARY</div>
-        <div class="v">LOADING</div>
-        <div class="loader-line"></div>
-      </div>
-
-      <div id="ruleSurfacePanel" class="block">
-        <div class="k">RULE SURFACE</div>
-
-        <div style="display:grid;gap:8px;margin-top:10px;">
-
-          <div class="block" style="background:#fff;padding:10px;">
-            <div class="small">✓ AML_CHECK</div>
-          </div>
-
-          <div class="block" style="background:#fff;padding:10px;">
-            <div class="small">✓ DOUBLE_ENTRY</div>
-          </div>
-
-          <div class="block" style="background:#fff;padding:10px;">
-            <div class="small">✓ EXECUTION_POLICY</div>
-          </div>
-
-          <div class="block" style="background:#fff;padding:10px;">
-            <div class="small">⚠ RISK_THRESHOLD</div>
-          </div>
-
-          <div class="block" style="background:#fff;padding:10px;">
-            <div class="small">✓ HASH_CHAIN</div>
-          </div>
-
-        </div>
-      </div>
-
-
-      <div id="executionTracePanel" class="block">
-        <div class="k">EXECUTION TRACE</div>
-        <div class="small">Trace loading...</div>
-        <div class="loader-line"></div>
-      </div>
-
       <div class="block">
         <div class="k">OPERATOR ACTIONS</div>
 
@@ -841,135 +774,6 @@ function renderDetail(x){
 
 
 
-
-
-async function renderRuleSurface(x){
-  const panel = document.getElementById("ruleSurfacePanel");
-  if(!panel || !x?.execution_id) return;
-
-  try{
-    const data = await api("/api/v1/rules/evaluate?execution_id=" + encodeURIComponent(x.execution_id));
-
-    window.__LAST_RULE_RESPONSE = data;
-    const rules = data.rules || [];
-
-    const summaryPanel = document.getElementById("decisionSummaryPanel");
-    const summary =
-      data.decision_summary ||
-      window.__LAST_RULE_RESPONSE?.decision_summary ||
-      {};
-
-    if(summaryPanel){
-      const decision = summary.overall_decision || "UNKNOWN";
-      const color =
-        decision === "APPROVED_FOR_EXECUTION"
-          ? "var(--ok)"
-          : decision === "REVIEW_REQUIRED"
-            ? "var(--warn)"
-            : "var(--bad)";
-
-      summaryPanel.innerHTML = `
-        <div class="k">DECISION SUMMARY</div>
-        <div class="v" style="color:${color};">${escapeHtml(decision)}</div>
-
-        <div class="grid2" style="margin-top:10px;">
-          <div><div class="k">BLOCKING</div><div class="v">${summary.blocking_rules ?? 0}</div></div>
-          <div><div class="k">REVIEW</div><div class="v">${summary.review_rules ?? 0}</div></div>
-          <div><div class="k">INTEGRITY</div><div class="v">${escapeHtml(summary.integrity || "PARTIAL")}</div></div>
-          <div><div class="k">ENGINE</div><div class="v">DB POLICY</div></div>
-        </div>
-      `;
-    }
-
-    panel.innerHTML = `
-      <div class="k">RULE SURFACE</div>
-      <div style="display:grid;gap:8px;margin-top:10px;">
-        ${rules.map(rule => `
-          <div class="block" style="background:#fff;padding:10px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-              <div class="small">
-                ${
-                  ["PASSED","VERIFIED","LINKED"].includes(rule.status)
-                    ? "✓"
-                    : rule.status === "REVIEW"
-                      ? "⚠"
-                      : "✕"
-                }
-                ${escapeHtml(rule.rule)}
-              </div>
-
-              <div class="small" style="font-weight:700;color:${
-                ["PASSED","VERIFIED","LINKED"].includes(rule.status)
-                  ? "var(--ok)"
-                  : rule.status === "REVIEW"
-                    ? "var(--warn)"
-                    : "var(--bad)"
-              };">
-                ${escapeHtml(rule.status)} · ${Math.round((rule.confidence || 0) * 100)}%
-              </div>
-            </div>
-
-            <div class="small" style="margin-top:4px;">
-              impact: ${escapeHtml(rule.impact || "execution_control")}
-            </div>
-          </div>
-        `).join("")}
-      </div>
-    `;
-  }catch(e){
-    panel.innerHTML = `
-      <div class="k">RULE SURFACE</div>
-      <div class="small">Rule engine unavailable: ${escapeHtml(e.message)}</div>
-    `;
-  }
-}
-
-
-
-
-async function loadExecutionTrace(x){
-  const panel = document.getElementById("executionTracePanel");
-  if(!panel || !x?.execution_id) return;
-
-  try{
-    const data = await api("/api/v1/trace/execution?execution_id=" + encodeURIComponent(x.execution_id));
-    const trace = data.trace || [];
-
-    panel.innerHTML = `
-      <div class="k">EXECUTION TRACE</div>
-      <div class="timeline" style="margin-top:12px;">
-        ${trace.map(step => `
-          <div class="event">
-            <div style="display:flex;justify-content:space-between;gap:10px;">
-              <div class="k">${escapeHtml(step.step || "STEP")}</div>
-              <div class="small" style="font-weight:800;color:${
-                ["PASSED","VERIFIED","LINKED","RECORDED","APPROVED"].includes(step.state) || String(step.step || "").startsWith("OPERATOR_") || ["LEDGER_COMMITTED","AUDIT_RECORDED","POLICY_STATE_CHANGED"].includes(step.step)
-                  ? "var(--ok)"
-                  : step.state === "REVIEW" || step.state === "PENDING_REVIEW" || step.state === "UNCLEAR"
-                    ? "var(--warn)"
-                    : step.state === "BLOCKED" || step.state === "MISSING"
-                      ? "var(--bad)"
-                      : "var(--muted)"
-              };">${escapeHtml(step.state || "INFO")}</div>
-            </div>
-            <div class="small">${escapeHtml(step.detail || "")}</div>
-            ${String(step.step || "").startsWith("OPERATOR_") || ["LEDGER_COMMITTED","AUDIT_RECORDED","POLICY_STATE_CHANGED"].includes(step.step)
-              ? `<div class="small" style="margin-top:4px;font-weight:800;color:var(--ok);">MATERIALIZED EXECUTION EVENT</div>`
-              : ""}
-            <div class="small">${escapeHtml(step.timestamp || "")}</div>
-          </div>
-        `).join("")}
-      </div>
-    `;
-  }catch(e){
-    panel.innerHTML = `
-      <div class="k">EXECUTION TRACE</div>
-      <div class="small">Trace unavailable: ${escapeHtml(e.message)}</div>
-    `;
-  }
-}
-
-
 async function operatorAction(action){
   if(!SELECTED) return alert("No execution selected.");
 
@@ -984,28 +788,16 @@ async function operatorAction(action){
 
     SELECTED.operator_action = action;
 
-    if(result?.next_state){
-      SELECTED.status = result.next_state;
+    if(result?.result?.status){
+      SELECTED.status = result.result.status;
     }
 
     SELECTED.audit_state = "RECORDED";
     SELECTED.reconciliation_state = "VERIFIED";
 
-    await loadExecutions();
-
-    const fresh =
-      ITEMS.find(item => String(item.id) === String(SELECTED.id)) ||
-      ITEMS.find(item => String(item.execution_id) === String(SELECTED.execution_id)) ||
-      SELECTED;
-
-    SELECTED = fresh;
-
-    renderRows();
     renderDetail(SELECTED);
     await loadProof(SELECTED);
-    await loadAuditTimeline(SELECTED);
-    await renderRuleSurface(SELECTED);
-    await loadExecutionTrace(SELECTED);
+    await loadExecutions();
 
   }catch(e){
     alert("Action failed: " + e.message);
