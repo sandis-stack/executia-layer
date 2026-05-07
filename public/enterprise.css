@@ -2688,3 +2688,67 @@ body > div[style*="position:fixed"][style*="bottom"] {
   box-shadow:0 0 12px rgba(34,160,107,.45);
 }
 
+
+
+/* EXECUTION DOMINANCE LAYER */
+
+.dashboard-grid{
+  grid-template-columns:1.45fr .8fr !important;
+  align-items:start;
+}
+
+.execution-stream{
+  min-height:520px;
+}
+
+.execution-stream .execution-card{
+  min-height:290px;
+  padding:28px;
+}
+
+.execution-stream h2{
+  font-size:36px;
+  line-height:1;
+  margin-bottom:22px;
+  letter-spacing:-0.04em;
+}
+
+.execution-stream .meta{
+  margin-top:18px;
+}
+
+.execution-stream .meta-row{
+  padding:10px 0;
+  border-bottom:1px solid #edf2f7;
+}
+
+.execution-stream .actions{
+  margin-top:28px;
+}
+
+.execution-stream .actions button{
+  min-width:140px;
+}
+
+.telemetry{
+  max-height:390px;
+}
+
+.telemetry pre{
+  max-height:90px;
+  font-size:10px;
+  opacity:.72;
+}
+
+.registry-grid{
+  gap:12px;
+}
+
+.registry-grid .metric{
+  min-height:84px;
+}
+
+.registry-grid .metric strong{
+  font-size:26px;
+}
+
