@@ -119,7 +119,86 @@ border-left:4px solid transparent;
       padding:12px;font-size:11px;color:#253244;max-height:220px;overflow:auto;
     }
     .lock{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted)}
-  </style>
+  
+@media (max-width: 900px){
+  .topbar{
+    height:auto;
+    min-height:56px;
+    padding:14px 18px;
+    align-items:flex-start;
+    gap:12px;
+  }
+
+  .topbar-left{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+  }
+
+  .logo{
+    font-size:18px;
+  }
+
+  .nav{
+    width:100%;
+    overflow-x:auto;
+    gap:18px;
+    padding-bottom:4px;
+  }
+
+  .nav a{
+    white-space:nowrap;
+    font-size:11px;
+  }
+
+  header:not(.topbar){
+    height:auto;
+    padding:18px;
+  }
+
+  main{
+    grid-template-columns:1fr;
+    height:auto;
+    padding:10px;
+  }
+
+  section{
+    min-height:auto;
+  }
+
+  .pad{
+    padding:12px;
+  }
+
+  .row{
+    grid-template-columns:1fr;
+    gap:4px;
+    min-height:auto;
+    padding:12px;
+  }
+
+  .drawer{
+    min-height:360px;
+  }
+
+  input{
+    font-size:14px;
+  }
+
+  button{
+    width:100%;
+  }
+
+  .block{
+    padding:10px;
+  }
+
+  .v{
+    font-size:14px;
+  }
+}
+
+</style>
 </head>
 <body>
 
