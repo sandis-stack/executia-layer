@@ -817,6 +817,12 @@ function renderDetail(x){
       </div>
 
 
+      <div id="executionTracePanel" class="block">
+        <div class="k">EXECUTION TRACE</div>
+        <div class="small">Trace loading...</div>
+        <div class="loader-line"></div>
+      </div>
+
       <div class="block">
         <div class="k">OPERATOR ACTIONS</div>
 
@@ -919,6 +925,47 @@ async function renderRuleSurface(x){
 
 
 
+
+async function loadExecutionTrace(x){
+  const panel = document.getElementById("executionTracePanel");
+  if(!panel || !x?.execution_id) return;
+
+  try{
+    const data = await api("/api/v1/trace/execution?execution_id=" + encodeURIComponent(x.execution_id));
+    const trace = data.trace || [];
+
+    panel.innerHTML = `
+      <div class="k">EXECUTION TRACE</div>
+      <div class="timeline" style="margin-top:12px;">
+        ${trace.map(step => `
+          <div class="event">
+            <div style="display:flex;justify-content:space-between;gap:10px;">
+              <div class="k">${escapeHtml(step.step || "STEP")}</div>
+              <div class="small" style="font-weight:800;color:${
+                ["PASSED","VERIFIED","LINKED","RECORDED"].includes(step.state)
+                  ? "var(--ok)"
+                  : step.state === "REVIEW" || step.state === "PENDING_REVIEW" || step.state === "UNCLEAR"
+                    ? "var(--warn)"
+                    : step.state === "BLOCKED" || step.state === "MISSING"
+                      ? "var(--bad)"
+                      : "var(--muted)"
+              };">${escapeHtml(step.state || "INFO")}</div>
+            </div>
+            <div class="small">${escapeHtml(step.detail || "")}</div>
+            <div class="small">${escapeHtml(step.timestamp || "")}</div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }catch(e){
+    panel.innerHTML = `
+      <div class="k">EXECUTION TRACE</div>
+      <div class="small">Trace unavailable: ${escapeHtml(e.message)}</div>
+    `;
+  }
+}
+
+
 async function operatorAction(action){
   if(!SELECTED) return alert("No execution selected.");
 
@@ -943,6 +990,7 @@ async function operatorAction(action){
     renderDetail(SELECTED);
     await loadProof(SELECTED);
     await renderRuleSurface(SELECTED);
+  await loadExecutionTrace(SELECTED);
     await loadExecutions();
 
   }catch(e){
