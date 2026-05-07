@@ -16,7 +16,55 @@
       linear-gradient(90deg,var(--line) 1px,transparent 1px),var(--bg);
       background-size:40px 40px;color:var(--text);
     }
-    header{
+    
+.topbar{
+  height:64px;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 28px;
+}
+.topbar-left{
+  display:flex;
+  align-items:center;
+  gap:32px;
+}
+.logo{
+  font-weight:800;
+  letter-spacing:.08em;
+  color:var(--blue);
+  font-size:20px;
+}
+.nav{
+  display:flex;
+  gap:24px;
+}
+.nav a{
+  text-decoration:none;
+  color:var(--graphite);
+  font-size:12px;
+  letter-spacing:.08em;
+  font-weight:700;
+}
+.nav a.active{
+  color:var(--blue);
+}
+.operator-badge{
+  text-align:right;
+}
+.operator-title{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+}
+.operator-sub{
+  font-size:11px;
+  color:var(--muted);
+}
+
+header{
       height:64px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.92);
       display:flex;align-items:center;justify-content:space-between;padding:0 28px;
     }
@@ -69,6 +117,33 @@
   </style>
 </head>
 <body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo">EXECUTIA™</div>
+
+    <nav class="nav">
+      <a href="/dashboard">OVERVIEW</a>
+      <a href="/console/operator.html" class="active">EXECUTIONS</a>
+      <a href="/projects">PROJECTS</a>
+      <a href="/rules">RULES</a>
+      <a href="/ledger">LEDGER</a>
+      <a href="/audit">AUDIT</a>
+      <a href="/reconciliation">RECONCILIATION</a>
+      <a href="/proofs">PROOFS</a>
+      <a href="/reports">REPORTS</a>
+      <a href="/settings">SETTINGS</a>
+    </nav>
+  </div>
+
+  <div class="topbar-right">
+    <div class="operator-badge">
+      <div class="operator-title">OPERATOR CONSOLE</div>
+      <div class="operator-sub">OPERATOR</div>
+    </div>
+  </div>
+</header>
+
 <header>
   <div class="brand">EXECUTIA™ OPERATOR CONSOLE</div>
   <div class="state" id="systemState">SYSTEM LOCK</div>
@@ -79,10 +154,26 @@
     <div class="pad rail">
       <h2>AUTHORITY SURFACE</h2>
       <div>
-        <label>ACCESS TOKEN</label>
-        <input id="token" placeholder="Operator JWT" />
-      </div>
-      <button onclick="authorize()">AUTHORIZE</button>
+        
+<label>EMAIL</label>
+<input id="email" value="operator@executia.io" />
+
+<label style="margin-top:10px;">PASSWORD</label>
+<input id="password" type="password" placeholder="Operator password" />
+
+<button onclick="login()">AUTHORIZE</button>
+
+<div style="text-align:center;margin:10px 0;font-size:11px;color:var(--muted);">
+OR
+</div>
+
+<label>ACCESS TOKEN</label>
+<input id="token" placeholder="JWT access token" />
+
+<button class="secondary" onclick="authorize()">
+AUTHORIZE WITH TOKEN
+</button>
+
 
       <div class="block"><div class="k">OPERATOR</div><div class="v" id="operator">UNVERIFIED</div></div>
       <div class="block"><div class="k">AUTH</div><div class="v" id="auth">LOCKED</div></div>
@@ -144,6 +235,41 @@ async function api(path, options = {}) {
   if (!res.ok || data.ok === false) throw new Error(data?.error?.message || data?.error || "REQUEST_FAILED");
   return data;
 }
+
+
+async function login(){
+  try{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const res = await fetch("/api/v1/auth/login",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if(!data.ok || !data.access_token){
+      throw new Error(data?.error?.message || "LOGIN_FAILED");
+    }
+
+    TOKEN = data.access_token;
+
+    localStorage.setItem(
+      "EXECUTIA_OPERATOR_TOKEN",
+      TOKEN
+    );
+
+    document.getElementById("token").value = TOKEN;
+
+    await authorize();
+
+  }catch(e){
+    alert("Authorization failed: " + e.message);
+  }
+}
+
 
 async function authorize(){
   TOKEN = document.getElementById("token").value.trim();
