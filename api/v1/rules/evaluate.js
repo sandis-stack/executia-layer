@@ -141,10 +141,35 @@ export default async function handler(req, res) {
       evaluateRuleFromCatalog(rule, data, policy || {})
     );
 
+    const blockingRules = rules.filter(r =>
+      r.severity === "BLOCKING" && !["PASSED","VERIFIED","LINKED"].includes(r.status)
+    );
+
+    const reviewRules = rules.filter(r =>
+      r.status === "REVIEW"
+    );
+
+    const overallDecision =
+      blockingRules.length > 0
+        ? "BLOCK_REQUIRED"
+        : reviewRules.length > 0
+          ? "REVIEW_REQUIRED"
+          : "APPROVED_FOR_EXECUTION";
+
     return res.status(200).json({
       ok: true,
       mode: "RULE_DECISION_ENGINE",
       execution_id,
+      decision_summary: {
+        overall_decision: overallDecision,
+        blocking_rules: blockingRules.length,
+        review_rules: reviewRules.length,
+        integrity:
+          data.hash_verified &&
+          data.reconciliation_state === "VERIFIED"
+            ? "VERIFIED"
+            : "PARTIAL"
+      },
       decision_surface: {
         status: data.status,
         validation_result: data.validation_result,
