@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 import crypto from "crypto";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -144,7 +145,7 @@ export default async function handler(req, res) {
       return json(res, 400, { ok: false, error: { code: "INVALID_ACTION", message: "Invalid operator action." } });
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { realtime: { transport: ws } });
 
     const { data: current, error: readError } = await supabase
       .from("execution_results")
