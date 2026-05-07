@@ -782,6 +782,12 @@ function renderDetail(x){
         <div class="small">Loading timeline...</div>
       </div>
 
+      <div id="decisionSummaryPanel" class="block">
+        <div class="k">DECISION SUMMARY</div>
+        <div class="v">LOADING</div>
+        <div class="loader-line"></div>
+      </div>
+
       <div id="ruleSurfacePanel" class="block">
         <div class="k">RULE SURFACE</div>
 
@@ -837,6 +843,31 @@ async function renderRuleSurface(x){
   try{
     const data = await api("/api/v1/rules/evaluate?execution_id=" + encodeURIComponent(x.execution_id));
     const rules = data.rules || [];
+
+    const summaryPanel = document.getElementById("decisionSummaryPanel");
+    const summary = data.decision_summary || {};
+
+    if(summaryPanel){
+      const decision = summary.overall_decision || "UNKNOWN";
+      const color =
+        decision === "APPROVED_FOR_EXECUTION"
+          ? "var(--ok)"
+          : decision === "REVIEW_REQUIRED"
+            ? "var(--warn)"
+            : "var(--bad)";
+
+      summaryPanel.innerHTML = `
+        <div class="k">DECISION SUMMARY</div>
+        <div class="v" style="color:${color};">${escapeHtml(decision)}</div>
+
+        <div class="grid2" style="margin-top:10px;">
+          <div><div class="k">BLOCKING</div><div class="v">${summary.blocking_rules ?? 0}</div></div>
+          <div><div class="k">REVIEW</div><div class="v">${summary.review_rules ?? 0}</div></div>
+          <div><div class="k">INTEGRITY</div><div class="v">${escapeHtml(summary.integrity || "PARTIAL")}</div></div>
+          <div><div class="k">ENGINE</div><div class="v">DB POLICY</div></div>
+        </div>
+      `;
+    }
 
     panel.innerHTML = `
       <div class="k">RULE SURFACE</div>
