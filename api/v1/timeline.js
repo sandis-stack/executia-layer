@@ -1,24 +1,13 @@
 import { db } from "../../services/db.js";
-import { resolveEnterpriseContext, requirePermission } from "../../services/enterprise-auth.js";
+import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 
 export default async function handler(req, res) {
   try {
-    const auth = await resolveEnterpriseContext(req);
+    const context = await resolveJwtContext(req);
+    const permission = requireJwtPermission(context, "view");
 
-    if (!auth.ok) {
-      return res.status(auth.status || 401).json({
-        ok: false,
-        error: auth.error || "UNAUTHORIZED"
-      });
-    }
-
-    const permission = requirePermission(auth, "view");
     if (!permission.ok) {
-      return res.status(permission.status || 403).json({
-        ok: false,
-        error: permission.error || "FORBIDDEN",
-        reason: permission.reason
-      });
+      return res.status(permission.status || 401).json(permission);
     }
 
     const execution_id = req.query?.execution_id;
@@ -26,54 +15,66 @@ export default async function handler(req, res) {
     if (!execution_id) {
       return res.status(400).json({
         ok: false,
-        error: "EXECUTION_ID_REQUIRED"
+        error: {
+          code: "EXECUTION_ID_REQUIRED",
+          message: "execution_id is required."
+        }
       });
     }
 
-    let execQuery = db()
+    const supabase = db();
+    const organization_id = context.organization_id;
+
+    const { data: execution, error: execError } = await supabase
       .from("execution_results")
-      .select("execution_id, organization_id")
+      .select("id, execution_id, organization_id")
       .eq("execution_id", execution_id)
+      .eq("organization_id", organization_id)
       .single();
-
-    if (auth.organization_id) {
-      execQuery = execQuery.eq("organization_id", auth.organization_id);
-    }
-
-    const { data: execution, error: execError } = await execQuery;
 
     if (execError || !execution) {
       return res.status(404).json({
         ok: false,
-        error: "EXECUTION_NOT_FOUND"
+        error: {
+          code: "EXECUTION_NOT_FOUND",
+          message: "Execution not found for this organization."
+        }
       });
     }
 
-    const { data, error } = await db()
+    const { data, error } = await supabase
       .from("audit_events")
       .select("*")
       .eq("execution_id", execution_id)
+      .eq("organization_id", organization_id)
       .order("created_at", { ascending: true });
 
     if (error) {
       return res.status(500).json({
         ok: false,
-        error: error.message
+        error: {
+          code: "TIMELINE_QUERY_FAILED",
+          message: error.message
+        }
       });
     }
 
     return res.status(200).json({
       ok: true,
-      mode: auth.mode,
-      organization_id: auth.organization_id,
+      mode: context.mode,
+      organization_id,
+      user: context.user,
       execution_id,
       timeline: data || []
     });
 
-  } catch (err) {
+  } catch (error) {
     return res.status(500).json({
       ok: false,
-      error: err.message || "TIMELINE_FAILED"
+      error: {
+        code: "INTERNAL_ERROR",
+        message: error.message
+      }
     });
   }
 }
