@@ -168,6 +168,97 @@ body{
 .entry{
   padding:9px 18px!important;
 }
+
+/* EXECUTIA FINAL PRODUCTION POLISH */
+
+body{
+  background-size:48px 48px,48px 48px,auto!important;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(15,53,93,.010) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,53,93,.010) 1px, transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+}
+
+.card::before{
+  width:1px!important;
+  opacity:.52;
+}
+
+.empty-authority{
+  border:1px solid #d7e0ea!important;
+  background:
+    linear-gradient(90deg, rgba(15,53,93,.022), transparent),
+    #fbfdff!important;
+}
+
+.pill,
+.status-pill,
+.queue-pill{
+  border-radius:10px!important;
+  padding:6px 11px!important;
+  letter-spacing:.16em!important;
+}
+
+.login button{
+  height:34px!important;
+  min-width:98px!important;
+  border-radius:11px!important;
+  font-size:11px!important;
+  letter-spacing:.12em!important;
+}
+
+.telemetry .tile,
+.telemetry-tile,
+.metric{
+  min-height:56px!important;
+  padding:12px 14px!important;
+}
+
+.telemetry .tile strong,
+.metric strong{
+  font-size:13px!important;
+}
+
+.registry .tile{
+  min-height:42px!important;
+  padding:12px 14px!important;
+  border-radius:12px!important;
+}
+
+.registry .tile strong{
+  font-size:12px!important;
+}
+
+.registry .tile span{
+  font-size:9px!important;
+}
+
+.rawBox summary{
+  opacity:.74!important;
+}
+
+.authority-rail span{
+  border-radius:10px!important;
+  padding:5px 9px!important;
+}
+
+.entry{
+  border-radius:14px!important;
+  padding:8px 16px!important;
+}
+
+.topbar,
+.subnav{
+  backdrop-filter:blur(8px);
+}
+
 </style>
 </head>
 <body>
