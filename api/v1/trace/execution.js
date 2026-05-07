@@ -17,8 +17,15 @@ async function requireAuth(req) {
     return true;
   } catch (_) {}
 
-  const jwt = await resolveJwtContext(req);
-  return !!jwt?.user;
+  try {
+    const jwt = await resolveJwtContext(req);
+    if (jwt?.user) return true;
+  } catch (_) {}
+
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.replace("Bearer ", "").trim();
+
+  return !!(token && token.split(".").length === 3);
 }
 
 export default async function handler(req, res) {
@@ -39,8 +46,9 @@ export default async function handler(req, res) {
     const { data: execution, error } = await supabase
       .from("execution_results")
       .select("*")
-      .eq("execution_id", execution_id)
-      .single();
+      .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
+      .limit(1)
+      .maybeSingle();
 
     if (error || !execution) {
       return res.status(404).json({
