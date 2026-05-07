@@ -2586,3 +2586,50 @@ body > div[style*="position:fixed"][style*="bottom"] {
 .summary{
   max-height:52px!important;
 }
+
+/* EXECUTION FLOW RAIL */
+
+.rail{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:18px 0 24px;
+}
+
+.rail-line{
+  flex:1;
+  height:1px;
+  background:#dbe5f0;
+  min-width:24px;
+}
+
+.rail-step{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid #dbe5f0;
+  background:#ffffff;
+  color:#6c8197;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+
+.rail-step.active{
+  background:#edf7ff;
+  border-color:#cfe2f7;
+  color:#0f355d;
+}
+
+.rail-step.review{
+  background:#fff7e8;
+  border-color:#f3dfb4;
+  color:#8a5d00;
+}
+
+.execution-card h3{
+  margin-bottom:4px;
+}
