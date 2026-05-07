@@ -426,6 +426,32 @@ AUTHORIZE WITH TOKEN
 const API_BASE = "https://execution.executia.io";
 let TOKEN = localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") || "";
 let SELECTED = null;
+let AUTO_REFRESH = null;
+
+function startAutoRefresh(){
+  if(AUTO_REFRESH) clearInterval(AUTO_REFRESH);
+
+  AUTO_REFRESH = setInterval(async () => {
+    const selectedId = SELECTED?.id;
+
+    await loadExecutions(false);
+
+    if(selectedId){
+      const found = ITEMS.find(x =>
+        x.id === selectedId ||
+        x.execution_id === selectedId
+      );
+
+      if(found){
+        SELECTED = found;
+        renderDetail(found);
+        await loadProof(found);
+        await loadAuditTimeline(found);
+        await loadLedgerVerify(found);
+      }
+    }
+  }, 5000);
+}
 let ITEMS = [];
 
 document.getElementById("token").value = TOKEN;
@@ -490,13 +516,15 @@ async function authorize(){
     const operatorEl = document.getElementById("operator"); if(operatorEl) operatorEl.textContent = me?.user?.email || "OPERATOR";
     const authEl = document.getElementById("auth"); if(authEl) authEl.textContent = me?.mode || "ENTERPRISE";
     await loadExecutions();
+    startAutoRefresh();
   }catch(e){
     document.getElementById("systemState").textContent = "SYSTEM LOCK";
     alert("Authority verification failed: " + e.message);
   }
 }
 
-async function loadExecutions(){
+async function loadExecutions(resetSelection = true){
+  if(resetSelection){ SELECTED = null; }
   try{
     const data = await api("/api/v1/operator/executions");
     ITEMS = data.items || data.executions || [];
@@ -774,6 +802,7 @@ async function operatorAction(action){
 }
 
 
+
 async function loadLedgerVerify(x){
   try{
     const result = await api("/api/v1/ledger-verify");
@@ -796,9 +825,13 @@ async function loadLedgerVerify(x){
 
   }catch(e){
     const panel = document.getElementById("ledgerVerifyPanel");
-    if(panel){ const s = panel.querySelector(".grid2"); if(s) s.innerHTML = `<div class="small">Ledger verify unavailable: ${e.message}</div>`; }
+    if(panel){
+      const grid = panel.querySelector(".grid2");
+      if(grid) grid.innerHTML = `<div class="small">Ledger verify unavailable: ${escapeHtml(e.message)}</div>`;
+    }
   }
 }
+
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
