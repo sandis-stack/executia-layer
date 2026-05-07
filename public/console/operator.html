@@ -283,6 +283,36 @@ border-left:4px solid transparent;
   letter-spacing:.12em;
 }
 
+
+.loader-line{
+  height:10px;
+  width:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#eef3f8,#dfe8f2,#eef3f8);
+  background-size:200% 100%;
+  animation:pulseLine 1.2s infinite linear;
+  margin-top:8px;
+}
+@keyframes pulseLine{
+  from{background-position:200% 0}
+  to{background-position:-200% 0}
+}
+.row.active{
+  box-shadow:inset 4px 0 0 var(--blue), 0 0 0 1px rgba(30,58,95,.08);
+}
+.drawer-head{
+  position:sticky;
+  top:0;
+  z-index:3;
+  background:#fbfdff;
+}
+.action-sticky{
+  position:sticky;
+  bottom:0;
+  z-index:4;
+  background:#eef3f8;
+}
+
 </style>
 </head>
 <body>
@@ -734,12 +764,12 @@ function renderDetail(x){
 
       <div id="proofPanel" class="block">
         <div class="k">EXECUTION PROOF</div>
-        <div class="v">LOADING...</div>
+        <div class="v">LOADING</div><div class="loader-line"></div>
       </div>
 
       <div id="auditTimelinePanel" class="block">
         <div class="k">AUDIT TIMELINE</div>
-        <div class="small">Loading timeline...</div>
+        <div class="small">Loading timeline...</div><div class="loader-line"></div>
       </div>
 
       <div id="ledgerVerifyPanel" class="block">
@@ -754,7 +784,7 @@ function renderDetail(x){
         </div>
       </div>
 
-      <div class="block">
+      <div class="block action-sticky">
         <div class="k">OPERATOR ACTIONS</div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;overflow:hidden;">
