@@ -489,7 +489,7 @@ async function authorize(){
   localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
   try{
     const me = await api("/api/v1/operator/me");
-    document.getElementById("systemState").textContent = "AUTHORITY VERIFIED";
+    document.getElementById("systemState").innerHTML = '<span class="live-dot"></span>AUTHORITY VERIFIED · LIVE';
     const operatorEl = document.getElementById("operator"); if(operatorEl) operatorEl.textContent = me?.user?.email || "OPERATOR";
     const authEl = document.getElementById("auth"); if(authEl) authEl.textContent = me?.mode || "ENTERPRISE";
     await loadExecutions();
