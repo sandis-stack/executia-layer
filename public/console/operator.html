@@ -80,6 +80,9 @@ header{
       font-size:13px;
     }
     button{
+      min-width:0;
+      white-space:nowrap;
+
       border:1px solid var(--blue);background:var(--blue);color:#fff;border-radius:10px;padding:10px 12px;
       font-size:11px;letter-spacing:.08em;font-weight:700;cursor:pointer;
     }
@@ -108,7 +111,7 @@ border-left:4px solid transparent;
     .APPROVED,.COMMITTED{color:var(--ok)}.BLOCKED,.FAILED{color:var(--bad)}.PENDING_REVIEW{color:var(--warn)}
     .drawer{display:flex;flex-direction:column;height:100%;background:#fbfdff}
     .drawer-head{padding:16px;border-bottom:1px solid var(--line)}
-    .drawer-body{overflow:auto;padding:12px;display:grid;gap:10px}
+    .drawer-body{overflow:auto;padding:12px;display:grid;gap:10px;max-height:calc(100vh - 220px)}
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .timeline{border-left:2px solid var(--blue);margin-left:8px;padding-left:16px;display:grid;gap:14px}
@@ -186,6 +189,9 @@ border-left:4px solid transparent;
   }
 
   button{
+      min-width:0;
+      white-space:nowrap;
+
     width:100%;
   }
 
@@ -451,7 +457,12 @@ async function loadProof(x){
           <div><div class="k">HASH INTEGRITY</div><div class="v">${proof.verified ? "VERIFIED" : "PARTIAL"}</div></div>
           <div><div class="k">ALGORITHM</div><div class="v">${proof.proof?.integrity?.algorithm}</div></div>
         </div>
-        <pre>${escapeHtml(JSON.stringify(proof.proof?.integrity || {}, null, 2))}</pre>
+        <div class="block" style="margin-top:8px;background:#fff;">
+          <div class="k">PROOF HASH</div>
+          <div class="small" style="word-break:break-all;font-family:monospace;">
+            ${escapeHtml((proof.proof?.integrity?.proof_hash || "").slice(0,32))}...
+          </div>
+        </div>
       `;
     }
   }catch(e){
@@ -561,7 +572,7 @@ function renderDetail(x){
       <div class="block">
         <div class="k">OPERATOR ACTIONS</div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;overflow:hidden;">
           <button>APPROVE</button>
           <button class="secondary">ESCALATE</button>
           <button class="danger">REJECT</button>
