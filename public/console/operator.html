@@ -307,6 +307,52 @@ border-left:4px solid transparent;
   font-weight:800;
 }
 
+
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:800;
+  letter-spacing:.04em;
+  font-size:12px;
+}
+
+.status-pill::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:currentColor;
+  box-shadow:0 0 12px currentColor;
+}
+
+.status-approved{
+  background:rgba(24,198,106,.10);
+  color:#0c9b52;
+}
+
+.status-pending{
+  background:rgba(214,158,46,.10);
+  color:#c48a12;
+}
+
+.status-blocked{
+  background:rgba(201,55,55,.10);
+  color:#c93737;
+}
+
+.status-frozen{
+  background:rgba(59,130,246,.10);
+  color:#2563eb;
+}
+
+.status-escalated{
+  background:rgba(124,58,237,.10);
+  color:#7c3aed;
+}
+
 </style>
 </head>
 <body>
@@ -580,6 +626,21 @@ async function loadExecutions(){
   }
 }
 
+
+function renderStatusPill(status){
+  const value = String(status || "UNKNOWN");
+
+  let cls = "status-pending";
+
+  if(value === "APPROVED") cls = "status-approved";
+  else if(value === "BLOCKED") cls = "status-blocked";
+  else if(value === "FROZEN") cls = "status-frozen";
+  else if(value === "ESCALATED") cls = "status-escalated";
+
+  return `<span class="status-pill ${cls}">${escapeHtml(value)}</span>`;
+}
+
+
 function renderRows(){
   if(!ITEMS.length){
     document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>Execution stream is unavailable until operator authority is verified.</p></div></div>`;
@@ -588,7 +649,7 @@ function renderRows(){
   document.getElementById("rows").innerHTML = ITEMS.map(x => `
     <div class="row ${SELECTED?.id===x.id ? "active":""}" onclick="selectExecution('${x.id}')">
       <div><b>${x.id || "EXECUTION"}</b><div class="small">${x.actor || x.user || "actor:not declared"}</div></div>
-      <div class="status ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div>
+      <div>${renderStatusPill(x.status || "PENDING_REVIEW")}</div>
       <div class="small">${x.validation_result || x.validation || "VALIDATION"}</div>
       <div class="small">${x.created_at || x.timestamp || "NO TIMESTAMP"}</div>
     </div>
@@ -731,7 +792,7 @@ function renderDetail(x){
 
         <div class="block">
           <div class="k">STATUS</div>
-          <div class="v">${escapeHtml(x.status || "-")}</div>
+          <div class="v">${renderStatusPill(x.status || "-")}</div>
         </div>
 
         <div class="block">
