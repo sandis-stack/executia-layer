@@ -1,8 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
-import { verifyJwt } from "../../../services/jwt-auth.js";
+import jwt from "jsonwebtoken";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.EXECUTIA_JWT_SECRET;
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -10,96 +11,79 @@ function json(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
-function mapAction(action) {
+function verifyOperator(req) {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.replace("Bearer ", "").trim();
+
+  if (!token || !JWT_SECRET) return null;
+
+  const decoded = jwt.verify(token, JWT_SECRET);
+
+  if (!decoded || !["OPERATOR", "ADMIN"].includes(decoded.role)) {
+    return null;
+  }
+
+  return {
+    id: decoded.id || decoded.sub || null,
+    email: decoded.email || null,
+    role: decoded.role
+  };
+}
+
+function transitionFor(action) {
   const a = String(action || "").toUpperCase();
 
-  if (a === "APPROVE") {
-    return {
-      action: "APPROVE",
+  const map = {
+    APPROVE: {
       next_state: "APPROVED",
-      trace: [
-        "OPERATOR_APPROVED",
-        "POLICY_STATE_CHANGED",
-        "LEDGER_COMMITTED",
-        "AUDIT_RECORDED"
-      ]
-    };
-  }
-
-  if (a === "REJECT") {
-    return {
-      action: "REJECT",
+      trace: ["OPERATOR_APPROVED", "POLICY_STATE_CHANGED", "LEDGER_COMMITTED", "AUDIT_RECORDED"]
+    },
+    REJECT: {
       next_state: "BLOCKED",
-      trace: [
-        "OPERATOR_REJECTED",
-        "POLICY_STATE_CHANGED",
-        "LEDGER_COMMITTED",
-        "AUDIT_RECORDED"
-      ]
-    };
-  }
-
-  if (a === "FREEZE") {
-    return {
-      action: "FREEZE",
+      trace: ["OPERATOR_REJECTED", "POLICY_STATE_CHANGED", "LEDGER_COMMITTED", "AUDIT_RECORDED"]
+    },
+    FREEZE: {
       next_state: "PENDING_REVIEW",
-      trace: [
-        "OPERATOR_FREEZE",
-        "POLICY_STATE_CHANGED",
-        "EXECUTION_FROZEN",
-        "AUDIT_RECORDED"
-      ]
-    };
-  }
-
-  if (a === "ESCALATE") {
-    return {
-      action: "ESCALATE",
+      trace: ["OPERATOR_FREEZE", "POLICY_STATE_CHANGED", "EXECUTION_FROZEN", "AUDIT_RECORDED"]
+    },
+    ESCALATE: {
       next_state: "PENDING_REVIEW",
-      trace: [
-        "OPERATOR_ESCALATED",
-        "POLICY_STATE_CHANGED",
-        "REVIEW_REQUIRED",
-        "AUDIT_RECORDED"
-      ]
-    };
-  }
+      trace: ["OPERATOR_ESCALATED", "POLICY_STATE_CHANGED", "REVIEW_REQUIRED", "AUDIT_RECORDED"]
+    }
+  };
 
-  return null;
+  return map[a] ? { action: a, ...map[a] } : null;
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return json(res, 405, {
-      ok: false,
-      error: { code: "METHOD_NOT_ALLOWED", message: "POST required." }
-    });
-  }
-
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    return json(res, 500, {
-      ok: false,
-      error: { code: "SUPABASE_ENV_MISSING", message: "Supabase env missing." }
-    });
-  }
-
   try {
-    const authHeader = req.headers.authorization || "";
-    const token = authHeader.replace("Bearer ", "").trim();
+    if (req.method !== "POST") {
+      return json(res, 405, {
+        ok: false,
+        error: { code: "METHOD_NOT_ALLOWED", message: "POST required." }
+      });
+    }
 
-    const user = await verifyJwt(token);
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      return json(res, 500, {
+        ok: false,
+        error: { code: "SUPABASE_ENV_MISSING", message: "Supabase env missing." }
+      });
+    }
 
-    if (!user || !["OPERATOR", "ADMIN"].includes(user.role)) {
+    const operator = verifyOperator(req);
+
+    if (!operator) {
       return json(res, 401, {
         ok: false,
         error: { code: "UNAUTHORIZED", message: "Operator authority required." }
       });
     }
 
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+    const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const execution_id = body.execution_id;
-    const requestedAction = body.action;
     const reason = body.reason || null;
+    const transition = transitionFor(body.action);
 
     if (!execution_id) {
       return json(res, 400, {
@@ -107,8 +91,6 @@ export default async function handler(req, res) {
         error: { code: "EXECUTION_ID_REQUIRED", message: "execution_id required." }
       });
     }
-
-    const transition = mapAction(requestedAction);
 
     if (!transition) {
       return json(res, 400, {
@@ -121,25 +103,26 @@ export default async function handler(req, res) {
 
     const { data: current, error: readError } = await supabase
       .from("execution_results")
-      .select("*")
+      .select("id,status")
       .eq("id", execution_id)
       .single();
 
     if (readError || !current) {
       return json(res, 404, {
         ok: false,
-        error: { code: "EXECUTION_NOT_FOUND", message: "Execution not found." }
+        error: {
+          code: "EXECUTION_NOT_FOUND",
+          message: readError?.message || "Execution not found."
+        }
       });
     }
 
     const previous_state = current.status || null;
+    const now = new Date().toISOString();
 
     const { error: updateError } = await supabase
       .from("execution_results")
-      .update({
-        status: transition.next_state,
-        updated_at: new Date().toISOString()
-      })
+      .update({ status: transition.next_state })
       .eq("id", execution_id);
 
     if (updateError) {
@@ -151,9 +134,9 @@ export default async function handler(req, res) {
 
     const trace = transition.trace.map((state) => ({
       state,
-      timestamp: new Date().toISOString(),
-      actor: user.email,
-      role: user.role
+      timestamp: now,
+      actor: operator.email,
+      role: operator.role
     }));
 
     const { data: auditEvent, error: auditError } = await supabase
@@ -163,8 +146,8 @@ export default async function handler(req, res) {
         action: transition.action,
         previous_state,
         next_state: transition.next_state,
-        actor_email: user.email,
-        actor_role: user.role,
+        actor_email: operator.email,
+        actor_role: operator.role,
         reason,
         trace,
         metadata: {
@@ -185,18 +168,21 @@ export default async function handler(req, res) {
 
     return json(res, 200, {
       ok: true,
+      materialized: true,
       execution_id,
       action: transition.action,
       previous_state,
       next_state: transition.next_state,
-      materialized: true,
-      audit_event: auditEvent,
-      trace
+      trace,
+      audit_event_id: auditEvent.id
     });
   } catch (err) {
     return json(res, 500, {
       ok: false,
-      error: { code: "OPERATOR_ACTION_FAILED", message: err.message }
+      error: {
+        code: "OPERATOR_ACTION_FAILED",
+        message: err.message
+      }
     });
   }
 }
