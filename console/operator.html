@@ -3,98 +3,108 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Operator Console — EXECUTIA™</title>
+  <title>Operator Control — EXECUTIA™</title>
   <link rel="stylesheet" href="/enterprise.css" />
 </head>
-<body>
-  <div class="ex-header-shell">
-    <header class="ex-header">
-      <div class="ex-brand">
-        <span class="ex-brand-name">EXECUTIA™</span>
-        <span class="ex-brand-context">OPERATOR CONTROL</span>
-      </div>
-      <nav class="ex-nav">
-        <a href="/dashboard">LIVE</a>
-        <a href="/console/operator.html" class="active">OPERATOR</a>
-        <a href="/demo">DEMO</a>
-      </nav>
-      <a class="ex-header-action" href="https://executia.io">Entry ↗</a>
-    </header>
-    <div class="ex-statusbar">
-      <span class="ex-status-item"><span class="ex-dot"></span>JWT SESSION</span>
-      <span class="ex-status-item">TENANT ISOLATED</span>
-      <span class="ex-status-item">ROLE GOVERNED</span>
-      <span class="ex-status-item">AUDIT RECORDING</span>
+
+<body class="ex-operator-body">
+  <header class="op-header">
+    <div class="op-brand">
+      <strong>EXECUTIA™</strong>
+      <span>OPERATOR CONTROL</span>
     </div>
+
+    <nav class="op-nav">
+      <a href="/dashboard">LIVE</a>
+      <a href="/console/operator.html" class="active">OPERATOR</a>
+      <a href="/demo">DEMO</a>
+    </nav>
+
+    <a class="op-entry" href="https://executia.io">Entry ↗</a>
+  </header>
+
+  <div class="op-statebar">
+    <span>● JWT SESSION</span>
+    <span>TENANT ISOLATED</span>
+    <span>ROLE GOVERNED</span>
+    <span>AUDIT RECORDING</span>
   </div>
 
-  <main class="ex-main">
-    <section class="ex-section">
-      <div class="ex-enterprise-grid">
-        <section class="ex-card">
-          <div class="ex-panel-header">
-            <div>
-              <h2 class="ex-panel-title">Execution authority</h2>
-              <p class="ex-panel-subtitle">Enterprise operator session.</p>
-            </div>
-            <span id="sessionPill" class="ex-pill warn">NOT SIGNED IN</span>
-          </div>
+  <main class="op-shell">
+    <section class="op-top">
+      <div class="op-card op-authority">
+        <div>
+          <p class="op-label">AUTHORITY</p>
+          <h1>Execution authority</h1>
+          <p id="sessionInfo">No active session.</p>
+        </div>
 
-          <div class="ex-stack">
-            <input id="apiKey" class="ex-input" type="password" placeholder="API key" autocomplete="off" />
-            <input id="organizationId" class="ex-input" type="text" value="f0063ff5-8558-47fc-9ca1-9da48b13bf54" />
-            <input id="userEmail" class="ex-input" type="email" value="operator@executia.io" />
+        <span id="sessionPill" class="op-pill warn">NOT SIGNED IN</span>
 
-            <div class="ex-actions">
-              <button id="loginBtn" class="ex-btn primary compact">Login</button>
-              <button id="logoutBtn" class="ex-btn compact">Logout</button>
-              <button id="refreshBtn" class="ex-btn compact">Refresh queue</button>
-            </div>
+        <div id="loginArea" class="op-login">
+          <input id="apiKey" type="password" placeholder="API key" autocomplete="off" />
+          <input id="organizationId" type="text" value="f0063ff5-8558-47fc-9ca1-9da48b13bf54" />
+          <input id="userEmail" type="email" value="operator@executia.io" />
+          <button id="loginBtn">AUTHORIZE SESSION</button>
+        </div>
 
-            <div id="sessionInfo" class="ex-panel-subtitle">No active session.</div>
-          </div>
-        </section>
-
-        <section class="ex-card">
-          <div class="ex-panel-header">
-            <div>
-              <h2 class="ex-panel-title">System telemetry</h2>
-              <p class="ex-panel-subtitle">Last authenticated execution response.</p>
-            </div>
-            <span class="ex-pill ok">LIVE</span>
-          </div>
-          <pre id="queueJson" class="ex-json compact">Waiting for session...</pre>
-        </section>
+        <div class="op-actions">
+          <button id="refreshBtn">SYNC QUEUE</button>
+          <button id="logoutBtn">LOGOUT</button>
+        </div>
       </div>
 
-      <div class="ex-enterprise-grid" style="margin-top:24px">
-        <section class="ex-card">
-          <div class="ex-panel-header">
-            <div>
-              <h2 class="ex-panel-title">Active executions</h2>
-              <p class="ex-panel-subtitle">JWT-controlled execution review queue.</p>
-            </div>
-            <span class="ex-pill warn">QUEUE</span>
+      <div class="op-card op-telemetry">
+        <div class="op-card-head">
+          <div>
+            <p class="op-label">TELEMETRY</p>
+            <h2>System state</h2>
           </div>
-          <div id="queueList" class="ex-stack">Sign in to load queue.</div>
-        </section>
+          <span class="op-pill ok">LIVE</span>
+        </div>
 
-        <section class="ex-card">
-          <div class="ex-panel-header">
-            <div>
-              <h2 class="ex-panel-title">Authority state</h2>
-              <p class="ex-panel-subtitle">Current operator authority context.</p>
-            </div>
-            <span class="ex-pill">CONTROL</span>
-          </div>
-          <div class="ex-control-strip">
-            <div class="ex-control-cell"><span>AUTH</span><strong>Bearer JWT</strong></div>
-            <div class="ex-control-cell"><span>TENANT</span><strong id="tenantValue">—</strong></div>
-            <div class="ex-control-cell"><span>ROLE</span><strong id="roleValue">—</strong></div>
-            <div class="ex-control-cell"><span>MODE</span><strong id="modeValue">—</strong></div>
-          </div>
-        </section>
+        <div class="op-telemetry-grid">
+          <div><span>MODE</span><strong id="modeValue">—</strong></div>
+          <div><span>TENANT</span><strong id="tenantValue">—</strong></div>
+          <div><span>ROLE</span><strong id="roleValue">—</strong></div>
+          <div><span>QUEUE</span><strong id="queueCount">—</strong></div>
+        </div>
+
+        <pre id="queueJson" class="op-json">Waiting for session...</pre>
       </div>
+    </section>
+
+    <section class="op-main">
+      <div class="op-card op-stream">
+        <div class="op-card-head">
+          <div>
+            <p class="op-label">EXECUTION STREAM</p>
+            <h2>Active executions</h2>
+          </div>
+          <span class="op-pill warn">QUEUE</span>
+        </div>
+
+        <div id="queueList" class="op-queue-empty">
+          Sign in to load execution stream.
+        </div>
+      </div>
+
+      <aside class="op-card op-registry">
+        <div class="op-card-head">
+          <div>
+            <p class="op-label">REGISTRY</p>
+            <h2>Authority context</h2>
+          </div>
+          <span class="op-pill">CONTROL</span>
+        </div>
+
+        <div class="op-registry-list">
+          <div><span>AUTH</span><strong>Bearer JWT</strong></div>
+          <div><span>VALIDATION</span><strong>ACTIVE</strong></div>
+          <div><span>LEDGER</span><strong>VERIFIED</strong></div>
+          <div><span>AUDIT</span><strong>RECORDING</strong></div>
+        </div>
+      </aside>
     </section>
   </main>
 
@@ -106,60 +116,64 @@
     const userEmail = document.getElementById("userEmail");
     const sessionPill = document.getElementById("sessionPill");
     const sessionInfo = document.getElementById("sessionInfo");
+    const loginArea = document.getElementById("loginArea");
     const queueList = document.getElementById("queueList");
     const queueJson = document.getElementById("queueJson");
-    const roleValue = document.getElementById("roleValue");
     const modeValue = document.getElementById("modeValue");
     const tenantValue = document.getElementById("tenantValue");
+    const roleValue = document.getElementById("roleValue");
+    const queueCount = document.getElementById("queueCount");
 
-    function token() {
+    function getToken() {
       return localStorage.getItem(TOKEN_KEY);
     }
 
-    function readJwtPayload(t) {
+    function decodeJwt(token) {
       try {
-        return JSON.parse(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+        return JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
       } catch {
-        return null;
+        return {};
       }
     }
 
-    function renderSession() {
-      const t = token();
-      if (!t) {
-        document.body.classList.remove("operator-auth-active");
-        sessionPill.className = "ex-pill warn";
+    function setAuthorizedUI() {
+      const token = getToken();
+      if (!token) {
+        document.body.classList.remove("is-authorized");
+        sessionPill.className = "op-pill warn";
         sessionPill.textContent = "NOT SIGNED IN";
         sessionInfo.textContent = "No active session.";
-        roleValue.textContent = "—";
         modeValue.textContent = "—";
         tenantValue.textContent = "—";
+        roleValue.textContent = "—";
+        queueCount.textContent = "—";
         return;
       }
 
-      const p = readJwtPayload(t) || {};
-      const user = p.user || {};
-      document.body.classList.add("operator-auth-active");
-      sessionPill.className = "ex-pill ok";
+      const payload = decodeJwt(token);
+      const user = payload.user || {};
+      document.body.classList.add("is-authorized");
+      sessionPill.className = "op-pill ok";
       sessionPill.textContent = "AUTHORIZED";
-      sessionInfo.textContent = `${user.email || "operator"} · ${p.role || user.role || "OPERATOR"} · ${p.organization_id || "tenant"}`;
-      roleValue.textContent = p.role || user.role || "OPERATOR";
-      modeValue.textContent = p.mode || "ENTERPRISE";
+      sessionInfo.textContent = `${user.email || "operator"} · ${payload.role || user.role || "OPERATOR"} · ${payload.organization_id || "tenant"}`;
+      modeValue.textContent = payload.mode || "ENTERPRISE";
       tenantValue.textContent = "VERIFIED";
+      roleValue.textContent = payload.role || user.role || "OPERATOR";
     }
 
     async function apiFetch(path, options = {}) {
       const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-      if (token()) headers.Authorization = `Bearer ${token()}`;
+      const token = getToken();
+      if (token) headers.Authorization = `Bearer ${token}`;
 
       const res = await fetch(path, { ...options, headers });
       const text = await res.text();
       try { return JSON.parse(text); }
-      catch { return { ok:false, error:{ code:"NON_JSON_RESPONSE", message:text } }; }
+      catch { return { ok:false, error:{ message:text || `HTTP ${res.status}` } }; }
     }
 
     async function login() {
-      queueJson.textContent = "Creating JWT session...";
+      queueJson.textContent = "Creating operator session...";
 
       const res = await fetch("/api/v1/login", {
         method: "POST",
@@ -176,73 +190,94 @@
       queueJson.textContent = JSON.stringify(data, null, 2);
 
       if (!data.ok || !data.token) {
-        queueList.textContent = "Login failed.";
+        queueList.className = "op-queue-empty";
+        queueList.textContent = "Authorization failed.";
         return;
       }
 
       localStorage.setItem(TOKEN_KEY, data.token);
       apiKey.value = "";
-      renderSession();
+      setAuthorizedUI();
       await loadQueue();
     }
 
+    function cleanValue(value, fallback) {
+      if (!value) return fallback;
+      const v = String(value).trim();
+      if (!v || v.toLowerCase() === "unknown" || v.toUpperCase() === "UNKNOWN") return fallback;
+      return v;
+    }
+
+    function cleanReason(value) {
+      const v = cleanValue(value, "EXECUTION REVIEW REQUIRED");
+      if (v === "VALIDATION_INCOMPLETE") return "AWAITING VERIFICATION";
+      return v.replaceAll("_", " ");
+    }
+
     async function loadQueue() {
-      if (!token()) {
-        queueList.textContent = "Sign in to load queue.";
+      if (!getToken()) {
+        queueList.className = "op-queue-empty";
+        queueList.textContent = "Sign in to load execution stream.";
         queueJson.textContent = "Waiting for session...";
         return;
       }
 
-      queueList.textContent = "Loading queue...";
+      queueList.className = "op-queue-empty";
+      queueList.textContent = "Synchronizing execution stream...";
+
       const data = await apiFetch("/api/v1/operator-queue");
       queueJson.textContent = JSON.stringify(data, null, 2);
 
       if (!data.ok) {
-        queueList.textContent = "Queue error.";
+        queueList.textContent = "Execution stream error.";
         return;
       }
 
-      if (!Array.isArray(data.items) || data.items.length === 0) {
-        queueList.innerHTML = `
-          <div class="ex-queue-card">
-            <span class="ex-pill ok">CLEAR</span>
-            <h3 class="ex-queue-title">No active executions</h3>
-            <p class="ex-panel-subtitle">Queue clear. System ready.</p>
-          </div>`;
+      const items = Array.isArray(data.items) ? data.items : [];
+      queueCount.textContent = `${items.length} PENDING`;
+
+      if (items.length === 0) {
+        queueList.className = "op-queue-empty verified";
+        queueList.innerHTML = "<strong>QUEUE CLEAR</strong><span>No active executions require operator action.</span>";
         return;
       }
 
+      queueList.className = "op-stream-list";
       queueList.innerHTML = "";
-      data.items.forEach((item) => {
-        const id = item.execution_id || item.id;
-        const title = item.request_type && item.request_type !== "UNKNOWN" ? item.request_type : item.type && item.type !== "UNKNOWN" ? item.type : "TENANT EXECUTION";
-        const reason = item.reason || "REVIEW_REQUIRED";
-        const actor = item.actor || item.operator_email || "operator@executia.io";
 
-        const card = document.createElement("div");
-        card.className = "ex-queue-card";
+      items.forEach((item) => {
+        const id = item.execution_id || item.id || "NO_EXECUTION_ID";
+        const title = cleanValue(item.request_type || item.type, "TENANT EXECUTION");
+        const actor = cleanValue(item.actor || item.operator_email || item.user_email, "SYSTEM_OPERATOR");
+        const reason = cleanReason(item.reason);
+        const status = cleanValue(item.status, "PENDING_REVIEW");
+
+        const card = document.createElement("article");
+        card.className = "op-execution";
         card.innerHTML = `
-          <div class="ex-queue-top">
-            <div>
-              <span class="ex-pill warn">${item.status || "PENDING_REVIEW"}</span>
-              <h3 class="ex-queue-title">${title}</h3>
-            </div>
-            <span class="ex-pill">REVIEW</span>
+          <div class="op-execution-top">
+            <span class="op-pill warn">${status}</span>
+            <span class="op-pill">REVIEW</span>
           </div>
-          <div class="ex-queue-meta">
-            <strong>Execution ID</strong><span class="ex-mono">${id}</span>
-            <strong>Actor</strong><span>${actor}</span>
-            <strong>Reason</strong><span>${reason}</span>
+
+          <h3>${title}</h3>
+
+          <div class="op-execution-grid">
+            <span>Execution ID</span><strong>${id}</strong>
+            <span>Actor</span><strong>${actor}</strong>
+            <span>Status</span><strong>${reason}</strong>
           </div>
-          <div class="ex-actions">
-            <button class="ex-btn primary compact" data-action="approve" data-id="${id}">Commit execution</button>
-            <button class="ex-btn compact danger" data-action="block" data-id="${id}">Reject execution</button>
-          </div>`;
+
+          <div class="op-command-row">
+            <button class="op-command commit" data-action="approve" data-id="${id}">COMMIT EXECUTION</button>
+            <button class="op-command reject" data-action="block" data-id="${id}">REJECT EXECUTION</button>
+          </div>
+        `;
         queueList.appendChild(card);
       });
     }
 
-    async function decision(action, id) {
+    async function decide(action, id) {
       const endpoint = action === "approve" ? "/api/v1/operator-approve" : "/api/v1/operator-block";
       const data = await apiFetch(endpoint, {
         method: "POST",
@@ -251,6 +286,7 @@
           reason: action === "approve" ? "Committed by enterprise operator" : "Rejected by enterprise operator"
         })
       });
+
       queueJson.textContent = JSON.stringify(data, null, 2);
       await loadQueue();
     }
@@ -258,20 +294,20 @@
     document.getElementById("loginBtn").addEventListener("click", login);
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem(TOKEN_KEY);
-      renderSession();
+      setAuthorizedUI();
       loadQueue();
     });
     document.getElementById("refreshBtn").addEventListener("click", loadQueue);
 
     document.addEventListener("click", async (e) => {
-      const b = e.target.closest("button[data-action]");
-      if (!b) return;
-      b.disabled = true;
-      try { await decision(b.dataset.action, b.dataset.id); }
-      finally { b.disabled = false; }
+      const button = e.target.closest("button[data-action]");
+      if (!button) return;
+      button.disabled = true;
+      try { await decide(button.dataset.action, button.dataset.id); }
+      finally { button.disabled = false; }
     });
 
-    renderSession();
+    setAuthorizedUI();
     loadQueue();
   </script>
 </body>
