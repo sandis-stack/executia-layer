@@ -11,41 +11,66 @@ function db() {
   );
 }
 
-function evaluateRules(execution) {
+function evaluateRuleFromCatalog(rule, execution) {
   const amount = Number(execution.amount || execution.payload?.amount || 0);
 
-  return [
-    {
-      rule: "AML_CHECK",
-      status: amount > 100000000 ? "REVIEW" : "PASSED",
-      confidence: amount > 100000000 ? 0.74 : 0.98,
-      impact: "financial_control"
-    },
-    {
-      rule: "DOUBLE_ENTRY",
+  if (rule.rule_code === "AML_CHECK") {
+    return {
+      rule: rule.rule_code,
+      status: amount > Number(rule.threshold || 100000000) ? "REVIEW" : "PASSED",
+      confidence: amount > Number(rule.threshold || 100000000) ? 0.74 : 0.98,
+      impact: rule.impact || "financial_control",
+      severity: rule.severity
+    };
+  }
+
+  if (rule.rule_code === "DOUBLE_ENTRY") {
+    return {
+      rule: rule.rule_code,
       status: execution.audit_state === "RECORDED" ? "VERIFIED" : "PENDING",
       confidence: execution.audit_state === "RECORDED" ? 0.97 : 0.61,
-      impact: "ledger_integrity"
-    },
-    {
-      rule: "EXECUTION_POLICY",
+      impact: rule.impact || "ledger_integrity",
+      severity: rule.severity
+    };
+  }
+
+  if (rule.rule_code === "EXECUTION_POLICY") {
+    return {
+      rule: rule.rule_code,
       status: execution.status === "BLOCKED" ? "BLOCKED" : "PASSED",
       confidence: execution.status === "BLOCKED" ? 0.91 : 0.96,
-      impact: "operator_governance"
-    },
-    {
-      rule: "RISK_THRESHOLD",
+      impact: rule.impact || "operator_governance",
+      severity: rule.severity
+    };
+  }
+
+  if (rule.rule_code === "RISK_THRESHOLD") {
+    return {
+      rule: rule.rule_code,
       status: execution.validation_result === "UNCLEAR" ? "REVIEW" : "PASSED",
       confidence: execution.validation_result === "UNCLEAR" ? 0.72 : 0.95,
-      impact: "risk_control"
-    },
-    {
-      rule: "HASH_CHAIN",
+      impact: rule.impact || "risk_control",
+      severity: rule.severity
+    };
+  }
+
+  if (rule.rule_code === "HASH_CHAIN") {
+    return {
+      rule: rule.rule_code,
       status: execution.hash ? "LINKED" : "MISSING",
       confidence: execution.hash ? 0.99 : 0.40,
-      impact: "proof_integrity"
-    }
-  ];
+      impact: rule.impact || "proof_integrity",
+      severity: rule.severity
+    };
+  }
+
+  return {
+    rule: rule.rule_code,
+    status: "INFO",
+    confidence: 0.50,
+    impact: rule.impact || "execution_control",
+    severity: rule.severity
+  };
 }
 
 export default async function handler(req, res) {
@@ -96,7 +121,17 @@ export default async function handler(req, res) {
       });
     }
 
-    const rules = evaluateRules(data);
+    const { data: catalog, error: catalogError } = await supabase
+      .from("rule_catalog")
+      .select("*")
+      .eq("default_status", "ACTIVE")
+      .order("created_at", { ascending: true });
+
+    if (catalogError) throw catalogError;
+
+    const rules = (catalog || []).map(rule =>
+      evaluateRuleFromCatalog(rule, data)
+    );
 
     return res.status(200).json({
       ok: true,
