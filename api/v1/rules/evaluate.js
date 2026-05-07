@@ -11,14 +11,16 @@ function db() {
   );
 }
 
-function evaluateRuleFromCatalog(rule, execution) {
+function evaluateRuleFromCatalog(rule, execution, policy = {}) {
   const amount = Number(execution.amount || execution.payload?.amount || 0);
+  const amlThreshold = Number(policy.aml_threshold || rule.threshold || 100000000);
+  const riskThreshold = Number(policy.risk_threshold || rule.threshold || 100000000);
 
   if (rule.rule_code === "AML_CHECK") {
     return {
       rule: rule.rule_code,
-      status: amount > Number(rule.threshold || 100000000) ? "REVIEW" : "PASSED",
-      confidence: amount > Number(rule.threshold || 100000000) ? 0.74 : 0.98,
+      status: amount > amlThreshold ? "REVIEW" : "PASSED",
+      confidence: amount > amlThreshold ? 0.74 : 0.98,
       impact: rule.impact || "financial_control",
       severity: rule.severity
     };
@@ -47,8 +49,8 @@ function evaluateRuleFromCatalog(rule, execution) {
   if (rule.rule_code === "RISK_THRESHOLD") {
     return {
       rule: rule.rule_code,
-      status: execution.validation_result === "UNCLEAR" ? "REVIEW" : "PASSED",
-      confidence: execution.validation_result === "UNCLEAR" ? 0.72 : 0.95,
+      status: execution.validation_result === "UNCLEAR" || amount > riskThreshold ? "REVIEW" : "PASSED",
+      confidence: execution.validation_result === "UNCLEAR" || amount > riskThreshold ? 0.72 : 0.95,
       impact: rule.impact || "risk_control",
       severity: rule.severity
     };
@@ -129,8 +131,14 @@ export default async function handler(req, res) {
 
     if (catalogError) throw catalogError;
 
+    const { data: policy } = await supabase
+      .from("organization_policy_profiles")
+      .select("*")
+      .eq("profile_code", "GLOBAL_STANDARD")
+      .maybeSingle();
+
     const rules = (catalog || []).map(rule =>
-      evaluateRuleFromCatalog(rule, data)
+      evaluateRuleFromCatalog(rule, data, policy || {})
     );
 
     return res.status(200).json({
