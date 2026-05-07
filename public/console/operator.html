@@ -687,26 +687,37 @@ function renderDetail(x){
 }
 
 
+
 async function operatorAction(action){
   if(!SELECTED) return alert("No execution selected.");
+
   try{
     const result = await api("/api/v1/operator/action", {
       method:"POST",
-      body: JSON.stringify({ execution_id: SELECTED.id, action })
+      body: JSON.stringify({
+        execution_id: SELECTED.id,
+        action
+      })
     });
 
     SELECTED.operator_action = action;
-    SELECTED.status = result?.result?.status || SELECTED.status;
+
+    if(result?.result?.status){
+      SELECTED.status = result.result.status;
+    }
+
     SELECTED.audit_state = "RECORDED";
     SELECTED.reconciliation_state = "VERIFIED";
 
     renderDetail(SELECTED);
     await loadProof(SELECTED);
     await loadExecutions();
+
   }catch(e){
     alert("Action failed: " + e.message);
   }
 }
+
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
