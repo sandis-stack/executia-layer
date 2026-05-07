@@ -423,6 +423,18 @@ AUTHORIZE WITH TOKEN
       <div class="k">VALIDATION</div>
       <div class="k">TIMESTAMP</div>
     </div>
+    
+<div style="padding:10px 14px;border-bottom:1px solid var(--line);background:#fbfdff;">
+  <input id="executionSearch" placeholder="Search execution id, actor, subject, status..." oninput="FILTER=this.value.toLowerCase();renderRows();" />
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;">
+    <button class="secondary" onclick="STATUS_FILTER='ALL';renderRows();">ALL</button>
+    <button class="secondary" onclick="STATUS_FILTER='APPROVED';renderRows();">APPROVED</button>
+    <button class="secondary" onclick="STATUS_FILTER='BLOCKED';renderRows();">BLOCKED</button>
+    <button class="secondary" onclick="STATUS_FILTER='PENDING_REVIEW';renderRows();">PENDING</button>
+  </div>
+</div>
+
     <div id="rows" class="rows">
       <div class="lock">
         <div>
@@ -464,6 +476,8 @@ const API_BASE = "https://execution.executia.io";
 let TOKEN = localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") || "";
 let SELECTED = null;
 let ITEMS = [];
+let FILTER = "";
+let STATUS_FILTER = "ALL";
 
 document.getElementById("token").value = TOKEN;
 
@@ -544,12 +558,29 @@ async function loadExecutions(){
 }
 
 function renderRows(){
+  const visibleItems = ITEMS.filter(x => {
+    if(STATUS_FILTER !== "ALL" && x.status !== STATUS_FILTER) return false;
+
+    const q = FILTER;
+    if(!q) return true;
+
+    return [
+      x.id,
+      x.execution_id,
+      x.actor,
+      x.subject,
+      x.status,
+      x.request_type
+    ].join(" ").toLowerCase().includes(q);
+  });
+
   if(!visibleItems.length){
-    document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>Execution stream is unavailable until operator authority is verified.</p></div></div>`;
+    document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>NO EXECUTIONS</h2><p>No records match current filter.</p></div></div>`;
     return;
   }
-  document.getElementById("rows").innerHTML = ITEMS.map(x => `
-    <div class="row ${SELECTED?.id===x.id ? "active":""}" onclick="selectExecution('${x.id}')">
+
+  document.getElementById("rows").innerHTML = visibleItems.map(x => `
+    <div class="row ${statusClass(x.status)} ${SELECTED?.id===x.id ? "active":""}" onclick="selectExecution('${x.id}')">
       <div><b>${x.id || "EXECUTION"}</b><div class="small">${x.actor || x.user || "actor:not declared"}</div></div>
       <div class="status ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div>
       <div class="small">${x.validation_result || x.validation || "VALIDATION"}</div>
