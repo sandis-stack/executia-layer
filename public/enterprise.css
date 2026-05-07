@@ -1770,3 +1770,46 @@ body > div[style*="position:fixed"][style*="bottom"] {
     max-height: 360px;
   }
 }
+
+/* EXECUTIA Operator Console — after-login compact mode */
+.operator-auth-active #apiKey,
+.operator-auth-active #organizationId,
+.operator-auth-active #userEmail,
+.operator-auth-active label[for="apiKey"],
+.operator-auth-active label[for="organizationId"],
+.operator-auth-active label[for="userEmail"] {
+  display: none;
+}
+
+.operator-auth-active .ex-card:first-child {
+  padding: 18px 22px;
+}
+
+.operator-auth-active .ex-card:first-child .ex-stack {
+  gap: 10px;
+}
+
+.operator-auth-active #sessionInfo {
+  padding: 14px 16px;
+  border: 1px solid rgba(30, 58, 95, 0.12);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  font-weight: 700;
+  color: #12365d;
+}
+
+.operator-auth-active #loginBtn {
+  display: none;
+}
+
+.operator-auth-active .ex-section {
+  padding-top: 18px;
+}
+
+.operator-auth-active .ex-json {
+  max-height: 360px;
+}
+
+.operator-auth-active #queueList .ex-queue-card {
+  min-height: 260px;
+}

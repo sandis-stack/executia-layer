@@ -7,7 +7,7 @@
   <meta name="description" content="EXECUTIA™ enterprise operator console." />
   <link rel="stylesheet" href="/enterprise.css" />
 </head>
-<body>
+<body class="operator-auth-pending">
   <div class="ex-header-shell" data-ex-header>
     <header class="ex-header">
       <div class="ex-brand">
@@ -169,6 +169,8 @@
       const token = getToken();
 
       if (!token) {
+        document.body.classList.remove("operator-auth-active");
+        document.body.classList.add("operator-auth-pending");
         sessionPill.className = "ex-pill warn";
         sessionPill.textContent = "Not signed in";
         sessionInfo.textContent = "No active session.";
@@ -176,6 +178,9 @@
         modeValue.textContent = "—";
         return;
       }
+
+      document.body.classList.remove("operator-auth-pending");
+      document.body.classList.add("operator-auth-active");
 
       const payload = readJwtPayload(token);
       const user = payload?.user || {};
