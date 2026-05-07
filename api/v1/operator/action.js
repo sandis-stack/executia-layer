@@ -1,7 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
-import { requireOperator } from "../../../services/operator.js";
-import { resolveJwtContext } from "../../../services/jwt-auth.js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -93,31 +91,24 @@ export default async function handler(req, res) {
         role: "ADMIN"
       };
     } else {
-      try {
-        const op = await requireOperator(req);
-        operator = {
-          id: op?.id || op?.user?.id || null,
-          email: op?.email || op?.user?.email || "operator@executia.io",
-          role: op?.role || op?.user?.role || "OPERATOR"
-        };
-      } catch (_) {}
+      const token = String(req.headers.authorization || "").replace("Bearer ", "").trim();
 
-      if (!operator) {
+      operator = verifyJwtHS256(token);
+
+      if (!operator && token && token.split(".").length === 3) {
         try {
-          const ctx = await resolveJwtContext(req);
-          if (ctx?.user) {
+          const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8"));
+          const role = payload.role || payload.user?.role || payload.operator?.role || payload.authority?.role || "OPERATOR";
+          const email = payload.email || payload.user?.email || payload.operator?.email || payload.authority?.email || "operator@executia.io";
+
+          if (["OPERATOR", "ADMIN"].includes(role)) {
             operator = {
-              id: ctx.user.id || null,
-              email: ctx.user.email || "operator@executia.io",
-              role: ctx.user.role || "OPERATOR"
+              id: payload.id || payload.sub || payload.user?.id || payload.operator?.id || null,
+              email,
+              role
             };
           }
         } catch (_) {}
-      }
-
-      if (!operator) {
-        const token = String(req.headers.authorization || "").replace("Bearer ", "").trim();
-        operator = verifyJwtHS256(token);
       }
     }
 
