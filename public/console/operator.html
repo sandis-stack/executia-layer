@@ -524,12 +524,17 @@ function startLiveSync(){
           ITEMS.find(x => String(x.id) === String(selectedId)) ||
           ITEMS.find(x => String(x.execution_id) === String(selectedId));
         if(fresh){
+          const detailEl = document.getElementById("detail");
+          const previousScroll = detailEl ? detailEl.scrollTop : 0;
+
           SELECTED = fresh;
-          renderDetail(SELECTED);
+
           await loadProof(SELECTED);
           await loadAuditTimeline(SELECTED);
           if(typeof renderRuleSurface === "function") await renderRuleSurface(SELECTED);
           if(typeof loadExecutionTrace === "function") await loadExecutionTrace(SELECTED);
+
+          if(detailEl) detailEl.scrollTop = previousScroll;
         }
       }
       setSyncState("SYNC: LIVE", true);
@@ -567,6 +572,7 @@ function renderRows(){
 async function selectExecution(id){
   SELECTED = ITEMS.find(x => String(x.id) === String(id));
   renderRows();
+  document.getElementById("detailId").textContent = SELECTED?.execution_id || SELECTED?.id || "No execution selected";
   renderDetail(SELECTED);
   await loadProof(SELECTED);
   await loadAuditTimeline(SELECTED);
