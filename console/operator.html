@@ -136,7 +136,7 @@ async function login(){
  const d=await r.json(); $("queueJson").textContent=JSON.stringify(d,null,2); if(!d.ok||!d.token)return; localStorage.setItem(TOKEN_KEY,d.token); $("apiKey").value=""; render(); loadQueue();
 }
 async function loadQueue(){
- if(!token()){$("queueList").textContent="<div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div>";$("queueJson").textContent="Waiting for session...";return}
+ if(!token()){$("queueList").innerHTML='<div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div>';$("queueJson").textContent="Waiting for session...";return}
  $("queueList").textContent="Synchronizing execution stream...";
  const d=await api("/api/v1/operator-queue"); $("queueJson").textContent=JSON.stringify(d,null,2);
  const items=Array.isArray(d.items)?d.items:[]; $("queueCount").textContent=`${items.length} PENDING`;
@@ -148,7 +148,7 @@ async function loadQueue(){
   const actor=clean(item.actor||item.operator_email||item.user_email,"SYSTEM_OPERATOR");
   const status=clean(item.status,"PENDING");
   const card=document.createElement("article"); card.className="execution";
-  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3></h3><div class="rail"><div class="rail-step active">REQUESTED</div><div class="rail-line"></div><div class="rail-step review">REVIEW</div><div class="rail-line"></div><div class="rail-step">COMMIT</div></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
+  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3>${title}</h3><div class="rail"><div class="rail-step active">REQUESTED</div><div class="rail-line"></div><div class="rail-step review">REVIEW</div><div class="rail-line"></div><div class="rail-step">COMMIT</div></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
   $("queueList").appendChild(card);
  })
 }

@@ -27,14 +27,14 @@ p{margin:6px 0 0;color:#64798f;font-size:13px;line-height:1.45}
 .stream{min-height:90px}.execution{border:1px solid #dce6f1;border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff);padding:22px}.top{display:flex;justify-content:space-between;margin-bottom:18px}
 .meta{margin-top:24px;display:grid;grid-template-columns:140px 1fr;gap:12px 18px}.meta span{font-size:13px;color:#49657e;font-weight:850}.meta strong{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#2c4660;font-size:13px}
 .cmdrow{display:flex;gap:12px;margin-top:26px}.commit{background:#12365d;color:#fff;box-shadow:0 10px 24px rgba(15,53,93,.13)}.reject{background:#fff;color:#a83434;border:1px solid #d9a7a7}
-.registry{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.login{display:none;grid-template-columns:1.1fr 1.2fr 1fr auto;gap:10px;margin-top:16px;align-items:center}.login input{height:42px;border:1px solid #d6e1ed;border-radius:12px;padding:0 13px;background:#fbfdff;color:#12365d;font-size:13px;font-weight:700;min-width:0}.login button{height:42px;background:#12365d;color:white;border:0;border-radius:12px;padding:0 20px;font-size:11px;font-weight:900;letter-spacing:.12em;box-shadow:0 8px 18px rgba(15,53,93,.14)}
+.registry{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.login{display:none;grid-template-columns:1.1fr 1.2fr 1fr auto;gap:10px;margin-top:16px;align-items:center}.login input{height:42px;border:1px solid #d6e1ed;border-radius:12px;padding:0 13px;background:#fbfdff;color:#12365d;font-size:13px;font-weight:700;min-width:0}.login button{height:46px;background:#12365d;color:white;border:0;border-radius:12px;padding:0 18px;font-size:12px;font-weight:900;letter-spacing:.14em;box-shadow:0 8px 18px rgba(15,53,93,.14)}
 body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display:none}
 @media(max-width:960px){.grid{grid-template-columns:1fr}.state{gap:18px;overflow:auto;justify-content:flex-start;padding:0 20px}.login{grid-template-columns:1fr}}
 
 .rail{display:flex;align-items:center;gap:10px;margin:18px 0 24px}
 .rail-line{flex:1;height:1px;background:#dbe5f0;min-width:28px}
-.rail-step{display:flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border-radius:999px;border:1px solid #dbe5f0;background:#fff;color:#6c8197;font-size:10px;font-weight:900;letter-spacing:.16em}
+.rail-step{display:flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border-radius:999px;border:1px solid #dbe5f0;background:#fff;color:#6c8197;font-size:10px;font-weight:900;letter-spacing:.28em;opacity:.72}
 .rail-step.active{background:#edf7ff;border-color:#cfe2f7;color:#0f355d}
 .rail-step.review{background:#fff7e8;border-color:#f3dfb4;color:#8a5d00}
 
@@ -42,6 +42,7 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
 .empty-authority{
   display:grid;
   gap:8px;
+  min-height:92px;
   padding:18px 20px;
   border:1px dashed #d6e1ed;
   border-radius:16px;
@@ -71,10 +72,14 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
 }
 .registry .tile{
   min-height:58px;
+  padding:18px;
+  gap:8px;
+  border-radius:18px;
   display:flex;
   flex-direction:column;
   justify-content:center;
 }
+.telemetry-empty{font-size:9px;letter-spacing:.16em;opacity:.5;font-weight:900;}
 .registry .tile strong{
   letter-spacing:.04em;
 }
@@ -92,13 +97,13 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
   <section class="grid">
     <div class="card auth">
       <div class="head"><div><p class="label">AUTHORITY</p><h1>Operator authority</h1><p id="sessionInfo">Operator authority not verified.</p></div><span id="sessionPill" class="pill warn">NOT SIGNED IN</span></div>
-      <div class="login"><input id="apiKey" type="password" placeholder="API key"><input id="organizationId" value="f0063ff5-8558-47fc-9ca1-9da48b13bf54"><input id="userEmail" value="operator@executia.io"><button id="loginBtn">AUTHORIZE</button></div>
+      <p class="label" style="margin:14px 0 6px">ACCESS TOKEN</p><div class="login"><input id="apiKey" type="password" placeholder="••••••••••••" aria-label="ACCESS TOKEN"><input id="organizationId" placeholder="ORG VERIFIED" value="f0063ff5-8558-47fc-9ca1-9da48b13bf54"><input id="userEmail" value="operator@executia.io"><button id="loginBtn">AUTHORIZE</button></div>
       <div class="authrow"><button id="refreshBtn">SYNC</button><button id="logoutBtn">LOGOUT</button></div>
     </div>
     <div class="card">
       <div class="head"><div><p class="label">TELEMETRY</p><h2>Execution telemetry</h2></div><span class="pill ok">LIVE</span></div>
-      <div class="telegrid"><div class="tile"><span>MODE</span><strong id="modeValue">—</strong></div><div class="tile"><span>TENANT</span><strong id="tenantValue">—</strong></div><div class="tile"><span>ROLE</span><strong id="roleValue">—</strong></div><div class="tile"><span>QUEUE</span><strong id="queueCount">—</strong></div></div>
-      <details class="rawBox"><summary>RAW TELEMETRY</summary><pre id="queueJson" class="summary">Waiting for session...</pre></details>
+      <div class="telegrid"><div class="tile"><span>MODE</span><strong id="modeValue"><span class="telemetry-empty">SESSION REQUIRED</span></strong></div><div class="tile"><span>TENANT</span><strong id="tenantValue">—</strong></div><div class="tile"><span>ROLE</span><strong id="roleValue">—</strong></div><div class="tile"><span>QUEUE</span><strong id="queueCount">—</strong></div></div>
+      <details class="rawBox"><summary style="font-size:11px;opacity:.55;letter-spacing:.18em;cursor:pointer">RAW TELEMETRY</summary><pre id="queueJson" class="summary">Waiting for session...</pre></details>
     </div>
   </section>
 
@@ -125,7 +130,7 @@ function render(){
  const t=token();
  if(!t){document.body.classList.remove("authorized");$("sessionPill").className="pill warn";$("sessionPill").textContent="NOT SIGNED IN";$("sessionInfo").textContent="Operator authority not verified.";$("modeValue").textContent=$("tenantValue").textContent=$("roleValue").textContent=$("queueCount").textContent="—";return}
  const p=decode(t),u=p.user||{};
- document.body.classList.add("authorized");$("sessionPill").className="pill ok";$("sessionPill").textContent="AUTHORIZED";$("sessionInfo").textContent=`${u.email||"operator"} · ${p.role||u.role||"OPERATOR"} · ${p.organization_id||"tenant"}`;$("modeValue").textContent=p.mode||"ENTERPRISE";$("tenantValue").textContent="VERIFIED";$("roleValue").textContent=p.role||u.role||"OPERATOR";
+ document.body.classList.add("authorized");$("sessionPill").className="pill ok";$("sessionPill").textContent="AUTHORIZED";$("sessionInfo").textContent=`${u.email||"operator"} · ${p.role||u.role||"OPERATOR"} · ${(p.organization_id||"tenant").slice(0,8)}…`;$("modeValue").textContent=p.mode||"ENTERPRISE";$("tenantValue").textContent="VERIFIED";$("roleValue").textContent=p.role||u.role||"OPERATOR";
 }
 async function api(path,opt={}){
  const h={"Content-Type":"application/json",...(opt.headers||{})}; if(token())h.Authorization=`Bearer ${token()}`;
@@ -136,7 +141,7 @@ async function login(){
  const d=await r.json(); $("queueJson").textContent=JSON.stringify(d,null,2); if(!d.ok||!d.token)return; localStorage.setItem(TOKEN_KEY,d.token); $("apiKey").value=""; render(); loadQueue();
 }
 async function loadQueue(){
- if(!token()){$("queueList").textContent="<div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div>";$("queueJson").textContent="Waiting for session...";return}
+ if(!token()){$("queueList").innerHTML='<div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div>';$("queueJson").textContent="Waiting for session...";return}
  $("queueList").textContent="Synchronizing execution stream...";
  const d=await api("/api/v1/operator-queue"); $("queueJson").textContent=JSON.stringify(d,null,2);
  const items=Array.isArray(d.items)?d.items:[]; $("queueCount").textContent=`${items.length} PENDING`;
@@ -148,7 +153,7 @@ async function loadQueue(){
   const actor=clean(item.actor||item.operator_email||item.user_email,"SYSTEM_OPERATOR");
   const status=clean(item.status,"PENDING");
   const card=document.createElement("article"); card.className="execution";
-  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3></h3><div class="rail"><div class="rail-step active">REQUESTED</div><div class="rail-line"></div><div class="rail-step review">REVIEW</div><div class="rail-line"></div><div class="rail-step">COMMIT</div></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
+  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3>${title}</h3><div class="rail"><div class="rail-step active">REQUESTED</div><div class="rail-line"></div><div class="rail-step review">REVIEW</div><div class="rail-line"></div><div class="rail-step">COMMIT</div></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
   $("queueList").appendChild(card);
  })
 }
