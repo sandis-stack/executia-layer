@@ -353,6 +353,33 @@ border-left:4px solid transparent;
   color:#7c3aed;
 }
 
+
+.row.active{
+  position:relative;
+  border-left:4px solid #18c66a !important;
+  background:linear-gradient(90deg,rgba(24,198,106,.08),rgba(24,198,106,.03)) !important;
+  box-shadow:inset 0 0 0 1px rgba(24,198,106,.08),0 0 24px rgba(24,198,106,.06);
+  transition:all .25s ease;
+}
+
+.row.active::after{
+  content:"LIVE";
+  position:absolute;
+  right:18px;
+  top:18px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.08em;
+  color:#18c66a;
+  animation:activeRowPulse 1.8s infinite;
+}
+
+@keyframes activeRowPulse{
+  0%{opacity:.45}
+  50%{opacity:1}
+  100%{opacity:.45}
+}
+
 </style>
 </head>
 <body>
