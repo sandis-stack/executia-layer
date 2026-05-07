@@ -63,6 +63,21 @@ export default async function handler(req, res) {
       .eq("default_status", "ACTIVE")
       .order("created_at", { ascending: true });
 
+    const { data: auditEvents } = await supabase
+      .from("audit_events")
+      .select("action,trace,created_at,actor_email,actor_role,next_state")
+      .or(`execution_id.eq.${execution.id},execution_id.eq.${execution.execution_id}`)
+      .order("created_at", { ascending: true });
+
+    const operatorTrace = (auditEvents || []).flatMap(event =>
+      (event.trace || []).map(item => ({
+        step: item.state || event.action || "OPERATOR_ACTION",
+        state: event.next_state || item.state || "RECORDED",
+        detail: `Operator action by ${event.actor_email || "operator"}`,
+        timestamp: item.timestamp || event.created_at
+      }))
+    );
+
     const amount = Number(execution.amount || execution.payload?.amount || 0);
 
     const trace = [
@@ -111,7 +126,8 @@ export default async function handler(req, res) {
         state: execution.reconciliation_state === "VERIFIED" ? "VERIFIED" : execution.status,
         detail: "Execution truth state materialized",
         timestamp: execution.updated_at || execution.created_at
-      }
+      },
+      ...operatorTrace
     ];
 
     return res.status(200).json({
