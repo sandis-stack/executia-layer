@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import { requireOperator } from "../../../services/operator.js";
+import { resolveJwtContext } from "../../../services/jwt-auth.js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -91,8 +93,32 @@ export default async function handler(req, res) {
         role: "ADMIN"
       };
     } else {
-      const token = String(req.headers.authorization || "").replace("Bearer ", "").trim();
-      operator = verifyJwtHS256(token);
+      try {
+        const op = await requireOperator(req);
+        operator = {
+          id: op?.id || op?.user?.id || null,
+          email: op?.email || op?.user?.email || "operator@executia.io",
+          role: op?.role || op?.user?.role || "OPERATOR"
+        };
+      } catch (_) {}
+
+      if (!operator) {
+        try {
+          const ctx = await resolveJwtContext(req);
+          if (ctx?.user) {
+            operator = {
+              id: ctx.user.id || null,
+              email: ctx.user.email || "operator@executia.io",
+              role: ctx.user.role || "OPERATOR"
+            };
+          }
+        } catch (_) {}
+      }
+
+      if (!operator) {
+        const token = String(req.headers.authorization || "").replace("Bearer ", "").trim();
+        operator = verifyJwtHS256(token);
+      }
     }
 
     if (!operator) {
@@ -116,8 +142,9 @@ export default async function handler(req, res) {
     const { data: current, error: readError } = await supabase
       .from("execution_results")
       .select("id,status")
-      .eq("id", execution_id)
-      .single();
+      .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
+      .limit(1)
+      .maybeSingle();
 
     if (readError || !current) {
       return json(res, 404, {
