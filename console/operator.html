@@ -78,6 +78,96 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
 .registry .tile strong{
   letter-spacing:.04em;
 }
+
+/* EXECUTIA final control surface layer */
+body{
+  background:
+    linear-gradient(rgba(15,53,93,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,53,93,.018) 1px, transparent 1px),
+    linear-gradient(180deg,#ffffff,#f8fbff);
+  background-size: 42px 42px, 42px 42px, auto;
+}
+.card{
+  position:relative;
+}
+.card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:18px;
+  bottom:18px;
+  width:2px;
+  border-radius:999px;
+  background:rgba(15,53,93,.16);
+}
+.auth::before{
+  background:#12365d;
+}
+.stream::before{
+  background:#8a5d00;
+}
+.pill.locked{
+  background:#eef3f8;
+  color:#49657e;
+}
+.authorized .pill.locked,
+.pill.ok{
+  background:#e6f7ef;
+  color:#0e6745;
+}
+.authority-rail{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+.authority-rail span{
+  border:1px solid #dbe5f0;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.16em;
+  color:#6f8499;
+  background:#fbfdff;
+}
+.login button{
+  min-width:106px;
+  box-shadow:none!important;
+}
+.empty-authority{
+  min-height:74px!important;
+  padding:13px 16px!important;
+  border-style:solid!important;
+  background:
+    linear-gradient(90deg, rgba(138,93,0,.06), transparent),
+    #fff;
+}
+.empty-authority strong{
+  color:#8a5d00!important;
+}
+.registry .tile{
+  min-height:48px!important;
+  padding:14px!important;
+  border-radius:14px!important;
+  background:#fbfdff!important;
+}
+.registry .tile span{
+  font-size:9px!important;
+}
+.registry .tile strong{
+  font-size:13px!important;
+}
+.rawBox summary{
+  color:#49657e!important;
+}
+.state{
+  letter-spacing:.28em!important;
+  opacity:.76;
+}
+.entry{
+  padding:9px 18px!important;
+}
 </style>
 </head>
 <body>
@@ -91,7 +181,7 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
 <main class="shell">
   <section class="grid">
     <div class="card auth">
-      <div class="head"><div><p class="label">AUTHORITY</p><h1>Operator authority</h1><p id="sessionInfo">Operator authority not verified.</p></div><span id="sessionPill" class="pill warn">NOT SIGNED IN</span></div>
+      <div class="head"><div><p class="label">AUTHORITY</p><h1>Operator authority</h1><p id="sessionInfo">Operator authority not verified.</p><div class="authority-rail"><span>SESSION</span><span>TENANT</span><span>ROLE</span><span>ACCESS</span></div></div><span id="sessionPill" class="pill locked">LOCKED</span></div>
       <div class="login"><input id="apiKey" type="password" placeholder="API key"><input id="organizationId" value="f0063ff5-8558-47fc-9ca1-9da48b13bf54"><input id="userEmail" value="operator@executia.io"><button id="loginBtn">AUTHORIZE</button></div>
       <div class="authrow"><button id="refreshBtn">SYNC</button><button id="logoutBtn">LOGOUT</button></div>
     </div>
@@ -105,7 +195,7 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
   <section class="grid">
     <div class="card stream">
       <div class="head"><div><p class="label">EXECUTION STREAM</p><h2>Live execution stream</h2></div><span class="pill warn">QUEUE</span></div>
-      <div id="queueList"><div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div></div>
+      <div id="queueList"><div class="empty-authority"><strong>SYSTEM LOCK</strong><span>Execution stream is unavailable until operator authority is verified.</span><span>JWT LOCK · TENANT REQUIRED · ROLE REQUIRED · AUDIT STANDBY</span></div></div>
     </div>
     <aside class="card">
       <div class="head"><div><p class="label">REGISTRY</p><h2>Execution registry</h2></div><span class="pill">CONTROL</span></div>
@@ -136,7 +226,7 @@ async function login(){
  const d=await r.json(); $("queueJson").textContent=JSON.stringify(d,null,2); if(!d.ok||!d.token)return; localStorage.setItem(TOKEN_KEY,d.token); $("apiKey").value=""; render(); loadQueue();
 }
 async function loadQueue(){
- if(!token()){$("queueList").innerHTML='<div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div>';$("queueJson").textContent="Waiting for session...";return}
+ if(!token()){$("queueList").innerHTML='<div class="empty-authority"><strong>SYSTEM LOCK</strong><span>Execution stream is unavailable until operator authority is verified.</span><span>JWT LOCK · TENANT REQUIRED · ROLE REQUIRED · AUDIT STANDBY</span></div>';$("queueJson").textContent="Waiting for session...";return}
  $("queueList").textContent="Synchronizing execution stream...";
  const d=await api("/api/v1/operator-queue"); $("queueJson").textContent=JSON.stringify(d,null,2);
  const items=Array.isArray(d.items)?d.items:[]; $("queueCount").textContent=`${items.length} PENDING`;
