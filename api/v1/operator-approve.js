@@ -1,12 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { db } from "../../services/db.js";
 import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
-
-function db() {
-  return createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
