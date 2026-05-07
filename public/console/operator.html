@@ -487,8 +487,8 @@ async function authorize(){
   try{
     const me = await api("/api/v1/operator/me");
     document.getElementById("systemState").textContent = "AUTHORITY VERIFIED";
-    document.getElementById("operator").textContent = me?.user?.email || "OPERATOR";
-    document.getElementById("auth").textContent = me?.mode || "ENTERPRISE";
+    const operatorEl = document.getElementById("operator"); if(operatorEl) operatorEl.textContent = me?.user?.email || "OPERATOR";
+    const authEl = document.getElementById("auth"); if(authEl) authEl.textContent = me?.mode || "ENTERPRISE";
     await loadExecutions();
   }catch(e){
     document.getElementById("systemState").textContent = "SYSTEM LOCK";
