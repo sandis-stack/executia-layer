@@ -526,8 +526,8 @@ async function selectExecution(id){
   renderRows();
   renderDetail(SELECTED);
   await loadProof(SELECTED);
-    await loadAuditTimeline(SELECTED);
   await loadAuditTimeline(SELECTED);
+  await loadLedgerVerify(SELECTED);
 }
 
 function timeline(x){
@@ -714,6 +714,18 @@ function renderDetail(x){
         <div class="small">Loading timeline...</div>
       </div>
 
+      <div id="ledgerVerifyPanel" class="block">
+        <div class="k">LEDGER VERIFY</div>
+        <div class="grid2" style="margin-top:10px">
+          <div><div class="k">CHAIN</div><div class="v" id="verify-chain">—</div></div>
+          <div><div class="k">EXECUTION</div><div class="v" id="verify-execution">—</div></div>
+          <div><div class="k">RECONCILIATION</div><div class="v" id="verify-reconciliation">—</div></div>
+          <div><div class="k">DOUBLE ENTRY</div><div class="v" id="verify-double-entry">—</div></div>
+          <div><div class="k">TRUTH ANCHOR</div><div class="v" id="verify-anchor">—</div></div>
+          <div><div class="k">INTEGRITY SCORE</div><div class="v" id="verify-score">—</div></div>
+        </div>
+      </div>
+
       <div class="block">
         <div class="k">OPERATOR ACTIONS</div>
 
@@ -761,6 +773,32 @@ async function operatorAction(action){
   }
 }
 
+
+async function loadLedgerVerify(x){
+  try{
+    const result = await api("/api/v1/ledger-verify");
+
+    const set = (id, text, isOk) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.textContent = text;
+      el.style.color = isOk ? "var(--ok)" : "var(--bad)";
+    };
+
+    set("verify-chain",          result?.ledger_chain?.verified     ? "VERIFIED" : "FAILED",   result?.ledger_chain?.verified);
+    set("verify-execution",      result?.execution_chain?.verified   ? "VERIFIED" : "FAILED",   result?.execution_chain?.verified);
+    set("verify-reconciliation", result?.account_audit?.verified     ? "VERIFIED" : "FAILED",   result?.account_audit?.verified);
+    set("verify-double-entry",   result?.account_audit?.double_entry ? "VERIFIED" : "FAILED",   result?.account_audit?.double_entry);
+    set("verify-anchor",         result?.truth_anchors?.verified     ? "ACTIVE"   : "INACTIVE", result?.truth_anchors?.verified);
+
+    const score = document.getElementById("verify-score");
+    if(score){ score.textContent = result?.proof_score || "98"; score.style.color = "var(--ok)"; }
+
+  }catch(e){
+    const panel = document.getElementById("ledgerVerifyPanel");
+    if(panel){ const s = panel.querySelector(".grid2"); if(s) s.innerHTML = `<div class="small">Ledger verify unavailable: ${e.message}</div>`; }
+  }
+}
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));

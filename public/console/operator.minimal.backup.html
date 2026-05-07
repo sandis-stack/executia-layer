@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA Operator Console</title>
+  <style>
+    :root{
+      --bg:#f5f7fa;--panel:#ffffff;--line:#d8dee8;--text:#162232;--muted:#667386;
+      --blue:#1e3a5f;--graphite:#2c3440;--soft:#eef3f8;--ok:#1f7a4d;--bad:#9b2c2c;--warn:#9a6a00;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Inter,Arial,sans-serif;background:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px),var(--bg);
+      background-size:40px 40px;color:var(--text);
+    }
+    header{
+      height:64px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.92);
+      display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+    }
+    .brand{font-weight:800;letter-spacing:.08em;color:var(--blue)}
+    .state{font-size:12px;color:var(--muted);letter-spacing:.08em}
+    main{display:grid;grid-template-columns:280px 1fr 420px;gap:16px;padding:16px;height:calc(100vh - 64px)}
+    section{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    .pad{padding:16px}
+    h2{margin:0 0 14px;font-size:12px;letter-spacing:.14em;color:var(--blue)}
+    label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.08em}
+    input{
+      width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);
+      font-size:13px;
+    }
+    button{
+      border:1px solid var(--blue);background:var(--blue);color:#fff;border-radius:10px;padding:10px 12px;
+      font-size:11px;letter-spacing:.08em;font-weight:700;cursor:pointer;
+    }
+    button.secondary{background:#fff;color:var(--blue)}
+    button.danger{background:var(--bad);border-color:var(--bad)}
+    .rail{display:grid;gap:10px}
+    .block{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:12px}
+    .k{font-size:10px;color:var(--muted);letter-spacing:.13em}
+    .v{font-size:14px;font-weight:800;margin-top:4px}
+    .stream{display:flex;flex-direction:column;height:100%}
+    .stream-head{border-bottom:1px solid var(--line);padding:14px 16px;display:flex;justify-content:space-between}
+    .rows{overflow:auto}
+    .row{
+      display:grid;grid-template-columns:1.2fr .9fr .8fr .8fr;gap:12px;padding:14px 16px;
+      border-bottom:1px solid var(--line);cursor:pointer;align-items:center;
+    }
+    .row:hover{background:#f0f4f9}
+    .row.active{background:#e8eef6}
+    .small{font-size:12px;color:var(--muted)}
+    .status{font-size:11px;font-weight:800;letter-spacing:.08em}
+    .APPROVED,.COMMITTED{color:var(--ok)}.BLOCKED,.FAILED{color:var(--bad)}.PENDING_REVIEW{color:var(--warn)}
+    .drawer{display:flex;flex-direction:column;height:100%}
+    .drawer-head{padding:16px;border-bottom:1px solid var(--line)}
+    .drawer-body{overflow:auto;padding:16px;display:grid;gap:14px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .timeline{border-left:2px solid var(--blue);margin-left:8px;padding-left:16px;display:grid;gap:14px}
+    .event{position:relative}
+    .event:before{content:"";position:absolute;left:-23px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--blue)}
+    pre{
+      margin:0;white-space:pre-wrap;background:#f7f9fc;border:1px solid var(--line);border-radius:12px;
+      padding:12px;font-size:11px;color:#253244;max-height:220px;overflow:auto;
+    }
+    .lock{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">EXECUTIA™ OPERATOR CONSOLE</div>
+  <div class="state" id="systemState">SYSTEM LOCK</div>
+</header>
+
+<main>
+  <section>
+    <div class="pad rail">
+      <h2>AUTHORITY SURFACE</h2>
+      <div>
+        <label>ACCESS TOKEN</label>
+        <input id="token" placeholder="Operator JWT" />
+      </div>
+      <button onclick="authorize()">AUTHORIZE</button>
+
+      <div class="block"><div class="k">OPERATOR</div><div class="v" id="operator">UNVERIFIED</div></div>
+      <div class="block"><div class="k">AUTH</div><div class="v" id="auth">LOCKED</div></div>
+      <div class="block"><div class="k">VALIDATION</div><div class="v">ACTIVE</div></div>
+      <div class="block"><div class="k">LEDGER</div><div class="v">HASH CHAIN</div></div>
+      <div class="block"><div class="k">AUDIT</div><div class="v">RECORDED</div></div>
+    </div>
+  </section>
+
+  <section class="stream">
+    <div class="stream-head">
+      <h2>EXECUTION REGISTRY</h2>
+      <button class="secondary" onclick="loadExecutions()">REFRESH</button>
+    </div>
+    <div id="rows" class="rows">
+      <div class="lock">
+        <div>
+          <h2>SYSTEM LOCK</h2>
+          <p>Execution stream is unavailable until operator authority is verified.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="drawer">
+    <div class="drawer-head">
+      <h2>EXECUTION DETAIL</h2>
+      <div class="small" id="detailId">No execution selected</div>
+    </div>
+    <div class="drawer-body" id="detail">
+      <div class="block">
+        <div class="k">STATE</div>
+        <div class="v">AWAITING SELECTION</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const API_BASE = "https://execution.executia.io";
+let TOKEN = localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") || "";
+let SELECTED = null;
+let ITEMS = [];
+
+document.getElementById("token").value = TOKEN;
+
+function statusClass(s){ return String(s || "PENDING_REVIEW").replaceAll(" ","_"); }
+
+async function api(path, options = {}) {
+  const res = await fetch(API_BASE + path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + TOKEN,
+      ...(options.headers || {})
+    }
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.ok === false) throw new Error(data?.error?.message || data?.error || "REQUEST_FAILED");
+  return data;
+}
+
+async function authorize(){
+  TOKEN = document.getElementById("token").value.trim();
+  localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
+  try{
+    const me = await api("/api/v1/operator/me");
+    document.getElementById("systemState").textContent = "AUTHORITY VERIFIED";
+    document.getElementById("operator").textContent = me?.user?.email || "OPERATOR";
+    document.getElementById("auth").textContent = me?.mode || "ENTERPRISE";
+    await loadExecutions();
+  }catch(e){
+    document.getElementById("systemState").textContent = "SYSTEM LOCK";
+    alert("Authority verification failed: " + e.message);
+  }
+}
+
+async function loadExecutions(){
+  try{
+    const data = await api("/api/v1/operator/executions");
+    ITEMS = data.items || data.executions || [];
+    renderRows();
+  }catch(e){
+    document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>${e.message}</p></div></div>`;
+  }
+}
+
+function renderRows(){
+  if(!ITEMS.length){
+    document.getElementById("rows").innerHTML = `<div class="lock"><div><h2>SYSTEM LOCK</h2><p>Execution stream is unavailable until operator authority is verified.</p></div></div>`;
+    return;
+  }
+  document.getElementById("rows").innerHTML = ITEMS.map(x => `
+    <div class="row ${SELECTED?.id===x.id ? "active":""}" onclick="selectExecution('${x.id}')">
+      <div><b>${x.id || "EXECUTION"}</b><div class="small">${x.actor || x.user || "actor:not declared"}</div></div>
+      <div class="status ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div>
+      <div class="small">${x.validation_result || x.validation || "VALIDATION"}</div>
+      <div class="small">${x.created_at || x.timestamp || "NO TIMESTAMP"}</div>
+    </div>
+  `).join("");
+}
+
+async function selectExecution(id){
+  SELECTED = ITEMS.find(x => String(x.id) === String(id));
+  renderRows();
+  renderDetail(SELECTED);
+  await loadProof(SELECTED);
+}
+
+function timeline(x){
+  const now = x.created_at || x.timestamp || "not recorded";
+  const hash = x.ledger_hash || x.hash || "not anchored";
+  return `
+    <div class="timeline">
+      ${["REQUESTED","VALIDATED","REVIEWED","COMMITTED","RECORDED"].map(step => `
+        <div class="event">
+          <div class="k">${step}</div>
+          <div class="small">timestamp: ${now}</div>
+          <div class="small">operator: ${x.operator || "authority layer"}</div>
+          <div class="small">ledger hash: ${hash}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+async function loadProof(x){
+  if(!x?.execution_id) return;
+  try{
+    const proof = await api("/api/v1/proof/execution?execution_id=" + encodeURIComponent(x.execution_id));
+    const el = document.getElementById("proofPanel");
+    if(el){
+      el.innerHTML = `
+        <h2>EXECUTION PROOF</h2>
+        <div class="grid2">
+          <div><div class="k">PROOF STATE</div><div class="v">${proof.proof_state}</div></div>
+          <div><div class="k">TRUTH STATE</div><div class="v">${proof.proof?.reconciliation_proof?.truth_state}</div></div>
+          <div><div class="k">HASH INTEGRITY</div><div class="v">${proof.verified ? "VERIFIED" : "PARTIAL"}</div></div>
+          <div><div class="k">ALGORITHM</div><div class="v">${proof.proof?.integrity?.algorithm}</div></div>
+        </div>
+        <pre>${escapeHtml(JSON.stringify(proof.proof?.integrity || {}, null, 2))}</pre>
+      `;
+    }
+  }catch(e){
+    const el = document.getElementById("proofPanel");
+    if(el){
+      el.innerHTML = `<h2>EXECUTION PROOF</h2><div class="small">Proof unavailable: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+}
+
+function renderDetail(x){
+  if(!x) return;
+  document.getElementById("detailId").textContent = x.id || "execution";
+  document.getElementById("detail").innerHTML = `
+    <div class="grid2">
+      <div class="block"><div class="k">ACTOR</div><div class="v">${x.actor || x.user || "NOT DECLARED"}</div></div>
+      <div class="block"><div class="k">STATUS</div><div class="v ${statusClass(x.status)}">${x.status || "PENDING_REVIEW"}</div></div>
+      <div class="block"><div class="k">VALIDATION</div><div class="v">${x.validation_result || x.validation || "UNCLEAR"}</div></div>
+      <div class="block"><div class="k">RISK</div><div class="v">${x.risk || x.risk_level || "CONTROLLED"}</div></div>
+      <div class="block"><div class="k">LEDGER</div><div class="v">${x.ledger_state || "HASH LINKED"}</div></div>
+      <div class="block"><div class="k">AUDIT</div><div class="v">${x.audit_state || "RECORDED"}</div></div>
+    </div>
+
+    <div class="block">
+      <h2>CORE LEDGER LINKAGE</h2>
+      <div class="grid2">
+        <div><div class="k">LEDGER STATE</div><div class="v">${x.ledger_state || "ACTIVE"}</div></div>
+        <div><div class="k">DOUBLE ENTRY</div><div class="v">${x.double_entry ? "VERIFIED" : "PENDING"}</div></div>
+        <div><div class="k">SETTLEMENT</div><div class="v">${x.settlement_state || "UNSETTLED"}</div></div>
+        <div><div class="k">RECONCILIATION</div><div class="v">${x.reconciliation_state || "PENDING"}</div></div>
+        <div><div class="k">HASH VERIFIED</div><div class="v">${x.hash_verified ? "YES" : "PENDING"}</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>AUDIT TIMELINE RAIL</h2>
+      ${timeline(x)}
+    </div>
+
+    <div class="block" id="proofPanel">
+      <h2>EXECUTION PROOF</h2>
+      <div class="small">Loading proof...</div>
+    </div>
+
+    <div class="block">
+      <h2>OPERATOR ACTIONS</h2>
+      <div class="actions">
+        <button onclick="operatorAction('APPROVE')">APPROVE</button>
+        <button class="danger" onclick="operatorAction('REJECT')">REJECT</button>
+        <button class="secondary" onclick="operatorAction('ESCALATE')">ESCALATE</button>
+        <button class="secondary" onclick="operatorAction('FREEZE')">FREEZE</button>
+        <button class="secondary" onclick="operatorAction('REPLAY')">REPLAY</button>
+        <button class="danger" onclick="operatorAction('ROLLBACK_BLOCK')">ROLLBACK BLOCK</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <h2>PAYLOAD</h2>
+      <pre>${escapeHtml(JSON.stringify(x.payload || x, null, 2))}</pre>
+    </div>
+  `;
+}
+
+async function operatorAction(action){
+  if(!SELECTED) return alert("No execution selected.");
+  try{
+    await api("/api/v1/operator/action", {
+      method:"POST",
+      body: JSON.stringify({ execution_id: SELECTED.id, action })
+    });
+    await loadExecutions();
+    alert("Operator action recorded: " + action);
+  }catch(e){
+    alert("Action failed: " + e.message);
+  }
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+if(TOKEN) authorize();
+</script>
+</body>
+</html>
