@@ -379,6 +379,30 @@ border-left:4px solid transparent;
   100%{opacity:.45}
 }
 
+
+.row{
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    transform .18s ease;
+}
+
+.row:hover{
+  background:rgba(30,58,95,.03);
+}
+
+.row.active{
+  background:rgba(30,58,95,.05) !important;
+  border-left:4px solid #1E3A5F !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(30,58,95,.08);
+}
+
+.row.active:hover{
+  transform:translateX(1px);
+}
+
 </style>
 </head>
 <body>
