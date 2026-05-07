@@ -2633,3 +2633,58 @@ body > div[style*="position:fixed"][style*="bottom"] {
 .execution-card h3{
   margin-bottom:4px;
 }
+
+
+/* FINAL COMMAND SURFACE */
+
+.execution-card .actions{
+  margin-top:26px;
+  display:flex;
+  gap:14px;
+}
+
+.execution-card .actions button{
+  height:44px;
+  padding:0 22px;
+  border-radius:14px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+
+.execution-card .commit{
+  box-shadow:0 10px 24px rgba(15,53,93,.12);
+}
+
+.execution-card .reject{
+  background:#fff;
+}
+
+.rail{
+  margin:12px 0 18px;
+}
+
+.telemetry pre{
+  max-height:120px;
+  overflow:auto;
+  opacity:.82;
+  font-size:11px;
+}
+
+.registry-grid .metric{
+  position:relative;
+  overflow:hidden;
+}
+
+.registry-grid .metric::after{
+  content:"";
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:#22a06b;
+  box-shadow:0 0 12px rgba(34,160,107,.45);
+}
+
