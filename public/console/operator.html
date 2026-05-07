@@ -829,69 +829,58 @@ function renderDetail(x){
 
 
 
-function renderRuleSurface(x){
+
+async function renderRuleSurface(x){
   const panel = document.getElementById("ruleSurfacePanel");
-  if(!panel || !x) return;
+  if(!panel || !x?.execution_id) return;
 
-  const rules = [
-    {
-      name:"AML_CHECK",
-      status:(x.amount || 0) > 100000000 ? "REVIEW" : "PASSED"
-    },
-    {
-      name:"DOUBLE_ENTRY",
-      status:x.audit_state === "RECORDED" ? "VERIFIED" : "PENDING"
-    },
-    {
-      name:"EXECUTION_POLICY",
-      status:x.status === "BLOCKED" ? "BLOCKED" : "PASSED"
-    },
-    {
-      name:"RISK_THRESHOLD",
-      status:x.validation_result === "UNCLEAR" ? "REVIEW" : "PASSED"
-    },
-    {
-      name:"HASH_CHAIN",
-      status:x.hash ? "LINKED" : "MISSING"
-    }
-  ];
+  try{
+    const data = await api("/api/v1/rules/evaluate?execution_id=" + encodeURIComponent(x.execution_id));
+    const rules = data.rules || [];
 
-  panel.innerHTML = `
-    <div class="k">RULE SURFACE</div>
+    panel.innerHTML = `
+      <div class="k">RULE SURFACE</div>
+      <div style="display:grid;gap:8px;margin-top:10px;">
+        ${rules.map(rule => `
+          <div class="block" style="background:#fff;padding:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+              <div class="small">
+                ${
+                  ["PASSED","VERIFIED","LINKED"].includes(rule.status)
+                    ? "✓"
+                    : rule.status === "REVIEW"
+                      ? "⚠"
+                      : "✕"
+                }
+                ${escapeHtml(rule.rule)}
+              </div>
 
-    <div style="display:grid;gap:8px;margin-top:10px;">
-      ${rules.map(rule => `
-        <div class="block" style="background:#fff;padding:10px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div class="small">
-              ${
-                ["PASSED","VERIFIED","LINKED"].includes(rule.status)
-                  ? "✓"
-                  : rule.status === "REVIEW"
-                    ? "⚠"
-                    : "✕"
-              }
-              ${rule.name}
-            </div>
-
-            <div class="small" style="
-              font-weight:700;
-              color:${
+              <div class="small" style="font-weight:700;color:${
                 ["PASSED","VERIFIED","LINKED"].includes(rule.status)
                   ? "var(--ok)"
                   : rule.status === "REVIEW"
                     ? "var(--warn)"
                     : "var(--bad)"
-              };
-            ">
-              ${rule.status}
+              };">
+                ${escapeHtml(rule.status)} · ${Math.round((rule.confidence || 0) * 100)}%
+              </div>
+            </div>
+
+            <div class="small" style="margin-top:4px;">
+              impact: ${escapeHtml(rule.impact || "execution_control")}
             </div>
           </div>
-        </div>
-      `).join("")}
-    </div>
-  `;
+        `).join("")}
+      </div>
+    `;
+  }catch(e){
+    panel.innerHTML = `
+      <div class="k">RULE SURFACE</div>
+      <div class="small">Rule engine unavailable: ${escapeHtml(e.message)}</div>
+    `;
+  }
 }
+
 
 
 async function operatorAction(action){
@@ -917,7 +906,7 @@ async function operatorAction(action){
 
     renderDetail(SELECTED);
     await loadProof(SELECTED);
-    renderRuleSurface(SELECTED);
+    await renderRuleSurface(SELECTED);
     await loadExecutions();
 
   }catch(e){
