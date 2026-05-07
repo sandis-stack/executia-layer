@@ -1,5 +1,20 @@
 import { verifyLedgerChain } from "../../services/ledger.js";
 import { requireInternalKey } from "../../services/auth.js";
+import { resolveJwtContext } from "../../services/jwt-auth.js";
+
+// Accepts: EXECUTIA_API_KEY (x-api-key) OR Supabase operator JWT (Authorization: Bearer)
+async function requireAuth(req) {
+  const internalAuth = requireInternalKey(req);
+  if (internalAuth.ok) return internalAuth;
+
+  // Fallback: Supabase JWT (operator console)
+  try {
+    const jwtAuth = await resolveJwtContext(req);
+    if (jwtAuth.ok) return jwtAuth;
+  } catch (_) {}
+
+  return { ok: false, error: "UNAUTHORIZED" };
+}
 import { verifyCoreLedgerChain } from "../../services/core-ledger.js";
 import { auditLedgerIntegrity } from "../../services/audit-ledger.js";
 import { verifyAnchor } from "../../services/truth-anchor.js";
@@ -44,8 +59,8 @@ async function verifyExecutionChain() {
 
 export default async function handler(req, res) {
   try {
-    const auth = requireInternalKey(req);
-    if (!auth.ok) return fail(res, "UNAUTHORIZED", "Invalid API key.", 401);
+    const auth = await requireAuth(req);
+    if (!auth.ok) return fail(res, "UNAUTHORIZED", "Invalid API key or JWT.", 401);
     if (!methodGuard(req, res, ["GET"])) return;
 
     const safeCall = async (fn, fallback) => { try { return await fn(); } catch (e) { return e.code === "SUPABASE_ENV_MISSING" ? fallback : (() => { throw e; })(); } };
