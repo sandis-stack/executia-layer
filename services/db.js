@@ -1,10 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
-import WebSocket from "ws";
 
 let cached = null;
 
 export function hasSupabaseEnv() {
-  return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+  return Boolean(
+    process.env.SUPABASE_URL &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
 }
 
 export function db() {
@@ -20,12 +22,9 @@ export function db() {
       process.env.SUPABASE_SERVICE_ROLE_KEY,
       {
         auth: {
-          persistSession:    false,
-          autoRefreshToken:  false,
+          persistSession: false,
+          autoRefreshToken: false,
           detectSessionInUrl: false
-        },
-        realtime: {
-          transport: WebSocket
         }
       }
     );
