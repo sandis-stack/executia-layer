@@ -1813,3 +1813,57 @@ body > div[style*="position:fixed"][style*="bottom"] {
 .operator-auth-active #queueList .ex-queue-card {
   min-height: 260px;
 }
+
+/* EXECUTIA Operator Console — compact correction */
+.operator-auth-active #apiKey,
+.operator-auth-active #organizationId,
+.operator-auth-active #userEmail,
+.operator-auth-active .ex-card:first-child label {
+  display: none !important;
+}
+
+.operator-auth-active .ex-card:first-child {
+  min-height: auto !important;
+  padding: 18px 22px !important;
+}
+
+.operator-auth-active .ex-card:first-child .ex-panel-subtitle {
+  display: none;
+}
+
+.operator-auth-active .ex-card:first-child .ex-stack {
+  gap: 10px !important;
+}
+
+.operator-auth-active .ex-card:first-child .ex-actions {
+  margin-top: 8px !important;
+}
+
+.operator-auth-active .ex-card:first-child #sessionInfo {
+  margin-top: 8px;
+}
+
+.operator-auth-active .ex-section {
+  padding-top: 8px !important;
+}
+
+.operator-auth-active .ex-enterprise-grid {
+  gap: 18px !important;
+}
+
+.operator-auth-active .ex-card {
+  scroll-margin-top: 120px;
+}
+
+.operator-auth-active .ex-json {
+  max-height: 300px !important;
+}
+
+.operator-auth-active #queueList .ex-queue-card {
+  min-height: 220px !important;
+  padding: 24px 28px !important;
+}
+
+.operator-auth-active .ex-main {
+  padding-top: 52px !important;
+}
