@@ -1966,3 +1966,67 @@ body > div[style*="position:fixed"][style*="bottom"] {
 }
 
 .ex-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.ex-stack{gap:14px}.ex-panel-subtitle{margin-bottom:6px}.ex-input{min-height:54px}.ex-authority-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.ex-authority-chip{padding:10px 14px;border:1px solid var(--ex-line);border-radius:999px;background:#fff;font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--ex-blue)}.ex-queue-card{padding:20px;border:1px solid var(--ex-line);border-radius:18px;background:#fff}.ex-json{background:#f7f9fc;border:1px solid var(--ex-line);border-radius:16px;padding:18px;font-size:12px;line-height:1.45;max-height:340px;overflow:auto}.ex-card{box-shadow:0 10px 28px rgba(15,53,93,.04)}
+
+/* EXECUTIA operator console production polish */
+.ex-input{
+  display:block!important;
+  width:100
+/* EXECUTIA authority density patch */
+.ex-enterprise-grid{
+  align-items:start;
+  grid-template-columns:minmax(0,1.7fr) minmax(360px,.95fr)!important;
+  gap:28px!important;
+}
+.ex-card{
+  padding:28px!important;
+  border-radius:24px!important;
+}
+.ex-stack{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.ex-input{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  display:flex!important;
+  align-items:center!important;
+  width:100
+
+/* EXECUTIA final operator polish */
+.ex-json.compact{
+  max-height:220px!important;
+  min-height:180px!important;
+  overflow:auto!important;
+}
+
+.operator-auth-active #apiKey,
+.operator-auth-active #organizationId,
+.operator-auth-active #userEmail{
+  display:none!important;
+}
+
+.operator-auth-active #loginBtn{
+  display:none!important;
+}
+
+.ex-control-strip{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+
+.ex-control-cell{
+  min-width:0!important;
+  padding:16px!important;
+}
+
+.ex-control-cell strong{
+  font-size:15px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+.ex-queue-title{
+  text-transform:uppercase!important;
+  letter-spacing:-.01em!important;
+}
