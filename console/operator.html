@@ -215,7 +215,7 @@
       queueList.innerHTML = "";
       data.items.forEach((item) => {
         const id = item.execution_id || item.id;
-        const title = item.request_type || item.type || "TENANT EXECUTION";
+        const title = item.request_type && item.request_type !== "UNKNOWN" ? item.request_type : item.type && item.type !== "UNKNOWN" ? item.type : "TENANT EXECUTION";
         const reason = item.reason || "REVIEW_REQUIRED";
         const actor = item.actor || item.operator_email || "operator@executia.io";
 
