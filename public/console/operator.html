@@ -217,7 +217,7 @@
         const id = item.execution_id || item.id;
         const title = item.request_type || item.type || "TENANT EXECUTION";
         const reason = item.reason || "REVIEW_REQUIRED";
-        const actor = item.actor || item.operator_email || "operator@executia.io";
+        const actor = item.actor || item.operator_email || item.user_email || "SYSTEM_OPERATOR";
 
         const card = document.createElement("div");
         card.className = "ex-queue-card";
