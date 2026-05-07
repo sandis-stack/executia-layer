@@ -41,12 +41,24 @@ export default async function handler(req, res) {
 
     const proof = buildExecutionProof(data);
 
-    await supabase.from("audit_events").insert({
-      execution_id,
-      event_type: "EXECUTION_PROOF_GENERATED",
-      payload: proof,
-      created_at: new Date().toISOString(),
-    });
+    const { data: existingProofEvent } = await supabase
+      .from("audit_events")
+      .select("id")
+      .eq("execution_id", execution_id)
+      .eq("event_type", "EXECUTION_PROOF_GENERATED")
+      .limit(1)
+      .maybeSingle();
+
+    if (!existingProofEvent) {
+      await supabase.from("audit_events").insert({
+        execution_id,
+        event_type: "EXECUTION_PROOF_GENERATED",
+        event_state: proof.proof_state,
+        actor: "proof_engine",
+        details: proof,
+        created_at: new Date().toISOString(),
+      });
+    }
 
     return res.status(200).json({
       ok: true,
