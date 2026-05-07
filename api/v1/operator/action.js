@@ -108,10 +108,16 @@ export default async function handler(req, res) {
       if (!operator && token && token.split(".").length === 3) {
         try {
           const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8"));
-          const role = payload.role || payload.user?.role || payload.operator?.role || payload.authority?.role || "OPERATOR";
+          const role =
+            payload.user_metadata?.role ||
+            payload.role ||
+            payload.user?.role ||
+            payload.operator?.role ||
+            payload.authority?.role ||
+            "OPERATOR";
           const email = payload.email || payload.user?.email || payload.operator?.email || payload.authority?.email || "operator@executia.io";
 
-          if (["OPERATOR", "ADMIN"].includes(role)) {
+          if (["OPERATOR", "ADMIN", "authenticated"].includes(role)) {
             operator = {
               id: payload.id || payload.sub || payload.user?.id || payload.operator?.id || null,
               email,
