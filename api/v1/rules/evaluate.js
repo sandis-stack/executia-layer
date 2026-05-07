@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
 import { requireOperator } from "../../../services/operator.js";
+import { resolveJwtContext } from "../../../services/jwt-auth.js";
 
 function db() {
   return createClient(
@@ -49,7 +50,24 @@ function evaluateRules(execution) {
 
 export default async function handler(req, res) {
   try {
-    await requireOperator(req);
+
+    let authOk = false;
+
+    try{
+      await requireOperator(req);
+      authOk = true;
+    }catch(_){}
+
+    if(!authOk){
+      const jwt = await resolveJwtContext(req);
+      if(jwt?.user){
+        authOk = true;
+      }
+    }
+
+    if(!authOk){
+      throw new Error("OPERATOR_UNAUTHORIZED");
+    }
 
     const execution_id = req.query.execution_id || req.body?.execution_id;
 
