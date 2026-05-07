@@ -31,6 +31,13 @@ p{margin:6px 0 0;color:#64798f;font-size:13px;line-height:1.45}
 .login{display:none;grid-template-columns:1fr 1fr 1fr auto;gap:10px;margin-top:18px}.login input{height:44px;border:1px solid #d6e1ed;border-radius:14px;padding:0 14px}.login button{background:#12365d;color:white;border:0;border-radius:14px;padding:0 18px;font-weight:900}
 body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display:none}
 @media(max-width:960px){.grid{grid-template-columns:1fr}.state{gap:18px;overflow:auto;justify-content:flex-start;padding:0 20px}.login{grid-template-columns:1fr}}
+
+.rail{display:flex;align-items:center;gap:10px;margin:18px 0 24px}
+.rail-line{flex:1;height:1px;background:#dbe5f0;min-width:28px}
+.rail-step{display:flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border-radius:999px;border:1px solid #dbe5f0;background:#fff;color:#6c8197;font-size:10px;font-weight:900;letter-spacing:.16em}
+.rail-step.active{background:#edf7ff;border-color:#cfe2f7;color:#0f355d}
+.rail-step.review{background:#fff7e8;border-color:#f3dfb4;color:#8a5d00}
+
 </style>
 </head>
 <body>
@@ -101,7 +108,7 @@ async function loadQueue(){
   const actor=clean(item.actor||item.operator_email||item.user_email,"SYSTEM_OPERATOR");
   const status=clean(item.status,"PENDING");
   const card=document.createElement("article"); card.className="execution";
-  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3></h3><div class="rail"><span>REQUESTED</span><span>REVIEW</span><span>COMMIT</span></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
+  card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3></h3><div class="rail"><div class="rail-step active">REQUESTED</div><div class="rail-line"></div><div class="rail-step review">REVIEW</div><div class="rail-line"></div><div class="rail-step">COMMIT</div></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
   $("queueList").appendChild(card);
  })
 }
