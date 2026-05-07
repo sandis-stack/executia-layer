@@ -185,10 +185,11 @@ function renderRows(){
   `).join("");
 }
 
-function selectExecution(id){
+async function selectExecution(id){
   SELECTED = ITEMS.find(x => String(x.id) === String(id));
   renderRows();
   renderDetail(SELECTED);
+  await loadProof(SELECTED);
 }
 
 function timeline(x){
@@ -206,6 +207,31 @@ function timeline(x){
       `).join("")}
     </div>
   `;
+}
+
+async function loadProof(x){
+  if(!x?.execution_id) return;
+  try{
+    const proof = await api("/api/v1/proof/execution?execution_id=" + encodeURIComponent(x.execution_id));
+    const el = document.getElementById("proofPanel");
+    if(el){
+      el.innerHTML = `
+        <h2>EXECUTION PROOF</h2>
+        <div class="grid2">
+          <div><div class="k">PROOF STATE</div><div class="v">${proof.proof_state}</div></div>
+          <div><div class="k">TRUTH STATE</div><div class="v">${proof.proof?.reconciliation_proof?.truth_state}</div></div>
+          <div><div class="k">HASH INTEGRITY</div><div class="v">${proof.verified ? "VERIFIED" : "PARTIAL"}</div></div>
+          <div><div class="k">ALGORITHM</div><div class="v">${proof.proof?.integrity?.algorithm}</div></div>
+        </div>
+        <pre>${escapeHtml(JSON.stringify(proof.proof?.integrity || {}, null, 2))}</pre>
+      `;
+    }
+  }catch(e){
+    const el = document.getElementById("proofPanel");
+    if(el){
+      el.innerHTML = `<h2>EXECUTION PROOF</h2><div class="small">Proof unavailable: ${escapeHtml(e.message)}</div>`;
+    }
+  }
 }
 
 function renderDetail(x){
@@ -235,6 +261,11 @@ function renderDetail(x){
     <div class="block">
       <h2>AUDIT TIMELINE RAIL</h2>
       ${timeline(x)}
+    </div>
+
+    <div class="block" id="proofPanel">
+      <h2>EXECUTION PROOF</h2>
+      <div class="small">Loading proof...</div>
     </div>
 
     <div class="block">
