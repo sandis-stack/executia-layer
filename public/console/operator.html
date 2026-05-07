@@ -526,6 +526,8 @@ async function selectExecution(id){
   renderRows();
   renderDetail(SELECTED);
   await loadProof(SELECTED);
+    await loadAuditTimeline(SELECTED);
+  await loadAuditTimeline(SELECTED);
 }
 
 function timeline(x){
@@ -575,6 +577,42 @@ async function loadProof(x){
   }
 }
 
+
+
+async function loadAuditTimeline(x){
+  if(!x?.execution_id) return;
+
+  const el = document.getElementById("auditTimelinePanel");
+  if(!el) return;
+
+  try{
+    const data = await api("/api/v1/audit/timeline?execution_id=" + encodeURIComponent(x.execution_id));
+    const items = data.items || [];
+
+    el.innerHTML = `
+      <div class="k">AUDIT TIMELINE</div>
+      <div class="timeline">
+        ${items.length ? items.map(ev => `
+          <div class="event">
+            <div class="k">${escapeHtml(ev.event_type || "EVENT")}</div>
+            <div class="small">${escapeHtml(ev.event_state || ev.actor || "RECORDED")}</div>
+            <div class="small">${escapeHtml(ev.created_at || "")}</div>
+          </div>
+        `).join("") : `
+          <div class="event">
+            <div class="k">NO EVENTS</div>
+            <div class="small">Audit trail is ready but no events were returned.</div>
+          </div>
+        `}
+      </div>
+    `;
+  }catch(e){
+    el.innerHTML = `
+      <div class="k">AUDIT TIMELINE</div>
+      <div class="small">Timeline unavailable: ${escapeHtml(e.message)}</div>
+    `;
+  }
+}
 
 function renderDetail(x){
   const el = document.getElementById("detail");
@@ -669,6 +707,11 @@ function renderDetail(x){
       <div id="proofPanel" class="block">
         <div class="k">EXECUTION PROOF</div>
         <div class="v">LOADING...</div>
+      </div>
+
+      <div id="auditTimelinePanel" class="block">
+        <div class="k">AUDIT TIMELINE</div>
+        <div class="small">Loading timeline...</div>
       </div>
 
       <div class="block">
