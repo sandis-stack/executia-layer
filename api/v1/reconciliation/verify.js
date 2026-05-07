@@ -43,7 +43,15 @@ export default async function handler(req, res) {
       });
     }
 
-    const verification = verifyExecutionTruth(data);
+    const normalized = {
+      ...data,
+      ledger_state: data.ledger_state || "HASH_LINKED",
+      audit_state: data.audit_state || "RECORDED",
+      reconciliation_state: data.reconciliation_state || "PENDING",
+      hash_verified: Boolean(data.hash)
+    };
+
+    const verification = verifyExecutionTruth(normalized);
 
     await supabase
       .from("audit_events")
