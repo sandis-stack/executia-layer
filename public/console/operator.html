@@ -275,9 +275,9 @@ border-left:4px solid transparent;
 }
 
 
-.primary-wide{
-  width:100%;
-  margin-top:12px;
+.primary-wide,
+.token-btn{
+  width:100% !important;
   height:46px;
   border-radius:14px;
   letter-spacing:.12em;
@@ -292,7 +292,6 @@ border-left:4px solid transparent;
   border-radius:999px;
   background:#18c66a;
   box-shadow:0 0 0 0 rgba(24,198,106,.55);
-  animation:livePulse 1.6s infinite;
   vertical-align:middle;
 }
 
@@ -434,7 +433,7 @@ border-left:4px solid transparent;
 <label>ACCESS TOKEN</label>
 <input id="token" placeholder="JWT access token" />
 
-<button class="secondary token-btn" style="width:100%;margin-top:10px;" data-token-btn="1" onclick="authorize()">
+<button class="secondary token-btn" data-token-btn="1" onclick="authorize()">
 AUTHORIZE WITH TOKEN
 </button>
 
