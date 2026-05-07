@@ -594,8 +594,9 @@ async function selectExecution(id){
   renderRows();
   renderDetail(SELECTED);
   await loadProof(SELECTED);
-    await loadAuditTimeline(SELECTED);
   await loadAuditTimeline(SELECTED);
+  await renderRuleSurface(SELECTED);
+  await loadExecutionTrace(SELECTED);
 }
 
 function timeline(x){
@@ -942,7 +943,7 @@ async function loadExecutionTrace(x){
             <div style="display:flex;justify-content:space-between;gap:10px;">
               <div class="k">${escapeHtml(step.step || "STEP")}</div>
               <div class="small" style="font-weight:800;color:${
-                ["PASSED","VERIFIED","LINKED","RECORDED"].includes(step.state)
+                ["PASSED","VERIFIED","LINKED","RECORDED","APPROVED"].includes(step.state) || String(step.step || "").startsWith("OPERATOR_") || ["LEDGER_COMMITTED","AUDIT_RECORDED","POLICY_STATE_CHANGED"].includes(step.step)
                   ? "var(--ok)"
                   : step.state === "REVIEW" || step.state === "PENDING_REVIEW" || step.state === "UNCLEAR"
                     ? "var(--warn)"
@@ -952,6 +953,9 @@ async function loadExecutionTrace(x){
               };">${escapeHtml(step.state || "INFO")}</div>
             </div>
             <div class="small">${escapeHtml(step.detail || "")}</div>
+            ${String(step.step || "").startsWith("OPERATOR_") || ["LEDGER_COMMITTED","AUDIT_RECORDED","POLICY_STATE_CHANGED"].includes(step.step)
+              ? `<div class="small" style="margin-top:4px;font-weight:800;color:var(--ok);">MATERIALIZED EXECUTION EVENT</div>`
+              : ""}
             <div class="small">${escapeHtml(step.timestamp || "")}</div>
           </div>
         `).join("")}
@@ -980,18 +984,28 @@ async function operatorAction(action){
 
     SELECTED.operator_action = action;
 
-    if(result?.result?.status){
-      SELECTED.status = result.result.status;
+    if(result?.next_state){
+      SELECTED.status = result.next_state;
     }
 
     SELECTED.audit_state = "RECORDED";
     SELECTED.reconciliation_state = "VERIFIED";
 
+    await loadExecutions();
+
+    const fresh =
+      ITEMS.find(item => String(item.id) === String(SELECTED.id)) ||
+      ITEMS.find(item => String(item.execution_id) === String(SELECTED.execution_id)) ||
+      SELECTED;
+
+    SELECTED = fresh;
+
+    renderRows();
     renderDetail(SELECTED);
     await loadProof(SELECTED);
+    await loadAuditTimeline(SELECTED);
     await renderRuleSurface(SELECTED);
-  await loadExecutionTrace(SELECTED);
-    await loadExecutions();
+    await loadExecutionTrace(SELECTED);
 
   }catch(e){
     alert("Action failed: " + e.message);
