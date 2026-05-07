@@ -764,6 +764,11 @@ function renderDetail(x){
         <div class="small">Loading timeline...</div>
       </div>
 
+      <div id="operatorCausalityPanel" class="block">
+        <div class="k">OPERATOR CAUSALITY</div>
+        <div class="small">No operator action recorded in this session.</div>
+      </div>
+
       <div id="decisionSummaryPanel" class="block">
         <div class="k">DECISION SUMMARY</div>
         <div class="v">LOADING</div>
@@ -863,6 +868,52 @@ async function loadExecutionTrace(x){
   }
 }
 
+
+function renderOperatorCausality(result){
+  const panel = document.getElementById("operatorCausalityPanel");
+  if(!panel || !result) return;
+
+  const firstTrace = (result.trace || [])[0] || {};
+
+  panel.innerHTML = `
+    <div class="k">OPERATOR CAUSALITY</div>
+    <div class="grid2" style="margin-top:10px;">
+      <div>
+        <div class="k">WHO</div>
+        <div class="v">${escapeHtml(firstTrace.actor || "operator")}</div>
+      </div>
+      <div>
+        <div class="k">ROLE</div>
+        <div class="v">${escapeHtml(firstTrace.role || "OPERATOR")}</div>
+      </div>
+      <div>
+        <div class="k">ACTION</div>
+        <div class="v">${escapeHtml(result.action || "ACTION")}</div>
+      </div>
+      <div>
+        <div class="k">STATE CHANGE</div>
+        <div class="v">${escapeHtml(result.previous_state || "-")} → ${escapeHtml(result.next_state || "-")}</div>
+      </div>
+    </div>
+
+    <div class="block" style="margin-top:10px;background:#fff;">
+      <div class="k">AUDIT EVENT ID</div>
+      <div class="small" style="word-break:break-all;font-family:monospace;">
+        ${escapeHtml(result.audit_event_id || "-")}
+      </div>
+    </div>
+
+    <div class="block" style="margin-top:10px;background:#fff;">
+      <div class="k">MATERIALIZATION PATH</div>
+      ${(result.trace || []).map(t => `
+        <div class="small" style="margin-top:6px;">
+          ✓ ${escapeHtml(t.state || "TRACE")} · ${escapeHtml(t.timestamp || "")}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
 async function operatorAction(action){
   if(!SELECTED) return alert("No execution selected.");
 
@@ -876,6 +927,7 @@ async function operatorAction(action){
     });
 
     SELECTED.operator_action = action;
+    renderOperatorCausality(result);
 
     if(result?.next_state){
       SELECTED.status = result.next_state;
