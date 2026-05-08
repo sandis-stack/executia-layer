@@ -1767,23 +1767,47 @@ button.secondary,
     if(TOKEN) authorize().then(startLiveSync);
   </script>
 
-<script>
+<script id="operator-final-actions-js">
+window.authorizeWithToken = async function(){
+  try{
+    await authorize();
+  }catch(e){
+    alert("Authorization failed: " + e.message);
+  }
+};
 
+window.refreshOperatorConsole = async function(){
+  const btn = document.getElementById("refreshBtn");
+  const started = Date.now();
 
-  window.refreshOperatorConsole = async function(){
-    try{
-      if(typeof previousRefresh === "function"){
-        return await previousRefresh();
-      }
-    }catch(e){
-      console.warn("[operator] previous refresh failed:", e);
+  try{
+    if(btn){
+      btn.textContent = "REFRESHING…";
+      btn.disabled = true;
+      btn.style.opacity = "0.72";
     }
 
-    window.location.reload();
-  };
+    await loadExecutions();
 
-  window.refresh = window.refreshOperatorConsole;
-})();
+    const wait = Math.max(0, 700 - (Date.now() - started));
+    await new Promise(resolve => setTimeout(resolve, wait));
+
+    if(btn){
+      const t = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+      btn.textContent = "REFRESHED " + t;
+      setTimeout(() => { btn.textContent = "REFRESH"; }, 1200);
+    }
+  }catch(e){
+    alert("Refresh failed: " + e.message);
+  }finally{
+    if(btn){
+      btn.disabled = false;
+      btn.style.opacity = "";
+    }
+  }
+};
+
+window.refresh = window.refreshOperatorConsole;
 </script>
 
 
