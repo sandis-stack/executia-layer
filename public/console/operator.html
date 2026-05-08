@@ -898,6 +898,7 @@ button.secondary,
 
       <label>ACCESS TOKEN</label>
       <input id="tokenInput" placeholder="Paste access token" />
+      <input id="token" style="display:none" />
       <input id="accessToken" style="display:none" />
 
       <button class="secondary full" onclick="authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
@@ -986,7 +987,7 @@ button.secondary,
     let SELECTED = null;
     let ITEMS = [];
 
-    document.getElementById("token").value = TOKEN;
+    if(document.getElementById("token")) document.getElementById("token").value = TOKEN;
 
     function escapeHtml(str){
       return String(str ?? "").replace(/[&<>"']/g, m => ({
@@ -1047,7 +1048,7 @@ button.secondary,
 
         TOKEN = data.access_token;
         localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
-        document.getElementById("token").value = TOKEN;
+        if(document.getElementById("token")) document.getElementById("token").value = TOKEN;
 
         await authorize();
 
