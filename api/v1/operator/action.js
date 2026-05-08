@@ -174,6 +174,29 @@ export default async function handler(req, res) {
       return json(res, 500, { ok: false, error: { code: "STATE_UPDATE_FAILED", message: updateError.message } });
     }
 
+    const materializedDecision =
+      transition.action === "APPROVE" ? "APPROVE" :
+      transition.action === "REJECT" ? "BLOCK" :
+      "REVIEW";
+
+    const { error: coreLedgerUpdateError } = await supabase
+      .from("core_ledger")
+      .update({
+        status: transition.next_state,
+        decision: materializedDecision
+      })
+      .eq("execution_id", execution_id);
+
+    if (coreLedgerUpdateError) {
+      return json(res, 500, {
+        ok: false,
+        error: {
+          code: "CORE_LEDGER_STATE_UPDATE_FAILED",
+          message: coreLedgerUpdateError.message
+        }
+      });
+    }
+
     const trace = transition.trace.map((state) => ({
       state,
       timestamp: now,
