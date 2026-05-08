@@ -987,7 +987,7 @@ button.secondary,
     let SELECTED = null;
     let ITEMS = [];
 
-    if(document.getElementById("token")) document.getElementById("token").value = TOKEN;
+    if(document.getElementById("token")) if(document.getElementById("token")) document.getElementById("token").value = TOKEN;
 
     function escapeHtml(str){
       return String(str ?? "").replace(/[&<>"']/g, m => ({
@@ -1048,7 +1048,7 @@ button.secondary,
 
         TOKEN = data.access_token;
         localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
-        if(document.getElementById("token")) document.getElementById("token").value = TOKEN;
+        if(document.getElementById("token")) if(document.getElementById("token")) document.getElementById("token").value = TOKEN;
 
         await authorize();
 
@@ -1064,20 +1064,16 @@ button.secondary,
       try{
         const me = await api("/api/v1/operator/me");
 
-        document.getElementById("systemState").textContent =
-          "EXECUTION AUTHORITY: ACTIVE";
+        if(document.getElementById("systemState")) document.getElementById("systemState").textContent = "EXECUTION AUTHORITY: ACTIVE";
 
-        document.getElementById("operator").textContent =
-          me?.user?.email || "OPERATOR";
+        if(document.getElementById("operator")) document.getElementById("operator").textContent = me?.user?.email || "OPERATOR";
 
-        document.getElementById("auth").textContent =
-          me?.mode || "ENTERPRISE";
+        if(document.getElementById("auth")) document.getElementById("auth").textContent = me?.mode || "ENTERPRISE";
 
         await loadExecutions();
 
       }catch(e){
-        document.getElementById("systemState").textContent =
-          "EXECUTION AUTHORITY: LOCKED";
+        if(document.getElementById("systemState")) document.getElementById("systemState").textContent = "EXECUTION AUTHORITY: LOCKED";
 
         alert("Authority verification failed: " + e.message);
       }
@@ -1089,7 +1085,7 @@ button.secondary,
         ITEMS = data.items || data.executions || [];
         renderRows();
       }catch(e){
-        document.getElementById("rows").innerHTML = `
+        if(document.getElementById("rows")) document.getElementById("rows").innerHTML = `
           <div class="lock">
             <div>
               <h2>EXECUTION AUTHORITY: LOCKED</h2>
@@ -1102,7 +1098,7 @@ button.secondary,
 
     function renderRows(){
       if(!ITEMS.length){
-        document.getElementById("rows").innerHTML = `
+        if(document.getElementById("rows")) document.getElementById("rows").innerHTML = `
           <div class="lock">
             <div>
               <h2>NO EXECUTIONS</h2>
@@ -1113,7 +1109,7 @@ button.secondary,
         return;
       }
 
-      document.getElementById("rows").innerHTML = ITEMS.map(x => `
+      if(document.getElementById("rows")) document.getElementById("rows").innerHTML = ITEMS.map(x => `
         <div class="row ${SELECTED?.id === x.id ? "active" : ""}" onclick="selectExecution('${escapeHtml(x.id)}')">
           <div>
             <b>${escapeHtml(x.id || x.execution_id || "EXECUTION")}</b>
@@ -1304,8 +1300,7 @@ button.secondary,
         return;
       }
 
-      document.getElementById("detailId").textContent =
-        x.execution_id || x.id || "No execution selected";
+      if(document.getElementById("detailId")) document.getElementById("detailId").textContent = x.execution_id || x.id || "No execution selected";
 
       el.innerHTML = `
         <div class="detail-stack">
