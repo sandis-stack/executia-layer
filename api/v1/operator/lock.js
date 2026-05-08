@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 const LOCK_TTL_MINUTES = 5;
 
@@ -14,7 +15,12 @@ function getDb() {
 
   return createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    {
+      realtime: {
+        transport: ws
+      }
+    }
   );
 }
 
