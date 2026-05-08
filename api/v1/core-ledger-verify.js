@@ -1,13 +1,26 @@
 import { db } from "../../services/db.js";
-import { requireInternalKey } from "../../services/auth.js";
+import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 import { buildLedgerHash } from "../../services/core-ledger.js";
 import { ok, fail, methodGuard } from "../../shared/response.js";
 
 export default async function handler(req, res) {
   try {
-    const auth = requireInternalKey(req);
-    if (!auth.ok) return fail(res, "UNAUTHORIZED", "Invalid API key.", 401);
     if (!methodGuard(req, res, ["GET"])) return;
+
+    const context = await resolveJwtContext(req);
+    const permission =
+      requireJwtPermission(context, "audit").ok
+        ? requireJwtPermission(context, "audit")
+        : requireJwtPermission(context, "execute");
+
+    if (!permission.ok) {
+      return fail(
+        res,
+        permission.error || "UNAUTHORIZED",
+        permission.reason || "JWT authentication or audit permission required.",
+        permission.status || 401
+      );
+    }
 
     const { data, error } = await db()
       .from("core_ledger")
@@ -16,7 +29,6 @@ export default async function handler(req, res) {
 
     if (error) throw error;
 
-    let prevHash = "GENESIS";
     let valid = true;
     let tampered_id = null;
 
@@ -28,13 +40,14 @@ export default async function handler(req, res) {
         tampered_id = row.id;
         break;
       }
-
-      prevHash = row.hash;
     }
 
     return ok(res, {
+      mode: context.mode,
+      organization_id: context.organization_id,
+      user: context.user,
       verified: valid,
-      entries:  (data || []).length,
+      entries: (data || []).length,
       ...(tampered_id ? { tampered_id } : {})
     });
 
