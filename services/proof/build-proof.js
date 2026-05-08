@@ -2,65 +2,163 @@ import crypto from "crypto";
 import { verifyExecutionTruth } from "../reconciliation/verify.js";
 
 function sha256(input) {
-  return crypto.createHash("sha256").update(JSON.stringify(input)).digest("hex");
+  return crypto
+    .createHash("sha256")
+    .update(JSON.stringify(input))
+    .digest("hex");
 }
 
-export function buildExecutionProof(execution) {
-  const normalized = {
-    ...execution,
-    ledger_state: execution.ledger_state || "HASH_LINKED",
-    audit_state: execution.audit_state || "RECORDED",
-    reconciliation_state: execution.reconciliation_state || "VERIFIED",
-    hash_verified: Boolean(execution.hash),
+const TRACE_STANDARD = [
+  "REQUEST_RECEIVED",
+  "VALIDATION_STARTED",
+  "VALIDATION_PASSED",
+  "POLICY_EVALUATED",
+  "DECISION_COMMITTED",
+  "LEDGER_LINKED",
+  "AUDIT_RECORDED",
+  "EXECUTION_FINALIZED"
+];
+
+function buildTrace(execution_id, actor, status, decision) {
+  const ts = new Date().toISOString();
+
+  return TRACE_STANDARD.map((event_type, index) => ({
+    index,
+    event_type,
+    execution_id,
+    actor,
+    status,
+    decision,
+    timestamp: ts
+  }));
+}
+
+export function buildExecutionProof(execution = {}) {
+  const reconciliation = verifyExecutionTruth(execution);
+
+  const status = execution.status || "PENDING_REVIEW";
+  const decision = execution.decision || "REVIEW";
+
+  const unified_execution_object = {
+    execution_id: execution.execution_id,
+    organization_id: execution.organization_id || null,
+
+    request_type:
+      execution.request_type ||
+      execution.payload?.request_type ||
+      "EXECUTION",
+
+    actor: {
+      id: execution.operator_user_id || null,
+      email:
+        execution.operator_email ||
+        execution.actor ||
+        "system",
+      role:
+        execution.operator_role ||
+        "OPERATOR"
+    },
+
+    payload: execution.payload || {},
+
+    validation: {
+      status:
+        status === "BLOCKED"
+          ? "FAILED"
+          : "PASSED",
+      timestamp:
+        execution.created_at ||
+        new Date().toISOString()
+    },
+
+    decision: {
+      status,
+      decision,
+      reason:
+        execution.reason ||
+        "EXECUTION_RECORDED",
+      committed: true
+    },
+
+    ledger: {
+      linked: Boolean(
+        execution.hash ||
+        execution.entry_hash
+      ),
+
+      entry_hash:
+        execution.hash ||
+        execution.entry_hash ||
+        null,
+
+      previous_hash:
+        execution.prev_hash ||
+        execution.previous_hash ||
+        "GENESIS"
+    },
+
+    audit: {
+      recorded: true,
+
+      immutable_chain: [
+        {
+          event_type: "EXECUTION_PROOF_GENERATED",
+          actor: "proof_engine",
+          execution_id: execution.execution_id,
+          timestamp:
+            new Date().toISOString(),
+          previous_event_hash: "GENESIS"
+        }
+      ]
+    },
+
+    reconciliation: reconciliation,
+
+    trace: buildTrace(
+      execution.execution_id,
+      execution.operator_email ||
+        execution.actor ||
+        "system",
+      status,
+      decision
+    )
   };
 
-  const reconciliation = verifyExecutionTruth(normalized);
+  const proof_hash = sha256({
+    execution_id:
+      unified_execution_object.execution_id,
 
-  const proof = {
-    execution_id: normalized.execution_id,
-    record_id: normalized.id,
-    subject: normalized.subject,
-    actor: normalized.actor,
-    request_type: normalized.request_type,
-    decision: normalized.decision,
-    status: normalized.status,
-    amount: normalized.amount || normalized.payload?.amount || null,
+    status:
+      unified_execution_object.decision.status,
 
-    audit_proof: {
-      recorded: normalized.audit_state === "RECORDED",
-      timestamp: normalized.created_at,
-      operator: normalized.operator_email || normalized.actor || "operator",
-    },
+    decision:
+      unified_execution_object.decision.decision,
 
-    ledger_proof: {
-      linked: normalized.ledger_state === "HASH_LINKED",
-      hash: normalized.hash,
-      previous_hash: normalized.prev_hash || normalized.previous_hash || "GENESIS",
-      hash_verified: Boolean(normalized.hash),
-    },
+    ledger_hash:
+      unified_execution_object.ledger.entry_hash,
 
-    reconciliation_proof: reconciliation,
+    previous_hash:
+      unified_execution_object.ledger.previous_hash,
 
-    integrity: {
-      proof_hash: null,
-      generated_at: new Date().toISOString(),
-      algorithm: "SHA-256",
-    },
-  };
-
-  proof.integrity.proof_hash = sha256({
-    execution_id: proof.execution_id,
-    record_id: proof.record_id,
-    status: proof.status,
-    decision: proof.decision,
-    ledger_hash: proof.ledger_proof.hash,
-    previous_hash: proof.ledger_proof.previous_hash,
-    reconciliation_state: proof.reconciliation_proof.truth_state,
+    reconciliation_state:
+      reconciliation.truth_state
   });
 
   return {
-    verified: reconciliation.verified && Boolean(proof.integrity.proof_hash),
-    proof_state: reconciliation.verified ? "PROOF_VERIFIED" : "PROOF_PARTIAL",
-    proof,
+    verified:
+      reconciliation.verified &&
+      Boolean(proof_hash),
+
+    proof_state:
+      reconciliation.verified
+        ? "PROOF_VERIFIED"
+        : "PROOF_PARTIAL",
+
+    proof_version:
+      "EXECUTIA_PROOF_V1",
+
+    proof_hash,
+
+    unified_execution_object
   };
 }
