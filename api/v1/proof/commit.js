@@ -1,6 +1,7 @@
 import { createExecutionProof } from "../../../services/execution-proof.js";
 import { resolveJwtContext, requireJwtPermission } from "../../../services/jwt-auth.js";
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 import { resolveGovernanceDecision } from "../../../engine/governance-resolver.js";
 import { evaluatePolicyDecision } from "../../../engine/policy-engine.js";
 import { materializePolicyDecision } from "../../../services/policy-materialization.js";
@@ -17,7 +18,16 @@ function db() {
 
   return createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false
+      },
+      realtime: {
+        transport: ws
+      }
+    }
   );
 }
 
