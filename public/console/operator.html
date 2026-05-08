@@ -353,9 +353,11 @@
     .drawer-body{
       overflow:auto;
       padding:14px;
-      display:grid;
+      display:flex;
+      flex-direction:column;
       gap:12px;
-      max-height:calc(100vh - 260px);
+      min-height:calc(100vh - 250px);
+      max-height:calc(100vh - 250px);
     }
 
     .detail-stack{
@@ -394,8 +396,8 @@
       position:sticky;
       bottom:0;
       background:#fbfdff;
-      padding-top:24px;
-      margin-top:24px;
+      padding-top:12px;
+      margin-top:auto;
     }
 
     .lock{
