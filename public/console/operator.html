@@ -475,48 +475,46 @@
         padding:0 10px;
       }
     }
-
-
-
-    .system-status-stack{
-      position:fixed;
-      top:86px;
-      right:18px;
-      z-index:80;
-      display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:8px;
-      pointer-events:none;
-    }
-
-    .status-pill{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:28px;
-      padding:0 12px;
-      border-radius:999px;
-      border:1px solid rgba(30,58,95,.18);
-      background:rgba(255,255,255,.94);
-      color:#1E3A5F;
-      font-size:10px;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      white-space:nowrap;
-      box-shadow:0 6px 18px rgba(15,23,42,.06);
-    }
-
-    @media (max-width: 1200px){
-      .system-status-stack{
-        top:92px;
-        right:12px;
-      }
-
-      .status-pill{
+.status-pill{
         font-size:9px;
         min-height:26px;
         padding:0 10px;
+      }
+    }
+
+
+    .operator-status-inline{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:nowrap;
+    }
+
+    .operator-status-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height:24px;
+      padding:0 10px;
+      border-radius:999px;
+      border:1px solid rgba(30,58,95,.18);
+      background:#fff;
+      color:#1E3A5F;
+      font-size:9px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    @media (max-width: 1180px){
+      .operator-status-inline{
+        order:3;
+        width:100%;
+        justify-content:flex-start;
+        margin-left:0;
+        margin-top:8px;
       }
     }
 
@@ -524,90 +522,7 @@
 </head>
 
 <body>
-
-  <div class="system-status-stack">
-    <div id="liveSyncState" class="status-pill">LIVE SYNC: CONNECTED</div>
-    <div id="lockState" class="status-pill">EXECUTION LOCK: INACTIVE</div>
-  </div>
-
-<header class="topbar">
-    <div class="topbar-left">
-      <div class="logo">EXECUTIA™</div>
-      <nav class="nav">
-        <a href="/dashboard">OVERVIEW</a>
-        <a href="/console/operator.html" class="active">EXECUTIONS</a>
-        <a href="/projects">PROJECTS</a>
-        <a href="/rules">RULES</a>
-        <a href="/ledger">LEDGER</a>
-        <a href="/audit">AUDIT</a>
-        <a href="/reconciliation">RECONCILIATION</a>
-        <a href="/proofs">PROOFS</a>
-        <a href="/reports">REPORTS</a>
-        <a href="/settings">SETTINGS</a>
-      </nav>
 </div>
-
-    <div class="operator-badge">
-      <div class="operator-title">OPERATOR CONSOLE</div>
-      <div class="operator-sub">OPERATOR</div>
-    </div>
-  </header>
-
-  <header class="systembar">
-    <div class="brand">EXECUTIA™ OPERATOR CONSOLE</div>
-    <div class="state" id="systemState">EXECUTION AUTHORITY: LOCKED</div>
-  </header>
-
-  <main>
-    <section>
-      <div class="pad rail">
-        <h2>AUTHORITY SURFACE</h2>
-
-        <div>
-          <label>EMAIL</label>
-          <input id="email" value="operator@executia.io" />
-
-          <label style="margin-top:10px;">PASSWORD</label>
-          <input id="password" type="password" placeholder="Operator password" />
-
-          <button class="primary-wide" onclick="login()">AUTHORIZE</button>
-
-          <div class="token-divider">TOKEN AUTHORIZATION</div>
-
-          <label>ACCESS TOKEN</label>
-          <input id="token" placeholder="JWT access token" />
-
-          <button class="secondary token-btn" data-token-btn="1" onclick="authorize()">
-            AUTHORIZE WITH TOKEN
-          </button>
-
-          <div class="status-stack">
-            <div class="status-card">
-              <div class="status-label">OPERATOR</div>
-              <div class="status-value" id="operator">operator@executia.io</div>
-            </div>
-
-            <div class="status-card">
-              <div class="status-label">AUTH</div>
-              <div class="status-value" id="auth">ENTERPRISE</div>
-            </div>
-
-            <div class="status-card">
-              <div class="status-label">VALIDATION</div>
-              <div class="status-value">ACTIVE</div>
-            </div>
-
-            <div class="status-card">
-              <div class="status-label">LEDGER</div>
-              <div class="status-value">HASH CHAIN</div>
-            </div>
-
-            <div class="status-card">
-              <div class="status-label">AUDIT</div>
-              <div class="status-value">RECORDED</div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 
