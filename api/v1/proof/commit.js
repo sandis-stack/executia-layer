@@ -3,6 +3,7 @@ import { resolveJwtContext, requireJwtPermission } from "../../../services/jwt-a
 import { createClient } from "@supabase/supabase-js";
 import { resolveGovernanceDecision } from "../../../engine/governance-resolver.js";
 import { evaluatePolicyDecision } from "../../../engine/policy-engine.js";
+import { materializePolicyDecision } from "../../../services/policy-materialization.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
@@ -127,11 +128,31 @@ export default async function handler(req, res) {
 
     const proof = await createExecutionProof(body);
 
+    let governance_materialization = null;
+
+    if (
+      process.env.EXECUTIA_GOVERNANCE_V2_ENABLED === "true" &&
+      body.governance &&
+      body.policy
+    ) {
+      governance_materialization =
+        await materializePolicyDecision({
+          supabase: db(),
+          request: body,
+          governance: body.governance,
+          policy: body.policy,
+          proof
+        });
+    }
+
     return json(res, 201, {
       ok: true,
       mode: context.mode,
       organization_id: context.organization_id,
       user: context.user,
+      governance: body.governance || null,
+      policy: body.policy || null,
+      governance_materialization,
       proof
     });
   } catch (error) {
