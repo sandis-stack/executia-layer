@@ -655,8 +655,25 @@
       }
     }
 
+    let LIVE_SYNC = null;
+
+    function startLiveSync(){
+      if(LIVE_SYNC) clearInterval(LIVE_SYNC);
+
+      LIVE_SYNC = setInterval(async () => {
+        try{
+          if(!TOKEN) return;
+          await loadOpenReviews();
+        }catch(error){
+          console.error("LIVE_SYNC_FAILED", error);
+        }
+      }, 5000);
+    }
+
     if(TOKEN){
-      authorize().catch(() => {
+      authorize().then(() => {
+        startLiveSync();
+      }).catch(() => {
         $("authState").textContent = "AUTH: LOCKED";
       });
     }
