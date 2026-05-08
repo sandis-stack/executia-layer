@@ -7,22 +7,47 @@ const db = createClient(
 
 const LOCK_TTL_MINUTES = 5;
 
+function json(res, status, body) {
+  res.status(status).setHeader("Content-Type", "application/json");
+  return res.end(JSON.stringify(body));
+}
+
 function getToken(req) {
   const auth = req.headers.authorization || "";
-  return auth.replace("Bearer ", "");
+  return auth.startsWith("Bearer ") ? auth.slice(7) : "";
+}
+
+async function readBody(req) {
+  if (req.body && typeof req.body === "object") return req.body;
+
+  const chunks = [];
+
+  for await (const chunk of req) {
+    chunks.push(chunk);
+  }
+
+  const raw = Buffer.concat(chunks).toString("utf8");
+
+  if (!raw) return {};
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
 }
 
 async function getOperator(req) {
   const token = getToken(req);
 
   if (!token) {
-    throw new Error("UNAUTHORIZED");
+    return null;
   }
 
   const { data, error } = await db.auth.getUser(token);
 
   if (error || !data?.user) {
-    throw new Error("INVALID_TOKEN");
+    return null;
   }
 
   return data.user;
@@ -30,16 +55,32 @@ async function getOperator(req) {
 
 export default async function handler(req, res) {
   try {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return json(res, 500, {
+        ok: false,
+        error: "SUPABASE_ENV_MISSING"
+      });
+    }
+
     const user = await getOperator(req);
 
+    if (!user) {
+      return json(res, 401, {
+        ok: false,
+        error: "UNAUTHORIZED"
+      });
+    }
+
+    const body = await readBody(req);
+
     const execution_id =
-      req.body?.execution_id ||
+      body.execution_id ||
       req.query?.execution_id;
 
     if (!execution_id) {
-      return res.status(400).json({
+      return json(res, 400, {
         ok: false,
-        error: "execution_id required"
+        error: "EXECUTION_ID_REQUIRED"
       });
     }
 
@@ -50,9 +91,14 @@ export default async function handler(req, res) {
         .eq("id", execution_id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        return json(res, 500, {
+          ok: false,
+          error: error.message
+        });
+      }
 
-      return res.json({
+      return json(res, 200, {
         ok: true,
         lock: data
       });
@@ -66,36 +112,46 @@ export default async function handler(req, res) {
           locked_at: null,
           lock_expires_at: null
         })
-        .eq("id", execution_id);
+        .eq("id", execution_id)
+        .or(`locked_by.eq.${user.id},lock_expires_at.lt.${new Date().toISOString()}`);
 
-      if (error) throw error;
+      if (error) {
+        return json(res, 500, {
+          ok: false,
+          error: error.message
+        });
+      }
 
-      return res.json({
+      return json(res, 200, {
         ok: true,
         released: true
       });
     }
 
     if (req.method === "POST") {
-
       const now = new Date();
-      const expires = new Date(
-        now.getTime() + LOCK_TTL_MINUTES * 60 * 1000
-      );
+      const expires = new Date(now.getTime() + LOCK_TTL_MINUTES * 60 * 1000);
 
-      const { data: existing } = await db
+      const { data: existing, error: readError } = await db
         .from("execution_results")
         .select("locked_by,lock_expires_at")
         .eq("id", execution_id)
         .single();
 
+      if (readError) {
+        return json(res, 500, {
+          ok: false,
+          error: readError.message
+        });
+      }
+
       if (
         existing?.locked_by &&
-        existing?.locked_by !== user.id &&
+        existing.locked_by !== user.id &&
         existing?.lock_expires_at &&
         new Date(existing.lock_expires_at) > now
       ) {
-        return res.status(409).json({
+        return json(res, 409, {
           ok: false,
           error: "EXECUTION_LOCKED",
           locked_by: existing.locked_by,
@@ -103,7 +159,7 @@ export default async function handler(req, res) {
         });
       }
 
-      const { error } = await db
+      const { error: updateError } = await db
         .from("execution_results")
         .update({
           locked_by: user.id,
@@ -112,9 +168,14 @@ export default async function handler(req, res) {
         })
         .eq("id", execution_id);
 
-      if (error) throw error;
+      if (updateError) {
+        return json(res, 500, {
+          ok: false,
+          error: updateError.message
+        });
+      }
 
-      return res.json({
+      return json(res, 200, {
         ok: true,
         locked: true,
         locked_by: user.id,
@@ -122,15 +183,14 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.status(405).json({
+    return json(res, 405, {
       ok: false,
       error: "METHOD_NOT_ALLOWED"
     });
-
   } catch (e) {
-    console.error("[LOCK]", e);
+    console.error("[EXECUTIA_LOCK_FATAL]", e);
 
-    return res.status(500).json({
+    return json(res, 500, {
       ok: false,
       error: e.message || "SERVER_ERROR"
     });
