@@ -873,6 +873,57 @@ button.secondary,
   color:#1E3A5F !important;
 }
 
+
+/* === FINAL HEADER ONLY FIX === */
+.titlebar{
+  min-height:42px !important;
+  padding:10px 28px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:16px !important;
+}
+.titlebar h1{
+  font-size:18px !important;
+  line-height:1.1 !important;
+}
+.titlebar .authority{
+  margin-left:auto !important;
+  font-size:11px !important;
+}
+.operator-status-inline,
+.titlebar-status{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+}
+.operator-status-pill{
+  height:22px !important;
+  padding:0 10px !important;
+  font-size:8.5px !important;
+  border-radius:999px !important;
+  white-space:nowrap !important;
+}
+.drawer-actions button[onclick="operatorAction('APPROVE')"]{
+  background:#1E3A5F !important;
+  border-color:#1E3A5F !important;
+  color:#fff !important;
+}
+.drawer-actions button[onclick="operatorAction('ESCALATE')"]{
+  background:#fff !important;
+  border-color:#1E3A5F !important;
+  color:#1E3A5F !important;
+}
+.drawer-actions button[onclick="operatorAction('REJECT')"]{
+  background:#A83232 !important;
+  border-color:#A83232 !important;
+  color:#fff !important;
+}
+.drawer-actions button[onclick="operatorAction('FREEZE')"]{
+  background:#fff !important;
+  border-color:#1E3A5F !important;
+  color:#1E3A5F !important;
+}
+
 </style>
 </head>
 
@@ -969,7 +1020,7 @@ button.secondary,
     <section class="stream">
       <div class="stream-head">
         <h2>EXECUTION REGISTRY</h2>
-        <button class="secondary" onclick="loadExecutions()">REFRESH</button>
+        <button id="refreshBtn" class="secondary" onclick="window.refreshOperatorConsole()">REFRESH</button>
       </div>
 
       <div class="row registry-head">
@@ -1602,5 +1653,127 @@ button.secondary,
 
     if(TOKEN) authorize().then(startLiveSync);
   </script>
+
+<script>
+window.login = async function(){
+  try{
+    const email = document.getElementById("email")?.value || "operator@executia.io";
+    const password = document.getElementById("password")?.value || "";
+
+    const r = await fetch("/api/v1/auth/login", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ email, password })
+    });
+
+    const data = await r.json();
+    const token = data.access_token || data.token || data.session?.access_token;
+
+    if(!token){
+      throw new Error(data?.error?.message || data?.error || "LOGIN_FAILED");
+    }
+
+    window.TOKEN = token;
+    localStorage.setItem("executia_token", token);
+    localStorage.setItem("executia_operator_token", token);
+
+    const tokenInput = document.getElementById("tokenInput");
+    if(tokenInput) tokenInput.value = token;
+
+    await window.operatorAuthorizeSafe();
+
+  }catch(e){
+    alert("Authorization failed: " + e.message);
+  }
+};
+
+window.authorizeWithToken = async function(){
+  try{
+    const token =
+      document.getElementById("tokenInput")?.value ||
+      localStorage.getItem("executia_token") ||
+      localStorage.getItem("executia_operator_token");
+
+    if(!token) throw new Error("TOKEN_MISSING");
+
+    window.TOKEN = token;
+    localStorage.setItem("executia_token", token);
+    localStorage.setItem("executia_operator_token", token);
+
+    await window.operatorAuthorizeSafe();
+
+  }catch(e){
+    alert("Authorization failed: " + e.message);
+  }
+};
+
+window.operatorAuthorizeSafe = async function(){
+  const token =
+    window.TOKEN ||
+    localStorage.getItem("executia_token") ||
+    localStorage.getItem("executia_operator_token");
+
+  if(!token) throw new Error("TOKEN_MISSING");
+
+  window.TOKEN = token;
+
+  const r = await fetch("/api/v1/operator/me", {
+    headers:{ "Authorization":"Bearer " + token }
+  });
+
+  const data = await r.json();
+
+  if(!data.ok){
+    throw new Error(data?.error?.message || data?.error || "OPERATOR_UNAUTHORIZED");
+  }
+
+  const email = data.user?.email || data.operator?.email || "operator@executia.io";
+
+  const operatorBox = document.getElementById("operatorName") || document.getElementById("operatorEmail");
+  const authBox = document.getElementById("authState") || document.getElementById("authMode");
+  const authority = document.getElementById("authorityState");
+
+  if(operatorBox) operatorBox.textContent = email;
+  if(authBox) authBox.textContent = "ACTIVE";
+  if(authority) authority.textContent = "EXECUTION AUTHORITY: ACTIVE";
+
+  const live = document.getElementById("liveSyncState");
+  if(live) live.textContent = "LIVE SYNC: CONNECTED";
+
+  if(typeof window.loadExecutions === "function"){
+    await window.loadExecutions();
+  }else if(typeof loadExecutions === "function"){
+    await loadExecutions();
+  }
+};
+
+window.refreshOperatorConsole = async function(){
+  const btn = document.getElementById("refreshBtn");
+
+  try{
+    if(btn){
+      btn.textContent = "REFRESHING";
+      btn.disabled = true;
+    }
+
+    if(typeof window.loadExecutions === "function"){
+      await window.loadExecutions();
+    }else if(typeof loadExecutions === "function"){
+      await loadExecutions();
+    }else{
+      await window.operatorAuthorizeSafe();
+    }
+
+  }catch(e){
+    alert("Refresh failed: " + e.message);
+  }finally{
+    if(btn){
+      btn.textContent = "REFRESH";
+      btn.disabled = false;
+    }
+  }
+};
+</script>
+
 </body>
 </html>
