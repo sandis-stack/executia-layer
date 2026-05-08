@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { resolveGovernanceDecision } from "../../../engine/governance-resolver.js";
 import { evaluatePolicyDecision } from "../../../engine/policy-engine.js";
 import { materializePolicyDecision } from "../../../services/policy-materialization.js";
+import { createGovernanceReview } from "../../../engine/governance-review-engine.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
@@ -115,13 +116,23 @@ export default async function handler(req, res) {
       if (
         policy.decision === "PENDING_REVIEW"
       ) {
+
+        const governance_review =
+          await createGovernanceReview({
+            supabase: db(),
+            request: body,
+            governance,
+            policy
+          });
+
         return json(res, 202, {
           ok: true,
           pending_review: true,
           mode: context.mode,
           organization_id: context.organization_id,
           governance,
-          policy
+          policy,
+          governance_review
         });
       }
     }
