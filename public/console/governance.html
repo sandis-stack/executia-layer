@@ -448,13 +448,18 @@
     }
 
     async function authorize(){
-      const me = await api("/api/v1/operator/me");
+      const data = await api("/api/v2/governance/reviews/open");
 
       $("authState").textContent = "AUTH: ACTIVE";
-      $("operatorEmail").textContent = me?.user?.email || "OPERATOR";
-      $("organizationId").textContent = me?.organization_id || "—";
+      $("operatorEmail").textContent = data?.user?.email || "OPERATOR";
+      $("organizationId").textContent = data?.organization_id || "—";
 
-      await loadOpenReviews();
+      REVIEWS = data.reviews || [];
+      $("openCount").textContent = String(REVIEWS.length);
+      $("queueState").textContent = "QUEUE: ACTIVE";
+      $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+
+      renderQueue();
     }
 
     function riskClass(score){
