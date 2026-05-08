@@ -97,7 +97,7 @@ export default async function handler(req, res) {
         .from("execution_results")
         .select("id,status,locked_by,locked_at,lock_expires_at")
         .eq("id", execution_id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         return json(res, 500, {
@@ -146,12 +146,19 @@ export default async function handler(req, res) {
         .from("execution_results")
         .select("locked_by,lock_expires_at")
         .eq("id", execution_id)
-        .single();
+        .maybeSingle();
 
       if (readError) {
         return json(res, 500, {
           ok: false,
           error: readError.message
+        });
+      }
+
+      if (!existing) {
+        return json(res, 404, {
+          ok: false,
+          error: "EXECUTION_NOT_FOUND"
         });
       }
 
