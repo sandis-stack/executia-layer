@@ -1205,8 +1205,22 @@ button.secondary,
         }
 
         TOKEN = data.access_token;
+        window.TOKEN = TOKEN;
+
+        localStorage.removeItem("EXECUTIA_OPERATOR_TOKEN");
+        localStorage.removeItem("EXECUTIA_JWT");
+        localStorage.removeItem("executia_token");
+        localStorage.removeItem("executia_operator_token");
+        localStorage.removeItem("executia_jwt");
+
         localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
-        if(document.getElementById("token")) if(document.getElementById("token")) document.getElementById("token").value = TOKEN;
+        localStorage.setItem("EXECUTIA_JWT", TOKEN);
+        localStorage.setItem("executia_token", TOKEN);
+        localStorage.setItem("executia_operator_token", TOKEN);
+        localStorage.setItem("executia_jwt", TOKEN);
+
+        const tokenEl = document.getElementById("token");
+        if(tokenEl) tokenEl.value = TOKEN;
 
         await authorize();
 
@@ -1216,8 +1230,27 @@ button.secondary,
     }
 
     async function authorize(){
-      TOKEN = document.getElementById("token").value.trim();
+      const tokenEl = document.getElementById("token");
+
+      TOKEN =
+        (tokenEl && tokenEl.value.trim()) ||
+        window.TOKEN ||
+        localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") ||
+        localStorage.getItem("EXECUTIA_JWT") ||
+        localStorage.getItem("executia_token") ||
+        localStorage.getItem("executia_operator_token") ||
+        localStorage.getItem("executia_jwt") ||
+        "";
+
+      window.TOKEN = TOKEN;
+
       localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
+      localStorage.setItem("EXECUTIA_JWT", TOKEN);
+      localStorage.setItem("executia_token", TOKEN);
+      localStorage.setItem("executia_operator_token", TOKEN);
+      localStorage.setItem("executia_jwt", TOKEN);
+
+      if(tokenEl) tokenEl.value = TOKEN;
 
       try{
         const me = await api("/api/v1/operator/me");
