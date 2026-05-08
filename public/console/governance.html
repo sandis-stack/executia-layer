@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA Governance Console V2</title>
+  <style>
+    :root{
+      --bg:#f5f7fa;
+      --panel:#ffffff;
+      --line:#d8dee8;
+      --text:#162232;
+      --muted:#667386;
+      --blue:#1e3a5f;
+      --soft:#eef3f8;
+      --ok:#1f7a4d;
+      --bad:#9b2c2c;
+      --warn:#9a6a00;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Inter,Arial,sans-serif;
+      color:var(--text);
+      background:
+        linear-gradient(var(--line) 1px,transparent 1px),
+        linear-gradient(90deg,var(--line) 1px,transparent 1px),
+        var(--bg);
+      background-size:40px 40px;
+    }
+
+    header{
+      height:68px;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 28px;
+    }
+
+    .brand{
+      font-weight:900;
+      letter-spacing:.1em;
+      color:var(--blue);
+      font-size:18px;
+    }
+
+    .sub{
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.12em;
+      font-weight:800;
+      margin-top:4px;
+    }
+
+    .status{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      border:1px solid var(--line);
+      background:var(--soft);
+      color:var(--blue);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.1em;
+    }
+
+    main{
+      display:grid;
+      grid-template-columns:300px 1fr 420px;
+      gap:16px;
+      padding:16px;
+      height:calc(100vh - 68px);
+      overflow:hidden;
+    }
+
+    section, aside{
+      background:rgba(255,255,255,.97);
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+      min-height:0;
+    }
+
+    .pad{padding:16px}
+
+    h2{
+      margin:0 0 14px;
+      font-size:12px;
+      letter-spacing:.14em;
+      color:var(--blue);
+    }
+
+    label{
+      display:block;
+      font-size:10px;
+      color:var(--muted);
+      margin:12px 0 7px;
+      letter-spacing:.12em;
+      font-weight:800;
+    }
+
+    input, textarea{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      color:var(--text);
+      font-size:13px;
+    }
+
+    textarea{
+      min-height:82px;
+      resize:vertical;
+      font-family:inherit;
+    }
+
+    button{
+      width:100%;
+      border:1px solid var(--blue);
+      background:var(--blue);
+      color:#fff;
+      border-radius:10px;
+      padding:11px 12px;
+      font-size:10px;
+      letter-spacing:.12em;
+      font-weight:900;
+      cursor:pointer;
+      margin-top:10px;
+    }
+
+    button.secondary{background:#fff;color:var(--blue)}
+    button.danger{background:var(--bad);border-color:var(--bad)}
+    button.warn{background:#fff;color:var(--warn);border-color:var(--warn)}
+
+    .metrics{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .metric{
+      background:var(--soft);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .k{
+      font-size:10px;
+      color:var(--muted);
+      letter-spacing:.12em;
+      font-weight:900;
+    }
+
+    .v{
+      margin-top:6px;
+      font-size:14px;
+      font-weight:900;
+      color:var(--text);
+      word-break:break-word;
+    }
+
+    .head{
+      height:58px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+      background:#fff;
+    }
+
+    .queue{
+      overflow:auto;
+      height:calc(100% - 58px);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 90px 70px;
+      gap:12px;
+      padding:13px 16px;
+      border-bottom:1px solid var(--line);
+      cursor:pointer;
+    }
+
+    .row:hover{background:#f8fafc}
+    .row.active{background:#eef3f8}
+
+    .id{
+      font-size:12px;
+      font-weight:900;
+      color:var(--blue);
+      word-break:break-all;
+    }
+
+    .small{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:5px;
+      line-height:1.45;
+    }
+
+    .badge{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 8px;
+      text-align:center;
+      font-size:10px;
+      font-weight:900;
+      height:max-content;
+    }
+
+    .bad{color:var(--bad);border-color:#e4b9b9;background:#fff5f5}
+    .warnc{color:var(--warn);border-color:#ead7a2;background:#fffaf0}
+    .okc{color:var(--ok);border-color:#b9dec9;background:#f3fff7}
+
+    .detail{
+      overflow:auto;
+      height:calc(100% - 58px);
+      padding:16px;
+    }
+
+    .block{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:12px;
+      padding:13px;
+      margin-bottom:12px;
+    }
+
+    pre{
+      white-space:pre-wrap;
+      word-break:break-word;
+      background:#f3f6fa;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:10px;
+      font-size:11px;
+      line-height:1.45;
+      max-height:260px;
+      overflow:auto;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .actions button{margin-top:0}
+
+    @media(max-width:1100px){
+      main{grid-template-columns:1fr;height:auto;overflow:auto}
+      section,aside{min-height:320px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="brand">EXECUTIA™ GOVERNANCE CONSOLE</div>
+      <div class="sub">V2 EXECUTION-TIME INSTITUTIONAL GOVERNANCE</div>
+    </div>
+
+    <div class="status">
+      <span class="pill" id="authState">AUTH: LOCKED</span>
+      <span class="pill" id="queueState">QUEUE: STANDBY</span>
+      <span class="pill" id="syncState">SYNC: MANUAL</span>
+    </div>
+  </header>
+
+  <main>
+    <aside>
+      <div class="pad">
+        <h2>AUTHORITY ACCESS</h2>
+
+        <label>EMAIL</label>
+        <input id="email" value="operator@executia.io" />
+
+        <label>PASSWORD</label>
+        <input id="password" type="password" placeholder="Operator password" />
+
+        <button onclick="login()">AUTHORIZE</button>
+
+        <label>ACCESS TOKEN</label>
+        <input id="tokenInput" placeholder="Paste JWT token" />
+
+        <button class="secondary" onclick="authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
+        <button class="secondary" onclick="loadOpenReviews()">REFRESH QUEUE</button>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="k">OPERATOR</div>
+            <div class="v" id="operatorEmail">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">ORGANIZATION</div>
+            <div class="v" id="organizationId">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">OPEN REVIEWS</div>
+            <div class="v" id="openCount">0</div>
+          </div>
+          <div class="metric">
+            <div class="k">SELECTED REVIEW</div>
+            <div class="v" id="selectedReview">—</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section>
+      <div class="head">
+        <h2>OPEN GOVERNANCE REVIEWS</h2>
+        <span class="pill" id="lastRefresh">NOT LOADED</span>
+      </div>
+      <div class="queue" id="queue">
+        <div class="pad">
+          <div class="block">
+            <div class="k">QUEUE LOCKED</div>
+            <div class="small">Authorize operator access to load governance review queue.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>REVIEW DETAIL</h2>
+        <span class="pill" id="detailState">NO SELECTION</span>
+      </div>
+
+      <div class="detail" id="detail">
+        <div class="block">
+          <div class="k">STATE</div>
+          <div class="v">AWAITING REVIEW SELECTION</div>
+          <div class="small">Select an open governance review to inspect policy, risk and event history.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = "";
+    let TOKEN =
+      localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") ||
+      localStorage.getItem("EXECUTIA_JWT") ||
+      "";
+    let REVIEWS = [];
+    let SELECTED = null;
+
+    function $(id){
+      return document.getElementById(id);
+    }
+
+    function escapeHtml(value){
+      return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function setToken(token){
+      TOKEN = token || "";
+      localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
+      localStorage.setItem("EXECUTIA_JWT", TOKEN);
+      localStorage.setItem("executia_token", TOKEN);
+      window.TOKEN = TOKEN;
+    }
+
+    async function api(path, options = {}){
+      TOKEN =
+        window.TOKEN ||
+        localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") ||
+        localStorage.getItem("EXECUTIA_JWT") ||
+        TOKEN;
+
+      const res = await fetch(API_BASE + path, {
+        ...options,
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":"Bearer " + TOKEN,
+          ...(options.headers || {})
+        }
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if(!res.ok || data.ok === false){
+        throw new Error(data?.error?.message || data?.message || "REQUEST_FAILED");
+      }
+
+      return data;
+    }
+
+    async function login(){
+      try{
+        const email = $("email").value.trim();
+        const password = $("password").value.trim();
+
+        if(!email || !password){
+          throw new Error("EMAIL_PASSWORD_REQUIRED");
+        }
+
+        const res = await fetch("/api/v1/auth/login", {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if(!data.ok || !data.access_token){
+          throw new Error(data?.error?.message || "LOGIN_FAILED");
+        }
+
+        setToken(data.access_token);
+        await authorize();
+      }catch(error){
+        alert("Authorization failed: " + error.message);
+      }
+    }
+
+    async function authorizeWithToken(){
+      try{
+        const token = $("tokenInput").value.trim() || TOKEN;
+        if(!token) throw new Error("TOKEN_REQUIRED");
+        setToken(token);
+        await authorize();
+      }catch(error){
+        alert("Token authorization failed: " + error.message);
+      }
+    }
+
+    async function authorize(){
+      const me = await api("/api/v1/operator/me");
+
+      $("authState").textContent = "AUTH: ACTIVE";
+      $("operatorEmail").textContent = me?.user?.email || "OPERATOR";
+      $("organizationId").textContent = me?.organization_id || "—";
+
+      await loadOpenReviews();
+    }
+
+    function riskClass(score){
+      const n = Number(score || 0);
+      if(n >= 80) return "bad";
+      if(n >= 50) return "warnc";
+      return "okc";
+    }
+
+    async function loadOpenReviews(){
+      try{
+        $("queueState").textContent = "QUEUE: LOADING";
+        const data = await api("/api/v2/governance/reviews/open");
+
+        REVIEWS = data.reviews || [];
+        $("openCount").textContent = String(REVIEWS.length);
+        $("queueState").textContent = "QUEUE: ACTIVE";
+        $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+
+        renderQueue();
+      }catch(error){
+        $("queueState").textContent = "QUEUE: ERROR";
+        alert("Queue load failed: " + error.message);
+      }
+    }
+
+    function renderQueue(){
+      const queue = $("queue");
+
+      if(!REVIEWS.length){
+        queue.innerHTML = `
+          <div class="pad">
+            <div class="block">
+              <div class="k">NO OPEN REVIEWS</div>
+              <div class="small">Governance review queue is currently empty.</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      queue.innerHTML = REVIEWS.map((review) => `
+        <div class="row ${SELECTED?.id === review.id ? "active" : ""}" onclick="selectReview('${escapeHtml(review.id)}')">
+          <div>
+            <div class="id">${escapeHtml(review.id)}</div>
+            <div class="small">Execution: ${escapeHtml(review.execution_id || "—")}</div>
+            <div class="small">Reason: ${escapeHtml(review.review_reason || "POLICY_ESCALATION")}</div>
+          </div>
+          <div class="badge ${riskClass(review.risk_score)}">RISK ${escapeHtml(review.risk_score || 0)}</div>
+          <div class="badge warnc">L${escapeHtml(review.escalation_level || 1)}</div>
+        </div>
+      `).join("");
+    }
+
+    async function selectReview(id){
+      SELECTED = REVIEWS.find((review) => review.id === id) || null;
+      $("selectedReview").textContent = SELECTED?.id || "—";
+      $("detailState").textContent = SELECTED ? "SELECTED" : "NO SELECTION";
+      renderQueue();
+      await renderDetail();
+    }
+
+    async function renderDetail(){
+      const detail = $("detail");
+
+      if(!SELECTED){
+        detail.innerHTML = `
+          <div class="block">
+            <div class="k">STATE</div>
+            <div class="v">NO REVIEW SELECTED</div>
+          </div>
+        `;
+        return;
+      }
+
+      let timeline = null;
+
+      try{
+        timeline = await api("/api/v2/governance/reviews/timeline?review_id=" + encodeURIComponent(SELECTED.id));
+      }catch(error){
+        timeline = { events: [], error: error.message };
+      }
+
+      detail.innerHTML = `
+        <div class="block">
+          <div class="k">REVIEW</div>
+          <div class="v">${escapeHtml(SELECTED.review_status)}</div>
+          <div class="small">ID: ${escapeHtml(SELECTED.id)}</div>
+          <div class="small">Execution: ${escapeHtml(SELECTED.execution_id || "—")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">DECISION STATE</div>
+          <div class="v">${escapeHtml(SELECTED.policy_decision)}</div>
+          <div class="small">Governance: ${escapeHtml(SELECTED.governance_decision)}</div>
+          <div class="small">Risk score: ${escapeHtml(SELECTED.risk_score || 0)}</div>
+          <div class="small">Escalation level: ${escapeHtml(SELECTED.escalation_level || 1)}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">OPERATOR REASON</div>
+          <textarea id="reviewReason" placeholder="Required for override. Optional for approve/reject."></textarea>
+
+          <div class="actions" style="margin-top:10px;">
+            <button onclick="approveReview()">APPROVE</button>
+            <button class="danger" onclick="rejectReview()">REJECT</button>
+          </div>
+
+          <button class="warn" onclick="overrideReview()">OVERRIDE</button>
+        </div>
+
+        <div class="block">
+          <div class="k">GOVERNANCE PAYLOAD</div>
+          <pre>${escapeHtml(JSON.stringify(SELECTED.governance_payload || {}, null, 2))}</pre>
+        </div>
+
+        <div class="block">
+          <div class="k">POLICY PAYLOAD</div>
+          <pre>${escapeHtml(JSON.stringify(SELECTED.policy_payload || {}, null, 2))}</pre>
+        </div>
+
+        <div class="block">
+          <div class="k">TIMELINE EVENTS</div>
+          <pre>${escapeHtml(JSON.stringify(timeline?.events || [], null, 2))}</pre>
+        </div>
+      `;
+    }
+
+    async function finalizeReview(path){
+      if(!SELECTED){
+        alert("Select review first.");
+        return;
+      }
+
+      const reasonEl = $("reviewReason");
+      const reason = reasonEl ? reasonEl.value.trim() : "";
+
+      const result = await api(path, {
+        method:"POST",
+        body:JSON.stringify({
+          review_id: SELECTED.id,
+          reason
+        })
+      });
+
+      alert("Governance review finalized.");
+      SELECTED = null;
+      $("selectedReview").textContent = "—";
+      $("detailState").textContent = "NO SELECTION";
+      await loadOpenReviews();
+      $("detail").innerHTML = `
+        <div class="block">
+          <div class="k">FINALIZED</div>
+          <pre>${escapeHtml(JSON.stringify(result, null, 2))}</pre>
+        </div>
+      `;
+    }
+
+    async function approveReview(){
+      try{
+        await finalizeReview("/api/v2/governance/review/approve");
+      }catch(error){
+        alert("Approve failed: " + error.message);
+      }
+    }
+
+    async function rejectReview(){
+      try{
+        await finalizeReview("/api/v2/governance/review/reject");
+      }catch(error){
+        alert("Reject failed: " + error.message);
+      }
+    }
+
+    async function overrideReview(){
+      try{
+        const reason = $("reviewReason")?.value.trim();
+        if(!reason){
+          alert("Override requires a reason.");
+          return;
+        }
+        await finalizeReview("/api/v2/governance/review/override");
+      }catch(error){
+        alert("Override failed: " + error.message);
+      }
+    }
+
+    if(TOKEN){
+      authorize().catch(() => {
+        $("authState").textContent = "AUTH: LOCKED";
+      });
+    }
+  </script>
+</body>
+</html>
