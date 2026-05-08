@@ -1129,6 +1129,66 @@
     }
 
 
+
+    let CURRENT_LOCK = null;
+
+    function setLockState(text){
+      const el = document.getElementById("lockState");
+      if(!el) return;
+      el.textContent = text;
+    }
+
+    async function acquireExecutionLock(executionId){
+      if(!executionId || !TOKEN) return false;
+
+      try{
+        const r = await fetch("/api/v1/operator/lock", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + TOKEN
+          },
+          body: JSON.stringify({ execution_id: executionId })
+        });
+
+        const j = await r.json();
+
+        if(!j.ok){
+          if(j.error === "EXECUTION_LOCKED"){
+            setLockState("LOCKED BY ANOTHER AUTHORITY");
+            return false;
+          }
+          throw new Error(j.error || "LOCK_FAILED");
+        }
+
+        CURRENT_LOCK = executionId;
+        setLockState("EXECUTION LOCK: ACTIVE");
+        return true;
+
+      }catch(e){
+        console.warn("[LOCK]", e);
+        setLockState("LOCK FAILED");
+        return false;
+      }
+    }
+
+    async function releaseExecutionLock(){
+      if(!CURRENT_LOCK || !TOKEN) return;
+
+      try{
+        await fetch("/api/v1/operator/lock?execution_id=" + CURRENT_LOCK, {
+          method: "DELETE",
+          headers: { "Authorization": "Bearer " + TOKEN }
+        });
+      }catch(e){
+        console.warn("[LOCK RELEASE]", e);
+      }
+
+      CURRENT_LOCK = null;
+      setLockState("EXECUTION LOCK: INACTIVE");
+    }
+
+
     if(TOKEN) authorize().then(startLiveSync);
   </script>
 </body>
