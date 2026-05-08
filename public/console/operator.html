@@ -925,6 +925,35 @@ button.secondary,
 }
 
 </style>
+
+<style id="operator-safe-stabilization-css">
+.titlebar{
+  padding-top:14px!important;
+  padding-bottom:14px!important;
+  min-height:auto!important;
+}
+.titlebar h1{
+  margin:0!important;
+  line-height:1.15!important;
+}
+.drawer-actions button:nth-child(1){
+  background:#1E3A5F!important;
+  border-color:#1E3A5F!important;
+  color:#fff!important;
+}
+.drawer-actions button:nth-child(2),
+.drawer-actions button:nth-child(4){
+  background:#fff!important;
+  border:1px solid #1E3A5F!important;
+  color:#1E3A5F!important;
+}
+.drawer-actions button:nth-child(3){
+  background:#7A1E1E!important;
+  border-color:#7A1E1E!important;
+  color:#fff!important;
+}
+</style>
+
 </head>
 
 <body>
@@ -1773,6 +1802,82 @@ window.refreshOperatorConsole = async function(){
     }
   }
 };
+</script>
+
+
+<script id="operator-safe-stabilization-js">
+(function(){
+  const previousLogin = window.login;
+  const previousRefresh = window.refreshOperatorConsole;
+
+  window.login = async function(){
+    try{
+      if(typeof previousLogin === "function"){
+        return await previousLogin();
+      }
+    }catch(e){
+      console.warn("[operator] previous login failed:", e);
+    }
+
+    const email =
+      document.querySelector("#email")?.value ||
+      document.querySelector("[name='email']")?.value ||
+      "operator@executia.io";
+
+    const password =
+      document.querySelector("#password")?.value ||
+      document.querySelector("[name='password']")?.value ||
+      "";
+
+    const endpoints = [
+      "/api/v1/auth/login",
+      "/api/v1/operator/login",
+      "/api/v1/login"
+    ];
+
+    for(const url of endpoints){
+      try{
+        const r = await fetch(url,{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ email, password })
+        });
+
+        const data = await r.json().catch(()=>({}));
+
+        const token =
+          data.token ||
+          data.jwt ||
+          data.access_token ||
+          data?.session?.access_token;
+
+        if(r.ok && token){
+          localStorage.setItem("EXECUTIA_JWT", token);
+          localStorage.setItem("executia_jwt", token);
+          return window.refreshOperatorConsole();
+        }
+      }catch(e){}
+    }
+
+    alert("Authorization failed. Check operator credentials.");
+  };
+
+  window.authorize = window.login;
+
+  window.refreshOperatorConsole = async function(){
+    try{
+      if(typeof previousRefresh === "function"){
+        return await previousRefresh();
+      }
+    }catch(e){
+      console.warn("[operator] previous refresh failed:", e);
+    }
+
+    window.location.reload();
+  };
+
+  window.refresh = window.refreshOperatorConsole;
+})();
 </script>
 
 </body>
