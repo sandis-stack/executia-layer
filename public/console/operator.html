@@ -522,9 +522,86 @@
 </head>
 
 <body>
-</div>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo">EXECUTIA™</div>
+
+      <nav class="nav">
+        <a href="#">OVERVIEW</a>
+        <a href="#">EXECUTIONS</a>
+        <a href="#">PROJECTS</a>
+        <a href="#">RULES</a>
+        <a href="#">LEDGER</a>
+        <a href="#">AUDIT</a>
+        <a href="#">RECONCILIATION</a>
+        <a href="#">PROOFS</a>
+        <a href="#">REPORTS</a>
+        <a href="#">SETTINGS</a>
+      </nav>
+    </div>
+
+    <div class="topbar-right">
+      <div class="operator-status-inline">
+        <span id="liveSyncState" class="operator-status-pill">LIVE SYNC: CONNECTED</span>
+        <span id="lockState" class="operator-status-pill">EXECUTION LOCK: INACTIVE</span>
       </div>
-    </section>
+
+      <div class="operator-meta">
+        <div class="operator-title">OPERATOR CONSOLE</div>
+        <div class="operator-subtitle">OPERATOR</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="titlebar">
+    <h1>EXECUTIA™ OPERATOR CONSOLE</h1>
+    <div class="authority" id="authorityState">EXECUTION AUTHORITY: LOCKED</div>
+  </div>
+
+  <section class="layout">
+    <aside class="authority-panel">
+      <h2>AUTHORITY SURFACE</h2>
+
+      <label>EMAIL</label>
+      <input id="email" value="operator@executia.io" />
+
+      <label>PASSWORD</label>
+      <input id="password" type="password" placeholder="Operator password" />
+
+      <button onclick="login()">AUTHORIZE</button>
+
+      <div class="token-title">TOKEN AUTHORIZATION</div>
+
+      <label>ACCESS TOKEN</label>
+      <input id="tokenInput" placeholder="Paste access token" />
+
+      <button class="secondary full" onclick="authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
+
+      <div class="metric">
+        <div class="k">OPERATOR</div>
+        <div class="v" id="operatorEmail">—</div>
+      </div>
+
+      <div class="metric">
+        <div class="k">AUTH</div>
+        <div class="v" id="authMode">LOCKED</div>
+      </div>
+
+      <div class="metric">
+        <div class="k">VALIDATION</div>
+        <div class="v">ACTIVE</div>
+      </div>
+
+      <div class="metric">
+        <div class="k">LEDGER</div>
+        <div class="v">HASH CHAIN</div>
+      </div>
+
+      <div class="metric">
+        <div class="k">AUDIT</div>
+        <div class="v">RECORDED</div>
+      </div>
+    </aside>
 
     <section class="stream">
       <div class="stream-head">
