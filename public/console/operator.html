@@ -338,11 +338,12 @@
     .status-neutral{background:rgba(102,115,134,.10);color:var(--muted)}
 
     .drawer{
-      position:relative;
-      display:flex;
-      flex-direction:column;
-      height:100%;
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr) auto;
+      height:calc(100vh - 170px);
+      max-height:calc(100vh - 170px);
       background:#fbfdff;
+      overflow:hidden;
     }
 
     .drawer-head{
@@ -354,11 +355,10 @@
     .drawer-body{
       overflow:auto;
       padding:14px;
-      display:flex;
-      flex-direction:column;
+      display:grid;
       gap:12px;
-      min-height:calc(100vh - 260px);
-      max-height:calc(100vh - 260px);
+      min-height:0;
+      max-height:none;
     }
 
     .detail-stack{
@@ -394,12 +394,17 @@
     }
 
     .drawer-actions{
-      margin-top:auto;
-      position:relative;
+      position:static;
       background:#fbfdff;
-      padding-top:12px;
-      border-radius:0;
-      box-shadow:none;
+      padding:12px 14px 14px;
+      margin:0;
+      border-top:1px solid rgba(30,58,95,.12);
+      z-index:10;
+    }
+
+    .drawer > .drawer-actions .block{
+      margin:0 !important;
+      box-shadow:none !important;
     }
 
     .lock{
@@ -1513,7 +1518,7 @@ button.secondary,
           </div>
 
           <div class="drawer-actions">
-            <div class="block" style="margin-bottom:0;">
+            <div class="block">
               <div class="k">OPERATOR ACTIONS</div>
 
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;overflow:hidden;">
@@ -1907,6 +1912,38 @@ window.refreshOperatorConsole = async function(){
   };
 
   window.refresh = window.refreshOperatorConsole;
+})();
+</script>
+
+
+<script id="operator-actions-dock-final">
+(function(){
+  function dockOperatorActions(){
+    const detail = document.getElementById("detail");
+    const drawer = document.querySelector(".drawer");
+    if(!detail || !drawer) return;
+
+    const actions = detail.querySelector(".drawer-actions");
+    const existing = Array.from(drawer.children).find(el => el.classList && el.classList.contains("drawer-actions"));
+
+    if(actions){
+      if(existing && existing !== actions) existing.remove();
+      drawer.appendChild(actions);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", dockOperatorActions);
+
+  const observer = new MutationObserver(dockOperatorActions);
+  document.addEventListener("DOMContentLoaded", function(){
+    const detail = document.getElementById("detail");
+    if(detail) observer.observe(detail, { childList:true, subtree:false });
+    dockOperatorActions();
+  });
+
+  window.addEventListener("click", function(){
+    setTimeout(dockOperatorActions, 50);
+  });
 })();
 </script>
 
