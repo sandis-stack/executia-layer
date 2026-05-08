@@ -56,7 +56,12 @@ export async function settleLedgerEntry(ledgerId) {
       .from("core_ledger")
       .update({
         settlement_status: "SETTLED",
-        settled_at:        nowIso()
+        settled_at:        nowIso(),
+        payload: {
+          ...(entry.payload || {}),
+          settlement_state: "SETTLED",
+          reconciliation_state: "VERIFIED"
+        }
       })
       .eq("id", ledgerId)
       .select()

@@ -1,19 +1,37 @@
 import { settleLedgerEntry, getAccountBalances, getPendingSettlements } from "../../services/settlement.js";
-import { requireInternalKey } from "../../services/auth.js";
+import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 import { ok, fail } from "../../shared/response.js";
 
 export default async function handler(req, res) {
   try {
-    const auth = requireInternalKey(req);
-    if (!auth.ok) return res.status(401).json({ ok: false, error: auth.error || "UNAUTHORIZED" });
+    const context = await resolveJwtContext(req);
+    const permission =
+      requireJwtPermission(context, "audit").ok
+        ? requireJwtPermission(context, "audit")
+        : requireJwtPermission(context, "execute");
 
-    // GET — list pending + account balances
+    if (!permission.ok) {
+      return fail(
+        res,
+        permission.error || "UNAUTHORIZED",
+        permission.reason || "JWT authentication or settlement permission required.",
+        permission.status || 401
+      );
+    }
+
     if (req.method === "GET") {
       const [pending, accounts] = await Promise.all([
         getPendingSettlements(),
         getAccountBalances()
       ]);
-      return ok(res, { pending, accounts });
+
+      return ok(res, {
+        mode: context.mode,
+        organization_id: context.organization_id,
+        user: context.user,
+        pending,
+        accounts
+      });
     }
 
     if (req.method !== "POST") {
@@ -29,8 +47,11 @@ export default async function handler(req, res) {
     const result = await settleLedgerEntry(ledger_id);
 
     return ok(res, {
+      mode: context.mode,
+      organization_id: context.organization_id,
+      user: context.user,
       message: "LEDGER_SETTLED",
-      ledger:  result
+      ledger: result
     });
 
   } catch (err) {
