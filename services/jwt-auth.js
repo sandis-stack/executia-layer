@@ -15,11 +15,46 @@ import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
 
 const ROLE_PERMISSIONS = {
-  ADMIN:     ["execute","approve","block","audit","settle","manage_users","view"],
-  OPERATOR:  ["execute","approve","block","view"],
-  AUDITOR:   ["audit","view"],
-  REGULATOR: ["audit","view"],
-  VIEWER:    ["view"]
+  ADMIN: [
+    "execute",
+    "approve",
+    "block",
+    "audit",
+    "settle",
+    "manage_users",
+    "view",
+    "governance.review.read",
+    "governance.review.approve",
+    "governance.review.reject",
+    "governance.review.override"
+  ],
+
+  OPERATOR: [
+    "execute",
+    "approve",
+    "block",
+    "view",
+    "governance.review.read",
+    "governance.review.approve",
+    "governance.review.reject",
+    "governance.review.override"
+  ],
+
+  AUDITOR: [
+    "audit",
+    "view",
+    "governance.review.read"
+  ],
+
+  REGULATOR: [
+    "audit",
+    "view",
+    "governance.review.read"
+  ],
+
+  VIEWER: [
+    "view"
+  ]
 };
 
 function getAuthClient() {
