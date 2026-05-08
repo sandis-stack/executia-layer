@@ -139,3 +139,46 @@ export async function verifyAuditChain(execution_id = null) {
     ...(execution_id ? { execution_id } : {})
   };
 }
+
+export async function repairAuditChain(execution_id = null) {
+  if (!hasSupabaseEnv()) {
+    return { repaired: true, mode: "DRY_RUN", entries: 0 };
+  }
+
+  let query = db()
+    .from("audit_events")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (execution_id) query = query.eq("execution_id", execution_id);
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  let previous = "GENESIS";
+  let repaired = 0;
+
+  for (const event of data || []) {
+    const hash = buildAuditHash(event, previous);
+
+    const { error: updateError } = await db()
+      .from("audit_events")
+      .update({
+        hash,
+        previous_hash: previous,
+        previous_event_hash: previous
+      })
+      .eq("id", event.id);
+
+    if (updateError) throw updateError;
+
+    previous = hash;
+    repaired += 1;
+  }
+
+  return {
+    repaired: true,
+    entries: repaired,
+    ...(execution_id ? { execution_id } : {})
+  };
+}
