@@ -1160,6 +1160,15 @@ button.secondary,
     }
 
     async function api(path, options = {}){
+      TOKEN =
+        window.TOKEN ||
+        localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") ||
+        localStorage.getItem("EXECUTIA_JWT") ||
+        localStorage.getItem("executia_token") ||
+        localStorage.getItem("executia_operator_token") ||
+        localStorage.getItem("executia_jwt") ||
+        TOKEN;
+
       const res = await fetch(API_BASE + path, {
         ...options,
         headers:{
