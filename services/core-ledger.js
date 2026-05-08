@@ -60,17 +60,35 @@ export async function commitCoreLedgerTransaction(input) {
     gross_amount:     amounts.gross_amount,
     status:           input.status           || "COMMITTED",
     decision:         input.decision         || "APPROVE",
-    payload:          input.payload          || {},
+    payload:          {
+      ...(input.payload || {}),
+      reconciliation_state: input.reconciliation_state || input.payload?.reconciliation_state || "PENDING"
+    },
+    settlement_status: input.settlement_status || input.payload?.settlement_state || "PENDING",
     prev_hash
   };
 
   entry.hash = buildLedgerHash(entry, prev_hash);
 
-  const { data, error } = await db()
+  let { data, error } = await db()
     .from("core_ledger")
     .insert(entry)
     .select()
     .single();
+
+  if (error && String(error.message || "").includes("organization_id")) {
+    const fallbackEntry = { ...entry };
+    delete fallbackEntry.organization_id;
+
+    const fallback = await db()
+      .from("core_ledger")
+      .insert(fallbackEntry)
+      .select()
+      .single();
+
+    data = fallback.data;
+    error = fallback.error;
+  }
 
   if (error) throw error;
 
