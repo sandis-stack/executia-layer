@@ -481,8 +481,16 @@
 
         renderQueue();
       }catch(error){
-        $("queueState").textContent = "QUEUE: ERROR";
-        alert("Queue load failed: " + error.message);
+        $("queueState").textContent = "QUEUE: STANDBY";
+
+        if(
+          String(error.message || "").includes("401") ||
+          String(error.message || "").includes("UNAUTHORIZED")
+        ){
+          return;
+        }
+
+        console.error("QUEUE_LOAD_FAILED", error);
       }
     }
 
