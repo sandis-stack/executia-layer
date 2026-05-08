@@ -954,6 +954,60 @@ button.secondary,
 }
 </style>
 
+
+<style id="operator-titlebar-compact-v2">
+.titlebar{
+  min-height:42px!important;
+  padding:10px 36px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+}
+.titlebar h1{
+  margin:0!important;
+  font-size:22px!important;
+  line-height:1.1!important;
+  letter-spacing:.08em!important;
+}
+.operator-titlebar-right{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  margin-left:auto!important;
+}
+.operator-titlebar-right .pill,
+.operator-titlebar-right [class*="pill"],
+.operator-titlebar-right [class*="badge"]{
+  height:28px!important;
+  padding:0 14px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+}
+.operator-refresh-state{
+  font-size:11px!important;
+  letter-spacing:.08em!important;
+  color:#6B7280!important;
+  white-space:nowrap!important;
+}
+.drawer-actions button:nth-child(1){
+  background:#1E3A5F!important;
+  border-color:#1E3A5F!important;
+  color:#fff!important;
+}
+.drawer-actions button:nth-child(2),
+.drawer-actions button:nth-child(4){
+  background:#fff!important;
+  border:1px solid #1E3A5F!important;
+  color:#1E3A5F!important;
+}
+.drawer-actions button:nth-child(3){
+  background:#7A1E1E!important;
+  border-color:#7A1E1E!important;
+  color:#fff!important;
+}
+</style>
+
 </head>
 
 <body>
@@ -1877,6 +1931,77 @@ window.refreshOperatorConsole = async function(){
   };
 
   window.refresh = window.refreshOperatorConsole;
+})();
+</script>
+
+
+<script id="operator-titlebar-compact-v2-js">
+(function(){
+  function textIncludes(el, txt){
+    return el && (el.textContent || "").toUpperCase().includes(txt);
+  }
+
+  function moveHeaderPills(){
+    const titlebar = document.querySelector(".titlebar");
+    if(!titlebar) return;
+
+    let right = titlebar.querySelector(".operator-titlebar-right");
+    if(!right){
+      right = document.createElement("div");
+      right.className = "operator-titlebar-right";
+      titlebar.appendChild(right);
+    }
+
+    const all = Array.from(document.querySelectorAll("body *"));
+    const live = all.find(el => textIncludes(el, "LIVE SYNC") && !right.contains(el));
+    const lock = all.find(el => textIncludes(el, "EXECUTION LOCK") && !right.contains(el));
+
+    if(live) right.appendChild(live);
+    if(lock) right.appendChild(lock);
+
+    let state = right.querySelector(".operator-refresh-state");
+    if(!state){
+      state = document.createElement("span");
+      state.className = "operator-refresh-state";
+      state.textContent = "LAST REFRESH: READY";
+      right.appendChild(state);
+    }
+  }
+
+  function setRefreshState(txt){
+    const el = document.querySelector(".operator-refresh-state");
+    if(el) el.textContent = txt;
+  }
+
+  const previousRefresh = window.refreshOperatorConsole;
+
+  window.refreshOperatorConsole = async function(){
+    moveHeaderPills();
+    setRefreshState("REFRESHING…");
+
+    try{
+      if(typeof previousRefresh === "function"){
+        await previousRefresh();
+        const now = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+        setRefreshState("LAST REFRESH: " + now);
+        return;
+      }
+    }catch(e){
+      console.warn("[operator] refresh failed:", e);
+      setRefreshState("REFRESH ERROR");
+      return;
+    }
+
+    setTimeout(function(){
+      window.location.reload();
+    }, 250);
+  };
+
+  window.refresh = window.refreshOperatorConsole;
+
+  document.addEventListener("DOMContentLoaded", moveHeaderPills);
+  setTimeout(moveHeaderPills, 300);
+  setTimeout(moveHeaderPills, 1000);
 })();
 </script>
 
