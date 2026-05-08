@@ -12,6 +12,7 @@
  *   VIEWER     → view
  */
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 const ROLE_PERMISSIONS = {
   ADMIN:     ["execute","approve","block","audit","settle","manage_users","view"],
@@ -25,7 +26,10 @@ function getAuthClient() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("SUPABASE_ENV_MISSING");
-  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    realtime: { transport: ws }
+  });
 }
 
 function extractBearer(req) {
