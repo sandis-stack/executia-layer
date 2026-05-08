@@ -39,9 +39,9 @@ export function buildExecutionProof(execution = {}) {
     organization_id: execution.organization_id || null,
     request_type: execution.request_type || execution.payload?.request_type || "EXECUTION",
     actor: {
-      id: execution.operator_user_id || null,
-      email: execution.operator_email || execution.actor || "system",
-      role: execution.operator_role || "OPERATOR"
+      id: execution.operator_user_id || execution.payload?.operator_user_id || null,
+      email: execution.operator_email || execution.payload?.operator_email || execution.actor || "system",
+      role: execution.operator_role || execution.payload?.operator_role || "OPERATOR"
     },
     payload: execution.payload || {},
     validation: {
@@ -72,7 +72,7 @@ export function buildExecutionProof(execution = {}) {
     reconciliation,
     trace: buildTrace(
       execution.execution_id,
-      execution.operator_email || execution.actor || "system",
+      execution.operator_email || execution.payload?.operator_email || execution.actor || "system",
       status,
       decision
     )
