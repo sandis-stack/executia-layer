@@ -837,91 +837,61 @@ button.secondary,
 }
 
 
+
 /* === FINAL SMALL PATCH: TITLEBAR HEIGHT + ACTION COLORS === */
-
 .titlebar{
-  padding:10px 28px !important;
-  min-height:42px !important;
-}
-
-.titlebar h1{
-  font-size:18px !important;
-  line-height:1.1 !important;
-}
-
-.drawer-actions button[onclick="operatorAction('APPROVE')"]{
-  background:#1E3A5F !important;
-  border-color:#1E3A5F !important;
-  color:#fff !important;
-}
-
-.drawer-actions button[onclick="operatorAction('ESCALATE')"]{
-  background:#fff !important;
-  border-color:#1E3A5F !important;
-  color:#1E3A5F !important;
-}
-
-.drawer-actions button[onclick="operatorAction('REJECT')"]{
-  background:#A83232 !important;
-  border-color:#A83232 !important;
-  color:#fff !important;
-}
-
-.drawer-actions button[onclick="operatorAction('FREEZE')"]{
-  background:#fff !important;
-  border-color:#1E3A5F !important;
-  color:#1E3A5F !important;
-}
-
-
-/* === FINAL HEADER ONLY FIX === */
-.titlebar{
-  min-height:42px !important;
-  padding:10px 28px !important;
+  height:34px !important;
+  min-height:34px !important;
+  padding:0 26px !important;
   display:flex !important;
   align-items:center !important;
-  gap:16px !important;
+  justify-content:space-between !important;
 }
+
 .titlebar h1{
+  margin:0 !important;
   font-size:18px !important;
-  line-height:1.1 !important;
+  line-height:1 !important;
 }
-.titlebar .authority{
-  margin-left:auto !important;
-  font-size:11px !important;
-}
-.operator-status-inline,
+
 .titlebar-status{
   display:flex !important;
   align-items:center !important;
-  gap:8px !important;
+  gap:10px !important;
+  margin-left:auto !important;
 }
-.operator-status-pill{
+
+.titlebar-status .operator-status-pill{
   height:22px !important;
-  padding:0 10px !important;
-  font-size:8.5px !important;
-  border-radius:999px !important;
+  padding:0 12px !important;
+  display:inline-flex !important;
+  align-items:center !important;
   white-space:nowrap !important;
 }
-.drawer-actions button[onclick="operatorAction('APPROVE')"]{
+
+.titlebar-status .authority{
+  font-size:12px !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+}
+
+.drawer-actions button:nth-child(1){
   background:#1E3A5F !important;
   border-color:#1E3A5F !important;
   color:#fff !important;
 }
-.drawer-actions button[onclick="operatorAction('ESCALATE')"]{
+
+.drawer-actions button:nth-child(2),
+.drawer-actions button:nth-child(4){
   background:#fff !important;
-  border-color:#1E3A5F !important;
+  border:1px solid #1E3A5F !important;
   color:#1E3A5F !important;
 }
-.drawer-actions button[onclick="operatorAction('REJECT')"]{
-  background:#A83232 !important;
-  border-color:#A83232 !important;
+
+.drawer-actions button:nth-child(3){
+  background:#7A1E1E !important;
+  border-color:#7A1E1E !important;
   color:#fff !important;
-}
-.drawer-actions button[onclick="operatorAction('FREEZE')"]{
-  background:#fff !important;
-  border-color:#1E3A5F !important;
-  color:#1E3A5F !important;
 }
 
 </style>
@@ -977,8 +947,6 @@ button.secondary,
 
     <div class="topbar-right">
       <div class="operator-status-inline">
-        <span id="liveSyncState" class="operator-status-pill">LIVE SYNC: CONNECTED</span>
-        <span id="lockState" class="operator-status-pill">EXECUTION LOCK: INACTIVE</span>
       </div>
 
       <div class="operator-meta">
@@ -990,7 +958,11 @@ button.secondary,
 
   <div class="titlebar">
     <h1>EXECUTIA™ OPERATOR CONSOLE</h1>
-    <div class="authority" id="authorityState">EXECUTION AUTHORITY: LOCKED</div>
+    <div class="titlebar-status">
+      <span id="liveSyncState" class="operator-status-pill">LIVE SYNC: CONNECTED</span>
+      <span id="lockState" class="operator-status-pill">EXECUTION LOCK: INACTIVE</span>
+      <div class="authority" id="authorityState">EXECUTION AUTHORITY: LOCKED</div>
+    </div>
   </div>
 
   <section class="layout" style="
@@ -1778,11 +1750,13 @@ window.operatorAuthorizeSafe = async function(){
 
 window.refreshOperatorConsole = async function(){
   const btn = document.getElementById("refreshBtn");
+  const started = Date.now();
 
   try{
     if(btn){
-      btn.textContent = "REFRESHING";
+      btn.textContent = "REFRESHING…";
       btn.disabled = true;
+      btn.style.opacity = "0.72";
     }
 
     if(typeof window.loadExecutions === "function"){
@@ -1793,12 +1767,23 @@ window.refreshOperatorConsole = async function(){
       await window.operatorAuthorizeSafe();
     }
 
+    const wait = Math.max(0, 700 - (Date.now() - started));
+    await new Promise(resolve => setTimeout(resolve, wait));
+
+    if(btn){
+      const t = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+      btn.textContent = "REFRESHED " + t;
+      setTimeout(() => {
+        btn.textContent = "REFRESH";
+      }, 1200);
+    }
+
   }catch(e){
     alert("Refresh failed: " + e.message);
   }finally{
     if(btn){
-      btn.textContent = "REFRESH";
       btn.disabled = false;
+      btn.style.opacity = "";
     }
   }
 };
