@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
 import crypto from "crypto";
+import { writeAuditEvent } from "../../../services/audit.js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -180,13 +181,16 @@ export default async function handler(req, res) {
       role: operator.role
     }));
 
-    const { data: auditEvent, error: auditError } = await supabase
-      .from("audit_events")
-      .insert({
+    let auditEvent;
+
+    try {
+      const auditResult = await writeAuditEvent({
         execution_id,
+        event_type: "OPERATOR_ACTION",
         action: transition.action,
         previous_state,
         next_state: transition.next_state,
+        actor: operator.email,
         actor_email: operator.email,
         actor_role: operator.role,
         reason: body.reason || null,
@@ -196,11 +200,10 @@ export default async function handler(req, res) {
           governance: "execution_time_truth",
           materialized: true
         }
-      })
-      .select("id")
-      .single();
+      });
 
-    if (auditError) {
+      auditEvent = auditResult.auditEvent;
+    } catch (auditError) {
       return json(res, 500, { ok: false, error: { code: "AUDIT_EVENT_FAILED", message: auditError.message } });
     }
 
