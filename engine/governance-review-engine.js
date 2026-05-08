@@ -5,10 +5,12 @@
  * Materialize operator review escalation runtime.
  */
 
-function resolveExecutionId(request = {}, proof = {}) {
+function resolveExecutionId(request = {}, proof = null) {
+  const safeProof = proof && typeof proof === "object" ? proof : {};
+
   return (
-    proof.execution_id ||
-    proof?.execution?.id ||
+    safeProof.execution_id ||
+    safeProof?.execution?.id ||
     request.execution_id ||
     request.executionId ||
     null
