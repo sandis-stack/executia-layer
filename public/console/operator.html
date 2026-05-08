@@ -353,9 +353,11 @@
 
     .drawer-body{
       overflow:auto;
-      padding:14px 14px 190px;
-      display:grid;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
       gap:12px;
+      min-height:calc(100vh - 260px);
       max-height:calc(100vh - 260px);
     }
 
@@ -392,16 +394,12 @@
     }
 
     .drawer-actions{
-      position:fixed;
-      right:22px;
-      bottom:10px;
-      width:372px;
-      z-index:60;
+      margin-top:auto;
+      position:relative;
       background:#fbfdff;
-      padding-top:0;
-      margin-top:0;
-      border-radius:14px;
-      box-shadow:0 8px 28px rgba(30,58,95,.08);
+      padding-top:12px;
+      border-radius:0;
+      box-shadow:none;
     }
 
     .lock{
@@ -1515,7 +1513,7 @@ button.secondary,
           </div>
 
           <div class="drawer-actions">
-            <div class="block">
+            <div class="block" style="margin-bottom:0;">
               <div class="k">OPERATOR ACTIONS</div>
 
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;overflow:hidden;">
