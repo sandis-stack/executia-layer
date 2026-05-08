@@ -45,8 +45,32 @@ export default async function handler(req, res) {
       .eq("execution_id", execution_id)
       .order("created_at", { ascending: true });
 
+    const { data: latestOperatorEvent } = await supabase
+      .from("audit_events")
+      .select("*")
+      .eq("execution_id", execution_id)
+      .eq("event_type", "OPERATOR_ACTION")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const resolvedStatus =
+      latestOperatorEvent?.next_state ||
+      data.status;
+
+    const resolvedDecision =
+      latestOperatorEvent?.action === "APPROVE" ? "APPROVE" :
+      latestOperatorEvent?.action === "REJECT" ? "BLOCK" :
+      data.decision || "REVIEW";
+
     const proof = buildExecutionProof({
       ...data,
+      status: resolvedStatus,
+      decision: resolvedDecision,
+      reason: latestOperatorEvent?.reason || data.reason,
+      actor: latestOperatorEvent?.actor_email || data.actor,
+      operator_email: latestOperatorEvent?.actor_email || data.operator_email,
+      operator_role: latestOperatorEvent?.actor_role || data.operator_role,
       core_ledger_entries: coreLedgerEntries || []
     });
 
