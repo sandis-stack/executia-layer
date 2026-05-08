@@ -13,6 +13,7 @@ export function buildAuditHash(event, previousEventHash = "GENESIS") {
     execution_id: event.execution_id || null,
     event_type: event.event_type || event.action || "UNKNOWN",
     actor: event.actor || event.actor_email || "system",
+    actor_email: event.actor_email || event.actor || null,
     actor_role: event.actor_role || null,
     action: event.action || null,
     previous_state: event.previous_state || null,
@@ -21,7 +22,6 @@ export function buildAuditHash(event, previousEventHash = "GENESIS") {
     payload: event.payload || {},
     trace: event.trace || [],
     metadata: event.metadata || {},
-    created_at: event.created_at || null,
     previous_event_hash: previousEventHash
   }));
 }
