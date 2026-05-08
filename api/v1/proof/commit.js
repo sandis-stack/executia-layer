@@ -1,8 +1,21 @@
 import { createExecutionProof } from "../../../services/execution-proof.js";
 import { resolveJwtContext, requireJwtPermission } from "../../../services/jwt-auth.js";
+import { createClient } from "@supabase/supabase-js";
+import { resolveGovernanceDecision } from "../../../engine/governance-resolver.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
+}
+
+function db() {
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error("SUPABASE_ENV_MISSING");
+  }
+
+  return createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
 }
 
 export default async function handler(req, res) {
@@ -58,6 +71,25 @@ export default async function handler(req, res) {
       operator_email: context.user?.email || null,
       operator_role: context.user?.role || context.role || null
     };
+
+
+    if (process.env.EXECUTIA_GOVERNANCE_V2_ENABLED === "true") {
+      const governance = await resolveGovernanceDecision({
+        supabase: db(),
+        request: body
+      });
+
+      if (!governance.ok) {
+        return json(res, 403, {
+          ok: false,
+          mode: context.mode,
+          organization_id: context.organization_id,
+          governance
+        });
+      }
+
+      body.governance = governance;
+    }
 
     const proof = await createExecutionProof(body);
 
