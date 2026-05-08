@@ -39,7 +39,16 @@ export default async function handler(req, res) {
       });
     }
 
-    const proof = buildExecutionProof(data);
+    const { data: coreLedgerEntries } = await supabase
+      .from("core_ledger")
+      .select("*")
+      .eq("execution_id", execution_id)
+      .order("created_at", { ascending: true });
+
+    const proof = buildExecutionProof({
+      ...data,
+      core_ledger_entries: coreLedgerEntries || []
+    });
 
     const { data: existingProofEvent } = await supabase
       .from("audit_events")

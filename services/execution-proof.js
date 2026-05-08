@@ -1,6 +1,7 @@
 import { db, hasSupabaseEnv } from "./db.js";
 import { createExecution } from "./execution.js";
 import { sha256, stableStringify, nowIso } from "../shared/crypto.js";
+import { commitCoreLedgerTransaction } from "./core-ledger.js";
 
 export const EXECUTION_TRACE_STANDARD = [
   "REQUEST_RECEIVED",
@@ -100,12 +101,43 @@ export async function createExecutionProof(input = {}) {
     input.actor ||
     "system";
 
-  const [executionRow, ledgerEntries, coreLedgerEntries, auditEvents] = await Promise.all([
+  let [executionRow, ledgerEntries, coreLedgerEntries, auditEvents] = await Promise.all([
     readExecutionRow(execution_id),
     readRows("ledger_entries", execution_id),
     readRows("core_ledger", execution_id),
     readRows("audit_events", execution_id)
   ]);
+
+  if (hasSupabaseEnv() && execution_id && coreLedgerEntries.length === 0) {
+    try {
+      const coreLedgerEntry = await commitCoreLedgerTransaction({
+        execution_id,
+        organization_id: input.organization_id || null,
+        transaction_type: input.transaction_type || input.request_type || "EXECUTION_TRANSACTION",
+        actor,
+        counterparty: input.counterparty || null,
+        subject: input.subject || input.payload?.purpose || input.request_type || "EXECUTION",
+        amount: Number(input.amount || input.payload?.amount || 0),
+        currency: input.currency || input.payload?.currency || "EUR",
+        debit_account: input.debit_account || "EXECUTION_CONTROL",
+        credit_account: input.credit_account || "EXECUTION_COUNTERPARTY",
+        tax_type: input.tax_type || null,
+        tax_rate: Number(input.tax_rate || 0),
+        status: normalized.status,
+        decision: normalized.decision,
+        payload: {
+          ...(input.payload || {}),
+          execution_hash: normalized.raw?.hash || null,
+          settlement_state: "PENDING",
+          reconciliation_state: "PENDING"
+        }
+      });
+
+      coreLedgerEntries = [coreLedgerEntry];
+    } catch (ledgerError) {
+      console.error("[EXECUTIA CORE LEDGER LINK ERROR]", ledgerError.message);
+    }
+  }
 
   const trace = buildTrace({
     execution_id,

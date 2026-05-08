@@ -55,9 +55,22 @@ export function buildExecutionProof(execution = {}) {
       committed: true
     },
     ledger: {
-      linked: Boolean(execution.hash || execution.entry_hash),
+      linked: Boolean(
+        execution.hash ||
+        execution.entry_hash ||
+        execution.core_ledger_entries?.length
+      ),
       entry_hash: execution.hash || execution.entry_hash || null,
-      previous_hash: execution.prev_hash || execution.previous_hash || "GENESIS"
+      previous_hash: execution.prev_hash || execution.previous_hash || "GENESIS",
+      core_ledger_entries: execution.core_ledger_entries || [],
+      settlement_state:
+        execution.core_ledger_entries?.[0]?.payload?.settlement_state ||
+        execution.settlement_state ||
+        "PENDING",
+      reconciliation_state:
+        execution.core_ledger_entries?.[0]?.payload?.reconciliation_state ||
+        execution.reconciliation_state ||
+        "PENDING"
     },
     audit: {
       recorded: true,
