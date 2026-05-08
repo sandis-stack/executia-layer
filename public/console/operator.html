@@ -836,6 +836,43 @@ button.secondary,
   }
 }
 
+
+/* === FINAL SMALL PATCH: TITLEBAR HEIGHT + ACTION COLORS === */
+
+.titlebar{
+  padding:10px 28px !important;
+  min-height:42px !important;
+}
+
+.titlebar h1{
+  font-size:18px !important;
+  line-height:1.1 !important;
+}
+
+.drawer-actions button[onclick="operatorAction('APPROVE')"]{
+  background:#1E3A5F !important;
+  border-color:#1E3A5F !important;
+  color:#fff !important;
+}
+
+.drawer-actions button[onclick="operatorAction('ESCALATE')"]{
+  background:#fff !important;
+  border-color:#1E3A5F !important;
+  color:#1E3A5F !important;
+}
+
+.drawer-actions button[onclick="operatorAction('REJECT')"]{
+  background:#A83232 !important;
+  border-color:#A83232 !important;
+  color:#fff !important;
+}
+
+.drawer-actions button[onclick="operatorAction('FREEZE')"]{
+  background:#fff !important;
+  border-color:#1E3A5F !important;
+  color:#1E3A5F !important;
+}
+
 </style>
 </head>
 
