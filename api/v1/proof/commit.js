@@ -2,6 +2,7 @@ import { createExecutionProof } from "../../../services/execution-proof.js";
 import { resolveJwtContext, requireJwtPermission } from "../../../services/jwt-auth.js";
 import { createClient } from "@supabase/supabase-js";
 import { resolveGovernanceDecision } from "../../../engine/governance-resolver.js";
+import { evaluatePolicyDecision } from "../../../engine/policy-engine.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
@@ -89,6 +90,39 @@ export default async function handler(req, res) {
       }
 
       body.governance = governance;
+
+      const policy = await evaluatePolicyDecision({
+        supabase: db(),
+        request: body,
+        governance
+      });
+
+      body.policy = policy;
+
+      if (
+        policy.decision === "BLOCK_COMMIT"
+      ) {
+        return json(res, 403, {
+          ok: false,
+          mode: context.mode,
+          organization_id: context.organization_id,
+          governance,
+          policy
+        });
+      }
+
+      if (
+        policy.decision === "PENDING_REVIEW"
+      ) {
+        return json(res, 202, {
+          ok: true,
+          pending_review: true,
+          mode: context.mode,
+          organization_id: context.organization_id,
+          governance,
+          policy
+        });
+      }
     }
 
     const proof = await createExecutionProof(body);
