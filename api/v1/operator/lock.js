@@ -1,15 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
-const db = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 const LOCK_TTL_MINUTES = 5;
 
 function json(res, status, body) {
   res.status(status).setHeader("Content-Type", "application/json");
   return res.end(JSON.stringify(body));
+}
+
+function getDb() {
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return null;
+  }
+
+  return createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
 }
 
 function getToken(req) {
@@ -23,7 +29,7 @@ async function readBody(req) {
   const chunks = [];
 
   for await (const chunk of req) {
-    chunks.push(chunk);
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
   }
 
   const raw = Buffer.concat(chunks).toString("utf8");
@@ -37,32 +43,30 @@ async function readBody(req) {
   }
 }
 
-async function getOperator(req) {
+async function getOperator(db, req) {
   const token = getToken(req);
 
-  if (!token) {
-    return null;
-  }
+  if (!token) return null;
 
   const { data, error } = await db.auth.getUser(token);
 
-  if (error || !data?.user) {
-    return null;
-  }
+  if (error || !data?.user) return null;
 
   return data.user;
 }
 
 export default async function handler(req, res) {
   try {
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const db = getDb();
+
+    if (!db) {
       return json(res, 500, {
         ok: false,
         error: "SUPABASE_ENV_MISSING"
       });
     }
 
-    const user = await getOperator(req);
+    const user = await getOperator(db, req);
 
     if (!user) {
       return json(res, 401, {
@@ -73,9 +77,7 @@ export default async function handler(req, res) {
 
     const body = await readBody(req);
 
-    const execution_id =
-      body.execution_id ||
-      req.query?.execution_id;
+    const execution_id = body.execution_id || req.query?.execution_id;
 
     if (!execution_id) {
       return json(res, 400, {
@@ -105,6 +107,8 @@ export default async function handler(req, res) {
     }
 
     if (req.method === "DELETE") {
+      const now = new Date().toISOString();
+
       const { error } = await db
         .from("execution_results")
         .update({
@@ -113,7 +117,7 @@ export default async function handler(req, res) {
           lock_expires_at: null
         })
         .eq("id", execution_id)
-        .or(`locked_by.eq.${user.id},lock_expires_at.lt.${new Date().toISOString()}`);
+        .or(`locked_by.eq.${user.id},lock_expires_at.lt.${now}`);
 
       if (error) {
         return json(res, 500, {
