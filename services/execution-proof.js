@@ -108,6 +108,8 @@ export async function createExecutionProof(input = {}) {
     readRows("audit_events", execution_id)
   ]);
 
+  let core_ledger_error = null;
+
   if (hasSupabaseEnv() && execution_id && coreLedgerEntries.length === 0) {
     try {
       const coreLedgerEntry = await commitCoreLedgerTransaction({
@@ -135,7 +137,13 @@ export async function createExecutionProof(input = {}) {
 
       coreLedgerEntries = [coreLedgerEntry];
     } catch (ledgerError) {
-      console.error("[EXECUTIA CORE LEDGER LINK ERROR]", ledgerError.message);
+      core_ledger_error = {
+        message: ledgerError.message || String(ledgerError),
+        code: ledgerError.code || null,
+        details: ledgerError.details || null,
+        hint: ledgerError.hint || null
+      };
+      console.error("[EXECUTIA CORE LEDGER LINK ERROR]", core_ledger_error);
     }
   }
 
@@ -171,7 +179,8 @@ export async function createExecutionProof(input = {}) {
     ledger: {
       linked: ledgerEntries.length > 0 || coreLedgerEntries.length > 0,
       ledger_entries: ledgerEntries,
-      core_ledger_entries: coreLedgerEntries
+      core_ledger_entries: coreLedgerEntries,
+      core_ledger_error
     },
     audit: {
       recorded: audit_chain.length > 0,
