@@ -474,6 +474,11 @@
 </head>
 
 <body>
+  
+  <div id="lockState" style="position:fixed;top:46px;right:14px;z-index:9999;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(30,58,95,.18);background:rgba(255,255,255,.92);color:#1E3A5F;padding:7px 10px;border-radius:999px;box-shadow:0 8px 24px rgba(15,23,42,.08);">
+    EXECUTION LOCK: INACTIVE
+  </div>
+
   <div id="liveSyncState" style="position:fixed;top:10px;right:14px;z-index:9999;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(30,58,95,.18);background:rgba(255,255,255,.92);color:#1E3A5F;padding:7px 10px;border-radius:999px;box-shadow:0 8px 24px rgba(15,23,42,.08);">
     LIVE SYNC: CONNECTING
   </div>
@@ -1059,7 +1064,11 @@
         SELECTED = fresh;
 
         renderRows();
+
+        await releaseExecutionLock();
+        await acquireExecutionLock(SELECTED?.id);
         renderDetail(SELECTED);
+
         await loadProof(SELECTED);
         await loadAuditTimeline(SELECTED);
         await renderRuleSurface(SELECTED);
