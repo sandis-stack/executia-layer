@@ -30,7 +30,19 @@ function buildTrace(execution_id, actor, status, decision) {
 }
 
 export function buildExecutionProof(execution = {}) {
-  const reconciliation = verifyExecutionTruth(execution);
+  const normalizedExecution = {
+    ...execution,
+    reconciliation_state:
+      execution.core_ledger_entries?.[0]?.payload?.reconciliation_state ||
+      execution.reconciliation_state ||
+      "PENDING",
+    settlement_state:
+      execution.core_ledger_entries?.[0]?.payload?.settlement_state ||
+      execution.settlement_state ||
+      "PENDING"
+  };
+
+  const reconciliation = verifyExecutionTruth(normalizedExecution);
   const status = execution.status || "PENDING_REVIEW";
   const decision = execution.decision || "REVIEW";
 
