@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   resolveJwtContext,
   requireJwtPermission
-} from "../../../../../services/jwt-auth.js";
+} from "../../../../services/jwt-auth.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
