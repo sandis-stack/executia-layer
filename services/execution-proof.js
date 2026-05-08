@@ -180,6 +180,7 @@ export async function createExecutionProof(input = {}) {
       linked: ledgerEntries.length > 0 || coreLedgerEntries.length > 0,
       ledger_entries: ledgerEntries,
       core_ledger_entries: coreLedgerEntries,
+      core_ledger_error,
       core_ledger_error
     },
     audit: {
