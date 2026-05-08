@@ -474,6 +474,9 @@
 </head>
 
 <body>
+  <div id="liveSyncState" style="position:fixed;top:10px;right:14px;z-index:9999;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(30,58,95,.18);background:rgba(255,255,255,.92);color:#1E3A5F;padding:7px 10px;border-radius:999px;box-shadow:0 8px 24px rgba(15,23,42,.08);">
+    LIVE SYNC: CONNECTING
+  </div>
   <header class="topbar">
     <div class="topbar-left">
       <div class="logo">EXECUTIA™</div>
@@ -1067,7 +1070,57 @@
       }
     }
 
-    if(TOKEN) authorize();
+
+    let LIVE_SYNC_TIMER = null;
+    let LIVE_SYNC_BUSY = false;
+    let LIVE_SYNC_LAST = 0;
+
+    function setLiveSyncState(state){
+      const el = document.getElementById("liveSyncState");
+      if(!el) return;
+      el.textContent = "LIVE SYNC: " + state;
+      el.style.opacity = state === "CONNECTED" ? "1" : ".72";
+    }
+
+    async function refreshSelectedExecution(){
+      if(!TOKEN) return;
+      if(LIVE_SYNC_BUSY) return;
+
+      LIVE_SYNC_BUSY = true;
+
+      try{
+        if(typeof loadExecutions === "function"){
+          await loadExecutions();
+        }
+
+        if(SELECTED){
+          if(typeof loadProof === "function") await loadProof(SELECTED);
+          if(typeof loadAuditTimeline === "function") await loadAuditTimeline(SELECTED);
+          if(typeof renderRuleSurface === "function") await renderRuleSurface(SELECTED);
+          if(typeof loadExecutionTrace === "function") await loadExecutionTrace(SELECTED);
+        }
+
+        LIVE_SYNC_LAST = Date.now();
+        setLiveSyncState("CONNECTED");
+      }catch(e){
+        console.warn("[EXECUTIA] live sync failed", e);
+        setLiveSyncState("DISCONNECTED");
+      }finally{
+        LIVE_SYNC_BUSY = false;
+      }
+    }
+
+    function startLiveSync(){
+      if(LIVE_SYNC_TIMER) clearInterval(LIVE_SYNC_TIMER);
+      setLiveSyncState("CONNECTED");
+
+      LIVE_SYNC_TIMER = setInterval(async () => {
+        await refreshSelectedExecution();
+      }, 5000);
+    }
+
+
+    if(TOKEN) authorize().then(startLiveSync);
   </script>
 </body>
 </html>
