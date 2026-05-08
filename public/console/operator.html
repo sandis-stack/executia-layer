@@ -1341,20 +1341,35 @@ button.secondary,
       if(!el) return;
 
       try{
-        const proof = await api("/api/v1/proof/execution?execution_id=" + encodeURIComponent(x.execution_id));
+        const proof = await api("/api/v1/proof/summary?execution_id=" + encodeURIComponent(x.execution_id));
+        const ledger = proof.ledger || {};
+        const summary = proof.summary || {};
 
         el.innerHTML = `
           <div class="k">EXECUTION PROOF</div>
           <div class="grid2" style="margin-top:10px;">
             <div><div class="k">PROOF STATE</div><div class="v">${escapeHtml(proof.proof_state || "-")}</div></div>
-            <div><div class="k">TRUTH STATE</div><div class="v">${escapeHtml(proof.proof?.reconciliation_proof?.truth_state || "-")}</div></div>
-            <div><div class="k">HASH INTEGRITY</div><div class="v">${proof.verified ? "VERIFIED" : "PARTIAL"}</div></div>
-            <div><div class="k">ALGORITHM</div><div class="v">${escapeHtml(proof.proof?.integrity?.algorithm || "-")}</div></div>
+            <div><div class="k">DECISION</div><div class="v">${escapeHtml(proof.status || proof.decision || "-")}</div></div>
+            <div><div class="k">SETTLEMENT</div><div class="v">${escapeHtml(ledger.settlement_state || ledger.settlement_status || "-")}</div></div>
+            <div><div class="k">RECONCILIATION</div><div class="v">${escapeHtml(ledger.reconciliation_state || "-")}</div></div>
+            <div><div class="k">AUDIT CHAIN</div><div class="v">${proof.audit?.verified ? "VERIFIED" : "PARTIAL"}</div></div>
+            <div><div class="k">TRACE</div><div class="v">${escapeHtml(String(proof.trace?.events || 0))} EVENTS</div></div>
           </div>
+
           <div class="block" style="margin-top:8px;background:#fff;">
             <div class="k">PROOF HASH</div>
             <div class="small" style="word-break:break-all;font-family:monospace;">
-              ${escapeHtml((proof.proof?.integrity?.proof_hash || "").slice(0,32))}...
+              ${escapeHtml((proof.proof_hash || "").slice(0,32))}...
+            </div>
+          </div>
+
+          <div class="block" style="margin-top:8px;background:#fff;">
+            <div class="k">SUMMARY</div>
+            <div class="small">
+              LEDGER ${summary.ledger_linked ? "LINKED" : "UNLINKED"} ·
+              SETTLEMENT ${summary.settlement_completed ? "SETTLED" : "PENDING"} ·
+              RECONCILIATION ${summary.reconciliation_verified ? "VERIFIED" : "PENDING"} ·
+              PROOF ${summary.proof_verified ? "VERIFIED" : "PARTIAL"}
             </div>
           </div>
         `;
