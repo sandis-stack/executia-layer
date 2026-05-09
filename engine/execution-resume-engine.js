@@ -100,7 +100,7 @@ const execution_id = review.execution_id
 MATERIALIZE EXECUTION
 */
 
-const materialization = await materializePolicyExecution({
+const materialization = await materializePolicyDecision({
 execution_id,
 organization_id,
 payload: executionPayload
