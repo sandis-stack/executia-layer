@@ -767,11 +767,36 @@
         })
       });
 
-      alert("Governance review finalized.");
+      const isQuorumPending = result?.status === "QUORUM_PENDING";
+
+      if(isQuorumPending){
+        alert("Approval recorded. Quorum still pending.");
+      }else{
+        alert("Governance review finalized.");
+      }
+
+      await loadOpenReviews();
+      await loadGovernanceChainStatus();
+
+      if(isQuorumPending){
+        SELECTED = REVIEWS.find((review) => review.id === SELECTED.id) || SELECTED;
+        $("selectedReview").textContent = SELECTED?.id || "—";
+        $("detailState").textContent = "SELECTED";
+        $("detail").innerHTML = `
+          <div class="block">
+            <div class="k">QUORUM PENDING</div>
+            <div class="v">APPROVAL RECORDED</div>
+            <div class="small">Approvals: ${escapeHtml(result.quorum.approvals_recorded + " / " + result.quorum.required_approvals)}</div>
+            <div class="small">Quorum met: ${escapeHtml(result.quorum.quorum_met ? "YES" : "NO")}</div>
+            <pre>${escapeHtml(JSON.stringify(result, null, 2))}</pre>
+          </div>
+        `;
+        return;
+      }
+
       SELECTED = null;
       $("selectedReview").textContent = "—";
       $("detailState").textContent = "NO SELECTION";
-      await loadOpenReviews();
       $("detail").innerHTML = `
         <div class="block">
           <div class="k">FINALIZED</div>
