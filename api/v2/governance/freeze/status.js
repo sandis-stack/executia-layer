@@ -1,10 +1,18 @@
-import { requireEnterpriseAuth } from "../../../../services/jwt-auth.js"
+import {
+  resolveJwtContext,
+  requireJwtPermission
+} from "../../../../services/jwt-auth.js"
+
 import { getActiveFreeze } from "../../../../services/governance-freeze.js"
+
+function json(res, status, body) {
+  return res.status(status).json(body)
+}
 
 export default async function handler(req, res) {
   try {
     if (req.method !== "GET") {
-      return res.status(405).json({
+      return json(res, 405, {
         ok: false,
         error: {
           code: "METHOD_NOT_ALLOWED",
@@ -13,7 +21,22 @@ export default async function handler(req, res) {
       })
     }
 
-    const auth = await requireEnterpriseAuth(req)
+    const context = await resolveJwtContext(req)
+
+    const permission = requireJwtPermission(
+      context,
+      "governance.review.read"
+    )
+
+    if (!permission.ok) {
+      return json(res, permission.status || 401, {
+        ok: false,
+        error: {
+          code: permission.error || "UNAUTHORIZED",
+          message: permission.reason || "Governance read permission required."
+        }
+      })
+    }
 
     const {
       review_id = null,
@@ -21,21 +44,21 @@ export default async function handler(req, res) {
     } = req.query || {}
 
     const active_freeze = await getActiveFreeze({
-      organization_id: auth.organization_id,
+      organization_id: context.organization_id,
       review_id: review_id || null,
       execution_id: execution_id || null
     })
 
-    return res.status(200).json({
+    return json(res, 200, {
       ok: true,
-      mode: auth.mode,
-      organization_id: auth.organization_id,
-      user: auth.user,
+      mode: context.mode,
+      organization_id: context.organization_id,
+      user: context.user,
       frozen: Boolean(active_freeze),
       active_freeze
     })
   } catch (error) {
-    return res.status(500).json({
+    return json(res, 500, {
       ok: false,
       error: {
         code: error.code || error.message || "FREEZE_STATUS_ERROR",
