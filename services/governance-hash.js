@@ -68,3 +68,60 @@ export async function insertGovernanceEvent({ supabase, event }) {
 
   return data;
 }
+
+
+export async function verifyGovernanceHashChain({ supabase, review_id }) {
+  if (!supabase) throw new Error("SUPABASE_CLIENT_MISSING");
+  if (!review_id) throw new Error("REVIEW_ID_REQUIRED");
+
+  const { data: events, error } = await supabase
+    .from("governance_review_events")
+    .select("*")
+    .eq("review_id", review_id)
+    .order("sequence_no", { ascending: true });
+
+  if (error) throw error;
+
+  let previousHash = null;
+
+  for (let i = 0; i < (events || []).length; i++) {
+    const event = events[i];
+
+    if ((event.prev_hash || null) !== previousHash) {
+      return {
+        ok: true,
+        verified: false,
+        events_checked: i + 1,
+        broken_at: event.id,
+        reason: "PREV_HASH_MISMATCH",
+        expected_prev_hash: previousHash,
+        actual_prev_hash: event.prev_hash || null
+      };
+    }
+
+    const recalculated = hashGovernanceEvent(event, previousHash);
+
+    if (event.hash !== recalculated) {
+      return {
+        ok: true,
+        verified: false,
+        events_checked: i + 1,
+        broken_at: event.id,
+        reason: "HASH_MISMATCH",
+        expected_hash: recalculated,
+        actual_hash: event.hash
+      };
+    }
+
+    previousHash = event.hash;
+  }
+
+  return {
+    ok: true,
+    verified: true,
+    review_id,
+    events_checked: events?.length || 0,
+    head_hash: previousHash,
+    broken_at: null
+  };
+}
