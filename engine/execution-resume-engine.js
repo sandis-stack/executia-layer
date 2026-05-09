@@ -1,157 +1,132 @@
-import crypto from "crypto"
-import db from "../services/db.js"
-import { materializePolicyExecution } from "../services/policy-materialization.js"
+import crypto from "crypto";
+import db from "../services/db.js";
+import { materializePolicyExecution } from "../services/policy-materialization.js";
 
 export async function resumeGovernedExecution({
-review_id,
-operator_id,
-organization_id
+  review_id,
+  operator_id,
+  organization_id
 }) {
+  if (!review_id) {
+    throw new Error("review_id_required");
+  }
 
-if(!review_id){
-throw new Error("review_id_required")
-}
+  const supabase = db();
 
-const supabase = db()
+  const { data: review, error: reviewError } = await supabase
+    .from("governance_reviews")
+    .select("*")
+    .eq("id", review_id)
+    .single();
 
-/*
-LOAD REVIEW
-*/
+  if (reviewError || !review) {
+    throw new Error("review_not_found");
+  }
 
-const { data: review, error: reviewError } = await supabase
-.from("governance_reviews")
-.select("*")
-.eq("id", review_id)
-.single()
+  if (review.organization_id !== organization_id) {
+    throw new Error("organization_scope_violation");
+  }
 
-if(reviewError || !review){
-throw new Error("review_not_found")
-}
+  if (review.review_status !== "APPROVED") {
+    return {
+      ok: false,
+      skipped: true,
+      reason: "review_not_approved",
+      review_status: review.review_status,
+      execution_id: review.execution_id
+    };
+  }
 
-if(review.organization_id !== organization_id){
-throw new Error("organization_scope_violation")
-}
+  if (!review.execution_id) {
+    throw new Error("execution_id_missing");
+  }
 
-if(review.review_status !== "APPROVED"){
-throw new Error("review_not_approved")
-}
+  const execution_id = review.execution_id;
 
-if(!review.execution_id){
-throw new Error("execution_id_missing")
-}
+  if (["RESUMING", "COMMITTED"].includes(review.execution_status)) {
+    return {
+      ok: true,
+      already_processed: true,
+      execution_id,
+      execution_status: review.execution_status
+    };
+  }
 
-/*
-PREVENT DOUBLE RESUME
-*/
+  const { data: lockResult, error: lockError } = await supabase
+    .from("governance_reviews")
+    .update({
+      execution_status: "RESUMING",
+      resumed_at: new Date().toISOString(),
+      resumed_by: operator_id
+    })
+    .eq("id", review_id)
+    .eq("execution_status", "PENDING_REVIEW")
+    .select();
 
-if([
-"RESUMING",
-"COMMITTED"
-].includes(review.execution_status)){
+  if (lockError) {
+    throw lockError;
+  }
 
-return {
-ok: true,
-already_processed: true,
-execution_id: review.execution_id,
-execution_status: review.execution_status
-}
+  if (!lockResult || lockResult.length === 0) {
+    return {
+      ok: true,
+      already_locked: true,
+      execution_id,
+      execution_status: review.execution_status
+    };
+  }
 
-}
+  const executionPayload =
+    review.execution_payload ||
+    review.policy_payload ||
+    {};
 
-/*
-SET RESUMING
-*/
+  const materialization = await materializePolicyExecution({
+    execution_id,
+    organization_id,
+    payload: executionPayload,
+    review
+  });
 
-const { data: lockResult, error: updateError } = await supabase
-.from("governance_reviews")
-.update({
-execution_status: "RESUMING",
-resumed_at: new Date().toISOString(),
-resumed_by: operator_id
-})
-.eq("id", review_id)
-.eq("execution_status", "PENDING_REVIEW")
-.select()
+  const { error: finalizeError } = await supabase
+    .from("governance_reviews")
+    .update({
+      execution_status: "COMMITTED",
+      committed_at: new Date().toISOString()
+    })
+    .eq("id", review_id);
 
-if(updateError){
-throw updateError
-}
+  if (finalizeError) {
+    throw finalizeError;
+  }
 
-if(!lockResult || lockResult.length === 0){
+  const governanceEvent = {
+    id: crypto.randomUUID(),
+    review_id,
+    execution_id,
+    organization_id,
+    actor: operator_id || "SYSTEM",
+    event_type: "GOVERNANCE_EXECUTION_RESUMED",
+    payload: {
+      operator_id,
+      materialization
+    },
+    created_at: new Date().toISOString()
+  };
 
-return {
-ok: true,
-already_locked: true,
-execution_id
-}
+  const { error: eventError } = await supabase
+    .from("governance_review_events")
+    .insert(governanceEvent);
 
-}
+  if (eventError) {
+    throw eventError;
+  }
 
-/*
-LOAD EXECUTION PAYLOAD
-*/
-
-const executionPayload = review.execution_payload || {}
-
-const execution_id = review.execution_id
-
-/*
-MATERIALIZE EXECUTION
-*/
-
-const materialization = await materializePolicyExecution({
-execution_id,
-organization_id,
-payload: executionPayload
-})
-
-/*
-FINALIZE GOVERNANCE
-*/
-
-const { error: finalizeError } = await supabase
-.from("governance_reviews")
-.update({
-execution_status: "COMMITTED",
-committed_at: new Date().toISOString()
-})
-.eq("id", review_id)
-
-if(finalizeError){
-throw finalizeError
-}
-
-/*
-APPEND GOVERNANCE EVENT
-*/
-
-const governanceEvent = {
-id: crypto.randomUUID(),
-review_id,
-execution_id,
-organization_id,
-event_type: "GOVERNANCE_EXECUTION_RESUMED",
-event_payload: {
-operator_id,
-materialization
-},
-created_at: new Date().toISOString()
-}
-
-const { error: eventError } = await supabase
-.from("governance_review_events")
-.insert(governanceEvent)
-
-if(eventError){
-throw eventError
-}
-
-return {
-ok: true,
-review_id,
-execution_id,
-execution_status: "COMMITTED",
-materialization
-}
-
+  return {
+    ok: true,
+    review_id,
+    execution_id,
+    execution_status: "COMMITTED",
+    materialization
+  };
 }
