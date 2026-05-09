@@ -15,7 +15,9 @@ import {
 } from "../../../../services/governance-hash.js";
 
 import {
-  getGovernanceQuorumState
+  getGovernanceQuorumRule,
+  getGovernanceQuorumState,
+  roleMeetsQuorumRequirement
 } from "../../../../services/governance-quorum.js";
 
 import { resumeGovernedExecution } from "../../../../engine/execution-resume-engine.js";
@@ -134,6 +136,33 @@ export default async function handler(req, res) {
         ok: false,
         error: "GOVERNANCE_REVIEW_ALREADY_CLOSED",
         review_status: review.review_status
+      });
+    }
+
+    const quorumRule = await getGovernanceQuorumRule({
+      supabase,
+      organization_id: review.organization_id || null,
+      escalation_level: review.escalation_level || 1
+    });
+
+    const actorRole =
+      context?.user?.role ||
+      context?.role ||
+      "OPERATOR";
+
+    if (!roleMeetsQuorumRequirement(actorRole, quorumRule.required_role)) {
+      return json(res, 403, {
+        ok: false,
+        error: {
+          code: "GOVERNANCE_ROLE_NOT_AUTHORIZED",
+          message:
+            "This governance level requires " +
+            quorumRule.required_role +
+            " approval."
+        },
+        required_role: quorumRule.required_role,
+        actor_role: actorRole,
+        escalation_level: review.escalation_level || 1
       });
     }
 

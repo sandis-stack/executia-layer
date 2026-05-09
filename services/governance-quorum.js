@@ -83,14 +83,37 @@ export async function getGovernanceQuorumRule({
   return defaultRule || fallbackQuorumRule(level);
 }
 
+export function roleMeetsQuorumRequirement(actorRole, requiredRole) {
+  const role = String(actorRole || "").toUpperCase();
+  const required = String(requiredRole || "OPERATOR").toUpperCase();
+
+  if (role === "ADMIN") return true;
+  if (required === "OPERATOR") {
+    return role === "OPERATOR" || role === "SUPERVISOR";
+  }
+  if (required === "SUPERVISOR") {
+    return role === "SUPERVISOR";
+  }
+
+  return role === required;
+}
+
 export function evaluateQuorumState({
   review,
   rule,
   approvals = []
 }) {
   const requiredApprovals = Number(rule?.required_approvals || 1);
+  const requiredRole = rule?.required_role || "OPERATOR";
+
   const validApprovals = approvals.filter((item) => {
-    return item?.event_type === "GOVERNANCE_APPROVAL_RECORDED";
+    return (
+      item?.event_type === "GOVERNANCE_APPROVAL_RECORDED" &&
+      roleMeetsQuorumRequirement(
+        item?.payload?.operator_role,
+        requiredRole
+      )
+    );
   });
 
   const uniqueActors = new Set(
@@ -108,7 +131,7 @@ export function evaluateQuorumState({
     required_approvals: requiredApprovals,
     approvals_recorded: approvalCount,
     quorum_met: approvalCount >= requiredApprovals,
-    required_role: rule?.required_role || "OPERATOR",
+    required_role: requiredRole,
     supervisor_required: Boolean(rule?.supervisor_required),
     freeze_required: Boolean(rule?.freeze_required),
     override_allowed: Boolean(rule?.override_allowed),
@@ -169,5 +192,6 @@ export default {
   fallbackQuorumRule,
   getGovernanceQuorumRule,
   evaluateQuorumState,
+  roleMeetsQuorumRequirement,
   getGovernanceQuorumState
 };
