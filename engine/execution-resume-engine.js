@@ -6,6 +6,7 @@ import { insertGovernanceEvent } from "../services/governance-hash.js"
 export async function resumeGovernedExecution({
 review_id,
 operator_id,
+operator_email,
 organization_id
 }) {
 
