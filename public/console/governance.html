@@ -703,10 +703,19 @@
 
         <div class="block">
           <div class="k">QUORUM STATE</div>
-          <div class="v" id="quorumState">CHECKING</div>
-          <div class="small" id="quorumApprovals">Approvals: —</div>
-          <div class="small" id="quorumRole">Required role: —</div>
-          <div class="small" id="quorumFreeze">Freeze required: —</div>
+          <div class="v">${
+            quorum?.ok
+              ? (quorum.quorum_met ? "QUORUM MET" : "QUORUM PENDING")
+              : "QUORUM ERROR"
+          }</div>
+          <div class="small">Approvals: ${escapeHtml(
+            quorum?.ok
+              ? (quorum.approvals_recorded + " / " + quorum.required_approvals)
+              : "—"
+          )}</div>
+          <div class="small">Required role: ${escapeHtml(quorum?.required_role || "—")}</div>
+          <div class="small">Supervisor required: ${escapeHtml(quorum?.supervisor_required ? "YES" : "NO")}</div>
+          <div class="small">Freeze required: ${escapeHtml(quorum?.freeze_required ? "YES" : "NO")}</div>
         </div>
 
         <div class="block">
@@ -739,39 +748,6 @@
         </div>
       `;
 
-      if(quorum?.ok){
-        const qs = $("quorumState");
-        const qa = $("quorumApprovals");
-        const qr = $("quorumRole");
-        const qf = $("quorumFreeze");
-
-        if(qs){
-          qs.textContent =
-            quorum.quorum_met
-              ? "QUORUM MET"
-              : "QUORUM PENDING";
-        }
-
-        if(qa){
-          qa.textContent =
-            "Approvals: " +
-            quorum.approvals_recorded +
-            " / " +
-            quorum.required_approvals;
-        }
-
-        if(qr){
-          qr.textContent =
-            "Required role: " +
-            (quorum.required_role || "—");
-        }
-
-        if(qf){
-          qf.textContent =
-            "Freeze required: " +
-            (quorum.freeze_required ? "YES" : "NO");
-        }
-      }
     }
 
     async function finalizeReview(path){
