@@ -40,6 +40,23 @@ const ROLE_PERMISSIONS = {
     "governance.review.override"
   ],
 
+  SUPERVISOR: [
+    "execute",
+    "approve",
+    "block",
+    "audit",
+    "view",
+    "governance.review.read",
+    "governance.review.approve",
+    "governance.review.reject",
+    "governance.review.override",
+    "governance.review.freeze",
+    "governance.review.supervise",
+    "governance.review.create_test",
+    "governance.chain.verify",
+    "governance.proof.export"
+  ],
+
   AUDITOR: [
     "audit",
     "view",
