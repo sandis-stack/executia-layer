@@ -21,7 +21,6 @@ export function hashGovernanceEvent(event, prev_hash = null) {
     actor: event.actor || null,
     event_type: event.event_type || null,
     payload: event.payload || {},
-    created_at: event.created_at || null,
     prev_hash
   };
 
