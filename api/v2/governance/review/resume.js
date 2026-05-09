@@ -1,4 +1,9 @@
-import { json } from "../../../../lib/http.js";
+function json(res, status, payload) {
+  res.statusCode = status;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(payload, null, 2));
+}
+
 import { db } from "../../../../services/db.js";
 import {
   resolveJwtContext,
