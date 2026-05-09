@@ -80,7 +80,7 @@ export async function verifyGovernanceHashChain({ supabase, review_id }) {
 
   if (error) throw error;
 
-  let previousHash = null;
+  let previousHash = events?.[0]?.prev_hash || null;
 
   for (let i = 0; i < (events || []).length; i++) {
     const event = events[i];
