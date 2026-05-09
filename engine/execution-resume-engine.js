@@ -132,10 +132,12 @@ const governanceEvent = {
 id: crypto.randomUUID(),
 review_id,
 execution_id,
-organization_id,
+actor: operator_email || operator_id || "SYSTEM",
 event_type: "GOVERNANCE_EXECUTION_RESUMED",
-event_payload: {
+payload: {
 operator_id,
+operator_email,
+execution_status: "COMMITTED",
 materialization
 },
 created_at: new Date().toISOString()
