@@ -1076,6 +1076,16 @@ button.secondary,
         <div class="k">AUDIT</div>
         <div class="v">RECORDED</div>
       </div>
+
+      <div class="metric">
+        <div class="k">GOVERNANCE CHAIN</div>
+        <div class="v" id="governanceChainStatus">UNKNOWN</div>
+      </div>
+
+      <div class="metric">
+        <div class="k">CHAIN HEAD</div>
+        <div class="v" id="governanceChainHead">—</div>
+      </div>
     </aside>
 
     <section class="stream">
@@ -1791,6 +1801,51 @@ window.authorizeWithToken = async function(){
   }
 };
 
+async function loadGovernanceChainStatus(){
+  const statusEl = document.getElementById("governanceChainStatus");
+  const headEl = document.getElementById("governanceChainHead");
+
+  try{
+    if(statusEl) statusEl.textContent = "CHECKING";
+    if(headEl) headEl.textContent = "—";
+
+    const token =
+      window.ACCESS_TOKEN ||
+      window.TOKEN ||
+      localStorage.getItem("executia_access_token") ||
+      localStorage.getItem("EXECUTIA_JWT") ||
+      document.getElementById("tokenInput")?.value ||
+      document.getElementById("token")?.value ||
+      document.getElementById("accessToken")?.value;
+
+    if(!token){
+      if(statusEl) statusEl.textContent = "LOCKED";
+      return;
+    }
+
+    const r = await fetch("/api/v2/governance/chain/verify", {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const data = await r.json();
+
+    if(!r.ok || !data.ok){
+      if(statusEl) statusEl.textContent = "BROKEN";
+      if(headEl) headEl.textContent = data?.error?.code || "VERIFY FAILED";
+      return;
+    }
+
+    if(statusEl) statusEl.textContent = data.verified ? "VERIFIED" : "BROKEN";
+    if(headEl) headEl.textContent = data.head_hash ? data.head_hash.slice(0, 12) + "…" : "—";
+  }catch(e){
+    if(statusEl) statusEl.textContent = "ERROR";
+    if(headEl) headEl.textContent = e.message || "VERIFY ERROR";
+  }
+}
+
 window.refreshOperatorConsole = async function(){
   const btn = document.getElementById("refreshBtn");
   const started = Date.now();
@@ -1803,6 +1858,7 @@ window.refreshOperatorConsole = async function(){
     }
 
     await loadExecutions();
+    await loadGovernanceChainStatus();
 
     const wait = Math.max(0, 700 - (Date.now() - started));
     await new Promise(resolve => setTimeout(resolve, wait));
