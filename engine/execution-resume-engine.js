@@ -149,8 +149,7 @@ payload: {
 operator_id,
 operator_email,
 execution_status: "COMMITTED",
-materialization,
-insertedEvent
+materialization
 },
 created_at: new Date().toISOString()
 }
