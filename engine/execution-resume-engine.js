@@ -45,10 +45,7 @@ throw new Error("execution_id_missing")
 PREVENT DOUBLE RESUME
 */
 
-if([
-"RESUMING",
-"COMMITTED"
-].includes(review.execution_status)){
+if(review.execution_status === "COMMITTED"){
 
 return {
 ok: true,
@@ -62,6 +59,8 @@ execution_status: review.execution_status
 /*
 SET RESUMING
 */
+
+if(review.execution_status !== "RESUMING"){
 
 const { data: lockResult, error: updateError } = await supabase
 .from("governance_reviews")
@@ -83,7 +82,10 @@ if(!lockResult || lockResult.length === 0){
 return {
 ok: true,
 already_locked: true,
-execution_id
+execution_id,
+execution_status: review.execution_status
+}
+
 }
 
 }
