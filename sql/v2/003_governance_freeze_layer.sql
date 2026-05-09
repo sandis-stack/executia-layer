@@ -53,3 +53,7 @@ drop constraint if exists governance_freezes_scope_check;
 alter table governance_freezes
 add constraint governance_freezes_scope_check
 check (freeze_scope in ('EXECUTION','REVIEW','ORGANIZATION','SYSTEM'));
+
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table governance_freezes to service_role;
+grant select, insert, update, delete on table governance_freeze_events to service_role;
