@@ -103,9 +103,19 @@ MATERIALIZE EXECUTION
 */
 
 const materialization = await materializePolicyDecision({
+supabase,
+request: {
 execution_id,
 organization_id,
-payload: executionPayload
+operator_user_id: operator_id,
+operator_email,
+execution_type: review.governance_payload?.execution_type,
+policy_scope: review.governance_payload?.policy_scope,
+jurisdiction: review.governance_payload?.jurisdiction
+},
+governance: review.governance_payload || {},
+policy: review.policy_payload || {},
+proof: { execution_id }
 })
 
 /*
@@ -138,7 +148,8 @@ payload: {
 operator_id,
 operator_email,
 execution_status: "COMMITTED",
-materialization
+materialization,
+insertedEvent
 },
 created_at: new Date().toISOString()
 }
@@ -154,7 +165,8 @@ ok: true,
 review_id,
 execution_id,
 execution_status: "COMMITTED",
-materialization
+materialization,
+insertedEvent
 }
 
 }
