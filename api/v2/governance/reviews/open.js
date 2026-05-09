@@ -58,13 +58,10 @@ export default async function handler(req, res) {
       return json(res, permission.status || 403, {
         ok: false,
         error: {
-          code: permission.error || "FORBIDDEN",
+          code: permission.error || "UNAUTHORIZED",
           message:
             permission.reason ||
-            "Governance review read permission required.",
-          role: context.role,
-          permissions: context.permissions,
-          user: context.user
+            "Governance review read permission required."
         }
       });
     }
