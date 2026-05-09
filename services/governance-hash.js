@@ -36,8 +36,7 @@ export async function attachGovernanceHash({ supabase, event }) {
 
   const { data: previousEvents, error } = await supabase
     .from("governance_review_events")
-    .select("hash, sequence_no, created_at")
-    .eq("review_id", event.review_id)
+    .select("hash, sequence_no")
     .not("hash", "is", null)
     .order("sequence_no", { ascending: false })
     .limit(1);
