@@ -660,15 +660,7 @@
       const detail = $("detail");
 
       if(!SELECTED){
-        let quorum = null;
-
-      try{
-        quorum = await api("/api/v2/governance/quorum/state?review_id=" + encodeURIComponent(SELECTED.id));
-      }catch(error){
-        quorum = { ok:false, error:error.message };
-      }
-
-      detail.innerHTML = `
+        detail.innerHTML = `
           <div class="block">
             <div class="k">STATE</div>
             <div class="v">NO REVIEW SELECTED</div>
@@ -683,6 +675,14 @@
         timeline = await api("/api/v2/governance/reviews/timeline?review_id=" + encodeURIComponent(SELECTED.id));
       }catch(error){
         timeline = { events: [], error: error.message };
+      }
+
+      let quorum = null;
+
+      try{
+        quorum = await api("/api/v2/governance/quorum/state?review_id=" + encodeURIComponent(SELECTED.id));
+      }catch(error){
+        quorum = { ok:false, error:error.message };
       }
 
       detail.innerHTML = `
