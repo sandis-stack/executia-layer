@@ -2,6 +2,7 @@ import { createExecutionProof } from "../../../services/execution-proof.js";
 import { resolveJwtContext, requireJwtPermission } from "../../../services/jwt-auth.js";
 import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
+import crypto from "crypto";
 import { resolveGovernanceDecision } from "../../../engine/governance-resolver.js";
 import { evaluatePolicyDecision } from "../../../engine/policy-engine.js";
 import { materializePolicyDecision } from "../../../services/policy-materialization.js";
@@ -84,6 +85,10 @@ export default async function handler(req, res) {
       operator_email: context.user?.email || null,
       operator_role: context.user?.role || context.role || null
     };
+
+    if (!body.execution_id && process.env.EXECUTIA_GOVERNANCE_V2_ENABLED === "true") {
+      body.execution_id = crypto.randomUUID();
+    }
 
 
     if (process.env.EXECUTIA_GOVERNANCE_V2_ENABLED === "true") {
