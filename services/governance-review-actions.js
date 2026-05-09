@@ -1,3 +1,4 @@
+import { insertGovernanceEvent } from "./governance-hash.js";
 /**
  * EXECUTIA V2 — Governance Review Actions
  *
@@ -131,19 +132,21 @@ export async function finalizeGovernanceReview({
     operator_role: context?.user?.role || context?.role || null
   };
 
-  const { data: reviewEvent, error: eventError } = await supabase
-    .from("governance_review_events")
-    .insert({
-      review_id,
-      execution_id: existingReview.execution_id || null,
-      actor,
-      event_type: normalized.event_type,
-      payload: eventPayload
-    })
-    .select()
-    .single();
+  let reviewEvent;
 
-  if (eventError) {
+  try {
+    reviewEvent = await insertGovernanceEvent({
+      supabase,
+      event: {
+        review_id,
+        execution_id: existingReview.execution_id || null,
+        actor,
+        event_type: normalized.event_type,
+        payload: eventPayload,
+        created_at: new Date().toISOString()
+      }
+    });
+  } catch (eventError) {
     return {
       ok: false,
       error: "GOVERNANCE_REVIEW_EVENT_FAILED",
