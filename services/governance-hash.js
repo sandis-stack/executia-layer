@@ -75,7 +75,6 @@ export async function verifyGovernanceHashChain({ supabase, review_id }) {
   const { data: events, error } = await supabase
     .from("governance_review_events")
     .select("*")
-    .eq("review_id", review_id)
     .order("sequence_no", { ascending: true });
 
   if (error) throw error;
@@ -118,6 +117,7 @@ export async function verifyGovernanceHashChain({ supabase, review_id }) {
     ok: true,
     verified: true,
     review_id,
+    verification_scope: "GLOBAL_GOVERNANCE_CHAIN",
     events_checked: events?.length || 0,
     head_hash: previousHash,
     broken_at: null
