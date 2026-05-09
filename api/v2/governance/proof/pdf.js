@@ -156,6 +156,30 @@ export default async function handler(req, res) {
 
     if (eventsError) throw eventsError;
 
+    const { data: freezes, error: freezesError } = await supabase
+      .from("governance_freezes")
+      .select("*")
+      .or(`review_id.eq.${review_id},execution_id.eq.${review.execution_id},freeze_scope.eq.SYSTEM,freeze_scope.eq.ORGANIZATION`)
+      .order("created_at", { ascending: true });
+
+    if (freezesError) throw freezesError;
+
+    const freezeIds = (freezes || []).map((freeze) => freeze.id);
+
+    let freezeEvents = [];
+
+    if (freezeIds.length > 0) {
+      const { data: fetchedFreezeEvents, error: freezeEventsError } = await supabase
+        .from("governance_freeze_events")
+        .select("*")
+        .in("freeze_id", freezeIds)
+        .order("created_at", { ascending: true });
+
+      if (freezeEventsError) throw freezeEventsError;
+
+      freezeEvents = fetchedFreezeEvents || [];
+    }
+
     const verification = await verifyGovernanceHashChain({
       supabase,
       review_id
@@ -178,9 +202,39 @@ export default async function handler(req, res) {
       `Head Hash: ${verification.head_hash || "-"}`,
       `Broken At: ${verification.broken_at || "-"}`,
       "",
-      "GOVERNANCE EVENT TIMELINE",
+      "EMERGENCY GOVERNANCE / FREEZE STATE",
+      `Freezes Found: ${(freezes || []).length}`,
+      `Freeze Events Found: ${(freezeEvents || []).length}`,
       ""
     ];
+
+    for (const freeze of freezes || []) {
+      lines.push(`Freeze ID: ${freeze.id}`);
+      lines.push(`Scope: ${freeze.freeze_scope}`);
+      lines.push(`Level: ${freeze.freeze_level}`);
+      lines.push(`Status: ${freeze.status}`);
+      lines.push(`Reason: ${freeze.freeze_reason}`);
+      lines.push(`Review ID: ${freeze.review_id || "-"}`);
+      lines.push(`Execution ID: ${freeze.execution_id || "-"}`);
+      lines.push(`Created By: ${freeze.created_by_email || "-"}`);
+      lines.push(`Released By: ${freeze.released_by_email || "-"}`);
+      lines.push(`Created At: ${freeze.created_at || "-"}`);
+      lines.push(`Released At: ${freeze.released_at || "-"}`);
+      lines.push("");
+    }
+
+    for (const event of freezeEvents || []) {
+      lines.push(`Freeze Event: ${event.event_type}`);
+      lines.push(`Freeze ID: ${event.freeze_id}`);
+      lines.push(`Actor: ${event.actor_email || event.actor_id || "-"}`);
+      lines.push(`Created At: ${event.created_at || "-"}`);
+      lines.push(`Details: ${JSON.stringify(event.details || {})}`);
+      lines.push("");
+    }
+
+    lines.push("GOVERNANCE EVENT TIMELINE");
+    lines.push("");
+
 
     for (const event of events || []) {
       lines.push(`Sequence: ${event.sequence_no}`);

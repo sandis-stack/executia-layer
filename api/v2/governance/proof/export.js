@@ -72,6 +72,30 @@ export default async function handler(req, res) {
 
     if (eventsError) throw eventsError;
 
+    const { data: freezes, error: freezesError } = await supabase
+      .from("governance_freezes")
+      .select("*")
+      .or(`review_id.eq.${review_id},execution_id.eq.${review.execution_id},freeze_scope.eq.SYSTEM,freeze_scope.eq.ORGANIZATION`)
+      .order("created_at", { ascending: true });
+
+    if (freezesError) throw freezesError;
+
+    const freezeIds = (freezes || []).map((freeze) => freeze.id);
+
+    let freezeEvents = [];
+
+    if (freezeIds.length > 0) {
+      const { data: fetchedFreezeEvents, error: freezeEventsError } = await supabase
+        .from("governance_freeze_events")
+        .select("*")
+        .in("freeze_id", freezeIds)
+        .order("created_at", { ascending: true });
+
+      if (freezeEventsError) throw freezeEventsError;
+
+      freezeEvents = fetchedFreezeEvents || [];
+    }
+
     const verification =
       await verifyGovernanceHashChain({
         supabase,
@@ -99,6 +123,31 @@ export default async function handler(req, res) {
         verified: verification.verified,
         head_hash: verification.head_hash || null,
         events_checked: verification.events_checked || 0
+      },
+
+      emergency_governance: {
+        freezes: (freezes || []).map((freeze) => ({
+          id: freeze.id,
+          scope: freeze.freeze_scope,
+          level: freeze.freeze_level,
+          status: freeze.status,
+          reason: freeze.freeze_reason,
+          review_id: freeze.review_id,
+          execution_id: freeze.execution_id,
+          created_by: freeze.created_by_email,
+          released_by: freeze.released_by_email,
+          created_at: freeze.created_at,
+          released_at: freeze.released_at,
+          metadata: freeze.metadata || {}
+        })),
+        freeze_events: (freezeEvents || []).map((event) => ({
+          id: event.id,
+          freeze_id: event.freeze_id,
+          event_type: event.event_type,
+          actor: event.actor_email || event.actor_id,
+          created_at: event.created_at,
+          details: event.details || {}
+        }))
       },
 
       events: (events || []).map((event) => ({
