@@ -127,7 +127,10 @@ export async function getActiveFreeze({
 
   if (error) {
     console.error("[EXECUTIA] getActiveFreeze failed", error)
-    throw new Error("FREEZE_LOOKUP_FAILED")
+    const err = new Error("FREEZE_LOOKUP_FAILED")
+    err.code = error.code || "FREEZE_LOOKUP_FAILED"
+    err.details = error.message || error.details || JSON.stringify(error)
+    throw err
   }
 
   return data?.[0] || null

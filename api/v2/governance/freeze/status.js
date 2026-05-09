@@ -62,7 +62,7 @@ export default async function handler(req, res) {
       ok: false,
       error: {
         code: error.code || error.message || "FREEZE_STATUS_ERROR",
-        message: error.message || "Freeze status failed"
+        message: error.details || error.message || "Freeze status failed"
       }
     })
   }
