@@ -1,5 +1,5 @@
 import crypto from "crypto"
-import db from "../services/db.js"
+import { db } from "../services/db.js"
 import { materializePolicyExecution } from "../services/policy-materialization.js"
 import { insertGovernanceEvent } from "../services/governance-hash.js"
 
