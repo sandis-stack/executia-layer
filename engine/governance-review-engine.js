@@ -1,3 +1,5 @@
+import { insertGovernanceEvent } from "../services/governance-hash.js";
+
 /**
  * EXECUTIA V2 — Governance Review Engine
  *
@@ -101,12 +103,9 @@ export async function createGovernanceReview({
     };
   }
 
-  const {
-    data: reviewEvent,
-    error: eventError
-  } = await supabase
-    .from("governance_review_events")
-    .insert({
+  const reviewEvent = await insertGovernanceEvent({
+    supabase,
+    event: {
       review_id: review.id,
       execution_id,
       actor,
@@ -118,18 +117,8 @@ export async function createGovernanceReview({
         governance_decision: review.governance_decision,
         policy_decision: review.policy_decision
       }
-    })
-    .select()
-    .single();
-
-  if (eventError) {
-    return {
-      ok: false,
-      error: "GOVERNANCE_REVIEW_EVENT_FAILED",
-      message: eventError.message,
-      review
-    };
-  }
+    }
+  });
 
   return {
     ok: true,
