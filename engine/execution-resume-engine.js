@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import db from "../services/db.js";
+import { db } from "../services/db.js";
 import { materializePolicyDecision } from "../services/policy-materialization.js";
 
 export async function resumeGovernedExecution({
