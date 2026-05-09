@@ -260,6 +260,35 @@
       gap:10px;
     }
 
+    .stream{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height:320px;
+      overflow:auto;
+    }
+
+    .stream-item{
+      border:1px solid var(--line);
+      background:#f8fafc;
+      border-radius:10px;
+      padding:10px;
+    }
+
+    .stream-type{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--blue);
+    }
+
+    .stream-meta{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+      line-height:1.45;
+    }
+
     .actions button{margin-top:0}
 
     @media(max-width:1100px){
@@ -379,6 +408,7 @@
       "";
     let REVIEWS = [];
     let SELECTED = null;
+    let GLOBAL_EVENTS = [];
 
     function $(id){
       return document.getElementById(id);
@@ -474,6 +504,7 @@
               await loadOpenReviews();
           await loadGovernanceChainStatus();
           await loadFreezeStatus();
+          await loadRecentEvents();
               await loadGovernanceChainStatus();
             }
           )
@@ -557,6 +588,20 @@
       }
     }
 
+    async function loadRecentEvents(){
+      try{
+        const data = await api("/api/v2/governance/reviews/timeline");
+
+        GLOBAL_EVENTS = (data.events || [])
+          .sort((a,b) => (b.sequence_no || 0) - (a.sequence_no || 0))
+          .slice(0, 25);
+
+      }catch(error){
+        console.error("EVENT_STREAM_FAILED", error);
+        GLOBAL_EVENTS = [];
+      }
+    }
+
     async function loadGovernanceChainStatus(){
       try{
         if($("chainState")) $("chainState").textContent = "CHAIN: CHECKING";
@@ -634,6 +679,7 @@
       $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
       await loadGovernanceChainStatus();
       await loadFreezeStatus();
+      await loadRecentEvents();
       startLiveSync();
 
       renderQueue();
@@ -810,6 +856,40 @@
         <div class="block">
           <div class="k">POLICY PAYLOAD</div>
           <pre>${escapeHtml(JSON.stringify(SELECTED.policy_payload || {}, null, 2))}</pre>
+        </div>
+
+        <div class="block">
+          <div class="k">LIVE GOVERNANCE EVENT STREAM</div>
+
+          <div class="stream">
+            ${
+              GLOBAL_EVENTS.length
+                ? GLOBAL_EVENTS.map(event => `
+                  <div class="stream-item">
+                    <div class="stream-type">
+                      ${escapeHtml(event.event_type || "UNKNOWN")}
+                    </div>
+
+                    <div class="stream-meta">
+                      Seq: ${escapeHtml(event.sequence_no || "—")}
+                    </div>
+
+                    <div class="stream-meta">
+                      Actor: ${escapeHtml(event.actor || "—")}
+                    </div>
+
+                    <div class="stream-meta">
+                      Review: ${escapeHtml(event.review_id || "—")}
+                    </div>
+
+                    <div class="stream-meta">
+                      ${escapeHtml(event.created_at || "—")}
+                    </div>
+                  </div>
+                `).join("")
+                : '<div class="small">No governance events loaded.</div>'
+            }
+          </div>
         </div>
 
         <div class="block">
@@ -1060,6 +1140,7 @@
           await loadOpenReviews();
           await loadGovernanceChainStatus();
           await loadFreezeStatus();
+          await loadRecentEvents();
         }catch(error){
           console.error("LIVE_SYNC_FAILED", error);
         }
