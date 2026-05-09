@@ -279,6 +279,7 @@
       <span class="pill" id="authState">AUTH: LOCKED</span>
       <span class="pill" id="queueState">QUEUE: STANDBY</span>
       <span class="pill" id="chainState">CHAIN: UNKNOWN</span>
+      <span class="pill" id="freezeState">FREEZE: UNKNOWN</span>
       <span class="pill" id="syncState">SYNC: STANDBY</span>
     </div>
   </header>
@@ -326,6 +327,10 @@
           <div class="metric">
             <div class="k">CHAIN HEAD</div>
             <div class="v" id="governanceChainHead">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">EMERGENCY FREEZE</div>
+            <div class="v" id="emergencyFreezeStatus">UNKNOWN</div>
           </div>
         </div>
       </div>
@@ -468,6 +473,7 @@
             async () => {
               await loadOpenReviews();
           await loadGovernanceChainStatus();
+          await loadFreezeStatus();
               await loadGovernanceChainStatus();
             }
           )
@@ -483,6 +489,20 @@
                 await loadTimeline(SELECTED.id);
               }
               await loadGovernanceChainStatus();
+            }
+          )
+          .on(
+            "postgres_changes",
+            {
+              event:"*",
+              schema:"public",
+              table:"governance_freezes"
+            },
+            async () => {
+              await loadFreezeStatus();
+              if(SELECTED){
+                await renderDetail();
+              }
             }
           )
           .subscribe((status) => {
@@ -570,6 +590,36 @@
       }
     }
 
+    async function loadFreezeStatus(){
+      try{
+        if($("freezeState")) $("freezeState").textContent = "FREEZE: CHECKING";
+        if($("emergencyFreezeStatus")) $("emergencyFreezeStatus").textContent = "CHECKING";
+
+        if(!TOKEN){
+          if($("freezeState")) $("freezeState").textContent = "FREEZE: LOCKED";
+          if($("emergencyFreezeStatus")) $("emergencyFreezeStatus").textContent = "LOCKED";
+          return null;
+        }
+
+        const data = await api("/api/v2/governance/freeze/status");
+
+        if(data.frozen){
+          if($("freezeState")) $("freezeState").textContent = "FREEZE: ACTIVE";
+          if($("emergencyFreezeStatus")) $("emergencyFreezeStatus").textContent =
+            (data.active_freeze?.freeze_level || "ACTIVE") + " / " + (data.active_freeze?.freeze_scope || "SYSTEM");
+        }else{
+          if($("freezeState")) $("freezeState").textContent = "FREEZE: CLEAR";
+          if($("emergencyFreezeStatus")) $("emergencyFreezeStatus").textContent = "CLEAR";
+        }
+
+        return data;
+      }catch(error){
+        if($("freezeState")) $("freezeState").textContent = "FREEZE: ERROR";
+        if($("emergencyFreezeStatus")) $("emergencyFreezeStatus").textContent = error.message || "ERROR";
+        return { ok:false, error:error.message };
+      }
+    }
+
     async function authorize(){
       const data = await api("/api/v2/governance/reviews/open");
       await startGovernanceRealtime();
@@ -583,6 +633,7 @@
       $("queueState").textContent = "QUEUE: ACTIVE";
       $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
       await loadGovernanceChainStatus();
+      await loadFreezeStatus();
       startLiveSync();
 
       renderQueue();
@@ -685,6 +736,14 @@
         quorum = { ok:false, error:error.message };
       }
 
+      let freeze = null;
+
+      try{
+        freeze = await api("/api/v2/governance/freeze/status?review_id=" + encodeURIComponent(SELECTED.id) + "&execution_id=" + encodeURIComponent(SELECTED.execution_id || ""));
+      }catch(error){
+        freeze = { ok:false, frozen:false, error:error.message };
+      }
+
       detail.innerHTML = `
         <div class="block">
           <div class="k">REVIEW</div>
@@ -716,6 +775,17 @@
           <div class="small">Required role: ${escapeHtml(quorum?.required_role || "—")}</div>
           <div class="small">Supervisor required: ${escapeHtml(quorum?.supervisor_required ? "YES" : "NO")}</div>
           <div class="small">Freeze required: ${escapeHtml(quorum?.freeze_required ? "YES" : "NO")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">EMERGENCY GOVERNANCE</div>
+          <div class="v">${freeze?.frozen ? "EXECUTION LOCKED" : "CLEAR"}</div>
+          <div class="small">Scope: ${escapeHtml(freeze?.active_freeze?.freeze_scope || "—")}</div>
+          <div class="small">Level: ${escapeHtml(freeze?.active_freeze?.freeze_level || "—")}</div>
+          <div class="small">Reason: ${escapeHtml(freeze?.active_freeze?.freeze_reason || "—")}</div>
+          <div class="small">Freeze ID: ${escapeHtml(freeze?.active_freeze?.id || "—")}</div>
+          <button class="danger" onclick="createSystemFreeze()">SYSTEM FREEZE</button>
+          <button class="warn" onclick="releaseActiveFreeze()">RELEASE FREEZE</button>
         </div>
 
         <div class="block">
@@ -834,6 +904,68 @@
       }
     }
 
+    async function createSystemFreeze(){
+      try{
+        if(!SELECTED){
+          alert("Select review first.");
+          return;
+        }
+
+        const reasonEl = $("reviewReason");
+        const reason = reasonEl?.value.trim() || "Emergency governance freeze from console";
+
+        const result = await api("/api/v2/governance/freeze/create", {
+          method:"POST",
+          body:JSON.stringify({
+            freeze_scope:"SYSTEM",
+            freeze_level:"EMERGENCY",
+            freeze_reason:reason,
+            metadata:{
+              source:"governance_console",
+              review_id:SELECTED.id,
+              execution_id:SELECTED.execution_id || null
+            }
+          })
+        });
+
+        alert("System freeze activated.");
+        await loadFreezeStatus();
+        await renderDetail();
+        return result;
+      }catch(error){
+        alert("Freeze failed: " + error.message);
+      }
+    }
+
+    async function releaseActiveFreeze(){
+      try{
+        const status = await loadFreezeStatus();
+
+        if(!status?.active_freeze?.id){
+          alert("No active freeze found.");
+          return;
+        }
+
+        const result = await api("/api/v2/governance/freeze/release", {
+          method:"POST",
+          body:JSON.stringify({
+            freeze_id:status.active_freeze.id,
+            metadata:{
+              release_reason:"Emergency freeze released from governance console",
+              source:"governance_console"
+            }
+          })
+        });
+
+        alert("Freeze released.");
+        await loadFreezeStatus();
+        await renderDetail();
+        return result;
+      }catch(error){
+        alert("Release failed: " + error.message);
+      }
+    }
+
     async function exportGovernanceProof(){
       try{
         if(!SELECTED?.id){
@@ -927,6 +1059,7 @@
           if(!TOKEN) return;
           await loadOpenReviews();
           await loadGovernanceChainStatus();
+          await loadFreezeStatus();
         }catch(error){
           console.error("LIVE_SYNC_FAILED", error);
         }
