@@ -113,17 +113,12 @@ export async function getActiveFreeze({
 
   const supabase = db()
 
-  let query = supabase
+  const { data, error } = await supabase
     .from("governance_freezes")
     .select("*")
     .eq("organization_id", organization_id)
     .eq("status", "ACTIVE")
     .order("created_at", { ascending: false })
-
-  if (review_id) query = query.eq("review_id", review_id)
-  if (execution_id) query = query.eq("execution_id", execution_id)
-
-  const { data, error } = await query.limit(1)
 
   if (error) {
     console.error("[EXECUTIA] getActiveFreeze failed", error)
@@ -133,7 +128,15 @@ export async function getActiveFreeze({
     throw err
   }
 
-  return data?.[0] || null
+  const freezes = data || []
+
+  return freezes.find((freeze) => {
+    if (freeze.freeze_scope === "SYSTEM") return true
+    if (freeze.freeze_scope === "ORGANIZATION") return true
+    if (review_id && freeze.review_id === review_id) return true
+    if (execution_id && freeze.execution_id === execution_id) return true
+    return false
+  }) || null
 }
 
 export async function assertExecutionNotFrozen({
