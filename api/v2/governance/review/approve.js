@@ -10,6 +10,8 @@ import {
   finalizeGovernanceReview
 } from "../../../../services/governance-review-actions.js";
 
+import { resumeGovernedExecution } from "../../../../engine/execution-resume-engine.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -95,12 +97,18 @@ export default async function handler(req, res) {
       return json(res, 400, result);
     }
 
+    const review_id = body.review_id || body.reviewId;
+
+    const resumeResult = await resumeGovernedExecution({
+      review_id,
+      operator_id:     context.user?.id,
+      organization_id: context.organization_id
+    });
+
     return json(res, 200, {
-      ok: true,
-      mode: context.mode,
-      organization_id: context.organization_id,
-      user: context.user,
-      governance_review: result
+      ok:          true,
+      governance:  result,
+      resume:      resumeResult
     });
 
   } catch (error) {
