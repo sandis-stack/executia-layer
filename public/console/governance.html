@@ -703,6 +703,7 @@
           </div>
 
           <button class="warn" onclick="overrideReview()">OVERRIDE</button>
+          <button class="secondary" onclick="exportGovernanceProof()">EXPORT PROOF JSON</button>
         </div>
 
         <div class="block">
@@ -778,6 +779,50 @@
         await finalizeReview("/api/v2/governance/review/override");
       }catch(error){
         alert("Override failed: " + error.message);
+      }
+    }
+
+    async function exportGovernanceProof(){
+      try{
+        if(!SELECTED?.id){
+          alert("Select governance review first.");
+          return;
+        }
+
+        const response = await fetch(
+          "/api/v2/governance/proof/export?review_id=" + SELECTED.id,
+          {
+            method:"GET",
+            headers:{
+              "Authorization":"Bearer " + TOKEN
+            }
+          }
+        );
+
+        const data = await response.json();
+
+        if(!response.ok || data.ok === false){
+          throw new Error(data?.error?.message || "PROOF_EXPORT_FAILED");
+        }
+
+        const blob = new Blob(
+          [JSON.stringify(data, null, 2)],
+          { type:"application/json" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        a.href = url;
+        a.download = "executia-governance-proof-" + SELECTED.id + ".json";
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        URL.revokeObjectURL(url);
+      }catch(error){
+        alert("Proof export failed: " + error.message);
       }
     }
 
