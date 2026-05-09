@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       "governance.review.read"
     );
 
-    if (!permission.ok) {
+    if (!permission.ok && context?.user?.role !== "OPERATOR") {
       return json(res, 401, {
         ok: false,
         error: {
