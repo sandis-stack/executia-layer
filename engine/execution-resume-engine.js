@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import db from "../services/db.js";
-import { materializePolicyExecution } from "../services/policy-materialization.js";
+import { materializePolicyDecision } from "../services/policy-materialization.js";
 
 export async function resumeGovernedExecution({
   review_id,
@@ -81,11 +81,19 @@ export async function resumeGovernedExecution({
     review.policy_payload ||
     {};
 
-  const materialization = await materializePolicyExecution({
-    execution_id,
-    organization_id,
-    payload: executionPayload,
-    review
+  const materialization = await materializePolicyDecision({
+    supabase,
+    request: {
+      execution_id,
+      organization_id,
+      operator_user_id: operator_id,
+      execution_type: review.governance_payload?.execution_type,
+      policy_scope: review.governance_payload?.policy_scope,
+      jurisdiction: review.governance_payload?.jurisdiction
+    },
+    governance: review.governance_payload || {},
+    policy: review.policy_payload || {},
+    proof: { execution_id }
   });
 
   const { error: finalizeError } = await supabase
