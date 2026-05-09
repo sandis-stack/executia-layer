@@ -2,6 +2,7 @@ import crypto from "crypto"
 import { db } from "../services/db.js"
 import { materializePolicyDecision } from "../services/policy-materialization.js"
 import { insertGovernanceEvent } from "../services/governance-hash.js"
+import { assertExecutionNotFrozen } from "../services/governance-freeze.js"
 
 export async function resumeGovernedExecution({
 review_id,
@@ -41,6 +42,16 @@ throw new Error("review_not_approved")
 if(!review.execution_id){
 throw new Error("execution_id_missing")
 }
+
+/*
+FREEZE ENFORCEMENT
+*/
+
+await assertExecutionNotFrozen({
+  organization_id,
+  review_id,
+  execution_id: review.execution_id
+})
 
 /*
 PREVENT DOUBLE RESUME

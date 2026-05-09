@@ -1,20 +1,4 @@
-import crypto from "crypto";
-import { createClient } from "@supabase/supabase-js";
-
-function db() {
-  if (!process.env.SUPABASE_URL) {
-    throw new Error("SUPABASE_URL_MISSING");
-  }
-
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY_MISSING");
-  }
-
-  return createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-}
+import { db } from "./db.js"
 
 export async function createFreeze({
   organization_id,
@@ -26,56 +10,47 @@ export async function createFreeze({
   actor = {},
   metadata = {}
 }) {
-  if (!organization_id) {
-    throw new Error("FREEZE_ORGANIZATION_REQUIRED");
-  }
+  if (!organization_id) throw new Error("FREEZE_ORGANIZATION_REQUIRED")
+  if (!freeze_reason) throw new Error("FREEZE_REASON_REQUIRED")
 
-  if (!freeze_reason) {
-    throw new Error("FREEZE_REASON_REQUIRED");
-  }
-
-  const supabase = db();
-
-  const payload = {
-    organization_id,
-    review_id,
-    execution_id,
-    freeze_scope,
-    freeze_reason,
-    freeze_level,
-    status: "ACTIVE",
-    created_by: actor.id || null,
-    created_by_email: actor.email || null,
-    metadata
-  };
+  const supabase = db()
 
   const { data, error } = await supabase
     .from("governance_freezes")
-    .insert(payload)
+    .insert({
+      organization_id,
+      review_id,
+      execution_id,
+      freeze_scope,
+      freeze_reason,
+      freeze_level,
+      status: "ACTIVE",
+      created_by: actor.id || null,
+      created_by_email: actor.email || null,
+      metadata
+    })
     .select()
-    .single();
+    .single()
 
   if (error) {
-    console.error("[EXECUTIA] createFreeze failed", error);
-    throw new Error("FREEZE_CREATE_FAILED");
+    console.error("[EXECUTIA] createFreeze failed", error)
+    throw new Error("FREEZE_CREATE_FAILED")
   }
 
-  await supabase
-    .from("governance_freeze_events")
-    .insert({
-      freeze_id: data.id,
-      organization_id,
-      event_type: "GOVERNANCE_FREEZE_CREATED",
-      actor_id: actor.id || null,
-      actor_email: actor.email || null,
-      details: {
-        freeze_scope,
-        freeze_level,
-        freeze_reason
-      }
-    });
+  await supabase.from("governance_freeze_events").insert({
+    freeze_id: data.id,
+    organization_id,
+    event_type: "GOVERNANCE_FREEZE_CREATED",
+    actor_id: actor.id || null,
+    actor_email: actor.email || null,
+    details: {
+      freeze_scope,
+      freeze_level,
+      freeze_reason
+    }
+  })
 
-  return data;
+  return data
 }
 
 export async function releaseFreeze({
@@ -83,25 +58,18 @@ export async function releaseFreeze({
   actor = {},
   metadata = {}
 }) {
-  if (!freeze_id) {
-    throw new Error("FREEZE_ID_REQUIRED");
-  }
+  if (!freeze_id) throw new Error("FREEZE_ID_REQUIRED")
 
-  const supabase = db();
+  const supabase = db()
 
   const { data: freeze, error: freezeError } = await supabase
     .from("governance_freezes")
     .select("*")
     .eq("id", freeze_id)
-    .single();
+    .single()
 
-  if (freezeError || !freeze) {
-    throw new Error("FREEZE_NOT_FOUND");
-  }
-
-  if (freeze.status !== "ACTIVE") {
-    throw new Error("FREEZE_ALREADY_RELEASED");
-  }
+  if (freezeError || !freeze) throw new Error("FREEZE_NOT_FOUND")
+  if (freeze.status !== "ACTIVE") throw new Error("FREEZE_ALREADY_RELEASED")
 
   const { data, error } = await supabase
     .from("governance_freezes")
@@ -117,25 +85,23 @@ export async function releaseFreeze({
     })
     .eq("id", freeze_id)
     .select()
-    .single();
+    .single()
 
   if (error) {
-    console.error("[EXECUTIA] releaseFreeze failed", error);
-    throw new Error("FREEZE_RELEASE_FAILED");
+    console.error("[EXECUTIA] releaseFreeze failed", error)
+    throw new Error("FREEZE_RELEASE_FAILED")
   }
 
-  await supabase
-    .from("governance_freeze_events")
-    .insert({
-      freeze_id,
-      organization_id: freeze.organization_id,
-      event_type: "GOVERNANCE_FREEZE_RELEASED",
-      actor_id: actor.id || null,
-      actor_email: actor.email || null,
-      details: metadata
-    });
+  await supabase.from("governance_freeze_events").insert({
+    freeze_id,
+    organization_id: freeze.organization_id,
+    event_type: "GOVERNANCE_FREEZE_RELEASED",
+    actor_id: actor.id || null,
+    actor_email: actor.email || null,
+    details: metadata
+  })
 
-  return data;
+  return data
 }
 
 export async function getActiveFreeze({
@@ -143,35 +109,28 @@ export async function getActiveFreeze({
   review_id = null,
   execution_id = null
 }) {
-  if (!organization_id) {
-    throw new Error("FREEZE_ORGANIZATION_REQUIRED");
-  }
+  if (!organization_id) throw new Error("FREEZE_ORGANIZATION_REQUIRED")
 
-  const supabase = db();
+  const supabase = db()
 
   let query = supabase
     .from("governance_freezes")
     .select("*")
     .eq("organization_id", organization_id)
     .eq("status", "ACTIVE")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
 
-  if (review_id) {
-    query = query.eq("review_id", review_id);
-  }
+  if (review_id) query = query.eq("review_id", review_id)
+  if (execution_id) query = query.eq("execution_id", execution_id)
 
-  if (execution_id) {
-    query = query.eq("execution_id", execution_id);
-  }
-
-  const { data, error } = await query.limit(1);
+  const { data, error } = await query.limit(1)
 
   if (error) {
-    console.error("[EXECUTIA] getActiveFreeze failed", error);
-    throw new Error("FREEZE_LOOKUP_FAILED");
+    console.error("[EXECUTIA] getActiveFreeze failed", error)
+    throw new Error("FREEZE_LOOKUP_FAILED")
   }
 
-  return data?.[0] || null;
+  return data?.[0] || null
 }
 
 export async function assertExecutionNotFrozen({
@@ -183,20 +142,20 @@ export async function assertExecutionNotFrozen({
     organization_id,
     review_id,
     execution_id
-  });
+  })
 
   if (activeFreeze) {
-    const error = new Error("EXECUTION_FROZEN");
-    error.code = "EXECUTION_FROZEN";
+    const error = new Error("EXECUTION_FROZEN")
+    error.code = "EXECUTION_FROZEN"
     error.freeze = {
-      id:         activeFreeze.id,
-      scope:      activeFreeze.freeze_scope,
-      level:      activeFreeze.freeze_level,
-      reason:     activeFreeze.freeze_reason,
+      id: activeFreeze.id,
+      scope: activeFreeze.freeze_scope,
+      level: activeFreeze.freeze_level,
+      reason: activeFreeze.freeze_reason,
       created_at: activeFreeze.created_at
-    };
-    throw error;
+    }
+    throw error
   }
 
-  return true;
+  return true
 }
