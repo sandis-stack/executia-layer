@@ -278,7 +278,8 @@
     <div class="status">
       <span class="pill" id="authState">AUTH: LOCKED</span>
       <span class="pill" id="queueState">QUEUE: STANDBY</span>
-      <span class="pill" id="syncState">SYNC: MANUAL</span>
+      <span class="pill" id="chainState">CHAIN: UNKNOWN</span>
+      <span class="pill" id="syncState">SYNC: STANDBY</span>
     </div>
   </header>
 
@@ -317,6 +318,14 @@
           <div class="metric">
             <div class="k">SELECTED REVIEW</div>
             <div class="v" id="selectedReview">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">GOVERNANCE CHAIN</div>
+            <div class="v" id="governanceChainStatus">UNKNOWN</div>
+          </div>
+          <div class="metric">
+            <div class="k">CHAIN HEAD</div>
+            <div class="v" id="governanceChainHead">—</div>
           </div>
         </div>
       </div>
@@ -457,7 +466,9 @@
               table:"governance_reviews"
             },
             async () => {
-              await refreshQueue();
+              await loadOpenReviews();
+          await loadGovernanceChainStatus();
+              await loadGovernanceChainStatus();
             }
           )
           .on(
@@ -471,10 +482,15 @@
               if(SELECTED){
                 await loadTimeline(SELECTED.id);
               }
+              await loadGovernanceChainStatus();
             }
           )
           .subscribe((status) => {
             console.log("Governance realtime:", status);
+            if($("syncState")){
+              $("syncState").textContent =
+                status === "SUBSCRIBED" ? "SYNC: REALTIME" : "SYNC: " + status;
+            }
           });
 
       }catch(error){
@@ -521,6 +537,39 @@
       }
     }
 
+    async function loadGovernanceChainStatus(){
+      try{
+        if($("chainState")) $("chainState").textContent = "CHAIN: CHECKING";
+        if($("governanceChainStatus")) $("governanceChainStatus").textContent = "CHECKING";
+        if($("governanceChainHead")) $("governanceChainHead").textContent = "—";
+
+        if(!TOKEN){
+          if($("chainState")) $("chainState").textContent = "CHAIN: LOCKED";
+          if($("governanceChainStatus")) $("governanceChainStatus").textContent = "LOCKED";
+          return;
+        }
+
+        const data = await api("/api/v2/governance/chain/verify");
+
+        if(data.verified){
+          if($("chainState")) $("chainState").textContent = "CHAIN: VERIFIED";
+          if($("governanceChainStatus")) $("governanceChainStatus").textContent = "VERIFIED";
+        }else{
+          if($("chainState")) $("chainState").textContent = "CHAIN: BROKEN";
+          if($("governanceChainStatus")) $("governanceChainStatus").textContent = "BROKEN";
+        }
+
+        if($("governanceChainHead")){
+          $("governanceChainHead").textContent =
+            data.head_hash ? data.head_hash.slice(0, 12) + "…" : "—";
+        }
+      }catch(error){
+        if($("chainState")) $("chainState").textContent = "CHAIN: ERROR";
+        if($("governanceChainStatus")) $("governanceChainStatus").textContent = "ERROR";
+        if($("governanceChainHead")) $("governanceChainHead").textContent = error.message || "VERIFY ERROR";
+      }
+    }
+
     async function authorize(){
       const data = await api("/api/v2/governance/reviews/open");
       await startGovernanceRealtime();
@@ -533,6 +582,8 @@
       $("openCount").textContent = String(REVIEWS.length);
       $("queueState").textContent = "QUEUE: ACTIVE";
       $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+      await loadGovernanceChainStatus();
+      startLiveSync();
 
       renderQueue();
     }
@@ -739,10 +790,13 @@
         try{
           if(!TOKEN) return;
           await loadOpenReviews();
+          await loadGovernanceChainStatus();
         }catch(error){
           console.error("LIVE_SYNC_FAILED", error);
         }
       }, 5000);
+
+      if($("syncState")) $("syncState").textContent = "SYNC: LIVE";
     }
 
     if(TOKEN){
