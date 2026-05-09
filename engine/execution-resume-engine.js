@@ -5,6 +5,7 @@ import { materializePolicyDecision } from "../services/policy-materialization.js
 export async function resumeGovernedExecution({
   review_id,
   operator_id,
+  operator_email,
   organization_id
 }) {
   if (!review_id) {
@@ -112,11 +113,12 @@ export async function resumeGovernedExecution({
     id: crypto.randomUUID(),
     review_id,
     execution_id,
-    organization_id,
-    actor: operator_id || "SYSTEM",
+    actor: operator_email || operator_id || "SYSTEM",
     event_type: "GOVERNANCE_EXECUTION_RESUMED",
     payload: {
       operator_id,
+      operator_email,
+      execution_status: "COMMITTED",
       materialization
     },
     created_at: new Date().toISOString()

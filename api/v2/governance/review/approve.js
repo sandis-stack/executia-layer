@@ -102,6 +102,7 @@ export default async function handler(req, res) {
     const resumeResult = await resumeGovernedExecution({
       review_id,
       operator_id:     context.user?.id,
+      operator_email:  context.user?.email,
       organization_id: context.organization_id
     });
 
