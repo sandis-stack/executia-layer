@@ -51,7 +51,8 @@ export default async function handler(req, res) {
 
       const commitRule = assertCommitHasTrace({
         trace_id,
-        execution_id: requestBody.execution_id || null
+        execution_id: requestBody.execution_id || null,
+        review_id: requestBody.review_id || null
       });
 
       if (commitRule?.event) {
