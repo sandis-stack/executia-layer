@@ -1241,6 +1241,12 @@
       <span class="pill" id="autonomousRecoveryState">RECOVERY: STANDBY</span>
     </div>
 
+    <div style="margin:12px 0 18px 0;">
+      <button class="secondary" onclick="applyAutonomousRecovery()">
+        APPLY AUTONOMOUS RECOVERY
+      </button>
+    </div>
+
     <div class="heatmap-grid" id="autonomousRecoveryGrid">
       <div class="heat-cell warn">
         <div class="heat-title">RECOVERY PLAN</div>
@@ -2651,6 +2657,72 @@
         ${controls}
         ${reasons}
       `;
+    }
+
+
+    async function applyAutonomousRecovery(){
+      try{
+        const plan = DETERMINISTIC_REPLAY?.recovery_plan || null;
+
+        if(!plan){
+          alert("No recovery plan loaded.");
+          return;
+        }
+
+        const reviewId =
+          DETERMINISTIC_REPLAY?.filters?.review_id ||
+          null;
+
+        const executionId =
+          DETERMINISTIC_REPLAY?.replay?.events?.find(e => e.execution_id)?.execution_id ||
+          DETERMINISTIC_REPLAY?.replay?.stages?.find(e => e.execution_id)?.execution_id ||
+          null;
+
+        if(!reviewId){
+          alert("No review_id available for recovery.");
+          return;
+        }
+
+        const response = await api(
+          "/api/v2/governance/recovery/apply",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              review_id: reviewId,
+              execution_id: executionId,
+              recovery_plan: plan
+            })
+          }
+        );
+
+        if(!response?.ok){
+          throw new Error(
+            response?.error?.message ||
+            response?.error ||
+            "Autonomous recovery apply failed."
+          );
+        }
+
+        alert(
+          "AUTONOMOUS RECOVERY APPLIED\n\n" +
+          "EVENT: " + (response.event?.event_type || "GOVERNANCE_AUTONOMOUS_RECOVERY_APPLIED") + "\n" +
+          "HASH: " + (response.event?.hash || "—")
+        );
+
+        await loadGlobalGovernanceStream?.();
+        await loadOpenReviews?.();
+
+      }catch(err){
+        console.error(err);
+
+        alert(
+          "AUTONOMOUS RECOVERY FAILED\n\n" +
+          (err?.message || err)
+        );
+      }
     }
 
 
