@@ -1,4 +1,5 @@
 import { insertGovernanceEvent } from "./governance-hash.js";
+import { GOVERNANCE_STATES, assertGovernanceTransition, resolveGovernanceState } from "./governance-state.js";
 /**
  * EXECUTIA V2 — Governance Review Actions
  *
@@ -24,7 +25,7 @@ function resolveActor(context = {}, body = {}) {
 function normalizeAction(action) {
   if (action === ACTIONS.APPROVE) {
     return {
-      review_status: "APPROVED",
+      review_status: GOVERNANCE_STATES.APPROVED,
       governance_decision: "ALLOW_COMMIT",
       event_type: "GOVERNANCE_APPROVED"
     };
@@ -32,7 +33,7 @@ function normalizeAction(action) {
 
   if (action === ACTIONS.REJECT) {
     return {
-      review_status: "REJECTED",
+      review_status: GOVERNANCE_STATES.REJECTED,
       governance_decision: "BLOCK_COMMIT",
       event_type: "GOVERNANCE_REJECTED"
     };
@@ -40,7 +41,7 @@ function normalizeAction(action) {
 
   if (action === ACTIONS.OVERRIDE) {
     return {
-      review_status: "OVERRIDDEN",
+      review_status: GOVERNANCE_STATES.OVERRIDDEN,
       governance_decision: "ALLOW_COMMIT",
       event_type: "GOVERNANCE_OVERRIDDEN"
     };
@@ -91,13 +92,19 @@ export async function finalizeGovernanceReview({
     return { ok: false, error: "GOVERNANCE_REVIEW_NOT_FOUND" };
   }
 
-  if (existingReview.review_status && existingReview.review_status !== "OPEN") {
+  if (existingReview.review_status && existingReview.review_status !== GOVERNANCE_STATES.OPEN) {
     return {
       ok: false,
       error: "GOVERNANCE_REVIEW_ALREADY_CLOSED",
       review_status: existingReview.review_status
     };
   }
+
+  const currentGovernanceState = resolveGovernanceState(existingReview);
+  assertGovernanceTransition(
+    currentGovernanceState,
+    normalized.review_status
+  );
 
   const { data: updatedReview, error: updateError } = await supabase
     .from("governance_reviews")

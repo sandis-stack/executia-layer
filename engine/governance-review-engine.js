@@ -1,4 +1,5 @@
 import { insertGovernanceEvent } from "../services/governance-hash.js";
+import { GOVERNANCE_STATES } from "../services/governance-state.js";
 
 /**
  * EXECUTIA V2 — Governance Review Engine
@@ -60,7 +61,7 @@ export async function createGovernanceReview({
       policy?.decision ||
       "PENDING_REVIEW",
 
-    review_status: "OPEN",
+    review_status: GOVERNANCE_STATES.OPEN,
 
     risk_score:
       policy?.risk_score || 0,
@@ -111,7 +112,7 @@ export async function createGovernanceReview({
       actor,
       event_type: "GOVERNANCE_REVIEW_CREATED",
       payload: {
-        review_status: "OPEN",
+        review_status: GOVERNANCE_STATES.OPEN,
         escalation_level: review.escalation_level,
         risk_score: review.risk_score,
         governance_decision: review.governance_decision,
