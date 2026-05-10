@@ -1305,6 +1305,7 @@
     let GOVERNANCE_STREAM_TIMER = null;
     let FREEZE_PROOF_EVENTS = [];
     let FORENSIC_REPLAY_EVENTS = [];
+    let DETERMINISTIC_REPLAY = null;
     let GOVERNANCE_MODE = "LEVEL_0_NORMAL";
 
     function $(id){
@@ -1584,6 +1585,119 @@
           </div>
         `).join("");
     }
+
+    async function loadDeterministicReplay(reviewId){
+      const el = $("deterministicReplayGrid");
+      if(!el) return;
+
+      if(!reviewId){
+        DETERMINISTIC_REPLAY = null;
+        renderDeterministicReplay();
+        return;
+      }
+
+      try{
+        DETERMINISTIC_REPLAY = await api(
+          "/api/v2/governance/replay?review_id=" + encodeURIComponent(reviewId)
+        );
+      }catch(error){
+        DETERMINISTIC_REPLAY = {
+          ok:false,
+          error:{
+            message:error.message
+          }
+        };
+      }
+
+      renderDeterministicReplay();
+    }
+
+    function replayStageClass(stage){
+      const s = String(stage || "").toUpperCase();
+      if(s.includes("CONSTITUTION")) return "warn-node";
+      if(s.includes("CONTAINMENT") || s.includes("STOP")) return "bad-node";
+      if(s.includes("RECOVERY") || s.includes("COMMIT")) return "";
+      return "";
+    }
+
+    function renderDeterministicReplay(){
+      const el = $("deterministicReplayGrid");
+      if(!el) return;
+
+      if($("deterministicReplayState")){
+        $("deterministicReplayState").textContent =
+          DETERMINISTIC_REPLAY?.ok
+            ? "REPLAY ENGINE: MATERIALIZED"
+            : "REPLAY ENGINE: STANDBY";
+      }
+
+      if(!DETERMINISTIC_REPLAY){
+        el.innerHTML = `
+          <div class="block">
+            <div class="k">REPLAY ENGINE LOCKED</div>
+            <div class="small">Select a governance review to reconstruct execution-time causality.</div>
+          </div>
+        `;
+        return;
+      }
+
+      if(!DETERMINISTIC_REPLAY.ok){
+        el.innerHTML = `
+          <div class="block">
+            <div class="k">REPLAY ERROR</div>
+            <div class="small">${escapeHtml(DETERMINISTIC_REPLAY.error?.message || "Replay unavailable.")}</div>
+          </div>
+        `;
+        return;
+      }
+
+      const replay = DETERMINISTIC_REPLAY.replay || {};
+      const stages = replay.stages || [];
+
+      el.innerHTML = `
+        <div class="block">
+          <div class="k">DETERMINISTIC PATH</div>
+          <div class="small">Execution-time reconstruction from governance, constitution and freeze evidence.</div>
+          <div class="chain-bar" style="margin-top:12px;">
+            ${
+              stages.length
+                ? stages.map((stage, index) => `
+                  ${index > 0 ? '<span class="chain-arrow">→</span>' : ''}
+                  <div class="chain-node ${replayStageClass(stage.stage)}">
+                    <strong>${escapeHtml(stage.stage)}</strong><br>
+                    ${escapeHtml(stage.type || "—")}<br>
+                    <span style="font-size:10px;">${escapeHtml(stage.hash ? stage.hash.slice(0, 16) + "…" : (stage.freeze_id || "—"))}</span>
+                  </div>
+                `).join("")
+                : '<div class="small">No deterministic stage path available.</div>'
+            }
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="k">REPLAY STATE</div>
+          <div class="small">Events: ${escapeHtml(replay.event_count || 0)}</div>
+          <div class="small">Constitution Triggered: ${escapeHtml(replay.constitution_triggered ? "YES" : "NO")}</div>
+          <div class="small">Stopped: ${escapeHtml(replay.stopped ? "YES" : "NO")}</div>
+          <div class="small">Recovered: ${escapeHtml(replay.recovered ? "YES" : "NO")}</div>
+        </div>
+
+        ${
+          (replay.events || []).slice(-8).reverse().map((event) => `
+            <div class="replay-event ${replayClass(event)}">
+              <div class="replay-stage">${escapeHtml(event.stage || event.source || "EVENT")}</div>
+              <div>
+                <div class="replay-title">${escapeHtml(event.type || "UNKNOWN")}</div>
+                <div class="replay-meta">Actor: ${escapeHtml(event.actor || "—")}</div>
+                <div class="replay-meta">Review: ${escapeHtml(event.review_id || "—")} · Execution: ${escapeHtml(event.execution_id || "—")}</div>
+              </div>
+              <div class="replay-time">${escapeHtml(event.created_at || "—")}</div>
+            </div>
+          `).join("")
+        }
+      `;
+    }
+
 
     async function loadFreezeBlockProof(){
       try{
@@ -2223,7 +2337,9 @@
       if(!detail) return;
 
       if(!SELECTED){
-        detail.innerHTML = `
+        await loadDeterministicReplay(SELECTED.id);
+
+      detail.innerHTML = `
           <div class="block">
             <div class="k">STATE</div>
             <div class="v">NO REVIEW SELECTED</div>
@@ -2387,6 +2503,7 @@
       await loadOperationsStatus();
 
       SELECTED = REVIEWS.find((review) => review.id === SELECTED.id) || null;
+      if(SELECTED) await loadDeterministicReplay(SELECTED.id);
       if(SELECTED) await renderDetail();
     }
 
