@@ -1214,6 +1214,21 @@
     </div>
   </section>
 
+  <section class="heatmap-panel" id="autonomousContainmentPanel">
+    <div class="head">
+      <h2>AUTONOMOUS CONTAINMENT PLAN</h2>
+      <span class="pill" id="autonomousContainmentState">CONTAINMENT: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="autonomousContainmentGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">CONTAINMENT PLAN</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Replay containment context required.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -1558,6 +1573,7 @@
         renderGovernanceRiskEngine();
       renderAutonomousGovernanceDecisionEngine();
       renderGovernanceStabilityEngine();
+      renderAutonomousContainmentPlan();
       }
     }
 
@@ -2467,6 +2483,85 @@
 
         ${actions}
         ${signals}
+      `;
+    }
+
+
+    function renderAutonomousContainmentPlan(){
+      const el = $("autonomousContainmentGrid");
+      if(!el) return;
+
+      const plan = DETERMINISTIC_REPLAY?.containment_plan || null;
+
+      if($("autonomousContainmentState")){
+        $("autonomousContainmentState").textContent =
+          plan ? "CONTAINMENT: LIVE" : "CONTAINMENT: STANDBY";
+      }
+
+      if(!plan){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">CONTAINMENT PLAN</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Replay containment context required.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const cls =
+        plan.execution_allowed === false
+          ? "bad"
+          : plan.mode === "MONITOR_ONLY"
+          ? "ok"
+          : "warn";
+
+      const actions = (plan.actions || []).map(action => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">ACTION</div>
+          <div class="heat-value">${escapeHtml(action)}</div>
+          <div class="heat-meta">Autonomous containment action</div>
+        </div>
+      `).join("");
+
+      const controls = (plan.controls || []).map(control => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">CONTROL</div>
+          <div class="heat-value">${escapeHtml(control)}</div>
+          <div class="heat-meta">Runtime governance control</div>
+        </div>
+      `).join("");
+
+      const reasons = (plan.reasons || []).map(reason => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">REASON</div>
+          <div class="heat-value">${escapeHtml(reason)}</div>
+          <div class="heat-meta">Containment trigger reason</div>
+        </div>
+      `).join("");
+
+      el.innerHTML = `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">MODE</div>
+          <div class="heat-value">${escapeHtml(plan.mode || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(plan.summary || "—")}</div>
+        </div>
+
+        <div class="heat-cell ${plan.execution_allowed ? "ok" : "bad"}">
+          <div class="heat-title">EXECUTION ALLOWED</div>
+          <div class="heat-value">${plan.execution_allowed ? "YES" : "NO"}</div>
+          <div class="heat-meta">Autonomous runtime execution decision</div>
+        </div>
+
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">RELEASE CONDITION</div>
+          <div class="heat-value">${escapeHtml(plan.release_condition || "UNKNOWN")}</div>
+          <div class="heat-meta">Required condition before governance release</div>
+        </div>
+
+        ${actions}
+        ${controls}
+        ${reasons}
       `;
     }
 
