@@ -232,6 +232,28 @@ export default async function handler(req, res) {
       lines.push("");
     }
 
+    const constitutionEvents = (events || []).filter((event) =>
+      String(event.event_type || "").startsWith("CONSTITUTION_")
+    );
+
+    lines.push("CONSTITUTION LAYER");
+    lines.push(`Constitution Events Found: ${constitutionEvents.length}`);
+    lines.push("");
+
+    for (const event of constitutionEvents) {
+      lines.push(`Constitution Event: ${event.event_type}`);
+      lines.push(`Rule: ${event.payload?.rule || "-"}`);
+      lines.push(`Reason: ${event.payload?.reason || "-"}`);
+      lines.push(`Actor: ${event.actor || "-"}`);
+      lines.push(`Review ID: ${event.review_id || "-"}`);
+      lines.push(`Execution ID: ${event.execution_id || "-"}`);
+      lines.push(`Sequence: ${event.sequence_no}`);
+      lines.push(`Prev Hash: ${event.prev_hash || "-"}`);
+      lines.push(`Hash: ${event.hash || "-"}`);
+      lines.push(`Context: ${JSON.stringify(event.payload?.context || {})}`);
+      lines.push("");
+    }
+
     lines.push("GOVERNANCE EVENT TIMELINE");
     lines.push("");
 
@@ -248,7 +270,7 @@ export default async function handler(req, res) {
     }
 
     lines.push("INSTITUTIONAL PROOF FOOTER");
-    lines.push("This report proves governance event order, hash-chain continuity, operator action, and execution-time governance integrity.");
+    lines.push("This report proves governance event order, hash-chain continuity, operator action, constitution enforcement, freeze state, and execution-time governance integrity.");
     lines.push("EXECUTIA - Execution-Time Truth Layer");
 
     const pdf = buildPdf(lines);
