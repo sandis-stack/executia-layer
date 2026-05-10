@@ -1287,6 +1287,7 @@
     let REVIEWS = [];
     let SELECTED = null;
     let CHAIN_DIAGNOSTICS = null;
+    let SIMULATED_CHAIN_BREAK = false;
     let LIVE_SYNC = null;
     let GOVERNANCE_STREAM_TIMER = null;
     let FREEZE_PROOF_EVENTS = [];
@@ -2185,6 +2186,7 @@
     }
 
     function isForensicLocked(){
+      if(SIMULATED_CHAIN_BREAK) return true;
       if(CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false) return true;
       if(hasConstitutionBlock()) return true;
       if(hasActiveFreezeSignal()) return true;
@@ -2192,6 +2194,7 @@
     }
 
     function forensicLockReason(){
+      if(SIMULATED_CHAIN_BREAK) return "SIMULATED_CHAIN_BREAK";
       if(CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false) return "CHAIN_INTEGRITY_BROKEN";
       if(hasConstitutionBlock()) return "CONSTITUTION_BLOCK_DETECTED";
       if(hasActiveFreezeSignal()) return "ACTIVE_FREEZE_DETECTED";
@@ -2367,6 +2370,29 @@
       await loadOperationsStatus();
 
       SELECTED = REVIEWS.find((review) => review.id === SELECTED.id) || null;
+      if(SELECTED) await renderDetail();
+    }
+
+    window.simulateChainBreak = async function(){
+      SIMULATED_CHAIN_BREAK = !SIMULATED_CHAIN_BREAK;
+
+      if(SIMULATED_CHAIN_BREAK){
+        CHAIN_DIAGNOSTICS = {
+          ...(CHAIN_DIAGNOSTICS || {}),
+          verified:false,
+          reason:"SIMULATED_CHAIN_BREAK",
+          broken_at:"SIMULATOR",
+          head_hash:CHAIN_DIAGNOSTICS?.head_hash || "SIMULATED"
+        };
+        alert("Simulated chain break activated. Forensic lockdown engaged.");
+      }else{
+        alert("Simulated chain break cleared.");
+      }
+
+      renderIncidentMode();
+      renderExecutionHeatmap();
+      renderConstitutionRulesMatrix();
+      renderExecutionTopology();
       if(SELECTED) await renderDetail();
     }
 
