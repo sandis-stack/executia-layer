@@ -2,6 +2,8 @@ import { createExecution } from "../../services/execution.js";
 import { ok, fail } from "../../shared/response.js";
 import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 import { assertExecutionNotFrozen } from "../../services/governance-freeze.js";
+import { assertCommitHasTrace } from "../../services/governance-constitution.js";
+import { materializeConstitutionEvent } from "../../services/governance-constitution-events.js";
 
 export default async function handler(req, res) {
   try {
@@ -41,8 +43,34 @@ export default async function handler(req, res) {
         }
       });
 
+      const trace_id =
+        requestBody.trace_id ||
+        requestBody.trace?.id ||
+        requestBody.execution_trace_id ||
+        null;
+
+      const commitRule = assertCommitHasTrace({
+        trace_id,
+        execution_id: requestBody.execution_id || null
+      });
+
+      if (commitRule?.event) {
+        await materializeConstitutionEvent({
+          type: commitRule.event.type,
+          rule: commitRule.event.rule,
+          reason: commitRule.event.reason || null,
+          context: commitRule.event.context || {},
+          actor: context.user
+        });
+      }
+
+      if (!commitRule.ok) {
+        return res.status(409).json(commitRule);
+      }
+
       const body = {
         ...requestBody,
+        trace_id,
         organization_id: context.organization_id,
         operator_user_id: context.user?.id || null,
         operator_email: context.user?.email || null,
