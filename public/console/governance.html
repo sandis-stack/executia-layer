@@ -721,8 +721,7 @@
             },
             async () => {
               await loadOpenReviews();
-          await loadGovernanceChainStatus();
-          await loadFreezeStatus();
+          await loadOperationsStatus();
           await loadFreezeStatus();
           await loadRecentEvents();
               await loadGovernanceChainStatus();
@@ -819,6 +818,45 @@
       }catch(error){
         console.error("EVENT_STREAM_FAILED", error);
         GLOBAL_EVENTS = [];
+      }
+    }
+
+    async function loadOperationsStatus(){
+      try{
+        const data = await api("/api/v2/governance/operations/status");
+
+        CHAIN_DIAGNOSTICS = data.chain || null;
+
+        if($("ccGlobalState")) $("ccGlobalState").textContent = data.system_state || "UNKNOWN";
+        if($("ccChainHealth")) $("ccChainHealth").textContent = data.chain?.verified ? "VERIFIED" : "BROKEN";
+        if($("ccFreezeCount")) $("ccFreezeCount").textContent = String(data.emergency?.active_freeze_count || 0);
+        if($("ccEventCount")) $("ccEventCount").textContent = String(data.chain?.events_checked || 0);
+        if($("ccSupervision")) $("ccSupervision").textContent =
+          data.operations_flags?.forensic_mode
+            ? "FORENSIC"
+            : data.operations_flags?.supervisor_required
+            ? "SUPERVISOR"
+            : "CLEAR";
+
+        if($("chainState")) $("chainState").textContent = data.chain?.verified ? "CHAIN: VERIFIED" : "CHAIN: BROKEN";
+        if($("governanceChainStatus")) $("governanceChainStatus").textContent = data.chain?.verified ? "VERIFIED" : "BROKEN";
+        if($("governanceChainHead")) $("governanceChainHead").textContent =
+          data.chain?.head_hash ? data.chain.head_hash.slice(0, 12) + "…" : "—";
+
+        if($("freezeState")) $("freezeState").textContent =
+          data.emergency?.active_freeze_count ? "FREEZE: ACTIVE" : "FREEZE: CLEAR";
+
+        if($("emergencyFreezeStatus")) $("emergencyFreezeStatus").textContent =
+          data.emergency?.active_freeze_count
+            ? String(data.emergency.active_freeze_count)
+            : "CLEAR";
+
+        return data;
+      }catch(error){
+        console.error("OPERATIONS_STATUS_FAILED", error);
+        if($("ccGlobalState")) $("ccGlobalState").textContent = "ERROR";
+        if($("ccChainHealth")) $("ccChainHealth").textContent = "ERROR";
+        return null;
       }
     }
 
@@ -942,8 +980,7 @@
       $("openCount").textContent = String(REVIEWS.length);
       $("queueState").textContent = "QUEUE: ACTIVE";
       $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
-      await loadGovernanceChainStatus();
-      await loadFreezeStatus();
+      await loadOperationsStatus();
       await loadRecentEvents();
       startLiveSync();
 
@@ -1556,8 +1593,7 @@
         try{
           if(!TOKEN) return;
           await loadOpenReviews();
-          await loadGovernanceChainStatus();
-          await loadFreezeStatus();
+          await loadOperationsStatus();
           await loadRecentEvents();
         }catch(error){
           console.error("LIVE_SYNC_FAILED", error);
