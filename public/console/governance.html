@@ -1,4 +1,4 @@
-x<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -902,7 +902,7 @@ x<!doctype html>
         const data = await api("/api/v2/governance/reviews/timeline");
         GLOBAL_EVENTS = (data.events || [])
           .sort((a,b) => (b.sequence_no || 0) - (a.sequence_no || 0))
-          .slice(0, 25);
+          .slice(0, 12);
         renderOperatorAuthorityMatrix();
         renderGlobalGovernanceStream();
       }catch(error){
@@ -1032,7 +1032,7 @@ x<!doctype html>
       const el = $("globalGovernanceStream");
       if(!el) return;
 
-      const events = (GLOBAL_EVENTS || []).slice(0, 25);
+      const events = (GLOBAL_EVENTS || []).slice(0, 12);
 
       if($("globalStreamState")){
         $("globalStreamState").textContent = events.length
