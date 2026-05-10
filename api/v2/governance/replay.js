@@ -18,6 +18,7 @@ import {
   classifyGovernanceIncident
 } from "../../../services/governance-intelligence.js";
 import { assessGovernanceStability } from "../../../services/governance-stability.js";
+import { buildGovernanceContainmentPlan } from "../../../services/governance-containment.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
@@ -246,6 +247,14 @@ export default async function handler(req, res) {
       replay: replayState
     });
 
+    const containment_plan = buildGovernanceContainmentPlan({
+      risk,
+      intelligence,
+      stability,
+      verification,
+      replay: replayState
+    });
+
     return json(res, 200, {
       ok: true,
       type: "EXECUTIA_DETERMINISTIC_GOVERNANCE_REPLAY",
@@ -260,6 +269,7 @@ export default async function handler(req, res) {
       risk,
       intelligence,
       stability,
+      containment_plan,
       replay: replayState
     });
   } catch (error) {
