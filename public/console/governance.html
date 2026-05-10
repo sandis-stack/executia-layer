@@ -605,6 +605,85 @@
       section,aside{min-height:320px}
     }
 
+    .forensic-replay-panel{
+      margin:18px 16px;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 1px 2px rgba(15,23,42,.04);
+    }
+
+    .forensic-replay-grid{
+      padding:18px;
+      background:#f8fbff;
+      display:grid;
+      gap:10px;
+    }
+
+    .replay-event{
+      display:grid;
+      grid-template-columns:160px 1fr 180px;
+      gap:14px;
+      align-items:start;
+      background:#ffffff;
+      border:1px solid #dbe6f3;
+      border-left:5px solid #2563eb;
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .replay-event.freeze{
+      border-left-color:#c0392b;
+    }
+
+    .replay-event.review{
+      border-left-color:#d97706;
+    }
+
+    .replay-event.commit{
+      border-left-color:#1f9d57;
+    }
+
+    .replay-stage{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .replay-title{
+      font-size:13px;
+      font-weight:900;
+      color:var(--blue);
+      word-break:break-word;
+    }
+
+    .replay-meta{
+      margin-top:6px;
+      font-size:12px;
+      line-height:1.5;
+      color:#607089;
+      word-break:break-word;
+    }
+
+    .replay-time{
+      font-size:11px;
+      color:#607089;
+      text-align:right;
+      word-break:break-word;
+    }
+
+    @media(max-width:1000px){
+      .replay-event{
+        grid-template-columns:1fr;
+      }
+      .replay-time{
+        text-align:left;
+      }
+    }
+
     .freeze-proof-panel{
       margin:18px 16px;
       background:#ffffff;
@@ -948,6 +1027,19 @@
     </div>
   </div>
 
+  <section class="forensic-replay-panel" id="forensicReplayPanel">
+    <div class="head">
+      <h2>FORENSIC REPLAY</h2>
+      <span class="pill" id="forensicReplayState">REPLAY: STANDBY</span>
+    </div>
+    <div class="forensic-replay-grid" id="forensicReplayGrid">
+      <div class="block">
+        <div class="k">FORENSIC REPLAY LOCKED</div>
+        <div class="small">Authorize governance access to reconstruct execution and freeze chronology.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="freeze-proof-panel" id="freezeProofPanel">
     <div class="head">
       <h2>FREEZE BLOCK PROOF</h2>
@@ -1159,6 +1251,7 @@
     let LIVE_SYNC = null;
     let GOVERNANCE_STREAM_TIMER = null;
     let FREEZE_PROOF_EVENTS = [];
+    let FORENSIC_REPLAY_EVENTS = [];
     let GOVERNANCE_MODE = "LEVEL_0_NORMAL";
 
     function $(id){
@@ -1290,6 +1383,87 @@
       }
     }
 
+    async function loadForensicReplay(){
+      try{
+        const proof = await api("/api/v2/governance/proof/export");
+
+        const reviewEvents = (proof?.events || []).map((event) => ({
+          source:"review",
+          type:event.event_type || "GOVERNANCE_EVENT",
+          actor:event.actor || "—",
+          time:event.created_at || "—",
+          meta:[
+            event.review_id ? "Review: " + event.review_id : null,
+            event.execution_id ? "Execution: " + event.execution_id : null,
+            event.sequence_no ? "SEQ " + event.sequence_no : null
+          ].filter(Boolean).join(" · ")
+        }));
+
+        const freezeEvents = (proof?.emergency_governance?.freeze_events || []).map((event) => ({
+          source:"freeze",
+          type:event.event_type || "FREEZE_EVENT",
+          actor:event.actor || "—",
+          time:event.created_at || "—",
+          meta:[
+            event.freeze_id ? "Freeze: " + event.freeze_id : null,
+            event.details?.freeze_scope ? "Scope: " + event.details.freeze_scope : null,
+            event.details?.freeze_level ? "Level: " + event.details.freeze_level : null,
+            event.details?.request_type ? "Request: " + event.details.request_type : null
+          ].filter(Boolean).join(" · ")
+        }));
+
+        FORENSIC_REPLAY_EVENTS = [...reviewEvents, ...freezeEvents]
+          .sort((a,b) => String(b.time || "").localeCompare(String(a.time || "")))
+          .slice(0, 30);
+
+        renderForensicReplay();
+      }catch(error){
+        FORENSIC_REPLAY_EVENTS = [];
+        renderForensicReplay();
+      }
+    }
+
+    function replayClass(event){
+      const t = String(event?.type || "").toUpperCase();
+      if(t.includes("FREEZE") || t.includes("BLOCKED")) return "freeze";
+      if(t.includes("APPROVED") || t.includes("RESUMED") || t.includes("COMMITTED")) return "commit";
+      if(t.includes("REVIEW")) return "review";
+      return "";
+    }
+
+    function renderForensicReplay(){
+      const el = $("forensicReplayGrid");
+      if(!el) return;
+
+      if($("forensicReplayState")){
+        $("forensicReplayState").textContent = FORENSIC_REPLAY_EVENTS.length
+          ? "REPLAY: MATERIALIZED"
+          : "REPLAY: CLEAR";
+      }
+
+      if(!FORENSIC_REPLAY_EVENTS.length){
+        el.innerHTML = `
+          <div class="block">
+            <div class="k">NO FORENSIC EVENTS</div>
+            <div class="small">No governance or freeze chronology found in current proof export.</div>
+          </div>
+        `;
+        return;
+      }
+
+      el.innerHTML = FORENSIC_REPLAY_EVENTS.map((event) => `
+        <div class="replay-event ${replayClass(event)}">
+          <div class="replay-stage">${escapeHtml(event.source)}</div>
+          <div>
+            <div class="replay-title">${escapeHtml(event.type)}</div>
+            <div class="replay-meta">Actor: ${escapeHtml(event.actor)}</div>
+            <div class="replay-meta">${escapeHtml(event.meta || "—")}</div>
+          </div>
+          <div class="replay-time">${escapeHtml(event.time)}</div>
+        </div>
+      `).join("");
+    }
+
     async function loadFreezeBlockProof(){
       try{
         const proof = await api("/api/v2/governance/proof/export");
@@ -1370,6 +1544,7 @@
         await loadOperationsStatus();
         await loadRecentEvents();
         await loadFreezeBlockProof();
+        await loadForensicReplay();
       }, 5000);
     }
 
@@ -1388,6 +1563,7 @@
         renderQueue();
         await loadRecentEvents();
         await loadFreezeBlockProof();
+        await loadForensicReplay();
         renderExecutionTopology();
       }catch(error){
         if($("queueState")) $("queueState").textContent = "QUEUE: ERROR";
@@ -2027,6 +2203,7 @@
         await loadOperationsStatus();
         await loadRecentEvents();
         await loadFreezeBlockProof();
+        await loadForensicReplay();
         if(SELECTED) await renderDetail();
 
         alert(scope + " freeze activated.");
@@ -2138,6 +2315,7 @@
           await loadOperationsStatus();
           await loadRecentEvents();
         await loadFreezeBlockProof();
+        await loadForensicReplay();
         }catch(error){
           console.error("LIVE_SYNC_FAILED", error);
         }
