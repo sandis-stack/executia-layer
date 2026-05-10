@@ -605,6 +605,71 @@
       section,aside{min-height:320px}
     }
 
+    .freeze-control-panel{
+      margin:18px 16px;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 1px 2px rgba(15,23,42,.04);
+    }
+
+    .freeze-control-body{
+      display:grid;
+      grid-template-columns:1.2fr repeat(3,minmax(160px,1fr));
+      gap:14px;
+      padding:18px;
+      background:#f8fbff;
+      align-items:stretch;
+    }
+
+    .freeze-reason{
+      width:100%;
+      min-height:92px;
+      resize:vertical;
+      border:1px solid #dbe6f3;
+      border-radius:14px;
+      padding:12px;
+      font-size:13px;
+      color:var(--ink);
+      background:#ffffff;
+    }
+
+    .freeze-action-card{
+      background:#ffffff;
+      border:1px solid #dbe6f3;
+      border-radius:16px;
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .freeze-action-title{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--muted);
+      text-transform:uppercase;
+    }
+
+    .freeze-action-desc{
+      font-size:12px;
+      line-height:1.5;
+      color:#607089;
+    }
+
+    .freeze-action-card button{
+      width:100%;
+    }
+
+    @media(max-width:1100px){
+      .freeze-control-body{
+        grid-template-columns:1fr;
+      }
+    }
+
     .incident-banner{
       display:none;
       margin:18px 16px;
@@ -841,6 +906,43 @@
       <div class="command-small">Forensic and freeze supervision</div>
     </div>
   </div>
+
+  <section class="freeze-control-panel" id="freezeControlPanel">
+    <div class="head">
+      <h2>EXECUTION FREEZE CONTROL</h2>
+      <span class="pill" id="freezeControlState">FREEZE CONTROL: READY</span>
+    </div>
+    <div class="freeze-control-body">
+      <div>
+        <label>FREEZE REASON</label>
+        <textarea class="freeze-reason" id="globalFreezeReason" placeholder="Reason required for execution containment or institutional freeze."></textarea>
+      </div>
+
+      <div class="freeze-action-card">
+        <div>
+          <div class="freeze-action-title">Partial Freeze</div>
+          <div class="freeze-action-desc">Restrict selected execution or review scope.</div>
+        </div>
+        <button class="warn" onclick="createFreezeFromPanel('EXECUTION','L2')">PARTIAL FREEZE</button>
+      </div>
+
+      <div class="freeze-action-card">
+        <div>
+          <div class="freeze-action-title">System Freeze</div>
+          <div class="freeze-action-desc">Freeze governance execution across system scope.</div>
+        </div>
+        <button class="danger" onclick="createFreezeFromPanel('SYSTEM','EMERGENCY')">SYSTEM FREEZE</button>
+      </div>
+
+      <div class="freeze-action-card">
+        <div>
+          <div class="freeze-action-title">Release Freeze</div>
+          <div class="freeze-action-desc">Supervisor-only release of active governance freeze.</div>
+        </div>
+        <button class="secondary" onclick="releaseActiveFreeze()">RELEASE ACTIVE</button>
+      </div>
+    </div>
+  </section>
 
   <section class="incident-banner" id="incidentBanner">
     <div class="incident-title">Governance Incident Mode</div>
@@ -1782,6 +1884,44 @@
     window.overrideReview = async function(){
       try{ await finalizeReview("/api/v2/governance/review/override"); }
       catch(error){ alert("Override failed: " + error.message); }
+    }
+
+    window.createFreezeFromPanel = async function(scope, level){
+      try{
+        const reason =
+          $("globalFreezeReason")?.value.trim() ||
+          $("reviewReason")?.value.trim() ||
+          "Governance freeze from EXECUTIA freeze control";
+
+        await api("/api/v2/governance/freeze/create", {
+          method:"POST",
+          body:JSON.stringify({
+            review_id:SELECTED?.id || null,
+            execution_id:SELECTED?.execution_id || null,
+            freeze_scope:scope,
+            freeze_level:level,
+            freeze_reason:reason,
+            metadata:{
+              source:"governance_freeze_control",
+              governance_mode:GOVERNANCE_MODE,
+              review_id:SELECTED?.id || null,
+              execution_id:SELECTED?.execution_id || null
+            }
+          })
+        });
+
+        if($("freezeControlState")){
+          $("freezeControlState").textContent = "FREEZE CONTROL: ACTIVE";
+        }
+
+        await loadOperationsStatus();
+        await loadRecentEvents();
+        if(SELECTED) await renderDetail();
+
+        alert(scope + " freeze activated.");
+      }catch(error){
+        alert("Freeze control failed: " + error.message);
+      }
     }
 
     window.createSystemFreeze = async function(){
