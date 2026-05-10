@@ -1199,6 +1199,12 @@
       <span class="pill" id="governanceStabilityState">STABILITY ENGINE: STANDBY</span>
     </div>
 
+    <div style="margin:12px 0 18px 0;">
+      <button class="secondary" onclick="createStabilizationReview()">
+        CREATE STABILIZATION REVIEW
+      </button>
+    </div>
+
     <div class="heatmap-grid" id="governanceStabilityGrid">
       <div class="heat-cell warn">
         <div class="heat-title">STABILITY</div>
@@ -2314,6 +2320,62 @@
 
         ${recommendations}
       `;
+    }
+
+
+    async function createStabilizationReview(){
+      try{
+        if(!DETERMINISTIC_REPLAY?.stability){
+          alert("No stability context loaded.");
+          return;
+        }
+
+        const reviewId =
+          DETERMINISTIC_REPLAY?.filters?.review_id ||
+          null;
+
+        const executionId =
+          DETERMINISTIC_REPLAY?.events?.[0]?.execution_id ||
+          crypto.randomUUID();
+
+        const response = await api(
+          "/api/v2/governance/stability/create-review",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              review_id: reviewId,
+              execution_id: executionId,
+              stability: DETERMINISTIC_REPLAY.stability
+            })
+          }
+        );
+
+        if(!response?.ok){
+          throw new Error(
+            response?.error?.message ||
+            response?.error ||
+            "Stabilization review creation failed."
+          );
+        }
+
+        alert(
+          "STABILIZATION REVIEW CREATED\n\n" +
+          "REVIEW: " + response.stabilization_review_id
+        );
+
+        await loadOpenReviews();
+
+      }catch(err){
+        console.error(err);
+
+        alert(
+          "STABILIZATION REVIEW FAILED\n\n" +
+          (err?.message || err)
+        );
+      }
     }
 
 
