@@ -1,6 +1,7 @@
 import { createExecution } from "../../services/execution.js";
 import { ok, fail } from "../../shared/response.js";
 import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
+import { assertExecutionNotFrozen } from "../../services/governance-freeze.js";
 
 export default async function handler(req, res) {
   try {
@@ -27,8 +28,16 @@ export default async function handler(req, res) {
         );
       }
 
+      const requestBody = req.body || {};
+
+      await assertExecutionNotFrozen({
+        organization_id: context.organization_id,
+        review_id: requestBody.review_id || null,
+        execution_id: requestBody.execution_id || null
+      });
+
       const body = {
-        ...(req.body || {}),
+        ...requestBody,
         organization_id: context.organization_id,
         operator_user_id: context.user?.id || null,
         operator_email: context.user?.email || null,
