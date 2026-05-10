@@ -1,5 +1,20 @@
 import crypto from "crypto";
-import { supabaseAdmin } from "./supabase.js";
+import { createClient } from "@supabase/supabase-js";
+
+function getSupabaseAdmin() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    throw new Error("SUPABASE_ENV_MISSING");
+  }
+
+  return createClient(url, key, {
+    auth: {
+      persistSession: false
+    }
+  });
+}
 
 function sha256(input) {
   return crypto
@@ -15,6 +30,8 @@ export async function materializeConstitutionEvent({
   context = {},
   actor = null
 }) {
+  const supabase = getSupabaseAdmin();
+
   const payload = {
     type,
     rule,
@@ -26,7 +43,7 @@ export async function materializeConstitutionEvent({
 
   const hash = sha256(payload);
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await supabase
     .from("governance_events")
     .insert({
       event_type: type,
