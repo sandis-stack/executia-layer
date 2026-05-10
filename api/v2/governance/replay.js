@@ -239,6 +239,13 @@ export default async function handler(req, res) {
       risk
     });
 
+    const stability = assessGovernanceStability({
+      risk,
+      intelligence,
+      verification,
+      replay: replayState
+    });
+
     return json(res, 200, {
       ok: true,
       type: "EXECUTIA_DETERMINISTIC_GOVERNANCE_REPLAY",
