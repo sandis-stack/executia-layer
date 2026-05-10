@@ -1075,6 +1075,18 @@
       };
     }
 
+    function governanceSeverityClass(eventType=""){
+      const value = String(eventType).toUpperCase();
+
+      if(value.includes("APPROVED")) return "ok";
+      if(value.includes("BLOCK") || value.includes("FREEZE")) return "bad";
+      if(value.includes("PENDING")) return "pending";
+      if(value.includes("REVIEW")) return "warn";
+      if(value.includes("EXECUTION")) return "live";
+
+      return "";
+    }
+
     function topologyClass(value){
       const v = String(value || "").toUpperCase();
       if(v.includes("BROKEN") || v.includes("FAILED")) return "bad";
@@ -1207,7 +1219,7 @@
       }
 
       el.innerHTML = events.map((event) => `
-        <div class="stream-event ${eventStreamClass(event.event_type)}">
+        <div class="stream-event ${eventStreamClass(event.event_type)} ${governanceSeverityClass(event.event_type)}">
           <div class="stream-event-head">
             <div class="stream-event-type">${escapeHtml(event.event_type || "UNKNOWN")}</div>
             <div class="stream-seq">SEQ ${escapeHtml(event.sequence_no || "—")}</div>
