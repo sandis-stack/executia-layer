@@ -33,7 +33,12 @@ export default async function handler(req, res) {
       await assertExecutionNotFrozen({
         organization_id: context.organization_id,
         review_id: requestBody.review_id || null,
-        execution_id: requestBody.execution_id || null
+        execution_id: requestBody.execution_id || null,
+        actor: context.user,
+        metadata: {
+          request_type: requestBody.type || null,
+          operator_role: context.user?.role || context.role || null
+        }
       });
 
       const body = {
@@ -65,6 +70,17 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error("[EXECUTIA EXECUTE ERROR]", error.message);
+
+    if (error.code === "EXECUTION_FROZEN") {
+      return res.status(423).json({
+        ok: false,
+        error: {
+          code: "EXECUTION_FROZEN",
+          message: "Execution blocked by active governance freeze.",
+          freeze: error.freeze || null
+        }
+      });
+    }
 
     return fail(
       res,

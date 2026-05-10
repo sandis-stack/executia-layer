@@ -142,7 +142,9 @@ export async function getActiveFreeze({
 export async function assertExecutionNotFrozen({
   organization_id,
   review_id = null,
-  execution_id = null
+  execution_id = null,
+  actor = {},
+  metadata = {}
 }) {
   const activeFreeze = await getActiveFreeze({
     organization_id,
@@ -151,6 +153,23 @@ export async function assertExecutionNotFrozen({
   })
 
   if (activeFreeze) {
+    await db().from("governance_freeze_events").insert({
+      freeze_id: activeFreeze.id,
+      organization_id,
+      event_type: "GOVERNANCE_EXECUTION_BLOCKED_BY_FREEZE",
+      actor_id: actor?.id || null,
+      actor_email: actor?.email || null,
+      details: {
+        review_id,
+        execution_id,
+        freeze_scope: activeFreeze.freeze_scope,
+        freeze_level: activeFreeze.freeze_level,
+        freeze_reason: activeFreeze.freeze_reason,
+        source: "execution_runtime_guard",
+        ...metadata
+      }
+    })
+
     const error = new Error("EXECUTION_FROZEN")
     error.code = "EXECUTION_FROZEN"
     error.freeze = {
