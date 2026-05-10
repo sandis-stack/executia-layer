@@ -2018,8 +2018,29 @@
       `;
     }
 
+    function hasConstitutionBlock(){
+      return (FORENSIC_REPLAY_EVENTS || []).some((event) =>
+        String(event.type || event.title || "").includes("CONSTITUTION_BLOCK")
+      );
+    }
+
+    function hasActiveFreezeSignal(){
+      return String($("freezeState")?.textContent || "").includes("ACTIVE") ||
+        Number(LAST_OPERATIONS_STATUS?.emergency?.active_freeze_count || 0) > 0;
+    }
+
     function isForensicLocked(){
-      return CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false;
+      if(CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false) return true;
+      if(hasConstitutionBlock()) return true;
+      if(hasActiveFreezeSignal()) return true;
+      return false;
+    }
+
+    function forensicLockReason(){
+      if(CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false) return "CHAIN_INTEGRITY_BROKEN";
+      if(hasConstitutionBlock()) return "CONSTITUTION_BLOCK_DETECTED";
+      if(hasActiveFreezeSignal()) return "ACTIVE_FREEZE_DETECTED";
+      return "CLEAR";
     }
 
     async function renderDetail(){
@@ -2077,14 +2098,15 @@
           <div class="small">Scope: ${escapeHtml(freeze?.active_freeze?.freeze_scope || "—")}</div>
           <div class="small">Level: ${escapeHtml(freeze?.active_freeze?.freeze_level || "—")}</div>
           <div class="small">Reason: ${escapeHtml(freeze?.active_freeze?.freeze_reason || "—")}</div>
-          <button class="danger" onclick="createSystemFreeze()">SYSTEM FREEZE</button>
+          <button class="danger" onclick="createSystemFreeze()" ${isForensicLocked() ? "disabled" : ""}>SYSTEM FREEZE</button>
           <button class="warn" onclick="releaseActiveFreeze()">RELEASE FREEZE</button>
         </div>
 
         ${isForensicLocked() ? `
           <div class="forensic-panel">
             <div class="forensic-title">FORENSIC LOCK MODE ACTIVE</div>
-            <div class="small">Governance actions are disabled until chain integrity is restored.</div>
+            <div class="small">Reason: ${escapeHtml(forensicLockReason())}</div>
+            <div class="small">Governance actions are disabled until constitutional, freeze, or chain integrity conditions are cleared.</div>
           </div>
         ` : ""}
 
