@@ -870,6 +870,7 @@
     let SELECTED = null;
     let CHAIN_DIAGNOSTICS = null;
     let LIVE_SYNC = null;
+    let GOVERNANCE_STREAM_TIMER = null;
 
     function $(id){
       return document.getElementById(id);
@@ -950,6 +951,7 @@
         if(!token) throw new Error("TOKEN_REQUIRED");
         setToken(token);
         await authorize();
+        startGovernanceStreamTimer();
       }catch(error){
         alert("Token authorization failed: " + error.message);
       }
@@ -1011,6 +1013,16 @@
         renderExecutionTopology();
         renderExecutionTopology();
       }
+    }
+
+    function startGovernanceStreamTimer(){
+      if(GOVERNANCE_STREAM_TIMER) return;
+
+      GOVERNANCE_STREAM_TIMER = setInterval(async () => {
+        if(!TOKEN) return;
+        await loadOperationsStatus();
+        await loadRecentEvents();
+      }, 5000);
     }
 
     window.loadOpenReviews = async function(){
