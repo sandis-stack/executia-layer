@@ -262,7 +262,6 @@ export default async function handler(req, res) {
       intelligence,
       stability,
       containment_plan,
-      recovery_plan,
       replay: replayState
     });
 
@@ -281,7 +280,6 @@ export default async function handler(req, res) {
       intelligence,
       stability,
       containment_plan,
-      recovery_plan,
       replay: replayState
     });
   } catch (error) {
