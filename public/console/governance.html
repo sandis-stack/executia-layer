@@ -143,6 +143,11 @@
     button.secondary{background:#fff;color:var(--blue)}
     button.danger{background:var(--bad);border-color:var(--bad)}
     button.warn{background:#fff;color:var(--warn);border-color:var(--warn)}
+    button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      filter:grayscale(1);
+    }
 
     .metrics{
       display:grid;
@@ -894,6 +899,10 @@
       await renderDetail();
     }
 
+    function isForensicLocked(){
+      return CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false;
+    }
+
     async function renderDetail(){
       const detail = $("detail");
 
@@ -975,16 +984,27 @@
           <button class="warn" onclick="releaseActiveFreeze()">RELEASE FREEZE</button>
         </div>
 
+        ${
+          isForensicLocked()
+            ? `
+              <div class="forensic-panel">
+                <div class="forensic-title">FORENSIC LOCK MODE ACTIVE</div>
+                <div class="small">Governance actions are disabled until chain integrity is restored. Freeze and proof export remain available.</div>
+              </div>
+            `
+            : ""
+        }
+
         <div class="block">
           <div class="k">OPERATOR REASON</div>
           <textarea id="reviewReason" placeholder="Required for override. Optional for approve/reject."></textarea>
 
           <div class="actions" style="margin-top:10px;">
-            <button onclick="approveReview()">APPROVE</button>
-            <button class="danger" onclick="rejectReview()">REJECT</button>
+            <button onclick="approveReview()" ${isForensicLocked() ? "disabled" : ""}>APPROVE</button>
+            <button class="danger" onclick="rejectReview()" ${isForensicLocked() ? "disabled" : ""}>REJECT</button>
           </div>
 
-          <button class="warn" onclick="overrideReview()">OVERRIDE</button>
+          <button class="warn" onclick="overrideReview()" ${isForensicLocked() ? "disabled" : ""}>OVERRIDE</button>
           <button class="secondary" onclick="exportGovernanceProof()">EXPORT PROOF JSON</button>
           <button class="secondary" onclick="exportGovernanceProofPdf()">EXPORT PROOF PDF</button>
         </div>
@@ -1177,6 +1197,11 @@
     async function finalizeReview(path){
       if(!SELECTED){
         alert("Select review first.");
+        return;
+      }
+
+      if(isForensicLocked()){
+        alert("Forensic Lock Mode active. Restore chain integrity before governance actions.");
         return;
       }
 
