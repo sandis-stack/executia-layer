@@ -102,12 +102,12 @@ export function assertL4OverrideAllowed({ incident_level, override_requested, ac
   );
 }
 
-export function assertCommitHasTrace({ trace_id, execution_id } = {}) {
+export function assertCommitHasTrace({ trace_id, execution_id, review_id } = {}) {
   if (!trace_id) {
     return constitutionBlock(
       CONSTITUTION_RULES.COMMIT_REQUIRES_TRACE,
       "Committed execution requires trace reference.",
-      { trace_id, execution_id }
+      { trace_id, execution_id, review_id }
     );
   }
 
