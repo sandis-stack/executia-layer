@@ -54,6 +54,7 @@ export default async function handler(req, res) {
     let review = null;
     let events = [];
     let freezes = [];
+    let constitutionEvents = [];
 
     if (review_id) {
       const { data: reviewData, error: reviewError } = await supabase
@@ -147,6 +148,17 @@ export default async function handler(req, res) {
       if (freezeEventsError) throw freezeEventsError;
 
       freezeEvents = fetchedFreezeEvents || [];
+
+      const { data: fetchedConstitutionEvents, error: constitutionError } =
+        await supabase
+          .from("governance_events")
+          .select("*")
+          .order("created_at", { ascending: true })
+          .limit(500);
+
+      if (constitutionError) throw constitutionError;
+
+      constitutionEvents = fetchedConstitutionEvents || [];
     }
 
     const verification =
@@ -221,6 +233,18 @@ export default async function handler(req, res) {
           details: event.details || {}
         }))
       },
+
+      constitution_events: (constitutionEvents || []).map((event) => ({
+        id: event.id,
+        type: event.type,
+        rule: event.rule,
+        reason: event.reason,
+        hash: event.hash,
+        prev_hash: event.prev_hash,
+        execution_id: event.execution_id,
+        created_at: event.created_at,
+        context: event.context || {}
+      })),
 
       events: (events || []).map((event) => ({
         id: event.id,
