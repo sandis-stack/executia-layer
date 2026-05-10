@@ -432,6 +432,46 @@
       word-break:break-all;
     }
 
+
+    .command-center{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:12px;
+      padding:12px 16px;
+      border-bottom:1px solid var(--line);
+      background:#f8fbff;
+    }
+
+    .command-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      min-height:88px;
+    }
+
+    .command-label{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--muted);
+    }
+
+    .command-value{
+      margin-top:8px;
+      font-size:15px;
+      font-weight:900;
+      color:var(--blue);
+      word-break:break-word;
+    }
+
+    .command-small{
+      margin-top:6px;
+      font-size:11px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
     .actions button{margin-top:0}
 
     @media(max-width:1100px){
@@ -456,7 +496,41 @@
     </div>
   </header>
 
+
+  <div class="command-center">
+    <div class="command-card">
+      <div class="command-label">GLOBAL STATE</div>
+      <div class="command-value" id="ccGlobalState">STANDBY</div>
+      <div class="command-small">Institutional governance runtime</div>
+    </div>
+
+    <div class="command-card">
+      <div class="command-label">CHAIN HEALTH</div>
+      <div class="command-value" id="ccChainHealth">UNKNOWN</div>
+      <div class="command-small">Hash continuity verification</div>
+    </div>
+
+    <div class="command-card">
+      <div class="command-label">ACTIVE FREEZES</div>
+      <div class="command-value" id="ccFreezeCount">0</div>
+      <div class="command-small">Emergency governance controls</div>
+    </div>
+
+    <div class="command-card">
+      <div class="command-label">LIVE EVENTS</div>
+      <div class="command-value" id="ccEventCount">0</div>
+      <div class="command-small">Governance chain events</div>
+    </div>
+
+    <div class="command-card">
+      <div class="command-label">SUPERVISION</div>
+      <div class="command-value" id="ccSupervision">CLEAR</div>
+      <div class="command-small">Forensic and freeze supervision</div>
+    </div>
+  </div>
+
   <main>
+
     <aside>
       <div class="pad">
         <h2>AUTHORITY ACCESS</h2>
@@ -551,6 +625,7 @@
       "";
     let REVIEWS = [];
     let SELECTED = null;
+    let CHAIN_DIAGNOSTICS = null;
     let GLOBAL_EVENTS = [];
     let CHAIN_DIAGNOSTICS = null;
 
@@ -647,6 +722,7 @@
             async () => {
               await loadOpenReviews();
           await loadGovernanceChainStatus();
+          await loadFreezeStatus();
           await loadFreezeStatus();
           await loadRecentEvents();
               await loadGovernanceChainStatus();
@@ -761,6 +837,27 @@
         const data = await api("/api/v2/governance/chain/verify");
         CHAIN_DIAGNOSTICS = data;
 
+        if($("ccChainHealth")){
+          $("ccChainHealth").textContent =
+            data.verified ? "VERIFIED" : "BROKEN";
+        }
+
+        if($("ccGlobalState")){
+          $("ccGlobalState").textContent =
+            data.verified ? "ACTIVE" : "FORENSIC";
+        }
+
+        if($("ccEventCount")){
+          $("ccEventCount").textContent =
+            String(data.events_checked || 0);
+        }
+
+        if($("ccSupervision")){
+          $("ccSupervision").textContent =
+            data.verified ? "CLEAR" : "LOCKED";
+        }
+        CHAIN_DIAGNOSTICS = data;
+
         if(data.verified){
           if($("chainState")) $("chainState").textContent = "CHAIN: VERIFIED";
           if($("governanceChainStatus")) $("governanceChainStatus").textContent = "VERIFIED";
@@ -808,6 +905,28 @@
         if($("freezeState")) $("freezeState").textContent = "FREEZE: ERROR";
         if($("emergencyFreezeStatus")) $("emergencyFreezeStatus").textContent = error.message || "ERROR";
         return { ok:false, error:error.message };
+      }
+    }
+
+
+    async function loadFreezeStatus(){
+      try{
+        const data = await api("/api/v2/governance/freeze/status");
+
+        const active =
+          data?.active_freeze ? 1 : 0;
+
+        if($("ccFreezeCount")){
+          $("ccFreezeCount").textContent = String(active);
+        }
+
+        if($("freezeState")){
+          $("freezeState").textContent =
+            active ? "FREEZE: ACTIVE" : "FREEZE: CLEAR";
+        }
+
+      }catch(error){
+        console.error("FREEZE_STATUS_FAILED", error);
       }
     }
 
