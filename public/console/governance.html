@@ -626,3 +626,489 @@
     let REVIEWS = [];
     let SELECTED = null;
     let CHAIN_DIAGNOSTICS = null;
+    let LIVE_SYNC = null;
+
+    function $(id){
+      return document.getElementById(id);
+    }
+
+    function escapeHtml(value){
+      return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function setToken(token){
+      TOKEN = token || "";
+      localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
+      localStorage.setItem("EXECUTIA_JWT", TOKEN);
+      window.TOKEN = TOKEN;
+    }
+
+    async function api(path, options = {}){
+      TOKEN =
+        window.TOKEN ||
+        localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") ||
+        localStorage.getItem("EXECUTIA_JWT") ||
+        TOKEN;
+
+      const res = await fetch(API_BASE + path, {
+        ...options,
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":"Bearer " + TOKEN,
+          ...(options.headers || {})
+        }
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if(!res.ok || data.ok === false){
+        throw new Error(data?.error?.message || data?.error || data?.message || "REQUEST_FAILED");
+      }
+
+      return data;
+    }
+
+    window.login = async function(){
+      try{
+        const email = $("email").value.trim();
+        const password = $("password").value.trim();
+
+        if(!email || !password){
+          throw new Error("EMAIL_PASSWORD_REQUIRED");
+        }
+
+        const res = await fetch("/api/v1/auth/login", {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if(!data.ok || !data.access_token){
+          throw new Error(data?.error?.message || "LOGIN_FAILED");
+        }
+
+        setToken(data.access_token);
+        await authorize();
+      }catch(error){
+        alert("Authorization failed: " + error.message);
+      }
+    }
+
+    window.authorizeWithToken = async function(){
+      try{
+        const token = $("tokenInput").value.trim() || TOKEN;
+        if(!token) throw new Error("TOKEN_REQUIRED");
+        setToken(token);
+        await authorize();
+      }catch(error){
+        alert("Token authorization failed: " + error.message);
+      }
+    }
+
+    async function loadOperationsStatus(){
+      try{
+        const data = await api("/api/v2/governance/operations/status");
+
+        CHAIN_DIAGNOSTICS = data.chain || null;
+
+        if($("ccGlobalState")) $("ccGlobalState").textContent = data.system_state || "UNKNOWN";
+        if($("ccChainHealth")) $("ccChainHealth").textContent = data.chain?.verified ? "VERIFIED" : "BROKEN";
+        if($("ccFreezeCount")) $("ccFreezeCount").textContent = String(data.emergency?.active_freeze_count || 0);
+        if($("ccEventCount")) $("ccEventCount").textContent = String(data.chain?.events_checked || 0);
+        if($("ccSupervision")) $("ccSupervision").textContent =
+          data.operations_flags?.forensic_mode
+            ? "FORENSIC"
+            : data.operations_flags?.supervisor_required
+            ? "SUPERVISOR"
+            : "CLEAR";
+
+        if($("chainState")) $("chainState").textContent = data.chain?.verified ? "CHAIN: VERIFIED" : "CHAIN: BROKEN";
+        if($("governanceChainStatus")) $("governanceChainStatus").textContent = data.chain?.verified ? "VERIFIED" : "BROKEN";
+        if($("governanceChainHead")) $("governanceChainHead").textContent =
+          data.chain?.head_hash ? data.chain.head_hash.slice(0, 12) + "…" : "—";
+
+        if($("freezeState")) $("freezeState").textContent =
+          data.emergency?.active_freeze_count ? "FREEZE: ACTIVE" : "FREEZE: CLEAR";
+
+        if($("emergencyFreezeStatus")) $("emergencyFreezeStatus").textContent =
+          data.emergency?.active_freeze_count
+            ? String(data.emergency.active_freeze_count)
+            : "CLEAR";
+
+        return data;
+      }catch(error){
+        console.error("OPERATIONS_STATUS_FAILED", error);
+        if($("ccGlobalState")) $("ccGlobalState").textContent = "ERROR";
+        if($("ccChainHealth")) $("ccChainHealth").textContent = "ERROR";
+        return null;
+      }
+    }
+
+    async function loadRecentEvents(){
+      try{
+        const data = await api("/api/v2/governance/reviews/timeline");
+        GLOBAL_EVENTS = (data.events || [])
+          .sort((a,b) => (b.sequence_no || 0) - (a.sequence_no || 0))
+          .slice(0, 25);
+      }catch(error){
+        GLOBAL_EVENTS = [];
+      }
+    }
+
+    window.loadOpenReviews = async function(){
+      try{
+        if($("queueState")) $("queueState").textContent = "QUEUE: LOADING";
+        const data = await api("/api/v2/governance/reviews/open");
+
+        REVIEWS = data.reviews || [];
+        if($("operatorEmail")) $("operatorEmail").textContent = data?.user?.email || "OPERATOR";
+        if($("organizationId")) $("organizationId").textContent = data?.organization_id || "—";
+        if($("openCount")) $("openCount").textContent = String(REVIEWS.length);
+        if($("queueState")) $("queueState").textContent = "QUEUE: ACTIVE";
+        if($("lastRefresh")) $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+
+        renderQueue();
+      }catch(error){
+        if($("queueState")) $("queueState").textContent = "QUEUE: ERROR";
+        console.error("QUEUE_LOAD_FAILED", error);
+      }
+    }
+
+    function riskClass(score){
+      const n = Number(score || 0);
+      if(n >= 80) return "bad";
+      if(n >= 50) return "warnc";
+      return "okc";
+    }
+
+    function renderQueue(){
+      const queue = $("queue");
+      if(!queue) return;
+
+      if(!REVIEWS.length){
+        queue.innerHTML = `
+          <div class="pad">
+            <div class="block">
+              <div class="k">NO OPEN REVIEWS</div>
+              <div class="small">Governance review queue is currently empty.</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      queue.innerHTML = REVIEWS.map((review) => `
+        <div class="row ${SELECTED?.id === review.id ? "active" : ""}" onclick="selectReview('${escapeHtml(review.id)}')">
+          <div>
+            <div class="id">${escapeHtml(review.id)}</div>
+            <div class="small">Execution: ${escapeHtml(review.execution_id || "—")}</div>
+            <div class="small">State: ${escapeHtml(review.governance_state || review.review_status || "—")}</div>
+          </div>
+          <div class="badge ${riskClass(review.risk_score)}">RISK ${escapeHtml(review.risk_score || 0)}</div>
+          <div class="badge warnc">L${escapeHtml(review.escalation_level || 1)}</div>
+        </div>
+      `).join("");
+    }
+
+    window.selectReview = async function(id){
+      SELECTED = REVIEWS.find((review) => review.id === id) || null;
+      if($("selectedReview")) $("selectedReview").textContent = SELECTED?.id || "—";
+      if($("detailState")) $("detailState").textContent = SELECTED ? "SELECTED" : "NO SELECTION";
+      renderQueue();
+      await renderDetail();
+    }
+
+    function isForensicLocked(){
+      return CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false;
+    }
+
+    async function renderDetail(){
+      const detail = $("detail");
+      if(!detail) return;
+
+      if(!SELECTED){
+        detail.innerHTML = `
+          <div class="block">
+            <div class="k">STATE</div>
+            <div class="v">NO REVIEW SELECTED</div>
+          </div>
+        `;
+        return;
+      }
+
+      let timeline = { events: [] };
+      let quorum = null;
+      let freeze = null;
+
+      try{
+        timeline = await api("/api/v2/governance/reviews/timeline?review_id=" + encodeURIComponent(SELECTED.id));
+      }catch(error){}
+
+      try{
+        quorum = await api("/api/v2/governance/quorum/state?review_id=" + encodeURIComponent(SELECTED.id));
+      }catch(error){
+        quorum = { ok:false, error:error.message };
+      }
+
+      try{
+        freeze = await api("/api/v2/governance/freeze/status?review_id=" + encodeURIComponent(SELECTED.id) + "&execution_id=" + encodeURIComponent(SELECTED.execution_id || ""));
+      }catch(error){
+        freeze = { ok:false, frozen:false, error:error.message };
+      }
+
+      detail.innerHTML = `
+        <div class="block">
+          <div class="k">REVIEW</div>
+          <div class="v">${escapeHtml(SELECTED.governance_state || SELECTED.review_status)}</div>
+          <div class="small">ID: ${escapeHtml(SELECTED.id)}</div>
+          <div class="small">Execution: ${escapeHtml(SELECTED.execution_id || "—")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">QUORUM STATE</div>
+          <div class="v">${quorum?.ok ? (quorum.quorum_met ? "QUORUM MET" : "QUORUM PENDING") : "QUORUM ERROR"}</div>
+          <div class="small">Approvals: ${escapeHtml(quorum?.ok ? (quorum.approvals_recorded + " / " + quorum.required_approvals) : "—")}</div>
+          <div class="small">Required role: ${escapeHtml(quorum?.required_role || "—")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">EMERGENCY GOVERNANCE</div>
+          <div class="v">${freeze?.frozen ? "EXECUTION LOCKED" : "CLEAR"}</div>
+          <div class="small">Scope: ${escapeHtml(freeze?.active_freeze?.freeze_scope || "—")}</div>
+          <div class="small">Level: ${escapeHtml(freeze?.active_freeze?.freeze_level || "—")}</div>
+          <div class="small">Reason: ${escapeHtml(freeze?.active_freeze?.freeze_reason || "—")}</div>
+          <button class="danger" onclick="createSystemFreeze()">SYSTEM FREEZE</button>
+          <button class="warn" onclick="releaseActiveFreeze()">RELEASE FREEZE</button>
+        </div>
+
+        ${isForensicLocked() ? `
+          <div class="forensic-panel">
+            <div class="forensic-title">FORENSIC LOCK MODE ACTIVE</div>
+            <div class="small">Governance actions are disabled until chain integrity is restored.</div>
+          </div>
+        ` : ""}
+
+        <div class="block">
+          <div class="k">OPERATOR REASON</div>
+          <textarea id="reviewReason" placeholder="Required for override. Optional for approve/reject."></textarea>
+
+          <div class="actions" style="margin-top:10px;">
+            <button onclick="approveReview()" ${isForensicLocked() ? "disabled" : ""}>APPROVE</button>
+            <button class="danger" onclick="rejectReview()" ${isForensicLocked() ? "disabled" : ""}>REJECT</button>
+          </div>
+
+          <button class="warn" onclick="overrideReview()" ${isForensicLocked() ? "disabled" : ""}>OVERRIDE</button>
+          <button class="secondary" onclick="exportGovernanceProof()">EXPORT PROOF JSON</button>
+          <button class="secondary" onclick="exportGovernanceProofPdf()">EXPORT PROOF PDF</button>
+        </div>
+
+        <div class="block">
+          <div class="k">CHAIN VISUALIZATION</div>
+          <div class="chain-bar">
+            ${
+              (timeline?.events || []).length
+                ? (timeline.events || []).map((event, index, arr) => {
+                    const previous = arr[index - 1];
+                    let nodeClass = "chain-node";
+                    if(index > 0 && previous && event.prev_hash !== previous.hash) nodeClass += " bad-node";
+                    if(!event.hash || !event.prev_hash) nodeClass += " warn-node";
+                    return `${index > 0 ? '<span class="chain-arrow">→</span>' : ''}<div class="${nodeClass}">SEQ ${escapeHtml(event.sequence_no || "—")}</div>`;
+                  }).join("")
+                : '<div class="small">No chain events loaded.</div>'
+            }
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="k">LIVE GOVERNANCE TIMELINE</div>
+          <div class="timeline-ui">
+            ${
+              (timeline?.events || []).length
+                ? (timeline.events || []).map(event => `
+                  <div class="timeline-card event-review">
+                    <div class="timeline-head">
+                      <div class="timeline-title">${escapeHtml(event.event_type || "UNKNOWN")}</div>
+                      <div class="timeline-seq">SEQ ${escapeHtml(event.sequence_no || "—")}</div>
+                    </div>
+                    <div class="stream-meta">Actor: ${escapeHtml(event.actor || "—")}</div>
+                    <div class="stream-meta">Execution: ${escapeHtml(event.execution_id || "—")}</div>
+                    <div class="stream-meta">${escapeHtml(event.created_at || "—")}</div>
+                    <div class="timeline-hash"><strong>HASH</strong><br>${escapeHtml(event.hash || "—")}</div>
+                    <div class="timeline-hash"><strong>PREV HASH</strong><br>${escapeHtml(event.prev_hash || "—")}</div>
+                  </div>
+                `).join("")
+                : '<div class="small">No governance timeline events.</div>'
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    async function finalizeReview(path){
+      if(!SELECTED){
+        alert("Select review first.");
+        return;
+      }
+
+      if(isForensicLocked()){
+        alert("Forensic Lock Mode active. Restore chain integrity before governance actions.");
+        return;
+      }
+
+      const reason = $("reviewReason")?.value.trim() || "";
+
+      const result = await api(path, {
+        method:"POST",
+        body:JSON.stringify({
+          review_id:SELECTED.id,
+          reason
+        })
+      });
+
+      alert(result?.status === "QUORUM_PENDING" ? "Approval recorded. Quorum pending." : "Governance action completed.");
+
+      await window.loadOpenReviews();
+      await loadOperationsStatus();
+
+      SELECTED = REVIEWS.find((review) => review.id === SELECTED.id) || null;
+      if(SELECTED) await renderDetail();
+    }
+
+    window.approveReview = async function(){
+      try{ await finalizeReview("/api/v2/governance/review/approve"); }
+      catch(error){ alert("Approve failed: " + error.message); }
+    }
+
+    window.rejectReview = async function(){
+      try{ await finalizeReview("/api/v2/governance/review/reject"); }
+      catch(error){ alert("Reject failed: " + error.message); }
+    }
+
+    window.overrideReview = async function(){
+      try{ await finalizeReview("/api/v2/governance/review/override"); }
+      catch(error){ alert("Override failed: " + error.message); }
+    }
+
+    window.createSystemFreeze = async function(){
+      try{
+        const reason = $("reviewReason")?.value.trim() || "Emergency governance freeze from console";
+        await api("/api/v2/governance/freeze/create", {
+          method:"POST",
+          body:JSON.stringify({
+            freeze_scope:"SYSTEM",
+            freeze_level:"EMERGENCY",
+            freeze_reason:reason,
+            metadata:{
+              source:"governance_console",
+              review_id:SELECTED?.id || null,
+              execution_id:SELECTED?.execution_id || null
+            }
+          })
+        });
+        alert("System freeze activated.");
+        await loadOperationsStatus();
+        await renderDetail();
+      }catch(error){ alert("Freeze failed: " + error.message); }
+    }
+
+    window.releaseActiveFreeze = async function(){
+      try{
+        const status = await api("/api/v2/governance/freeze/status");
+        if(!status?.active_freeze?.id){
+          alert("No active freeze found.");
+          return;
+        }
+        await api("/api/v2/governance/freeze/release", {
+          method:"POST",
+          body:JSON.stringify({
+            freeze_id:status.active_freeze.id,
+            metadata:{ release_reason:"Released from governance console" }
+          })
+        });
+        alert("Freeze released.");
+        await loadOperationsStatus();
+        await renderDetail();
+      }catch(error){ alert("Release failed: " + error.message); }
+    }
+
+    window.exportGovernanceProof = async function(){
+      try{
+        if(!SELECTED?.id){
+          alert("Select governance review first.");
+          return;
+        }
+        const data = await api("/api/v2/governance/proof/export?review_id=" + SELECTED.id);
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "executia-governance-proof-" + SELECTED.id + ".json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }catch(error){ alert("Proof export failed: " + error.message); }
+    }
+
+    window.exportGovernanceProofPdf = async function(){
+      try{
+        if(!SELECTED?.id){
+          alert("Select governance review first.");
+          return;
+        }
+        const response = await fetch("/api/v2/governance/proof/pdf?review_id=" + SELECTED.id, {
+          headers:{ "Authorization":"Bearer " + TOKEN }
+        });
+        if(!response.ok) throw new Error("PDF_EXPORT_FAILED");
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "executia-governance-audit-" + SELECTED.id + ".pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }catch(error){ alert("PDF export failed: " + error.message); }
+    }
+
+    async function authorize(){
+      const data = await api("/api/v2/governance/reviews/open");
+      $("authState").textContent = "AUTH: ACTIVE";
+      $("operatorEmail").textContent = data?.user?.email || "OPERATOR";
+      $("organizationId").textContent = data?.organization_id || "—";
+      await window.loadOpenReviews();
+      await loadOperationsStatus();
+      await loadRecentEvents();
+      startLiveSync();
+    }
+
+    function startLiveSync(){
+      if(LIVE_SYNC) clearInterval(LIVE_SYNC);
+      LIVE_SYNC = setInterval(async () => {
+        try{
+          if(!TOKEN) return;
+          await window.loadOpenReviews();
+          await loadOperationsStatus();
+          await loadRecentEvents();
+        }catch(error){
+          console.error("LIVE_SYNC_FAILED", error);
+        }
+      }, 5000);
+
+      if($("syncState")) $("syncState").textContent = "SYNC: LIVE";
+    }
+
+    if(TOKEN){
+      authorize().then(() => startLiveSync()).catch(() => {});
+    }
+  </script>
+</body>
+</html>
