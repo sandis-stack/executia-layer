@@ -1412,6 +1412,8 @@
 
         renderIncidentMode();
         renderExecutionHeatmap();
+      renderConstitutionRulesMatrix();
+        renderConstitutionRulesMatrix();
 
         return data;
       }catch(error){
@@ -1858,6 +1860,73 @@
         </div>
       `).join("");
     }
+
+    function renderConstitutionRulesMatrix(){
+      const el = $("constitutionRulesMatrix");
+      if(!el) return;
+
+      const emergency = window.__OPS__?.emergency || {};
+      const constitutionBlocked = hasConstitutionBlock();
+      const activeFreeze = Number(emergency.active_freeze_count || 0) > 0;
+      const chainBroken = CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false;
+      const locked = isForensicLocked();
+
+      const cells = [
+        [
+          "COMMIT_REQUIRES_TRACE",
+          constitutionBlocked ? "VIOLATED" : "ACTIVE",
+          constitutionBlocked ? "bad" : "ok",
+          constitutionBlocked
+            ? "Constitution block detected in governance chain."
+            : "Committed execution requires deterministic trace reference."
+        ],
+        [
+          "FREEZE_CONTAINMENT",
+          activeFreeze ? "LOCKED" : "ENFORCED",
+          activeFreeze ? "bad" : "ok",
+          activeFreeze
+            ? "Active governance freeze is containing execution scope."
+            : "Freeze containment layer operational."
+        ],
+        [
+          "FORENSIC_LOCKDOWN",
+          locked ? "ACTIVE" : "CLEAR",
+          locked ? "bad" : "ok",
+          locked
+            ? "Hard runtime lockdown active: " + forensicLockReason()
+            : "No forensic integrity lock active."
+        ],
+        [
+          "QUORUM_ENFORCEMENT",
+          "ACTIVE",
+          "live",
+          "Supervisor quorum governance enforcement active."
+        ],
+        [
+          "HASH_CONTINUITY",
+          chainBroken ? "BROKEN" : "VERIFIED",
+          chainBroken ? "bad" : "ok",
+          chainBroken
+            ? "Governance hash-chain continuity failed."
+            : "Governance chain continuity verified."
+        ]
+      ];
+
+      if($("constitutionMatrixState")){
+        $("constitutionMatrixState").textContent = locked
+          ? "RULES: LOCKDOWN"
+          : "RULES: ACTIVE";
+      }
+
+      el.innerHTML = cells.map(([title,value,cls,meta]) => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">${escapeHtml(title)}</div>
+          <div class="heat-value">${escapeHtml(value)}</div>
+          <div class="heat-meta">${escapeHtml(meta)}</div>
+        </div>
+      `).join("");
+    }
+
 
     function renderExecutionTopology(){
       const el = $("executionTopology");
