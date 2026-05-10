@@ -655,6 +655,20 @@
     </div>
   </div>
 
+  <section class="execution-topology">
+    <div class="head">
+      <h2>LIVE EXECUTION TOPOLOGY</h2>
+      <span class="pill" id="executionTopologyState">TOPOLOGY: STANDBY</span>
+    </div>
+    <div class="topology-body" id="executionTopology">
+      <div class="topology-node warn">
+        <div class="topology-label">Runtime</div>
+        <div class="topology-value">AUTH REQUIRED</div>
+        <div class="topology-meta">Authorize operator access to materialize execution topology.</div>
+      </div>
+    </div>
+  </section>
+
   <main>
 
     <aside>
@@ -911,10 +925,14 @@
           .slice(0, 12);
         renderOperatorAuthorityMatrix();
         renderGlobalGovernanceStream();
+        renderExecutionTopology();
+        renderExecutionTopology();
       }catch(error){
         GLOBAL_EVENTS = [];
         renderOperatorAuthorityMatrix();
         renderGlobalGovernanceStream();
+        renderExecutionTopology();
+        renderExecutionTopology();
       }
     }
 
@@ -932,6 +950,7 @@
 
         renderQueue();
         await loadRecentEvents();
+        renderExecutionTopology();
       }catch(error){
         if($("queueState")) $("queueState").textContent = "QUEUE: ERROR";
         console.error("QUEUE_LOAD_FAILED", error);
@@ -965,6 +984,48 @@
         created_at:
           event?.created_at || "—"
       };
+    }
+
+    function topologyClass(value){
+      const v = String(value || "").toUpperCase();
+      if(v.includes("BROKEN") || v.includes("FAILED")) return "bad";
+      if(v.includes("FREEZE") || v.includes("LOCK")) return "lock";
+      if(v.includes("PENDING") || v.includes("OPEN") || v.includes("REVIEW")) return "warn";
+      if(v.includes("COMMITTED") || v.includes("VERIFIED") || v.includes("CLEAR") || v.includes("OPERATIONAL")) return "ok";
+      return "live";
+    }
+
+    function renderExecutionTopology(){
+      const el = $("executionTopology");
+      if(!el) return;
+
+      const latestReview = (REVIEWS || [])[0] || (GLOBAL_EVENTS || []).find(e => e.review_id) || {};
+      const latestEvent = (GLOBAL_EVENTS || [])[0] || {};
+      const systemState = $("ccGlobalState")?.textContent || "UNKNOWN";
+      const chainState = CHAIN_DIAGNOSTICS?.verified ? "VERIFIED" : "UNKNOWN";
+      const freezeState = $("freezeState")?.textContent || "FREEZE: UNKNOWN";
+      const syncState = $("syncState")?.textContent || "SYNC: STANDBY";
+
+      if($("executionTopologyState")){
+        $("executionTopologyState").textContent = "TOPOLOGY: LIVE";
+      }
+
+      const nodes = [
+        ["Execution", latestReview.execution_id || latestEvent.execution_id || "LIVE", "Runtime execution request"],
+        ["Governance", latestReview.governance_state || latestReview.review_status || latestEvent.event_type || "MATERIALIZED", "Review and decision layer"],
+        ["Quorum", "SUPERVISOR MATRIX", "Multi-actor approval topology"],
+        ["Commit", latestReview.execution_status || "COMMIT STREAM", "Execution-time state materialization"],
+        ["Chain", chainState, CHAIN_DIAGNOSTICS?.head_hash ? CHAIN_DIAGNOSTICS.head_hash.slice(0,18) + "…" : "Hash continuity"],
+        ["Integrity", freezeState.includes("ACTIVE") ? "FREEZE_ACTIVE" : systemState, syncState]
+      ];
+
+      el.innerHTML = nodes.map(([label,value,meta]) => `
+        <div class="topology-node ${topologyClass(value)}">
+          <div class="topology-label">${escapeHtml(label)}</div>
+          <div class="topology-value">${escapeHtml(value)}</div>
+          <div class="topology-meta">${escapeHtml(meta)}</div>
+        </div>
+      `).join("");
     }
 
     function renderOperatorAuthorityMatrix(){
