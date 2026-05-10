@@ -1654,14 +1654,45 @@
       const replay = DETERMINISTIC_REPLAY.replay || {};
       const stages = replay.stages || [];
 
+      let replayState = "CLEAR";
+      let replayClass = "ok";
+
+      if(replay.constitution_triggered){
+        replayState = "CONSTITUTION BREACH";
+        replayClass = "warn";
+      }
+
+      if(replay.stopped){
+        replayState = "EXECUTION CONTAINED";
+        replayClass = "bad";
+      }
+
+      if(replay.recovered){
+        replayState = "RECOVERED";
+        replayClass = "live";
+      }
+
+      const replayTimeline = stages.map((stage, index) => {
+        const previous = stages[index - 1];
+
+        return {
+          ...stage,
+          broken:
+            previous &&
+            stage.prev_hash &&
+            previous.hash &&
+            stage.prev_hash !== previous.hash
+        };
+      });
+
       el.innerHTML = `
         <div class="block">
           <div class="k">DETERMINISTIC PATH</div>
           <div class="small">Execution-time reconstruction from governance, constitution and freeze evidence.</div>
           <div class="chain-bar" style="margin-top:12px;">
             ${
-              stages.length
-                ? stages.map((stage, index) => `
+              replayTimeline.length
+                ? replayTimeline.map((stage, index) => `
                   ${index > 0 ? '<span class="chain-arrow">→</span>' : ''}
                   <div class="chain-node ${replayStageClass(stage.stage)}">
                     <strong>${escapeHtml(stage.stage)}</strong><br>
@@ -1676,6 +1707,21 @@
 
         <div class="block">
           <div class="k">REPLAY STATE</div>
+
+          <div class="v" style="
+            margin-top:8px;
+            color:
+              ${replayClass === "bad"
+                ? "#b42318"
+                : replayClass === "warn"
+                ? "#b26a00"
+                : replayClass === "live"
+                ? "#027a48"
+                : "#1d2939"};
+          ">
+            ${escapeHtml(replayState)}
+          </div>
+
           <div class="small">Events: ${escapeHtml(replay.event_count || 0)}</div>
           <div class="small">Constitution Triggered: ${escapeHtml(replay.constitution_triggered ? "YES" : "NO")}</div>
           <div class="small">Stopped: ${escapeHtml(replay.stopped ? "YES" : "NO")}</div>
