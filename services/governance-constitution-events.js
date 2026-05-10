@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 function getSupabaseAdmin() {
   const url = process.env.SUPABASE_URL;
@@ -11,7 +12,11 @@ function getSupabaseAdmin() {
 
   return createClient(url, key, {
     auth: {
-      persistSession: false
+      persistSession: false,
+      autoRefreshToken: false
+    },
+    realtime: {
+      transport: ws
     }
   });
 }
