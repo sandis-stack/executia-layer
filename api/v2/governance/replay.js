@@ -273,7 +273,6 @@ export default async function handler(req, res) {
       stability,
       containment_plan,
       recovery_plan,
-      orchestrator,
       replay: replayState
     });
 
