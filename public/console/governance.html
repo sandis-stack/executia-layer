@@ -613,6 +613,19 @@
     </section>
   </main>
 
+  <section class="global-stream-panel">
+    <div class="head">
+      <h2>LIVE GOVERNANCE STREAM</h2>
+      <span class="pill" id="globalStreamState">STREAM: STANDBY</span>
+    </div>
+    <div class="global-stream" id="globalGovernanceStream">
+      <div class="block">
+        <div class="k">STREAM LOCKED</div>
+        <div class="small">Authorize operator access to load institutional governance events.</div>
+      </div>
+    </div>
+  </section>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -757,8 +770,10 @@
         GLOBAL_EVENTS = (data.events || [])
           .sort((a,b) => (b.sequence_no || 0) - (a.sequence_no || 0))
           .slice(0, 25);
+        renderGlobalGovernanceStream();
       }catch(error){
         GLOBAL_EVENTS = [];
+        renderGlobalGovernanceStream();
       }
     }
 
@@ -775,10 +790,58 @@
         if($("lastRefresh")) $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
 
         renderQueue();
+        await loadRecentEvents();
       }catch(error){
         if($("queueState")) $("queueState").textContent = "QUEUE: ERROR";
         console.error("QUEUE_LOAD_FAILED", error);
       }
+    }
+
+    function eventStreamClass(type){
+      const t = String(type || "").toUpperCase();
+      if(t.includes("APPROVED")) return "event-approved";
+      if(t.includes("REJECTED")) return "event-rejected";
+      if(t.includes("OVERRIDE")) return "event-override";
+      if(t.includes("FREEZE")) return "event-freeze";
+      if(t.includes("REVIEW")) return "event-review";
+      return "event-review";
+    }
+
+    function renderGlobalGovernanceStream(){
+      const el = $("globalGovernanceStream");
+      if(!el) return;
+
+      const events = (GLOBAL_EVENTS || []).slice(0, 25);
+
+      if($("globalStreamState")){
+        $("globalStreamState").textContent = events.length
+          ? "STREAM: LIVE"
+          : "STREAM: EMPTY";
+      }
+
+      if(!events.length){
+        el.innerHTML = `
+          <div class="block">
+            <div class="k">NO GLOBAL EVENTS</div>
+            <div class="small">No governance stream events loaded yet.</div>
+          </div>
+        `;
+        return;
+      }
+
+      el.innerHTML = events.map((event) => `
+        <div class="stream-event ${eventStreamClass(event.event_type)}">
+          <div class="stream-event-head">
+            <div class="stream-event-type">${escapeHtml(event.event_type || "UNKNOWN")}</div>
+            <div class="stream-seq">SEQ ${escapeHtml(event.sequence_no || "—")}</div>
+          </div>
+          <div class="stream-meta">Actor: ${escapeHtml(event.actor || "—")}</div>
+          <div class="stream-meta">Review: ${escapeHtml(event.review_id || "—")}</div>
+          <div class="stream-meta">Execution: ${escapeHtml(event.execution_id || "—")}</div>
+          <div class="stream-meta">${escapeHtml(event.created_at || "—")}</div>
+          <div class="stream-hash-mini">HASH ${escapeHtml(event.hash ? event.hash.slice(0, 18) + "…" : "—")}</div>
+        </div>
+      `).join("");
     }
 
     function riskClass(score){
