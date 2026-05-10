@@ -1399,6 +1399,24 @@
           ].filter(Boolean).join(" · ")
         }));
 
+        const constitutionEvents = (proof?.events || [])
+          .filter((event) => String(event.event_type || "").startsWith("CONSTITUTION_"))
+          .map((event) => ({
+            source:"constitution",
+            type:event.event_type,
+            title:event.event_type,
+            time:event.created_at,
+            actor:event.actor || "constitution",
+            hash:event.hash || "",
+            meta:[
+              event.payload?.rule ? "Rule: " + event.payload.rule : null,
+              event.payload?.reason ? "Reason: " + event.payload.reason : null,
+              event.review_id ? "Review: " + event.review_id : null,
+              event.execution_id ? "Execution: " + event.execution_id : null,
+              event.sequence_no ? "SEQ: " + event.sequence_no : null
+            ].filter(Boolean)
+          }));
+
         const freezeEvents = (proof?.emergency_governance?.freeze_events || []).map((event) => ({
           source:"freeze",
           type:event.event_type || "FREEZE_EVENT",
@@ -1412,7 +1430,7 @@
           ].filter(Boolean).join(" · ")
         }));
 
-        FORENSIC_REPLAY_EVENTS = [...reviewEvents, ...freezeEvents]
+        FORENSIC_REPLAY_EVENTS = [...reviewEvents, ...constitutionEvents, ...freezeEvents]
           .sort((a,b) => String(b.time || "").localeCompare(String(a.time || "")))
           .slice(0, 30);
 
@@ -1425,6 +1443,7 @@
 
     function replayClass(event){
       const t = String(event?.type || "").toUpperCase();
+      if(t.includes("CONSTITUTION")) return "constitution";
       if(t.includes("FREEZE") || t.includes("BLOCKED")) return "freeze";
       if(t.includes("APPROVED") || t.includes("RESUMED") || t.includes("COMMITTED")) return "commit";
       if(t.includes("REVIEW")) return "review";
