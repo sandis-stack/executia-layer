@@ -1450,6 +1450,51 @@
       return "";
     }
 
+    function buildCausalityGraph(events){
+      const constitution = (events || []).find((event) =>
+        String(event.type || "").includes("CONSTITUTION_BLOCK")
+      );
+
+      const freeze = (events || []).find((event) =>
+        String(event.type || "").includes("GOVERNANCE_FREEZE_CREATED")
+      );
+
+      const blocked = (events || []).find((event) =>
+        String(event.type || "").includes("GOVERNANCE_EXECUTION_BLOCKED_BY_FREEZE")
+      );
+
+      const released = (events || []).find((event) =>
+        String(event.type || "").includes("GOVERNANCE_FREEZE_RELEASED")
+      );
+
+      const steps = [
+        constitution ? ["CONSTITUTION", constitution.type, constitution.meta || "Rule triggered"] : null,
+        freeze ? ["AUTO FREEZE", freeze.type, freeze.meta || "Freeze materialized"] : null,
+        blocked ? ["STOP", blocked.type, blocked.meta || "Execution blocked"] : null,
+        released ? ["RECOVERY", released.type, released.meta || "Freeze released"] : null
+      ].filter(Boolean);
+
+      if(!steps.length) return "";
+
+      return `
+        <div class="block">
+          <div class="k">FORENSIC CAUSALITY GRAPH</div>
+          <div class="small">Deterministic reconstruction of governance cause → containment → recovery.</div>
+          <div class="chain-bar" style="margin-top:12px;">
+            ${steps.map((step, index) => `
+              ${index > 0 ? '<span class="chain-arrow">→</span>' : ''}
+              <div class="chain-node ${index === 0 ? "warn-node" : ""}">
+                <strong>${escapeHtml(step[0])}</strong><br>
+                ${escapeHtml(step[1])}<br>
+                <span style="font-size:10px;">${escapeHtml(String(step[2]).slice(0, 90))}</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+
     function renderForensicReplay(){
       const el = $("forensicReplayGrid");
       if(!el) return;
@@ -1470,17 +1515,19 @@
         return;
       }
 
-      el.innerHTML = FORENSIC_REPLAY_EVENTS.map((event) => `
-        <div class="replay-event ${replayClass(event)}">
-          <div class="replay-stage">${escapeHtml(event.source)}</div>
-          <div>
-            <div class="replay-title">${escapeHtml(event.type)}</div>
-            <div class="replay-meta">Actor: ${escapeHtml(event.actor)}</div>
-            <div class="replay-meta">${escapeHtml(event.meta || "—")}</div>
+      el.innerHTML =
+        buildCausalityGraph(FORENSIC_REPLAY_EVENTS) +
+        FORENSIC_REPLAY_EVENTS.map((event) => `
+          <div class="replay-event ${replayClass(event)}">
+            <div class="replay-stage">${escapeHtml(event.source)}</div>
+            <div>
+              <div class="replay-title">${escapeHtml(event.type)}</div>
+              <div class="replay-meta">Actor: ${escapeHtml(event.actor)}</div>
+              <div class="replay-meta">${escapeHtml(Array.isArray(event.meta) ? event.meta.join(" · ") : (event.meta || "—"))}</div>
+            </div>
+            <div class="replay-time">${escapeHtml(event.time)}</div>
           </div>
-          <div class="replay-time">${escapeHtml(event.time)}</div>
-        </div>
-      `).join("");
+        `).join("");
     }
 
     async function loadFreezeBlockProof(){
