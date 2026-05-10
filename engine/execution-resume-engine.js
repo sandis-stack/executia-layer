@@ -3,6 +3,7 @@ import { db } from "../services/db.js"
 import { materializePolicyDecision } from "../services/policy-materialization.js"
 import { insertGovernanceEvent } from "../services/governance-hash.js"
 import { assertExecutionNotFrozen } from "../services/governance-freeze.js"
+import { GOVERNANCE_STATES } from "../services/governance-state.js"
 
 export async function resumeGovernedExecution({
 review_id,
@@ -138,6 +139,7 @@ const { error: finalizeError } = await supabase
 .from("governance_reviews")
 .update({
 execution_status: "COMMITTED",
+governance_state: GOVERNANCE_STATES.COMMITTED,
 committed_at: new Date().toISOString()
 })
 .eq("id", review_id)

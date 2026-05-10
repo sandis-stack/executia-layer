@@ -21,6 +21,7 @@ import {
 } from "../../../../services/governance-quorum.js";
 
 import { resumeGovernedExecution } from "../../../../engine/execution-resume-engine.js";
+import { GOVERNANCE_STATES } from "../../../../services/governance-state.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
@@ -208,9 +209,17 @@ export default async function handler(req, res) {
     });
 
     if (!quorum.quorum_met) {
+      await supabase
+        .from("governance_reviews")
+        .update({
+          governance_state: GOVERNANCE_STATES.QUORUM_PENDING,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", review_id);
+
       return json(res, 200, {
         ok: true,
-        status: "QUORUM_PENDING",
+        status: GOVERNANCE_STATES.QUORUM_PENDING,
         approval_recorded: true,
         duplicate_actor: Boolean(existingApproval),
         approval_event: approvalEvent,
@@ -219,6 +228,14 @@ export default async function handler(req, res) {
         resume: null
       });
     }
+
+    await supabase
+      .from("governance_reviews")
+      .update({
+        governance_state: GOVERNANCE_STATES.QUORUM_MET,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", review_id);
 
     const result = await finalizeGovernanceReview({
       supabase,

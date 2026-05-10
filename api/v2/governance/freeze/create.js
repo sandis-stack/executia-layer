@@ -4,6 +4,7 @@ import {
 } from "../../../../services/jwt-auth.js"
 
 import { createFreeze } from "../../../../services/governance-freeze.js"
+import { GOVERNANCE_STATES } from "../../../../services/governance-state.js"
 
 function json(res, status, body) {
   return res.status(status).json(body)
@@ -67,6 +68,17 @@ export default async function handler(req, res) {
       actor: context.user,
       metadata
     })
+
+    if (review_id) {
+      const { db } = await import("../../../../services/db.js")
+      await db()
+        .from("governance_reviews")
+        .update({
+          governance_state: GOVERNANCE_STATES.FROZEN,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", review_id)
+    }
 
     return json(res, 200, {
       ok: true,
