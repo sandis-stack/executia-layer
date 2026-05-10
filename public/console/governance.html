@@ -605,6 +605,74 @@
       section,aside{min-height:320px}
     }
 
+    .heatmap-panel{
+      margin:18px 16px;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 1px 2px rgba(15,23,42,.04);
+    }
+
+    .heatmap-grid{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:14px;
+      padding:18px;
+      background:#f8fbff;
+    }
+
+    .heat-cell{
+      min-height:110px;
+      border-radius:16px;
+      padding:14px;
+      border:1px solid #dbe6f3;
+      background:#fff;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .heat-cell.ok{
+      background:#edf9f1;
+      border-color:#b9e7c7;
+    }
+
+    .heat-cell.warn{
+      background:#fff7e8;
+      border-color:#f6d28f;
+    }
+
+    .heat-cell.bad{
+      background:#fff1f0;
+      border-color:#efb4ae;
+    }
+
+    .heat-cell.live{
+      background:#eef5ff;
+      border-color:#bdd4ff;
+    }
+
+    .heat-title{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--muted);
+      text-transform:uppercase;
+    }
+
+    .heat-value{
+      margin-top:12px;
+      font-size:24px;
+      font-weight:900;
+      color:var(--blue);
+    }
+
+    .heat-meta{
+      margin-top:10px;
+      font-size:12px;
+      color:#607089;
+    }
+
     .execution-topology{
       margin:18px 16px;
       background:#ffffff;
@@ -731,6 +799,21 @@
       <div class="command-small">Forensic and freeze supervision</div>
     </div>
   </div>
+
+  <section class="heatmap-panel">
+    <div class="head">
+      <h2>EXECUTION INTEGRITY HEATMAP</h2>
+      <span class="pill" id="heatmapState">HEATMAP: LIVE</span>
+    </div>
+
+    <div class="heatmap-grid" id="executionHeatmap">
+      <div class="heat-cell live">
+        <div class="heat-title">RUNTIME</div>
+        <div class="heat-value">LIVE</div>
+        <div class="heat-meta">Execution governance runtime active</div>
+      </div>
+    </div>
+  </section>
 
   <section class="execution-topology">
     <div class="head">
@@ -987,6 +1070,10 @@
             ? String(data.emergency.active_freeze_count)
             : "CLEAR";
 
+        window.__OPS__ = data;
+
+        renderExecutionHeatmap();
+
         return data;
       }catch(error){
         console.error("OPERATIONS_STATUS_FAILED", error);
@@ -1094,6 +1181,31 @@
       if(v.includes("PENDING") || v.includes("OPEN") || v.includes("REVIEW")) return "warn";
       if(v.includes("COMMITTED") || v.includes("VERIFIED") || v.includes("CLEAR") || v.includes("OPERATIONAL")) return "ok";
       return "live";
+    }
+
+    function renderExecutionHeatmap(){
+      const el = $("executionHeatmap");
+      if(!el) return;
+
+      const governance = window.__OPS__?.governance || {};
+      const emergency = window.__OPS__?.emergency || {};
+      const flags = window.__OPS__?.operations_flags || {};
+
+      const cells = [
+        ["HIGH RISK", governance.high_risk || 0, "warn"],
+        ["OPEN REVIEWS", governance.open_reviews || 0, "live"],
+        ["QUORUM", governance.quorum_pending || 0, governance.quorum_pending ? "warn" : "ok"],
+        ["FREEZES", emergency.active_freeze_count || 0, emergency.active_freeze_count ? "bad" : "ok"],
+        ["FORENSIC", flags.forensic_mode ? "ACTIVE" : "CLEAR", flags.forensic_mode ? "bad" : "ok"]
+      ];
+
+      el.innerHTML = cells.map(([title,value,cls]) => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">${escapeHtml(title)}</div>
+          <div class="heat-value">${escapeHtml(value)}</div>
+          <div class="heat-meta">Governance execution integrity signal</div>
+        </div>
+      `).join("");
     }
 
     function renderExecutionTopology(){
