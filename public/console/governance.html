@@ -888,6 +888,70 @@
       await renderDetail();
     }
 
+    function mapNodeClass(state, options = {}){
+      const value = String(state || "").toUpperCase();
+
+      if(options.broken) return "broken";
+      if(options.locked) return "locked";
+      if(value.includes("COMMITTED") || value.includes("APPROVED") || value.includes("MET")) return "committed";
+      if(value.includes("PENDING") || value.includes("OPEN") || value.includes("REVIEW")) return "pending";
+      if(value.includes("FROZEN") || value.includes("LOCK")) return "locked";
+      return "active";
+    }
+
+    function renderGovernanceMap(review, quorum, freeze){
+      const executionState = review?.execution_status || "PENDING";
+      const reviewState = review?.governance_state || review?.review_status || "OPEN";
+      const quorumState = quorum?.ok
+        ? (quorum.quorum_met ? "QUORUM_MET" : "QUORUM_PENDING")
+        : "QUORUM_UNKNOWN";
+      const commitState = review?.committed_at || review?.execution_status === "COMMITTED"
+        ? "COMMITTED"
+        : "NOT_COMMITTED";
+      const integrityState = isForensicLocked()
+        ? "FORENSIC_LOCK"
+        : freeze?.frozen
+        ? "FREEZE_ACTIVE"
+        : "INTEGRITY_CLEAR";
+
+      return `
+        <div class="block">
+          <div class="k">GOVERNANCE MAP</div>
+          <div class="governance-map">
+            <div class="map-node ${mapNodeClass(executionState)}">
+              <div class="map-node-title">Execution</div>
+              <div class="map-node-state">${escapeHtml(executionState)}</div>
+              <div class="map-node-meta">${escapeHtml(review?.execution_id || "—")}</div>
+            </div>
+
+            <div class="map-node ${mapNodeClass(reviewState)}">
+              <div class="map-node-title">Review</div>
+              <div class="map-node-state">${escapeHtml(reviewState)}</div>
+              <div class="map-node-meta">${escapeHtml(review?.id || "—")}</div>
+            </div>
+
+            <div class="map-node ${mapNodeClass(quorumState)}">
+              <div class="map-node-title">Quorum</div>
+              <div class="map-node-state">${escapeHtml(quorumState)}</div>
+              <div class="map-node-meta">${escapeHtml(quorum?.ok ? ((quorum.approvals_recorded || 0) + " / " + (quorum.required_approvals || 0)) : "—")}</div>
+            </div>
+
+            <div class="map-node ${mapNodeClass(commitState)}">
+              <div class="map-node-title">Commit</div>
+              <div class="map-node-state">${escapeHtml(commitState)}</div>
+              <div class="map-node-meta">${escapeHtml(review?.committed_at || "—")}</div>
+            </div>
+
+            <div class="map-node ${mapNodeClass(integrityState, { broken:isForensicLocked(), locked:freeze?.frozen })}">
+              <div class="map-node-title">Integrity</div>
+              <div class="map-node-state">${escapeHtml(integrityState)}</div>
+              <div class="map-node-meta">${escapeHtml(CHAIN_DIAGNOSTICS?.head_hash ? CHAIN_DIAGNOSTICS.head_hash.slice(0, 14) + "…" : "—")}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     function isForensicLocked(){
       return CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false;
     }
@@ -971,6 +1035,8 @@
           <button class="secondary" onclick="exportGovernanceProof()">EXPORT PROOF JSON</button>
           <button class="secondary" onclick="exportGovernanceProofPdf()">EXPORT PROOF PDF</button>
         </div>
+
+        ${renderGovernanceMap(SELECTED, quorum, freeze)}
 
         <div class="block">
           <div class="k">CHAIN VISUALIZATION</div>
