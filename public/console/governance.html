@@ -1178,6 +1178,21 @@
     </div>
   </section>
 
+  <section class="heatmap-panel" id="autonomousDecisionPanel">
+    <div class="head">
+      <h2>AUTONOMOUS GOVERNANCE DECISION ENGINE</h2>
+      <span class="pill" id="autonomousDecisionState">DECISION ENGINE: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="autonomousDecisionGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">AUTONOMOUS DECISION</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Replay intelligence context required.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -1520,6 +1535,7 @@
         FORENSIC_REPLAY_EVENTS = [];
         renderForensicReplay();
         renderGovernanceRiskEngine();
+      renderAutonomousGovernanceDecisionEngine();
       }
     }
 
@@ -2190,6 +2206,97 @@
         </div>
 
         ${signalCards}
+      `;
+    }
+
+
+    function renderAutonomousGovernanceDecisionEngine(){
+      const el = $("autonomousDecisionGrid");
+      if(!el) return;
+
+      const intelligence = DETERMINISTIC_REPLAY?.intelligence || null;
+      const risk = DETERMINISTIC_REPLAY?.risk || null;
+      const verification = DETERMINISTIC_REPLAY?.verification || null;
+
+      if($("autonomousDecisionState")){
+        $("autonomousDecisionState").textContent =
+          intelligence
+            ? "DECISION ENGINE: LIVE"
+            : "DECISION ENGINE: STANDBY";
+      }
+
+      if(!intelligence){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">AUTONOMOUS DECISION</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Replay intelligence context required.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const severityClass =
+        intelligence.severity === "CRITICAL"
+          ? "bad"
+          : intelligence.severity === "HIGH"
+          ? "warn"
+          : intelligence.severity === "MEDIUM"
+          ? "live"
+          : "ok";
+
+      const recommendations = (intelligence.recommendations || []).map(item => `
+        <div class="heat-cell ${severityClass}">
+          <div class="heat-title">RECOMMENDATION</div>
+          <div class="heat-value">${escapeHtml(item)}</div>
+          <div class="heat-meta">Autonomous governance action recommendation</div>
+        </div>
+      `).join("");
+
+      el.innerHTML = `
+        <div class="heat-cell ${severityClass}">
+          <div class="heat-title">INCIDENT</div>
+          <div class="heat-value">${escapeHtml(intelligence.incident || "UNKNOWN")}</div>
+          <div class="heat-meta">Autonomous incident classification</div>
+        </div>
+
+        <div class="heat-cell ${severityClass}">
+          <div class="heat-title">SEVERITY</div>
+          <div class="heat-value">${escapeHtml(intelligence.severity || "UNKNOWN")}</div>
+          <div class="heat-meta">Execution-time severity assessment</div>
+        </div>
+
+        <div class="heat-cell ${severityClass}">
+          <div class="heat-title">CONTAINMENT</div>
+          <div class="heat-value">${escapeHtml(intelligence.containment || "NONE")}</div>
+          <div class="heat-meta">Runtime containment recommendation</div>
+        </div>
+
+        <div class="heat-cell ${severityClass}">
+          <div class="heat-title">QUORUM</div>
+          <div class="heat-value">${escapeHtml(intelligence.quorum || "NONE")}</div>
+          <div class="heat-meta">Governance quorum requirement</div>
+        </div>
+
+        <div class="heat-cell ${severityClass}">
+          <div class="heat-title">SURVIVABILITY</div>
+          <div class="heat-value">${escapeHtml(intelligence.survivability || "UNKNOWN")}</div>
+          <div class="heat-meta">System continuity under governance stress</div>
+        </div>
+
+        <div class="heat-cell ${verification?.verified ? "ok" : "bad"}">
+          <div class="heat-title">CHAIN</div>
+          <div class="heat-value">${verification?.verified ? "VERIFIED" : "UNVERIFIED"}</div>
+          <div class="heat-meta">Events checked: ${escapeHtml(verification?.events_checked || 0)}</div>
+        </div>
+
+        <div class="heat-cell ${severityClass}">
+          <div class="heat-title">RISK SCORE</div>
+          <div class="heat-value">${escapeHtml(risk?.score ?? "—")}</div>
+          <div class="heat-meta">${escapeHtml(risk?.summary || "No risk summary available.")}</div>
+        </div>
+
+        ${recommendations}
       `;
     }
 
