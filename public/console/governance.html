@@ -1844,13 +1844,17 @@
       const governance = window.__OPS__?.governance || {};
       const emergency = window.__OPS__?.emergency || {};
       const flags = window.__OPS__?.operations_flags || {};
+      const forensicActive =
+        SIMULATED_CHAIN_BREAK ||
+        flags.forensic_mode === true ||
+        (CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false);
 
       const cells = [
         ["HIGH RISK", governance.high_risk || 0, "warn"],
         ["OPEN REVIEWS", governance.open_reviews || 0, "live"],
         ["QUORUM", governance.quorum_pending || 0, governance.quorum_pending ? "warn" : "ok"],
         ["FREEZES", emergency.active_freeze_count || 0, emergency.active_freeze_count ? "bad" : "ok"],
-        ["FORENSIC", flags.forensic_mode ? "ACTIVE" : "CLEAR", flags.forensic_mode ? "bad" : "ok"]
+        ["FORENSIC", forensicActive ? "LOCKDOWN" : "CLEAR", forensicActive ? "bad" : "ok"]
       ];
 
       el.innerHTML = cells.map(([title,value,cls]) => `
