@@ -1,7 +1,7 @@
 import { createExecution } from "../../services/execution.js";
 import { ok, fail } from "../../shared/response.js";
 import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
-import { assertExecutionNotFrozen } from "../../services/governance-freeze.js";
+import { assertExecutionNotFrozen, createFreeze } from "../../services/governance-freeze.js";
 import { assertCommitHasTrace } from "../../services/governance-constitution.js";
 import { materializeConstitutionEvent } from "../../services/governance-constitution-events.js";
 
@@ -66,7 +66,41 @@ export default async function handler(req, res) {
       }
 
       if (!commitRule.ok) {
-        return res.status(409).json(commitRule);
+        let freeze = null;
+
+        if (requestBody.review_id) {
+          try {
+            freeze = await createFreeze({
+              organization_id: context.organization_id,
+              review_id: requestBody.review_id,
+              execution_id: requestBody.execution_id || null,
+              freeze_scope: "REVIEW",
+              freeze_level: "L2",
+              freeze_reason: "Constitution block: commit requires trace.",
+              actor: context.user,
+              metadata: {
+                source: "constitution_auto_freeze",
+                rule: commitRule.error?.rule || "COMMIT_REQUIRES_TRACE",
+                constitution_event_hash: commitRule.error?.event_hash || null
+              }
+            });
+          } catch (freezeError) {
+            console.error("[CONSTITUTION_AUTO_FREEZE_FAILED]", freezeError);
+          }
+        }
+
+        return res.status(409).json({
+          ...commitRule,
+          auto_freeze: freeze
+            ? {
+                id: freeze.id,
+                scope: freeze.freeze_scope,
+                level: freeze.freeze_level,
+                reason: freeze.freeze_reason,
+                status: freeze.status
+              }
+            : null
+        });
       }
 
       const body = {
