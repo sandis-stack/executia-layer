@@ -1,4 +1,4 @@
-<!doctype html>
+x<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -314,7 +314,127 @@
       border-left:4px solid #0369a1;
     }
 
-    .timeline-ui{
+    
+.global-stream-panel{
+  margin:24px;
+  border:1px solid #d7dee8;
+  border-radius:22px;
+  overflow:hidden;
+  background:#f7f9fc;
+}
+
+.global-stream{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:18px;
+  padding:22px;
+}
+
+.stream-event{
+  background:white;
+  border:1px solid #d7dee8;
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-height:180px;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+
+.stream-event-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.stream-event-type{
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:#1d3557;
+}
+
+.stream-seq{
+  font-size:12px;
+  font-weight:700;
+  color:#5b6b83;
+}
+
+.stream-meta{
+  font-size:12px;
+  color:#5f6f86;
+  line-height:1.5;
+  word-break:break-word;
+}
+
+.stream-hash-mini{
+  margin-top:auto;
+  padding-top:12px;
+  border-top:1px solid #eef2f7;
+  font-size:11px;
+  color:#7b8798;
+  word-break:break-all;
+}
+
+.event-approved{
+  border-left:5px solid #1f7a4d;
+}
+
+.event-rejected{
+  border-left:5px solid #c0392b;
+}
+
+.event-override{
+  border-left:5px solid #9b59b6;
+}
+
+.event-freeze{
+  border-left:5px solid #e67e22;
+}
+
+.event-review{
+  border-left:5px solid #1d4e89;
+}
+
+.authority-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:18px;
+  padding:22px;
+}
+
+.authority-card{
+  background:white;
+  border:1px solid #d7dee8;
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.authority-email{
+  font-size:15px;
+  font-weight:700;
+  color:#1d3557;
+  word-break:break-word;
+}
+
+.authority-role{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:#5f6f86;
+}
+
+.authority-stat{
+  font-size:13px;
+  color:#4f5d73;
+}
+
+.timeline-ui{
       display:flex;
       flex-direction:column;
       gap:12px;
