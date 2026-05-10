@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -32,7 +33,8 @@ export default async function handler(req, res) {
   try {
     if (token && supabaseUrl && process.env.SUPABASE_ANON_KEY) {
       const supabase = createClient(supabaseUrl, process.env.SUPABASE_ANON_KEY, {
-        auth: { persistSession: false, autoRefreshToken: false }
+        auth: { persistSession: false, autoRefreshToken: false },
+        realtime: { transport: ws }
       });
 
       const { data, error } = await supabase.auth.getUser(token);
