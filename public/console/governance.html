@@ -1193,6 +1193,21 @@
     </div>
   </section>
 
+  <section class="heatmap-panel" id="governanceStabilityPanel">
+    <div class="head">
+      <h2>GOVERNANCE STABILITY ENGINE</h2>
+      <span class="pill" id="governanceStabilityState">STABILITY ENGINE: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="governanceStabilityGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">STABILITY</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Replay stability context required.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -1536,6 +1551,7 @@
         renderForensicReplay();
         renderGovernanceRiskEngine();
       renderAutonomousGovernanceDecisionEngine();
+      renderGovernanceStabilityEngine();
       }
     }
 
@@ -2297,6 +2313,98 @@
         </div>
 
         ${recommendations}
+      `;
+    }
+
+
+    function renderGovernanceStabilityEngine(){
+      const el = $("governanceStabilityGrid");
+      if(!el) return;
+
+      const stability = DETERMINISTIC_REPLAY?.stability || null;
+
+      if($("governanceStabilityState")){
+        $("governanceStabilityState").textContent =
+          stability
+            ? "STABILITY ENGINE: LIVE"
+            : "STABILITY ENGINE: STANDBY";
+      }
+
+      if(!stability){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">STABILITY</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Replay stability context required.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const stabilityClass =
+        stability.collapse_probability === "HIGH" || stability.continuity === "UNSTABLE"
+          ? "bad"
+          : stability.collapse_probability === "MEDIUM" || stability.continuity === "DEGRADED"
+          ? "warn"
+          : stability.continuity === "WATCH"
+          ? "live"
+          : "ok";
+
+      const actions = (stability.actions || []).map(action => `
+        <div class="heat-cell ${stabilityClass}">
+          <div class="heat-title">STABILIZATION ACTION</div>
+          <div class="heat-value">${escapeHtml(action)}</div>
+          <div class="heat-meta">Recommended governance stabilization action</div>
+        </div>
+      `).join("");
+
+      const signals = (stability.signals || []).slice(0, 4).map(signal => `
+        <div class="heat-cell ${signal.severity === "CRITICAL" ? "bad" : signal.severity === "HIGH" ? "warn" : "live"}">
+          <div class="heat-title">${escapeHtml(signal.code)}</div>
+          <div class="heat-value">${escapeHtml(signal.severity)}</div>
+          <div class="heat-meta">${escapeHtml(signal.message)}</div>
+        </div>
+      `).join("");
+
+      el.innerHTML = `
+        <div class="heat-cell ${stabilityClass}">
+          <div class="heat-title">CONTINUITY SCORE</div>
+          <div class="heat-value">${escapeHtml(stability.score)}</div>
+          <div class="heat-meta">${escapeHtml(stability.summary || "—")}</div>
+        </div>
+
+        <div class="heat-cell ${stabilityClass}">
+          <div class="heat-title">CONTINUITY</div>
+          <div class="heat-value">${escapeHtml(stability.continuity || "UNKNOWN")}</div>
+          <div class="heat-meta">Execution continuity state</div>
+        </div>
+
+        <div class="heat-cell ${stabilityClass}">
+          <div class="heat-title">COLLAPSE PROBABILITY</div>
+          <div class="heat-value">${escapeHtml(stability.collapse_probability || "UNKNOWN")}</div>
+          <div class="heat-meta">Predicted governance collapse pressure</div>
+        </div>
+
+        <div class="heat-cell ${stabilityClass}">
+          <div class="heat-title">QUORUM FAILURE RISK</div>
+          <div class="heat-value">${escapeHtml(stability.quorum_failure_risk || "UNKNOWN")}</div>
+          <div class="heat-meta">Probability of governance quorum failure</div>
+        </div>
+
+        <div class="heat-cell ${stabilityClass}">
+          <div class="heat-title">OVERLOAD</div>
+          <div class="heat-value">${escapeHtml(stability.overload || "UNKNOWN")}</div>
+          <div class="heat-meta">Governance event density pressure</div>
+        </div>
+
+        <div class="heat-cell ${stabilityClass}">
+          <div class="heat-title">SURVIVABILITY</div>
+          <div class="heat-value">${escapeHtml(stability.survivability || "UNKNOWN")}</div>
+          <div class="heat-meta">System survivability under stress</div>
+        </div>
+
+        ${actions}
+        ${signals}
       `;
     }
 
