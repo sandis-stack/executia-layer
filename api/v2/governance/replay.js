@@ -17,6 +17,7 @@ import {
 import {
   classifyGovernanceIncident
 } from "../../../services/governance-intelligence.js";
+import { assessGovernanceStability } from "../../../services/governance-stability.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
@@ -251,6 +252,7 @@ export default async function handler(req, res) {
       verification,
       risk,
       intelligence,
+      stability,
       replay: replayState
     });
   } catch (error) {
