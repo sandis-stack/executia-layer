@@ -20,6 +20,7 @@ import {
 import { assessGovernanceStability } from "../../../services/governance-stability.js";
 import { buildGovernanceContainmentPlan } from "../../../services/governance-containment.js";
 import { buildGovernanceRecoveryPlan } from "../../../services/governance-recovery.js";
+import { orchestrateGovernanceCycle } from "../../../services/governance-orchestrator.js";
 
 function json(res, status, body) {
   return res.status(status).json(body);
@@ -265,6 +266,17 @@ export default async function handler(req, res) {
       replay: replayState
     });
 
+    const orchestrator = orchestrateGovernanceCycle({
+      verification,
+      risk,
+      intelligence,
+      stability,
+      containment_plan,
+      recovery_plan,
+      orchestrator,
+      replay: replayState
+    });
+
     return json(res, 200, {
       ok: true,
       type: "EXECUTIA_DETERMINISTIC_GOVERNANCE_REPLAY",
@@ -281,6 +293,7 @@ export default async function handler(req, res) {
       stability,
       containment_plan,
       recovery_plan,
+      orchestrator,
       replay: replayState
     });
   } catch (error) {
