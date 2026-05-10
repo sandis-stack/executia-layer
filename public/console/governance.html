@@ -1506,9 +1506,20 @@
           .slice(0, 30);
 
         renderForensicReplay();
+
+        const firstReplayReview =
+          (FORENSIC_REPLAY_EVENTS || []).find(
+            (event) => event.review_id
+          );
+
+        if(firstReplayReview?.review_id){
+          loadDeterministicReplay(firstReplayReview.review_id);
+        }
+
       }catch(error){
         FORENSIC_REPLAY_EVENTS = [];
         renderForensicReplay();
+        renderGovernanceRiskEngine();
       }
     }
 
