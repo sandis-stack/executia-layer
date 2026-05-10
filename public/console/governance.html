@@ -605,6 +605,48 @@
       section,aside{min-height:320px}
     }
 
+    .incident-banner{
+      display:none;
+      margin:18px 16px;
+      border:1px solid #f4b4b4;
+      border-radius:18px;
+      background:#fff5f5;
+      padding:18px;
+      box-shadow:0 1px 2px rgba(127,29,29,.08);
+    }
+
+    .incident-banner.active{
+      display:block;
+      animation:incidentPulse 2s infinite;
+    }
+
+    .incident-title{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#991b1b;
+    }
+
+    .incident-state{
+      margin-top:8px;
+      font-size:24px;
+      font-weight:900;
+      color:#7f1d1d;
+    }
+
+    .incident-meta{
+      margin-top:8px;
+      font-size:13px;
+      color:#7f1d1d;
+    }
+
+    @keyframes incidentPulse{
+      0%{ box-shadow:0 0 0 rgba(220,38,38,0); }
+      50%{ box-shadow:0 0 24px rgba(220,38,38,.18); }
+      100%{ box-shadow:0 0 0 rgba(220,38,38,0); }
+    }
+
     .heatmap-panel{
       margin:18px 16px;
       background:#ffffff;
@@ -799,6 +841,12 @@
       <div class="command-small">Forensic and freeze supervision</div>
     </div>
   </div>
+
+  <section class="incident-banner" id="incidentBanner">
+    <div class="incident-title">Governance Incident Mode</div>
+    <div class="incident-state" id="incidentState">CLEAR</div>
+    <div class="incident-meta" id="incidentMeta">No active governance containment condition.</div>
+  </section>
 
   <section class="heatmap-panel">
     <div class="head">
@@ -1072,6 +1120,7 @@
 
         window.__OPS__ = data;
 
+        renderIncidentMode();
         renderExecutionHeatmap();
 
         return data;
@@ -1181,6 +1230,41 @@
       if(v.includes("PENDING") || v.includes("OPEN") || v.includes("REVIEW")) return "warn";
       if(v.includes("COMMITTED") || v.includes("VERIFIED") || v.includes("CLEAR") || v.includes("OPERATIONAL")) return "ok";
       return "live";
+    }
+
+    function renderIncidentMode(){
+      const banner = $("incidentBanner");
+      if(!banner) return;
+
+      const ops = window.__OPS__ || {};
+      const chainBroken = ops?.chain && ops.chain.verified === false;
+      const freezeActive = Number(ops?.emergency?.active_freeze_count || 0) > 0;
+      const forensicActive = ops?.operations_flags?.forensic_mode === true;
+      const quorumStalled = Number(ops?.governance?.quorum_pending || 0) > 0;
+      const highRiskOverload = Number(ops?.governance?.high_risk || 0) >= 10;
+
+      const incidents = [];
+      if(chainBroken) incidents.push("CHAIN_BROKEN");
+      if(freezeActive) incidents.push("FREEZE_ACTIVE");
+      if(forensicActive) incidents.push("FORENSIC_ACTIVE");
+      if(quorumStalled) incidents.push("QUORUM_PENDING");
+      if(highRiskOverload) incidents.push("HIGH_RISK_OVERLOAD");
+
+      const active = incidents.length > 0;
+
+      banner.classList.toggle("active", active);
+
+      if($("incidentState")){
+        $("incidentState").textContent = active
+          ? "INCIDENT MODE ACTIVE"
+          : "GOVERNANCE CLEAR";
+      }
+
+      if($("incidentMeta")){
+        $("incidentMeta").textContent = active
+          ? incidents.join(" · ")
+          : "No active governance containment condition.";
+      }
     }
 
     function renderExecutionHeatmap(){
