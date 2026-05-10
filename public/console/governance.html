@@ -1608,6 +1608,7 @@
       if(!reviewId){
         DETERMINISTIC_REPLAY = null;
         renderDeterministicReplay();
+      renderGovernanceRiskEngine();
         return;
       }
 
@@ -1625,6 +1626,7 @@
       }
 
       renderDeterministicReplay();
+      renderGovernanceRiskEngine();
     }
 
     function replayStageClass(stage){
@@ -2118,6 +2120,66 @@
           <div class="heat-meta">${escapeHtml(meta)}</div>
         </div>
       `).join("");
+    }
+
+
+
+    function renderGovernanceRiskEngine(){
+      const el = $("governanceRiskGrid");
+      if(!el) return;
+
+      const risk = DETERMINISTIC_REPLAY?.risk || null;
+
+      if($("riskEngineState")){
+        $("riskEngineState").textContent =
+          risk
+            ? "RISK ENGINE: LIVE"
+            : "RISK ENGINE: STANDBY";
+      }
+
+      if(!risk){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">RISK ENGINE</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Replay context required.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const levelClass =
+        risk.level === "CRITICAL"
+          ? "bad"
+          : risk.level === "HIGH"
+          ? "warn"
+          : risk.level === "MEDIUM"
+          ? "live"
+          : "ok";
+
+      const signalCards = (risk.signals || []).map(signal => `
+        <div class="heat-cell ${levelClass}">
+          <div class="heat-title">${escapeHtml(signal.code)}</div>
+          <div class="heat-value">${escapeHtml(signal.severity)}</div>
+          <div class="heat-meta">${escapeHtml(signal.message)}</div>
+        </div>
+      `).join("");
+
+      el.innerHTML = `
+        <div class="heat-cell ${levelClass}">
+          <div class="heat-title">TOTAL RISK</div>
+          <div class="heat-value">${escapeHtml(risk.score)}</div>
+          <div class="heat-meta">${escapeHtml(risk.summary || "—")}</div>
+        </div>
+
+        <div class="heat-cell ${levelClass}">
+          <div class="heat-title">ESCALATION</div>
+          <div class="heat-value">${escapeHtml(risk.level)}</div>
+          <div class="heat-meta">Execution-time governance escalation level</div>
+        </div>
+
+        ${signalCards}
+      `;
     }
 
 
