@@ -217,6 +217,24 @@ export default async function handler(req, res) {
         })
         .eq("id", review_id);
 
+      await insertGovernanceEvent({
+        supabase,
+        event: {
+          review_id,
+          execution_id: review.execution_id || null,
+          actor,
+          event_type: "GOVERNANCE_QUORUM_PENDING",
+          payload: {
+            required_approvals: quorum.required_approvals,
+            approvals_recorded: quorum.approvals_recorded,
+            required_role: quorum.required_role,
+            actors: quorum.actors || [],
+            escalation_level: quorum.escalation_level
+          },
+          created_at: new Date().toISOString()
+        }
+      });
+
       return json(res, 200, {
         ok: true,
         status: GOVERNANCE_STATES.QUORUM_PENDING,
@@ -236,6 +254,24 @@ export default async function handler(req, res) {
         updated_at: new Date().toISOString()
       })
       .eq("id", review_id);
+
+    await insertGovernanceEvent({
+      supabase,
+      event: {
+        review_id,
+        execution_id: review.execution_id || null,
+        actor,
+        event_type: "GOVERNANCE_QUORUM_MET",
+        payload: {
+          required_approvals: quorum.required_approvals,
+          approvals_recorded: quorum.approvals_recorded,
+          required_role: quorum.required_role,
+          actors: quorum.actors || [],
+          escalation_level: quorum.escalation_level
+        },
+        created_at: new Date().toISOString()
+      }
+    });
 
     const result = await finalizeGovernanceReview({
       supabase,
