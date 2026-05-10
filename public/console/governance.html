@@ -1002,6 +1002,7 @@
     let CHAIN_DIAGNOSTICS = null;
     let LIVE_SYNC = null;
     let GOVERNANCE_STREAM_TIMER = null;
+    let GOVERNANCE_MODE = "LEVEL_0_NORMAL";
 
     function $(id){
       return document.getElementById(id);
@@ -1264,6 +1265,79 @@
         $("incidentMeta").textContent = active
           ? incidents.join(" · ")
           : "No active governance containment condition.";
+      }
+    }
+
+
+    function renderGovernanceLevels(){
+      const el = $("governanceLevelGrid");
+      if(!el) return;
+
+      const governance = window.__OPS__?.governance || {};
+      const emergency = window.__OPS__?.emergency || {};
+      const flags = window.__OPS__?.operations_flags || {};
+
+      let current = "LEVEL 0";
+      let cls = "normal";
+      let description = "NORMAL EXECUTION";
+
+      if(governance.high_risk >= 10){
+        current = "LEVEL 2";
+        cls = "incident";
+        description = "INCIDENT GOVERNANCE";
+      }
+
+      if(emergency.active_freeze_count > 0){
+        current = "LEVEL 3";
+        cls = "containment";
+        description = "CONTAINMENT ACTIVE";
+      }
+
+      if(flags.forensic_mode){
+        current = "LEVEL 4";
+        cls = "lockdown";
+        description = "FORENSIC LOCKDOWN";
+      }
+
+      GOVERNANCE_MODE = current;
+
+      const levels = [
+        ["LEVEL 0","NORMAL","Stable execution governance","normal"],
+        ["LEVEL 1","REVIEW","Elevated governance review","review"],
+        ["LEVEL 2","INCIDENT","Execution integrity pressure","incident"],
+        ["LEVEL 3","CONTAINMENT","Restricted operations mode","containment"],
+        ["LEVEL 4","LOCKDOWN","Forensic governance lockdown","lockdown"]
+      ];
+
+      el.innerHTML = levels.map(([level,title,meta,levelCls]) => `
+        <div class="gov-level ${levelCls}">
+          <div class="gov-level-label">${escapeHtml(level)}</div>
+          <div class="gov-level-value">${escapeHtml(title)}</div>
+          <div class="gov-level-meta">${escapeHtml(meta)}</div>
+        </div>
+      `).join("");
+
+      const containment = $("containmentMode");
+
+      if(containment){
+        containment.classList.toggle(
+          "active",
+          current === "LEVEL 3" || current === "LEVEL 4"
+        );
+      }
+
+      if($("containmentValue")){
+        $("containmentValue").textContent =
+          current === "LEVEL 4"
+            ? "FORENSIC LOCKDOWN"
+            : "RESTRICTED OPERATIONS";
+      }
+
+      if($("containmentMeta")){
+        $("containmentMeta").textContent =
+          current === "LEVEL 4"
+            ? "ONLY FORENSIC / TRACE / AUDIT OPERATIONS PERMITTED"
+            : "EXECUTION APPROVALS LIMITED DURING CONTAINMENT";
       }
     }
 
