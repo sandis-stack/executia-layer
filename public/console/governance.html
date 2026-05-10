@@ -2168,14 +2168,31 @@
       `;
     }
 
+    function assertActionAllowed(action){
+      const allowedDuringLock = [
+        "EXPORT_PROOF",
+        "EXPORT_PDF",
+        "RELEASE_FREEZE",
+        "REFRESH",
+        "TRACE",
+        "AUDIT"
+      ];
+
+      if(isForensicLocked() && !allowedDuringLock.includes(action)){
+        alert("Hard Runtime Lockdown active. Only trace, audit, proof export, refresh, and freeze release are permitted. Reason: " + forensicLockReason());
+        return false;
+      }
+
+      return true;
+    }
+
     async function finalizeReview(path){
       if(!SELECTED){
         alert("Select review first.");
         return;
       }
 
-      if(isForensicLocked()){
-        alert("Forensic Lock Mode active. Restore chain integrity before governance actions.");
+      if(!assertActionAllowed("GOVERNANCE_DECISION")){
         return;
       }
 
@@ -2214,6 +2231,7 @@
     }
 
     window.createFreezeFromPanel = async function(scope, level){
+      if(!assertActionAllowed("CREATE_FREEZE")) return;
       try{
         const reason =
           $("globalFreezeReason")?.value.trim() ||
@@ -2254,6 +2272,7 @@
     }
 
     window.createSystemFreeze = async function(){
+      if(!assertActionAllowed("CREATE_FREEZE")) return;
       try{
         const reason = $("reviewReason")?.value.trim() || "Emergency governance freeze from console";
         await api("/api/v2/governance/freeze/create", {
@@ -2276,6 +2295,7 @@
     }
 
     window.releaseActiveFreeze = async function(){
+      if(!assertActionAllowed("RELEASE_FREEZE")) return;
       try{
         const status = await api("/api/v2/governance/freeze/status");
         if(!status?.active_freeze?.id){
