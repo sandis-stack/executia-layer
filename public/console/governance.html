@@ -1220,6 +1220,12 @@
       <span class="pill" id="autonomousContainmentState">CONTAINMENT: STANDBY</span>
     </div>
 
+    <div style="margin:12px 0 18px 0;">
+      <button class="secondary" onclick="applyAutonomousContainment()">
+        APPLY AUTONOMOUS CONTAINMENT
+      </button>
+    </div>
+
     <div class="heatmap-grid" id="autonomousContainmentGrid">
       <div class="heat-cell warn">
         <div class="heat-title">CONTAINMENT PLAN</div>
@@ -2484,6 +2490,72 @@
         ${actions}
         ${signals}
       `;
+    }
+
+
+    async function applyAutonomousContainment(){
+      try{
+        const plan = DETERMINISTIC_REPLAY?.containment_plan || null;
+
+        if(!plan){
+          alert("No containment plan loaded.");
+          return;
+        }
+
+        const reviewId =
+          DETERMINISTIC_REPLAY?.filters?.review_id ||
+          null;
+
+        const executionId =
+          DETERMINISTIC_REPLAY?.replay?.events?.find(e => e.execution_id)?.execution_id ||
+          DETERMINISTIC_REPLAY?.replay?.stages?.find(e => e.execution_id)?.execution_id ||
+          null;
+
+        if(!reviewId){
+          alert("No review_id available for containment.");
+          return;
+        }
+
+        const response = await api(
+          "/api/v2/governance/containment/apply",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              review_id: reviewId,
+              execution_id: executionId,
+              containment_plan: plan
+            })
+          }
+        );
+
+        if(!response?.ok){
+          throw new Error(
+            response?.error?.message ||
+            response?.error ||
+            "Autonomous containment apply failed."
+          );
+        }
+
+        alert(
+          "AUTONOMOUS CONTAINMENT APPLIED\n\n" +
+          "EVENT: " + (response.event?.event_type || "GOVERNANCE_AUTONOMOUS_CONTAINMENT_APPLIED") + "\n" +
+          "HASH: " + (response.event?.hash || "—")
+        );
+
+        await loadGlobalGovernanceStream?.();
+        await loadOpenReviews?.();
+
+      }catch(err){
+        console.error(err);
+
+        alert(
+          "AUTONOMOUS CONTAINMENT FAILED\n\n" +
+          (err?.message || err)
+        );
+      }
     }
 
 
