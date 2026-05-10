@@ -615,6 +615,19 @@
 
   <section class="global-stream-panel">
     <div class="head">
+      <h2>OPERATOR AUTHORITY MATRIX</h2>
+      <span class="pill" id="authorityMatrixState">AUTHORITY: STANDBY</span>
+    </div>
+    <div class="global-stream" id="operatorAuthorityMatrix">
+      <div class="block">
+        <div class="k">AUTHORITY LOCKED</div>
+        <div class="small">Authorize operator access to derive governance actors from the live event chain.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="global-stream-panel">
+    <div class="head">
       <h2>LIVE GOVERNANCE STREAM</h2>
       <span class="pill" id="globalStreamState">STREAM: STANDBY</span>
     </div>
@@ -770,9 +783,11 @@
         GLOBAL_EVENTS = (data.events || [])
           .sort((a,b) => (b.sequence_no || 0) - (a.sequence_no || 0))
           .slice(0, 25);
+        renderOperatorAuthorityMatrix();
         renderGlobalGovernanceStream();
       }catch(error){
         GLOBAL_EVENTS = [];
+        renderOperatorAuthorityMatrix();
         renderGlobalGovernanceStream();
       }
     }
@@ -805,6 +820,92 @@
       if(t.includes("FREEZE")) return "event-freeze";
       if(t.includes("REVIEW")) return "event-review";
       return "event-review";
+    }
+
+    function resolveEventActor(event){
+      const payload = event?.payload || {};
+      return {
+        email:
+          payload.operator_email ||
+          event?.actor_email ||
+          event?.actor ||
+          "system",
+        role:
+          payload.operator_role ||
+          event?.actor_role ||
+          (String(event?.actor || "").includes("supervisor") ? "SUPERVISOR" : "OPERATOR"),
+        event_type:
+          event?.event_type || "UNKNOWN",
+        created_at:
+          event?.created_at || "—"
+      };
+    }
+
+    function renderOperatorAuthorityMatrix(){
+      const el = $("operatorAuthorityMatrix");
+      if(!el) return;
+
+      const actors = new Map();
+
+      (GLOBAL_EVENTS || []).forEach((event) => {
+        const actor = resolveEventActor(event);
+        if(!actor.email || actor.email === "system") return;
+
+        const key = actor.email;
+        const previous = actors.get(key) || {
+          email: actor.email,
+          role: actor.role,
+          count: 0,
+          last_event: "—",
+          last_seen: "—"
+        };
+
+        previous.count += 1;
+        previous.role = actor.role || previous.role;
+        previous.last_event = actor.event_type || previous.last_event;
+        previous.last_seen = actor.created_at || previous.last_seen;
+
+        actors.set(key, previous);
+      });
+
+      const list = Array.from(actors.values())
+        .sort((a,b) => String(b.last_seen).localeCompare(String(a.last_seen)))
+        .slice(0, 12);
+
+      if($("authorityMatrixState")){
+        $("authorityMatrixState").textContent = list.length
+          ? "AUTHORITY: LIVE"
+          : "AUTHORITY: EMPTY";
+      }
+
+      if(!list.length){
+        el.innerHTML = `
+          <div class="block">
+            <div class="k">NO AUTHORITY EVENTS</div>
+            <div class="small">No operator or supervisor authority events found in the current governance stream.</div>
+          </div>
+        `;
+        return;
+      }
+
+      el.innerHTML = list.map((actor) => {
+        const roleClass = String(actor.role || "").toLowerCase().includes("supervisor")
+          ? "supervisor"
+          : "operator";
+
+        return `
+          <div class="authority-card">
+            <div class="authority-head">
+              <div class="authority-email">${escapeHtml(actor.email)}</div>
+              <div class="authority-role ${roleClass}">${escapeHtml(actor.role || "OPERATOR")}</div>
+            </div>
+            <div class="authority-stat">Events: ${escapeHtml(actor.count)}</div>
+            <div class="authority-stat">Last action: ${escapeHtml(actor.last_event)}</div>
+            <div class="authority-stat">Last seen: ${escapeHtml(actor.last_seen)}</div>
+            <div class="authority-stat">Status: ACTIVE IN GOVERNANCE CHAIN</div>
+          </div>
+        `;
+      }).join("");
     }
 
     function renderGlobalGovernanceStream(){
