@@ -76,8 +76,12 @@ const ROLE_PERMISSIONS = {
 
 function getAuthClient() {
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("SUPABASE_ENV_MISSING");
+  const key = process.env.SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    throw new Error("SUPABASE_AUTH_ENV_MISSING");
+  }
+
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
     realtime: { transport: ws }
