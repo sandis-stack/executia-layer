@@ -605,6 +605,47 @@
       section,aside{min-height:320px}
     }
 
+    .freeze-proof-panel{
+      margin:18px 16px;
+      background:#ffffff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 1px 2px rgba(15,23,42,.04);
+    }
+
+    .freeze-proof-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:14px;
+      padding:18px;
+      background:#f8fbff;
+    }
+
+    .freeze-proof-card{
+      border:1px solid #dbe6f3;
+      border-left:5px solid #c0392b;
+      border-radius:16px;
+      background:#fff;
+      padding:16px;
+    }
+
+    .freeze-proof-title{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#7f1d1d;
+    }
+
+    .freeze-proof-meta{
+      margin-top:8px;
+      font-size:12px;
+      line-height:1.5;
+      color:#607089;
+      word-break:break-word;
+    }
+
     .freeze-control-panel{
       margin:18px 16px;
       background:#ffffff;
@@ -907,6 +948,19 @@
     </div>
   </div>
 
+  <section class="freeze-proof-panel" id="freezeProofPanel">
+    <div class="head">
+      <h2>FREEZE BLOCK PROOF</h2>
+      <span class="pill" id="freezeProofState">PROOF: STANDBY</span>
+    </div>
+    <div class="freeze-proof-grid" id="freezeProofGrid">
+      <div class="block">
+        <div class="k">NO FREEZE BLOCK PROOF LOADED</div>
+        <div class="small">Global proof export will materialize execution blocks caused by active governance freeze.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="freeze-control-panel" id="freezeControlPanel">
     <div class="head">
       <h2>EXECUTION FREEZE CONTROL</h2>
@@ -1104,6 +1158,7 @@
     let CHAIN_DIAGNOSTICS = null;
     let LIVE_SYNC = null;
     let GOVERNANCE_STREAM_TIMER = null;
+    let FREEZE_PROOF_EVENTS = [];
     let GOVERNANCE_MODE = "LEVEL_0_NORMAL";
 
     function $(id){
@@ -1235,6 +1290,59 @@
       }
     }
 
+    async function loadFreezeBlockProof(){
+      try{
+        const proof = await api("/api/v2/governance/proof/export");
+        FREEZE_PROOF_EVENTS =
+          (proof?.emergency_governance?.freeze_events || [])
+            .filter((event) => event.event_type === "GOVERNANCE_EXECUTION_BLOCKED_BY_FREEZE")
+            .sort((a,b) => String(b.created_at || "").localeCompare(String(a.created_at || "")))
+            .slice(0, 12);
+
+        renderFreezeBlockProof();
+      }catch(error){
+        FREEZE_PROOF_EVENTS = [];
+        renderFreezeBlockProof();
+      }
+    }
+
+    function renderFreezeBlockProof(){
+      const el = $("freezeProofGrid");
+      if(!el) return;
+
+      if($("freezeProofState")){
+        $("freezeProofState").textContent = FREEZE_PROOF_EVENTS.length
+          ? "PROOF: MATERIALIZED"
+          : "PROOF: CLEAR";
+      }
+
+      if(!FREEZE_PROOF_EVENTS.length){
+        el.innerHTML = `
+          <div class="block">
+            <div class="k">NO FREEZE BLOCK PROOF</div>
+            <div class="small">No execution blocks caused by governance freeze found in current proof export.</div>
+          </div>
+        `;
+        return;
+      }
+
+      el.innerHTML = FREEZE_PROOF_EVENTS.map((event) => {
+        const details = event.details || {};
+        return `
+          <div class="freeze-proof-card">
+            <div class="freeze-proof-title">${escapeHtml(event.event_type)}</div>
+            <div class="freeze-proof-meta">Freeze: ${escapeHtml(event.freeze_id || "—")}</div>
+            <div class="freeze-proof-meta">Actor: ${escapeHtml(event.actor || "—")}</div>
+            <div class="freeze-proof-meta">Scope: ${escapeHtml(details.freeze_scope || "—")}</div>
+            <div class="freeze-proof-meta">Level: ${escapeHtml(details.freeze_level || "—")}</div>
+            <div class="freeze-proof-meta">Reason: ${escapeHtml(details.freeze_reason || "—")}</div>
+            <div class="freeze-proof-meta">Request: ${escapeHtml(details.request_type || "—")}</div>
+            <div class="freeze-proof-meta">Time: ${escapeHtml(event.created_at || "—")}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
     async function loadRecentEvents(){
       try{
         const data = await api("/api/v2/governance/reviews/timeline");
@@ -1261,6 +1369,7 @@
         if(!TOKEN) return;
         await loadOperationsStatus();
         await loadRecentEvents();
+        await loadFreezeBlockProof();
       }, 5000);
     }
 
@@ -1278,6 +1387,7 @@
 
         renderQueue();
         await loadRecentEvents();
+        await loadFreezeBlockProof();
         renderExecutionTopology();
       }catch(error){
         if($("queueState")) $("queueState").textContent = "QUEUE: ERROR";
@@ -1916,6 +2026,7 @@
 
         await loadOperationsStatus();
         await loadRecentEvents();
+        await loadFreezeBlockProof();
         if(SELECTED) await renderDetail();
 
         alert(scope + " freeze activated.");
@@ -2026,6 +2137,7 @@
           await window.loadOpenReviews();
           await loadOperationsStatus();
           await loadRecentEvents();
+        await loadFreezeBlockProof();
         }catch(error){
           console.error("LIVE_SYNC_FAILED", error);
         }
