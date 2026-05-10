@@ -10,6 +10,10 @@ import {
   verifyGovernanceHashChain
 } from "../../../services/governance-hash.js";
 
+import {
+  calculateGovernanceRisk
+} from "../../../services/governance-risk.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -210,6 +214,21 @@ export default async function handler(req, res) {
 
     const path = buildReplayPath(replayEvents);
 
+    const replayState = {
+      stages: path,
+      events: replayEvents,
+      event_count: replayEvents.length,
+      recovered: replayEvents.some((event) => event.stage === "RECOVERY"),
+      stopped: replayEvents.some((event) => event.stage === "STOP"),
+      constitution_triggered: replayEvents.some((event) => event.stage === "CONSTITUTION")
+    };
+
+    const risk = calculateGovernanceRisk({
+      verification,
+      replay: replayState,
+      events: replayEvents
+    });
+
     return json(res, 200, {
       ok: true,
       type: "EXECUTIA_DETERMINISTIC_GOVERNANCE_REPLAY",
@@ -221,14 +240,8 @@ export default async function handler(req, res) {
         execution_id
       },
       verification,
-      replay: {
-        stages: path,
-        events: replayEvents,
-        event_count: replayEvents.length,
-        recovered: replayEvents.some((event) => event.stage === "RECOVERY"),
-        stopped: replayEvents.some((event) => event.stage === "STOP"),
-        constitution_triggered: replayEvents.some((event) => event.stage === "CONSTITUTION")
-      }
+      risk,
+      replay: replayState
     });
   } catch (error) {
     console.error("[EXECUTIA GOVERNANCE REPLAY ERROR]", error);
