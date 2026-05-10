@@ -14,6 +14,10 @@ import {
   calculateGovernanceRisk
 } from "../../../services/governance-risk.js";
 
+import {
+  classifyGovernanceIncident
+} from "../../../services/governance-intelligence.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -229,6 +233,11 @@ export default async function handler(req, res) {
       events: replayEvents
     });
 
+    const intelligence = classifyGovernanceIncident({
+      replay: replayState,
+      risk
+    });
+
     return json(res, 200, {
       ok: true,
       type: "EXECUTIA_DETERMINISTIC_GOVERNANCE_REPLAY",
@@ -241,6 +250,7 @@ export default async function handler(req, res) {
       },
       verification,
       risk,
+      intelligence,
       replay: replayState
     });
   } catch (error) {
