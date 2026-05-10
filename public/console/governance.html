@@ -625,9 +625,636 @@
       "";
     let REVIEWS = [];
     let SELECTED = null;
+    let CHAIN_DIAGNOSTICS = null;<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA Governance Console V2</title>
+  <style>
+    :root{
+      --bg:#f5f7fa;
+      --panel:#ffffff;
+      --line:#d8dee8;
+      --text:#162232;
+      --muted:#667386;
+      --blue:#1e3a5f;
+      --soft:#eef3f8;
+      --ok:#1f7a4d;
+      --bad:#9b2c2c;
+      --warn:#9a6a00;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Inter,Arial,sans-serif;
+      color:var(--text);
+      background:
+        linear-gradient(var(--line) 1px,transparent 1px),
+        linear-gradient(90deg,var(--line) 1px,transparent 1px),
+        var(--bg);
+      background-size:40px 40px;
+    }
+
+    header{
+      height:68px;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 28px;
+    }
+
+    .brand{
+      font-weight:900;
+      letter-spacing:.1em;
+      color:var(--blue);
+      font-size:18px;
+    }
+
+    .sub{
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.12em;
+      font-weight:800;
+      margin-top:4px;
+    }
+
+    .status{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      border:1px solid var(--line);
+      background:var(--soft);
+      color:var(--blue);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.1em;
+    }
+
+    main{
+      display:grid;
+      grid-template-columns:300px 1fr 420px;
+      gap:16px;
+      padding:16px;
+      height:calc(100vh - 68px);
+      overflow:hidden;
+    }
+
+    section, aside{
+      background:rgba(255,255,255,.97);
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+      min-height:0;
+    }
+
+    .pad{padding:16px}
+
+    h2{
+      margin:0 0 14px;
+      font-size:12px;
+      letter-spacing:.14em;
+      color:var(--blue);
+    }
+
+    label{
+      display:block;
+      font-size:10px;
+      color:var(--muted);
+      margin:12px 0 7px;
+      letter-spacing:.12em;
+      font-weight:800;
+    }
+
+    input, textarea{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:#fff;
+      color:var(--text);
+      font-size:13px;
+    }
+
+    textarea{
+      min-height:82px;
+      resize:vertical;
+      font-family:inherit;
+    }
+
+    button{
+      width:100%;
+      border:1px solid var(--blue);
+      background:var(--blue);
+      color:#fff;
+      border-radius:10px;
+      padding:11px 12px;
+      font-size:10px;
+      letter-spacing:.12em;
+      font-weight:900;
+      cursor:pointer;
+      margin-top:10px;
+    }
+
+    button.secondary{background:#fff;color:var(--blue)}
+    button.danger{background:var(--bad);border-color:var(--bad)}
+    button.warn{background:#fff;color:var(--warn);border-color:var(--warn)}
+    button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      filter:grayscale(1);
+    }
+
+    .metrics{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .metric{
+      background:var(--soft);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .k{
+      font-size:10px;
+      color:var(--muted);
+      letter-spacing:.12em;
+      font-weight:900;
+    }
+
+    .v{
+      margin-top:6px;
+      font-size:14px;
+      font-weight:900;
+      color:var(--text);
+      word-break:break-word;
+    }
+
+    .head{
+      height:58px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 16px;
+      background:#fff;
+    }
+
+    .queue{
+      overflow:auto;
+      height:calc(100% - 58px);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 90px 70px;
+      gap:12px;
+      padding:13px 16px;
+      border-bottom:1px solid var(--line);
+      cursor:pointer;
+    }
+
+    .row:hover{background:#f8fafc}
+    .row.active{background:#eef3f8}
+
+    .id{
+      font-size:12px;
+      font-weight:900;
+      color:var(--blue);
+      word-break:break-all;
+    }
+
+    .small{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:5px;
+      line-height:1.45;
+    }
+
+    .badge{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 8px;
+      text-align:center;
+      font-size:10px;
+      font-weight:900;
+      height:max-content;
+    }
+
+    .bad{color:var(--bad);border-color:#e4b9b9;background:#fff5f5}
+    .warnc{color:var(--warn);border-color:#ead7a2;background:#fffaf0}
+    .okc{color:var(--ok);border-color:#b9dec9;background:#f3fff7}
+
+    .detail{
+      overflow:auto;
+      height:calc(100% - 58px);
+      padding:16px;
+    }
+
+    .block{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:12px;
+      padding:13px;
+      margin-bottom:12px;
+    }
+
+    pre{
+      white-space:pre-wrap;
+      word-break:break-word;
+      background:#f3f6fa;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:10px;
+      font-size:11px;
+      line-height:1.45;
+      max-height:260px;
+      overflow:auto;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .stream{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height:320px;
+      overflow:auto;
+    }
+
+    .stream-item{
+      border:1px solid var(--line);
+      background:#f8fafc;
+      border-radius:10px;
+      padding:10px;
+    }
+
+    .stream-type{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--blue);
+    }
+
+    .stream-meta{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+      line-height:1.45;
+    }
+
+    .event-approved{
+      border-left:4px solid #1f7a4d;
+    }
+
+    .event-rejected{
+      border-left:4px solid #9b2c2c;
+    }
+
+    .event-review{
+      border-left:4px solid #9a6a00;
+    }
+
+    .event-freeze{
+      border-left:4px solid #5b21b6;
+    }
+
+    .event-resume{
+      border-left:4px solid #0369a1;
+    }
+
+    .timeline-ui{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .timeline-card{
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      padding:12px;
+    }
+
+    .timeline-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+
+    .timeline-title{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--blue);
+    }
+
+    .timeline-seq{
+      font-size:10px;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    .timeline-hash{
+      margin-top:8px;
+      padding:8px;
+      border-radius:8px;
+      background:#f3f6fa;
+      border:1px solid var(--line);
+      font-size:10px;
+      color:var(--muted);
+      word-break:break-all;
+      line-height:1.45;
+    }
+
+    .chain-bar{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      overflow:auto;
+      padding:10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#f8fafc;
+      margin-bottom:12px;
+    }
+
+    .chain-node{
+      min-width:70px;
+      border:1px solid #b9dec9;
+      background:#f3fff7;
+      color:var(--ok);
+      border-radius:999px;
+      padding:8px 10px;
+      text-align:center;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+
+    .chain-arrow{
+      color:var(--muted);
+      font-weight:900;
+      font-size:14px;
+    }
+
+    .chain-node.warn-node{
+      border-color:#ead7a2;
+      background:#fffaf0;
+      color:var(--warn);
+    }
+
+    .chain-node.bad-node{
+      border-color:#e4b9b9;
+      background:#fff5f5;
+      color:var(--bad);
+    }
+
+    .forensic-panel{
+      border:1px solid #e4b9b9;
+      background:#fff5f5;
+      border-radius:12px;
+      padding:12px;
+      margin-top:12px;
+    }
+
+    .forensic-title{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--bad);
+    }
+
+    .forensic-grid{
+      display:grid;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .forensic-row{
+      background:#fff;
+      border:1px solid #efd0d0;
+      border-radius:8px;
+      padding:8px;
+      font-size:11px;
+      word-break:break-all;
+    }
+
+
+    .command-center{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:12px;
+      padding:12px 16px;
+      border-bottom:1px solid var(--line);
+      background:#f8fbff;
+    }
+
+    .command-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+      min-height:88px;
+    }
+
+    .command-label{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--muted);
+    }
+
+    .command-value{
+      margin-top:8px;
+      font-size:15px;
+      font-weight:900;
+      color:var(--blue);
+      word-break:break-word;
+    }
+
+    .command-small{
+      margin-top:6px;
+      font-size:11px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .actions button{margin-top:0}
+
+    @media(max-width:1100px){
+      main{grid-template-columns:1fr;height:auto;overflow:auto}
+      section,aside{min-height:320px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="brand">EXECUTIA™ GOVERNANCE CONSOLE</div>
+      <div class="sub">V2 EXECUTION-TIME INSTITUTIONAL GOVERNANCE</div>
+    </div>
+
+    <div class="status">
+      <span class="pill" id="authState">AUTH: LOCKED</span>
+      <span class="pill" id="queueState">QUEUE: STANDBY</span>
+      <span class="pill" id="chainState">CHAIN: UNKNOWN</span>
+      <span class="pill" id="freezeState">FREEZE: UNKNOWN</span>
+      <span class="pill" id="syncState">SYNC: STANDBY</span>
+    </div>
+  </header>
+
+
+  <div class="command-center">
+    <div class="command-card">
+      <div class="command-label">GLOBAL STATE</div>
+      <div class="command-value" id="ccGlobalState">STANDBY</div>
+      <div class="command-small">Institutional governance runtime</div>
+    </div>
+
+    <div class="command-card">
+      <div class="command-label">CHAIN HEALTH</div>
+      <div class="command-value" id="ccChainHealth">UNKNOWN</div>
+      <div class="command-small">Hash continuity verification</div>
+    </div>
+
+    <div class="command-card">
+      <div class="command-label">ACTIVE FREEZES</div>
+      <div class="command-value" id="ccFreezeCount">0</div>
+      <div class="command-small">Emergency governance controls</div>
+    </div>
+
+    <div class="command-card">
+      <div class="command-label">LIVE EVENTS</div>
+      <div class="command-value" id="ccEventCount">0</div>
+      <div class="command-small">Governance chain events</div>
+    </div>
+
+    <div class="command-card">
+      <div class="command-label">SUPERVISION</div>
+      <div class="command-value" id="ccSupervision">CLEAR</div>
+      <div class="command-small">Forensic and freeze supervision</div>
+    </div>
+  </div>
+
+  <main>
+
+    <aside>
+      <div class="pad">
+        <h2>AUTHORITY ACCESS</h2>
+
+        <label>EMAIL</label>
+        <input id="email" value="operator@executia.io" />
+
+        <label>PASSWORD</label>
+        <input id="password" type="password" placeholder="Operator password" />
+
+        <button onclick="login()">AUTHORIZE</button>
+
+        <label>ACCESS TOKEN</label>
+        <input id="tokenInput" placeholder="Paste JWT token" />
+
+        <button class="secondary" onclick="authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
+        <button class="secondary" onclick="loadOpenReviews()">REFRESH QUEUE</button>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="k">OPERATOR</div>
+            <div class="v" id="operatorEmail">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">ORGANIZATION</div>
+            <div class="v" id="organizationId">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">OPEN REVIEWS</div>
+            <div class="v" id="openCount">0</div>
+          </div>
+          <div class="metric">
+            <div class="k">SELECTED REVIEW</div>
+            <div class="v" id="selectedReview">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">GOVERNANCE CHAIN</div>
+            <div class="v" id="governanceChainStatus">UNKNOWN</div>
+          </div>
+          <div class="metric">
+            <div class="k">CHAIN HEAD</div>
+            <div class="v" id="governanceChainHead">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">EMERGENCY FREEZE</div>
+            <div class="v" id="emergencyFreezeStatus">UNKNOWN</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section>
+      <div class="head">
+        <h2>OPEN GOVERNANCE REVIEWS</h2>
+        <span class="pill" id="lastRefresh">NOT LOADED</span>
+      </div>
+      <div class="queue" id="queue">
+        <div class="pad">
+          <div class="block">
+            <div class="k">QUEUE LOCKED</div>
+            <div class="small">Authorize operator access to load governance review queue.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>REVIEW DETAIL</h2>
+        <span class="pill" id="detailState">NO SELECTION</span>
+      </div>
+
+      <div class="detail" id="detail">
+        <div class="block">
+          <div class="k">STATE</div>
+          <div class="v">AWAITING REVIEW SELECTION</div>
+          <div class="small">Select an open governance review to inspect policy, risk and event history.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const API_BASE = "";
+    let REALTIME_CLIENT = null;
+    let REALTIME_CHANNEL = null;
+    let TOKEN =
+      localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") ||
+      localStorage.getItem("EXECUTIA_JWT") ||
+      "";
+    let REVIEWS = [];
+    let SELECTED = null;
     let CHAIN_DIAGNOSTICS = null;
     let GLOBAL_EVENTS = [];
-    let CHAIN_DIAGNOSTICS = null;
+    
 
     function $(id){
       return document.getElementById(id);
@@ -768,7 +1395,7 @@
       }
     }
 
-    async function login(){
+    window.login = async function(){
       try{
         const email = $("email").value.trim();
         const password = $("password").value.trim();
@@ -796,7 +1423,7 @@
       }
     }
 
-    async function authorizeWithToken(){
+    window.authorizeWithToken = async function(){
       try{
         const token = $("tokenInput").value.trim() || TOKEN;
         if(!token) throw new Error("TOKEN_REQUIRED");
@@ -994,7 +1621,7 @@
       return "okc";
     }
 
-    async function loadOpenReviews(){
+    window.loadOpenReviews = async function(){
       try{
         $("queueState").textContent = "QUEUE: LOADING";
         const data = await api("/api/v2/governance/reviews/open");
