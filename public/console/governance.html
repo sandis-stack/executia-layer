@@ -3279,6 +3279,35 @@
     </div>
   </section>
 
+
+<section class="regeneration-engine-shell">
+    <div class="regeneration-engine-head">
+      <div class="regeneration-engine-title">
+        <div class="regeneration-engine-label">
+          EXECUTION-TIME CIVILIZATION REGENERATION ENGINE
+        </div>
+
+        <div class="regeneration-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationRegenerationPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="regeneration-engine-grid" id="civilizationRegenerationGrid">
+      <div class="regeneration-node warn">
+        <div class="regeneration-node-title">CIVILIZATION REGENERATION ENGINE</div>
+        <div class="regeneration-node-value">STANDBY</div>
+        <div class="regeneration-node-meta">
+          Awaiting execution-time regeneration materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4830,6 +4859,7 @@
         renderCivilizationConsciousness();
         renderRealitySynchronization();
         renderCivilizationImmuneSystem();
+        renderCivilizationRegenerationEngine();
           return;
         }
 
@@ -6867,6 +6897,107 @@
 
 
 
+
+
+    function renderCivilizationRegenerationEngine(){
+      const el = $("civilizationRegenerationGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+      const reality = $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED";
+      const immune = $("civilizationImmunePill")?.textContent || "IMMUNE ACTIVE";
+
+      const regenerationText = [
+        truth,
+        evolution,
+        directive,
+        kernel,
+        consciousness,
+        reality,
+        immune
+      ].join(" ").toUpperCase();
+
+      let regenerationState = "REGENERATION SYNCHRONIZED";
+      let repair = "NOT REQUIRED";
+      let continuity = "RESTORED";
+      let coherence = "COHERENT";
+      let truthStability = "STABLE";
+      let rebuild = "STANDBY";
+
+      if(
+        regenerationText.includes("DIVERG") ||
+        regenerationText.includes("BROKEN") ||
+        regenerationText.includes("MISMATCH") ||
+        regenerationText.includes("FRACTURE")
+      ){
+        regenerationState = "REGENERATION REBUILDING";
+        repair = "EXECUTION FRACTURE REPAIR ACTIVE";
+        continuity = "REBUILDING";
+        coherence = "RECONSTRUCTING";
+        truthStability = "RECOVERING";
+        rebuild = "ACTIVE";
+      }
+      else if(
+        regenerationText.includes("RECOVER")
+      ){
+        regenerationState = "REGENERATION RECOVERING";
+        repair = "RECOVERY FLOW ACTIVE";
+        continuity = "RECOVERING";
+        coherence = "REBALANCING";
+        truthStability = "STABILIZING";
+        rebuild = "CONTROLLED";
+      }
+      else if(
+        regenerationText.includes("CONTAIN") ||
+        regenerationText.includes("ISOLAT")
+      ){
+        regenerationState = "REGENERATION STABILIZING";
+        repair = "POST-CONTAINMENT REPAIR PREPARED";
+        continuity = "PROTECTED";
+        coherence = "STABILIZING";
+        truthStability = "MONITORED";
+        rebuild = "READY";
+      }
+      else if(
+        regenerationText.includes("UNSTABLE") ||
+        regenerationText.includes("STABILIZ") ||
+        regenerationText.includes("PENDING") ||
+        regenerationText.includes("REVIEW")
+      ){
+        regenerationState = "REGENERATION ACTIVE";
+        repair = "PREVENTIVE REPAIR ACTIVE";
+        continuity = "ADAPTIVE";
+        coherence = "MONITORED";
+        truthStability = "PROTECTED";
+        rebuild = "PREPARED";
+      }
+
+      const nodes = [
+        ["REPAIR", repair, "Execution fracture repair and runtime restoration."],
+        ["CONTINUITY", continuity, "Continuity restoration across execution layers."],
+        ["COHERENCE", coherence, "Execution coherence reconstruction state."],
+        ["TRUTH STABILITY", truthStability, "Truth layer stability recovery and protection."],
+        ["REBUILD", rebuild, "Runtime rebuild readiness and activation state."],
+        ["REGENERATION STATUS", regenerationState, "Self-healing execution civilization layer active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationRegenerationPill")){
+        $("civilizationRegenerationPill").textContent = regenerationState;
+      }
+    }
 
     function renderCivilizationImmuneSystem(){
       const el = $("civilizationImmuneGrid");
