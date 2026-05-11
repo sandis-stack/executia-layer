@@ -1226,6 +1226,48 @@
       box-shadow:none;
     }
 
+  
+    /* EXECUTIA Runtime Status Rail */
+    .runtime-status-rail{
+      position:sticky;
+      top:0;
+      z-index:30;
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:8px;
+      padding:10px 16px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(14px);
+    }
+
+    .runtime-rail-cell{
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      padding:10px 12px;
+      min-height:58px;
+    }
+
+    .runtime-rail-label{
+      font-size:9px;
+      font-weight:900;
+      letter-spacing:.14em;
+      color:var(--muted);
+    }
+
+    .runtime-rail-value{
+      margin-top:6px;
+      font-size:13px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1.15;
+    }
+
+    .runtime-rail-cell.ok{border-color:#b7e4c7;background:#f2fbf5}
+    .runtime-rail-cell.warn{border-color:#f1d38a;background:#fffaf0}
+    .runtime-rail-cell.bad{border-color:#e2aaaa;background:#fff5f5}
+
   </style>
 </head>
 <body>
@@ -1656,6 +1698,29 @@
         <div class="runtime-priority-pill live">
           SYNCHRONIZED
         </div>
+      </div>
+    </div>
+
+    <div class="runtime-status-rail" id="runtimeStatusRail">
+      <div class="runtime-rail-cell warn" id="railCommandCell">
+        <div class="runtime-rail-label">COMMAND</div>
+        <div class="runtime-rail-value" id="railCommand">STANDBY</div>
+      </div>
+      <div class="runtime-rail-cell warn" id="railFieldCell">
+        <div class="runtime-rail-label">FIELD</div>
+        <div class="runtime-rail-value" id="railField">STANDBY</div>
+      </div>
+      <div class="runtime-rail-cell warn" id="railPhysicsCell">
+        <div class="runtime-rail-label">PHYSICS</div>
+        <div class="runtime-rail-value" id="railPhysics">STANDBY</div>
+      </div>
+      <div class="runtime-rail-cell warn" id="railSyncCell">
+        <div class="runtime-rail-label">SYNC</div>
+        <div class="runtime-rail-value" id="railSync">STANDBY</div>
+      </div>
+      <div class="runtime-rail-cell warn" id="railExecutionCell">
+        <div class="runtime-rail-label">EXECUTION</div>
+        <div class="runtime-rail-value" id="railExecution">STANDBY</div>
       </div>
     </div>
 
@@ -3061,6 +3126,7 @@
           renderCivilizationPressureMap();
           renderAutonomousStabilizationField();
           renderLiveExecutionPhysicsEngine();
+        renderRuntimeStatusRail();
           return;
         }
 
@@ -3527,6 +3593,97 @@
 
 
 
+
+
+
+
+    function renderRuntimeStatusRail(){
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const state = response?.runtime_state || null;
+
+      const setRail = (cellId, valueId, value, cls) => {
+        const cell = $(cellId);
+        const el = $(valueId);
+        if(el) el.textContent = value || "STANDBY";
+        if(cell){
+          cell.classList.remove("ok","warn","bad");
+          cell.classList.add(cls || "warn");
+        }
+      };
+
+      if(!state){
+        setRail("railCommandCell","railCommand","STANDBY","warn");
+        setRail("railFieldCell","railField","STANDBY","warn");
+        setRail("railPhysicsCell","railPhysics","STANDBY","warn");
+        setRail("railSyncCell","railSync","STANDBY","warn");
+        setRail("railExecutionCell","railExecution","STANDBY","warn");
+        return;
+      }
+
+      const risk =
+        [
+          state.execution_allowed === false,
+          state.quarantine_required,
+          state.entropy_detected,
+          state.stabilization_required,
+          state.field_stabilization_required,
+          state.origin_stabilization_required,
+          state.convergence_required,
+          state.synchronization_stable === false
+        ].filter(Boolean).length;
+
+      const command =
+        state.execution_allowed === false
+          ? "BLOCKED"
+          : risk >= 3
+          ? "STABILIZE"
+          : "LIVE";
+
+      const commandClass =
+        state.execution_allowed === false
+          ? "bad"
+          : risk >= 3
+          ? "warn"
+          : "ok";
+
+      const field =
+        state.field_stabilization_required || state.origin_stabilization_required
+          ? "STABILIZE"
+          : "STABLE";
+
+      const fieldClass =
+        state.field_stabilization_required || state.origin_stabilization_required
+          ? "warn"
+          : "ok";
+
+      const physics =
+        state.entropy_detected || state.convergence_required || state.stabilization_required
+          ? "DRIFT"
+          : "COHERENT";
+
+      const physicsClass =
+        physics === "DRIFT" ? "warn" : "ok";
+
+      const sync =
+        state.synchronization_stable === false
+          ? "DRIFT"
+          : "SYNCED";
+
+      const syncClass =
+        sync === "DRIFT" ? "warn" : "ok";
+
+      const execution =
+        state.execution_allowed ? "ALLOWED" : "LOCKED";
+
+      const executionClass =
+        state.execution_allowed ? "ok" : "bad";
+
+      setRail("railCommandCell","railCommand",command,commandClass);
+      setRail("railFieldCell","railField",field,fieldClass);
+      setRail("railPhysicsCell","railPhysics",physics,physicsClass);
+      setRail("railSyncCell","railSync",sync,syncClass);
+      setRail("railExecutionCell","railExecution",execution,executionClass);
+    }
 
 
     function renderCivilizationCommandCenter(){
