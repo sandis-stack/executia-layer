@@ -2122,6 +2122,7 @@
         await loadRecentEvents();
         await loadFreezeBlockProof();
         await loadForensicReplay();
+        await loadGovernanceRuntimeState();
         renderExecutionTopology();
       }catch(error){
         if($("queueState")) $("queueState").textContent = "QUEUE: ERROR";
