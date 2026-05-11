@@ -3163,6 +3163,35 @@
     </div>
   </section>
 
+
+<section class="kernel-engine-shell">
+    <div class="kernel-engine-head">
+      <div class="kernel-engine-title">
+        <div class="kernel-engine-label">
+          EXECUTION-TIME CIVILIZATION KERNEL
+        </div>
+
+        <div class="kernel-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationKernelPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="kernel-engine-grid" id="civilizationKernelGrid">
+      <div class="kernel-node warn">
+        <div class="kernel-node-title">CIVILIZATION KERNEL</div>
+        <div class="kernel-node-value">STANDBY</div>
+        <div class="kernel-node-meta">
+          Awaiting execution-time kernel materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4710,6 +4739,7 @@
         renderTruthEngine();
         renderEvolutionEngine();
         renderDirectiveCore();
+        renderCivilizationKernel();
           return;
         }
 
@@ -6743,6 +6773,89 @@
 
 
 
+
+
+    function renderCivilizationKernel(){
+      const el = $("civilizationKernelGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+
+      const runtimeStateText = [
+        truth,
+        evolution,
+        directive
+      ].join(" ").toUpperCase();
+
+      let kernelState = "KERNEL SYNCHRONIZED";
+      let coordination = "GLOBAL EXECUTION COORDINATION";
+      let continuity = "STABLE";
+      let pressure = "CONTROLLED";
+      let propagation = "SYNCHRONIZED";
+
+      if(runtimeStateText.includes("CONTAIN")){
+        kernelState = "KERNEL CONTAINING";
+        coordination = "EXECUTION CONTAINMENT";
+        continuity = "PROTECTED";
+        pressure = "CRITICAL";
+        propagation = "IMMEDIATE";
+      }
+      else if(
+        runtimeStateText.includes("DIVERG") ||
+        runtimeStateText.includes("BROKEN") ||
+        runtimeStateText.includes("REROUT")
+      ){
+        kernelState = "KERNEL RECOVERING";
+        coordination = "EXECUTION RECOVERY";
+        continuity = "RECOVERING";
+        pressure = "HIGH";
+        propagation = "CASCADE";
+      }
+      else if(
+        runtimeStateText.includes("UNSTABLE") ||
+        runtimeStateText.includes("STABILIZ")
+      ){
+        kernelState = "KERNEL STABILIZING";
+        coordination = "RUNTIME STABILIZATION";
+        continuity = "ADAPTIVE";
+        pressure = "ELEVATED";
+        propagation = "CONTROLLED";
+      }
+      else if(
+        runtimeStateText.includes("EVOLUTION") ||
+        runtimeStateText.includes("OPTIMIZE")
+      ){
+        kernelState = "KERNEL EVOLVING";
+        coordination = "AUTONOMOUS EVOLUTION";
+        continuity = "SELF-ADAPTING";
+        pressure = "OPTIMAL";
+        propagation = "SYNCHRONIZED";
+      }
+
+      const nodes = [
+        ["KERNEL STATE", kernelState, "Central execution civilization runtime state."],
+        ["COORDINATION", coordination, "Top-level orchestration across execution layers."],
+        ["CONTINUITY", continuity, "Civilization runtime continuity integrity."],
+        ["PRESSURE FIELD", pressure, "Execution pressure stabilization level."],
+        ["PROPAGATION", propagation, "Runtime directive propagation behavior."],
+        ["RUNTIME STATUS", "SELF-REGULATING", "Autonomous execution civilization kernel active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationKernelPill")){
+        $("civilizationKernelPill").textContent = kernelState;
+      }
+    }
 
     function renderDirectiveCore(){
       const el = $("directiveCoreGrid");
