@@ -2682,6 +2682,16 @@
   .topology-signal-text{font-size:8.5px;font-weight:700;fill:#60748a;}
   @keyframes signalPing{0%{r:7;opacity:.55;}70%{opacity:.12;}100%{r:28;opacity:0;}}
 
+
+  .topology-response-vector{stroke:#1e3a5f;stroke-width:2;opacity:.46;fill:none;stroke-linecap:round;stroke-dasharray:9 7;animation:topologyFlow 2.6s linear infinite;}
+  .topology-response-arc{fill:none;stroke:rgba(30,58,95,.30);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:14 9;animation:topologyFlow 3.8s linear infinite;}
+  .topology-response-node{fill:#f8fbff;stroke:#1e3a5f;stroke-width:2.2;filter:drop-shadow(0 0 12px rgba(30,58,95,.20));}
+  .topology-response-core{fill:#1e3a5f;opacity:.88;}
+  .topology-response-label{font-size:8.5px;font-weight:900;letter-spacing:.1em;fill:#1e3a5f;text-anchor:middle;}
+  .topology-response-panel{fill:#fff;stroke:rgba(30,58,95,.14);stroke-width:1;filter:drop-shadow(0 8px 16px rgba(30,58,95,.08));}
+  .topology-response-title{font-size:9px;font-weight:900;letter-spacing:.12em;fill:#1e3a5f;}
+  .topology-response-text{font-size:8.5px;font-weight:700;fill:#60748a;}
+
 </style>
 </head>
 <body>
@@ -7503,7 +7513,7 @@
             <div>
               <div class="civilization-topology-title">LIVE CIVILIZATION TOPOLOGY GRAPH</div>
               <div class="civilization-topology-subtitle">
-                Runtime universe view: execution layers, animated flow streams, pressure heat zones, signal intelligence, anomaly pings and structural links.
+                Runtime universe view: execution layers, animated flow streams, pressure heat zones, signal intelligence, autonomous response vectors and structural links.
               </div>
             </div>
             <div class="civilization-topology-badge">${escapeHtml(canvasState)}</div>
@@ -7561,6 +7571,28 @@
               <circle class="topology-signal-node" cx="245" cy="420" r="8"></circle>
               <text class="topology-signal-label" x="245" y="400">SYNC</text>
             </g>
+            <g>
+              <path class="topology-response-arc" d="M 300 125 C 405 210, 430 255, 520 300"></path>
+              <path class="topology-response-arc" d="M 760 155 C 690 230, 625 270, 520 300"></path>
+              <path class="topology-response-arc" d="M 830 390 C 700 365, 625 330, 520 300"></path>
+              <path class="topology-response-arc" d="M 245 420 C 350 380, 425 340, 520 300"></path>
+
+              <path class="topology-response-vector" d="M 520 300 L 650 300"></path>
+              <path class="topology-response-vector" d="M 520 300 L 430 225"></path>
+              <path class="topology-response-vector" d="M 520 300 L 455 405"></path>
+
+              <circle class="topology-response-node" cx="650" cy="300" r="13"></circle>
+              <circle class="topology-response-core" cx="650" cy="300" r="6"></circle>
+              <text class="topology-response-label" x="650" y="328">CONTAIN</text>
+
+              <circle class="topology-response-node" cx="430" cy="225" r="13"></circle>
+              <circle class="topology-response-core" cx="430" cy="225" r="6"></circle>
+              <text class="topology-response-label" x="430" y="253">STABILIZE</text>
+
+              <circle class="topology-response-node" cx="455" cy="405" r="13"></circle>
+              <circle class="topology-response-core" cx="455" cy="405" r="6"></circle>
+              <text class="topology-response-label" x="455" y="433">REROUTE</text>
+            </g>
             <circle class="topology-flow-particle" r="5">
               <animateMotion dur="9s" repeatCount="indefinite">
                 <mpath href="#executionFlowOrbitOuter"></mpath>
@@ -7588,6 +7620,13 @@
               <text class="topology-signal-text" x="840" y="488">ANOMALY · scanning</text>
               <text class="topology-signal-text" x="840" y="507">SPIKE · predictive alert</text>
               <text class="topology-signal-text" x="840" y="526">DIVERGENCE · monitored</text>
+            </g>
+            <g>
+              <rect class="topology-response-panel" x="820" y="322" width="178" height="98" rx="16"></rect>
+              <text class="topology-response-title" x="840" y="350">AUTONOMOUS RESPONSE</text>
+              <text class="topology-response-text" x="840" y="372">CONTAIN · ready</text>
+              <text class="topology-response-text" x="840" y="391">STABILIZE · active</text>
+              <text class="topology-response-text" x="840" y="410">REROUTE · standby</text>
             </g>
             ${graphNodeMarkup}
           </svg>
