@@ -15,6 +15,10 @@ import {
   planGovernanceSelfHealing
 } from "../../../../services/governance-self-healing.js";
 
+import {
+  buildGovernanceMemory
+} from "../../../../services/governance-memory.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -83,6 +87,17 @@ export default async function handler(req, res) {
         replay: runtime.replay
       });
 
+    const memory =
+      buildGovernanceMemory({
+        replay: runtime.replay,
+        risk: runtime.risk,
+        intelligence: runtime.intelligence,
+        stability: runtime.stability,
+        containment_plan: runtime.containment_plan,
+        recovery_plan: runtime.recovery_plan,
+        orchestrator: runtime.orchestrator
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -90,6 +105,7 @@ export default async function handler(req, res) {
       runtime,
       watchdog_cycle,
       healing_plan,
+      memory,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -113,7 +129,13 @@ export default async function handler(req, res) {
           runtime.stability?.continuity || null,
 
         governance_verified:
-          runtime.verification?.verified || false
+          runtime.verification?.verified || false,
+
+        memory_state:
+          memory.memory_state,
+
+        governance_drift:
+          memory.drift
       }
     });
 
