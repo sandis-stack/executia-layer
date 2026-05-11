@@ -1437,6 +1437,21 @@
     </div>
   </section>
 
+  <section class="heatmap-panel" id="autonomousStabilizationFieldPanel">
+    <div class="head">
+      <h2>AUTONOMOUS STABILIZATION FIELD</h2>
+      <span class="pill" id="autonomousStabilizationFieldPill">FIELD: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="autonomousStabilizationFieldGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">STABILIZATION FIELD</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load runtime state to materialize autonomous containment and recovery field.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2760,6 +2775,7 @@
         renderCivilizationStateMatrix();
         renderCivilizationControlLayer();
         renderCivilizationPressureMap();
+        renderAutonomousStabilizationField();
 
       }catch(err){
         console.error(err);
@@ -3151,6 +3167,124 @@
           <div class="heat-title">${escapeHtml(title)}</div>
           <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
           <div class="heat-meta">${escapeHtml(meta || "EXECUTIA civilization pressure map")}</div>
+        </div>
+      `).join("");
+    }
+
+
+
+
+    function renderAutonomousStabilizationField(){
+      const el = $("autonomousStabilizationFieldGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const state = response?.runtime_state || null;
+      const healing = response?.healing_plan || null;
+      const watchdog = response?.watchdog_cycle || null;
+
+      if($("autonomousStabilizationFieldPill")){
+        $("autonomousStabilizationFieldPill").textContent =
+          state ? "FIELD: LIVE" : "FIELD: STANDBY";
+      }
+
+      if(!state){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">STABILIZATION FIELD</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load runtime state to materialize autonomous containment and recovery field.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const recoveryRequired =
+        Boolean(state.stabilization_required) ||
+        Boolean(state.field_stabilization_required) ||
+        Boolean(state.origin_stabilization_required) ||
+        Boolean(state.convergence_required) ||
+        Boolean(state.quarantine_required) ||
+        Boolean(state.delayed_causality_detected);
+
+      const containmentRequired =
+        Boolean(state.quarantine_required) ||
+        Boolean(state.entropy_detected) ||
+        Boolean(state.stabilization_required) ||
+        state.execution_allowed === false;
+
+      const healingState =
+        state.healing_state ||
+        healing?.state ||
+        healing?.healing_state ||
+        "UNKNOWN";
+
+      const watchdogState =
+        watchdog?.state ||
+        watchdog?.cycle_state ||
+        state.watchdog_state ||
+        "UNKNOWN";
+
+      const cells = [
+        [
+          "RECOVERY READINESS",
+          recoveryRequired ? "ARMED" : "STABLE",
+          recoveryRequired ? "warn" : "ok",
+          recoveryRequired
+            ? "Autonomous recovery path is required or armed"
+            : "No recovery path required"
+        ],
+        [
+          "CONTAINMENT FIELD",
+          containmentRequired ? "ACTIVE" : "CLEAR",
+          containmentRequired ? "bad" : "ok",
+          containmentRequired
+            ? "Containment geometry active across execution field"
+            : "No containment demand detected"
+        ],
+        [
+          "SELF-HEALING",
+          healingState,
+          String(healingState).includes("FAILED") ? "bad" : String(healingState).includes("PENDING") ? "warn" : "ok",
+          "Self-healing planner state"
+        ],
+        [
+          "WATCHDOG CYCLE",
+          watchdogState,
+          String(watchdogState).includes("FAILED") ? "bad" : String(watchdogState).includes("WARN") ? "warn" : "ok",
+          "Autonomous watchdog runtime cycle"
+        ],
+        [
+          "SINGULARITY STABILIZER",
+          state.stabilization_required ? "REQUIRED" : "LOCKED",
+          state.stabilization_required ? "bad" : "ok",
+          state.singularity_state || "Singularity stabilization control"
+        ],
+        [
+          "FIELD STABILIZER",
+          state.field_stabilization_required ? "REQUIRED" : "LOCKED",
+          state.field_stabilization_required ? "warn" : "ok",
+          state.field_state || "Execution field stabilization control"
+        ],
+        [
+          "ORIGIN STABILIZER",
+          state.origin_stabilization_required ? "REQUIRED" : "LOCKED",
+          state.origin_stabilization_required ? "warn" : "ok",
+          state.origin_state || "Origin causality stabilization control"
+        ],
+        [
+          "EXECUTION PERMISSION",
+          state.execution_allowed ? "ALLOWED" : "BLOCKED",
+          state.execution_allowed ? "ok" : "bad",
+          state.autonomous_state || "Autonomous execution permission state"
+        ]
+      ];
+
+      el.innerHTML = cells.map(([title, value, cls, meta]) => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">${escapeHtml(title)}</div>
+          <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(meta || "EXECUTIA autonomous stabilization field")}</div>
         </div>
       `).join("");
     }
