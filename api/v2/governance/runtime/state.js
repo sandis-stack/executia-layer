@@ -79,6 +79,10 @@ import {
   evaluateGovernanceField
 } from "../../../../services/governance-field.js";
 
+import {
+  evaluateGovernanceCosmology
+} from "../../../../services/governance-cosmology.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -307,6 +311,15 @@ export default async function handler(req, res) {
         constitutional
       });
 
+    const cosmology =
+      evaluateGovernanceCosmology({
+        field,
+        quantum,
+        singularity,
+        reality_fabric,
+        constitutional
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -330,6 +343,7 @@ export default async function handler(req, res) {
       singularity,
       quantum,
       field,
+      cosmology,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -491,7 +505,16 @@ export default async function handler(req, res) {
           field.field_stability,
 
         field_stabilization_required:
-          field.stabilization_required
+          field.stabilization_required,
+
+        cosmology_state:
+          cosmology.cosmology_state,
+
+        cosmology_stability:
+          cosmology.cosmology_stability,
+
+        entropy_detected:
+          cosmology.entropy_detected
       }
     });
 
