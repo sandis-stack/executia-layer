@@ -1376,6 +1376,22 @@
     </div>
   </section>
 
+
+  <section class="heatmap-panel" id="systemVisualizationCorePanel">
+    <div class="head">
+      <h2>SYSTEM VISUALIZATION CORE</h2>
+      <span class="pill" id="systemVisualizationCorePill">CORE: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="systemVisualizationCoreGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">VISUALIZATION CORE</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load system state to materialize system core.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2694,6 +2710,7 @@
         renderGovernanceRuntimeFlow();
         renderLiveExecutionMap();
         renderLiveGovernanceGraph();
+        renderSystemVisualizationCore();
 
       }catch(err){
         console.error(err);
@@ -2710,6 +2727,64 @@
 
 
 
+
+
+
+
+    function renderSystemVisualizationCore(){
+      const el = $("systemVisualizationCoreGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const state = response?.runtime_state || null;
+
+      if($("systemVisualizationCorePill")){
+        $("systemVisualizationCorePill").textContent =
+          state ? "CORE: LIVE" : "CORE: STANDBY";
+      }
+
+      if(!state){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">VISUALIZATION CORE</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load system state to materialize system core.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const cells = [
+        ["RUNTIME", state.autonomous_state, state.execution_allowed ? "ok" : "bad"],
+        ["HEALING", state.healing_state, "live"],
+        ["MEMORY", state.memory_state || "UNKNOWN", "ok"],
+        ["PREDICTION", state.predictive_state || "UNKNOWN", "ok"],
+        ["CONSENSUS", state.consensus || "UNKNOWN", state.consensus_quorum ? "ok" : "warn"],
+        ["REALITY", state.reality_state || "UNKNOWN", state.execution_authenticity ? "ok" : "warn"],
+        ["PRESSURE", state.pressure_state || "UNKNOWN", state.pressure_index >= 60 ? "warn" : "ok"],
+        ["GRAVITY", state.gravity_state || "UNKNOWN", state.gravity_index >= 60 ? "warn" : "ok"],
+        ["TIME", state.temporal_state || "UNKNOWN", state.delayed_causality_detected ? "warn" : "ok"],
+        ["CONSCIOUSNESS", state.consciousness_state || "UNKNOWN", state.awareness_index >= 70 ? "ok" : "warn"],
+        ["EVOLUTION", state.evolution_state || "UNKNOWN", state.adaptation_index >= 70 ? "ok" : "warn"],
+        ["IMMUNE", state.immune_state || "UNKNOWN", state.quarantine_required ? "bad" : "ok"],
+        ["DNA", state.dna_state || "UNKNOWN", state.dna_integrity >= 70 ? "ok" : "warn"],
+        ["CONSTITUTION", state.constitutional_state || "UNKNOWN", state.civilization_integrity ? "ok" : "warn"],
+        ["FABRIC", state.reality_fabric_state || "UNKNOWN", state.synchronization_stable ? "ok" : "warn"],
+        ["SINGULARITY", state.singularity_state || "UNKNOWN", state.stabilization_required ? "bad" : "ok"],
+        ["QUANTUM", state.quantum_state || "UNKNOWN", state.convergence_required ? "warn" : "ok"],
+        ["FIELD", state.field_state || "UNKNOWN", state.field_stabilization_required ? "warn" : "ok"],
+        ["COSMOLOGY", state.cosmology_state || "UNKNOWN", state.entropy_detected ? "warn" : "ok"],
+        ["ORIGIN", state.origin_state || "UNKNOWN", state.origin_stabilization_required ? "warn" : "ok"]
+      ];
+
+      el.innerHTML = cells.map(([title, value, cls]) => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">${escapeHtml(title)}</div>
+          <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
+          <div class="heat-meta">EXECUTIA system visualization core</div>
+        </div>
+      `).join("");
+    }
 
 
     function renderLiveGovernanceGraph(){
