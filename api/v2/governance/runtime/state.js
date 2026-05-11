@@ -19,6 +19,10 @@ import {
   buildGovernanceMemory
 } from "../../../../services/governance-memory.js";
 
+import {
+  predictGovernanceState
+} from "../../../../services/governance-prediction.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -98,6 +102,17 @@ export default async function handler(req, res) {
         orchestrator: runtime.orchestrator
       });
 
+    const prediction =
+      predictGovernanceState({
+        memory,
+        risk: runtime.risk,
+        intelligence: runtime.intelligence,
+        stability: runtime.stability,
+        recovery_plan: runtime.recovery_plan,
+        containment_plan: runtime.containment_plan,
+        orchestrator: runtime.orchestrator
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -106,6 +121,7 @@ export default async function handler(req, res) {
       watchdog_cycle,
       healing_plan,
       memory,
+      prediction,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -135,7 +151,13 @@ export default async function handler(req, res) {
           memory.memory_state,
 
         governance_drift:
-          memory.drift
+          memory.drift,
+
+        predictive_state:
+          prediction.predictive_state,
+
+        collapse_probability:
+          prediction.collapse_probability
       }
     });
 
