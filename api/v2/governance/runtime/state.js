@@ -72,8 +72,15 @@ export default async function handler(req, res) {
 
     const healing_plan =
       planGovernanceSelfHealing({
-        runtime,
-        watchdog_cycle
+        verification: runtime.verification,
+        risk: runtime.risk,
+        intelligence: runtime.intelligence,
+        stability: runtime.stability,
+        containment_plan: runtime.containment_plan,
+        recovery_plan: runtime.recovery_plan,
+        orchestrator: runtime.orchestrator,
+        watchdog_cycle,
+        replay: runtime.replay
       });
 
     return json(res, 200, {
