@@ -3337,6 +3337,35 @@
     </div>
   </section>
 
+
+<section class="foresight-engine-shell">
+    <div class="foresight-engine-head">
+      <div class="foresight-engine-title">
+        <div class="foresight-engine-label">
+          EXECUTION-TIME CIVILIZATION STRATEGIC FORESIGHT ENGINE
+        </div>
+
+        <div class="foresight-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationForesightPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="foresight-engine-grid" id="civilizationForesightGrid">
+      <div class="foresight-node warn">
+        <div class="foresight-node-title">CIVILIZATION STRATEGIC FORESIGHT ENGINE</div>
+        <div class="foresight-node-value">STANDBY</div>
+        <div class="foresight-node-meta">
+          Awaiting execution-time foresight materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4890,6 +4919,7 @@
         renderCivilizationImmuneSystem();
         renderCivilizationRegenerationEngine();
         renderCivilizationAdaptationMatrix();
+        renderCivilizationForesightEngine();
           return;
         }
 
@@ -6929,6 +6959,126 @@
 
 
 
+
+
+    function renderCivilizationForesightEngine(){
+      const el = $("civilizationForesightGrid");
+
+      const prediction = $("predictionFieldPill")?.textContent || "PREDICTION STABLE";
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+      const reality = $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED";
+      const immune = $("civilizationImmunePill")?.textContent || "IMMUNE ACTIVE";
+      const regeneration = $("civilizationRegenerationPill")?.textContent || "REGENERATION SYNCHRONIZED";
+      const adaptation = $("civilizationAdaptationPill")?.textContent || "ADAPTATION SYNCHRONIZED";
+
+      const foresightText = [
+        prediction,
+        truth,
+        evolution,
+        directive,
+        kernel,
+        consciousness,
+        reality,
+        immune,
+        regeneration,
+        adaptation
+      ].join(" ").toUpperCase();
+
+      let foresightState = "FORESIGHT SYNCHRONIZED";
+      let trajectory = "STABLE";
+      let futureRisk = "LOW";
+      let simulation = "PASSIVE";
+      let sustainability = "HIGH";
+      let divergenceProbability = "LOW";
+
+      if(
+        foresightText.includes("DIVERG") ||
+        foresightText.includes("BROKEN") ||
+        foresightText.includes("MISMATCH") ||
+        foresightText.includes("FRACTURE")
+      ){
+        foresightState = "FORESIGHT SIMULATING";
+        trajectory = "DIVERGENCE PATHS DETECTED";
+        futureRisk = "CRITICAL";
+        simulation = "STRUCTURAL FUTURE SIMULATION ACTIVE";
+        sustainability = "THREATENED";
+        divergenceProbability = "HIGH";
+      }
+      else if(
+        foresightText.includes("RECOVER") ||
+        foresightText.includes("REBUILD")
+      ){
+        foresightState = "FORESIGHT STABILIZING";
+        trajectory = "RECOVERY TRAJECTORY ACTIVE";
+        futureRisk = "ELEVATED";
+        simulation = "RECOVERY SCENARIO MODELING";
+        sustainability = "RESTORING";
+        divergenceProbability = "MEDIUM";
+      }
+      else if(
+        foresightText.includes("CONTAIN") ||
+        foresightText.includes("ISOLAT")
+      ){
+        foresightState = "FORESIGHT ANALYZING";
+        trajectory = "CONTAINMENT TRAJECTORY ACTIVE";
+        futureRisk = "HIGH";
+        simulation = "CONTAINMENT IMPACT ANALYSIS";
+        sustainability = "PROTECTED";
+        divergenceProbability = "CONTROLLED";
+      }
+      else if(
+        foresightText.includes("EVOLV") ||
+        foresightText.includes("ADAPT") ||
+        foresightText.includes("OPTIMIZ")
+      ){
+        foresightState = "FORESIGHT EVOLVING";
+        trajectory = "EVOLUTION TRAJECTORY OPTIMIZED";
+        futureRisk = "CONTROLLED";
+        simulation = "LONG-HORIZON OPTIMIZATION";
+        sustainability = "IMPROVING";
+        divergenceProbability = "DECREASING";
+      }
+      else if(
+        foresightText.includes("UNSTABLE") ||
+        foresightText.includes("STABILIZ") ||
+        foresightText.includes("PENDING") ||
+        foresightText.includes("REVIEW")
+      ){
+        foresightState = "FORESIGHT ANALYZING";
+        trajectory = "INSTABILITY VECTOR DETECTED";
+        futureRisk = "ELEVATED";
+        simulation = "RISK VECTOR ANALYSIS";
+        sustainability = "MONITORED";
+        divergenceProbability = "MEDIUM";
+      }
+
+      const nodes = [
+        ["TRAJECTORY", trajectory, "Long-horizon civilization execution trajectory."],
+        ["FUTURE RISK", futureRisk, "Projected instability and execution collapse risk."],
+        ["SIMULATION", simulation, "Structural future simulation and scenario modeling."],
+        ["SUSTAINABILITY", sustainability, "Continuity sustainability across future execution states."],
+        ["DIVERGENCE PROBABILITY", divergenceProbability, "Projected probability of future execution divergence."],
+        ["FORESIGHT STATUS", foresightState, "Civilization-scale future execution guidance layer active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationForesightPill")){
+        $("civilizationForesightPill").textContent = foresightState;
+      }
+    }
 
     function renderCivilizationAdaptationMatrix(){
       const el = $("civilizationAdaptationGrid");
