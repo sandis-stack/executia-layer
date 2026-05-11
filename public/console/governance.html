@@ -1468,6 +1468,21 @@
     </div>
   </section>
 
+  <section class="heatmap-panel" id="liveExecutionPhysicsEnginePanel">
+    <div class="head">
+      <h2>LIVE EXECUTION PHYSICS ENGINE</h2>
+      <span class="pill" id="liveExecutionPhysicsEnginePill">PHYSICS: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="liveExecutionPhysicsEngineGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">PHYSICS ENGINE</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load runtime state to materialize execution physics vectors.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2793,6 +2808,7 @@
         renderCivilizationControlLayer();
         renderCivilizationPressureMap();
         renderAutonomousStabilizationField();
+        renderLiveExecutionPhysicsEngine();
 
       }catch(err){
         console.error(err);
@@ -4502,6 +4518,141 @@
         ${conditions}
         ${actions}
       `;
+    }
+
+
+
+
+    function renderLiveExecutionPhysicsEngine(){
+      const el = $("liveExecutionPhysicsEngineGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const state = response?.runtime_state || null;
+
+      if($("liveExecutionPhysicsEnginePill")){
+        $("liveExecutionPhysicsEnginePill").textContent =
+          state ? "PHYSICS: LIVE" : "PHYSICS: STANDBY";
+      }
+
+      if(!state){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">PHYSICS ENGINE</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load runtime state to materialize execution physics vectors.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const pressure = Number.isFinite(Number(state.pressure_index)) ? Math.round(Number(state.pressure_index)) : 0;
+      const gravity = Number.isFinite(Number(state.gravity_index)) ? Math.round(Number(state.gravity_index)) : 0;
+      const awareness = Number.isFinite(Number(state.awareness_index)) ? Math.round(Number(state.awareness_index)) : 0;
+      const adaptation = Number.isFinite(Number(state.adaptation_index)) ? Math.round(Number(state.adaptation_index)) : 0;
+      const dna = Number.isFinite(Number(state.dna_integrity)) ? Math.round(Number(state.dna_integrity)) : 0;
+
+      const vectorClass = (value, reverse = false) => {
+        if(reverse){
+          if(value >= 75) return "bad";
+          if(value >= 45) return "warn";
+          return "ok";
+        }
+        if(value >= 75) return "ok";
+        if(value >= 45) return "warn";
+        return "bad";
+      };
+
+      const driftActive =
+        Boolean(state.entropy_detected) ||
+        Boolean(state.convergence_required) ||
+        state.synchronization_stable === false ||
+        Boolean(state.delayed_causality_detected);
+
+      const stabilizationActive =
+        Boolean(state.stabilization_required) ||
+        Boolean(state.field_stabilization_required) ||
+        Boolean(state.origin_stabilization_required) ||
+        Boolean(state.quarantine_required);
+
+      const cells = [
+        [
+          "VECTOR FLOW",
+          `P${pressure} / G${gravity}`,
+          pressure >= 75 || gravity >= 75 ? "bad" : pressure >= 45 || gravity >= 45 ? "warn" : "ok",
+          `Pressure ${pressure}% · Gravity ${gravity}%`
+        ],
+        [
+          "ENTROPY DRIFT",
+          driftActive ? "ACTIVE" : "NONE",
+          driftActive ? "warn" : "ok",
+          state.entropy_detected
+            ? "Entropy propagation active"
+            : state.convergence_required
+            ? "Quantum convergence required"
+            : state.synchronization_stable === false
+            ? "Reality synchronization drift"
+            : "No active entropy drift"
+        ],
+        [
+          "STABILIZATION WAVES",
+          stabilizationActive ? "PROPAGATING" : "LOCKED",
+          stabilizationActive ? "warn" : "ok",
+          stabilizationActive
+            ? "Autonomous stabilization wave active"
+            : "Stabilization field locked"
+        ],
+        [
+          "COHERENCE MOTION",
+          state.convergence_required ? "COLLAPSING" : "COHERENT",
+          state.convergence_required ? "warn" : "ok",
+          state.quantum_state || "Quantum coherence motion"
+        ],
+        [
+          "REALITY GEOMETRY",
+          state.synchronization_stable ? "SYNCHRONIZED" : "DISTORTED",
+          state.synchronization_stable ? "ok" : "warn",
+          state.reality_fabric_state || "Runtime reality geometry"
+        ],
+        [
+          "FIELD GEOMETRY",
+          state.field_stabilization_required ? "UNSTABLE" : "STABLE",
+          state.field_stabilization_required ? "warn" : "ok",
+          state.field_state || "Execution field geometry"
+        ],
+        [
+          "ADAPTIVE MOTION",
+          `${adaptation}%`,
+          vectorClass(adaptation),
+          state.evolution_state || "Evolutionary adaptation motion"
+        ],
+        [
+          "AWARENESS SIGNAL",
+          `${awareness}%`,
+          vectorClass(awareness),
+          state.consciousness_state || "Governance awareness signal"
+        ],
+        [
+          "DNA CONTINUITY",
+          `${dna}%`,
+          vectorClass(dna),
+          state.dna_state || "Execution DNA continuity"
+        ],
+        [
+          "PHYSICS RESULT",
+          state.execution_allowed ? "EXECUTION STABLE" : "EXECUTION LOCKED",
+          state.execution_allowed ? "ok" : "bad",
+          state.autonomous_state || "Physics engine execution result"
+        ]
+      ];
+
+      el.innerHTML = cells.map(([title, value, cls, meta]) => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">${escapeHtml(title)}</div>
+          <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(meta || "EXECUTIA live execution physics engine")}</div>
+        </div>
+      `).join("");
     }
 
 
