@@ -2628,6 +2628,50 @@
     100%{ transform:scale(1.12); opacity:0; }
   }
 
+  .topology-pressure-heat{
+    opacity:.22;
+    transform-origin:center;
+    animation: pressureHeatBreath 6.5s ease-in-out infinite;
+  }
+
+  .topology-pressure-heat.zone-1{ animation-delay:0s; }
+  .topology-pressure-heat.zone-2{ animation-delay:1.4s; }
+  .topology-pressure-heat.zone-3{ animation-delay:2.8s; }
+
+  .topology-turbulence{
+    fill:none;
+    stroke:rgba(30,58,95,.18);
+    stroke-width:1.4;
+    stroke-dasharray:2 9;
+    animation: topologyFlow 5.4s linear infinite;
+  }
+
+  .topology-heat-legend{
+    fill:#ffffff;
+    stroke:rgba(30,58,95,.14);
+    stroke-width:1;
+    filter: drop-shadow(0 8px 16px rgba(30,58,95,.08));
+  }
+
+  .topology-heat-legend-title{
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.12em;
+    fill:#1e3a5f;
+  }
+
+  .topology-heat-legend-text{
+    font-size:8.5px;
+    font-weight:700;
+    fill:#60748a;
+  }
+
+  @keyframes pressureHeatBreath{
+    0%{ opacity:.10; transform:scale(.96); }
+    50%{ opacity:.28; transform:scale(1.04); }
+    100%{ opacity:.10; transform:scale(.96); }
+  }
+
 </style>
 </head>
 <body>
@@ -7449,7 +7493,7 @@
             <div>
               <div class="civilization-topology-title">LIVE CIVILIZATION TOPOLOGY GRAPH</div>
               <div class="civilization-topology-subtitle">
-                Runtime universe view: execution layers, animated flow streams, pressure waves, synchronization density and structural links.
+                Runtime universe view: execution layers, animated flow streams, pressure heat zones, turbulence, synchronization density and structural links.
               </div>
             </div>
             <div class="civilization-topology-badge">${escapeHtml(canvasState)}</div>
@@ -7459,9 +7503,30 @@
               <path id="executionFlowOrbitOuter" d="M 520 40 A 430 260 0 1 1 519.9 40"></path>
               <path id="executionFlowOrbitInner" d="M 520 145 A 270 155 0 1 1 519.9 145"></path>
               <path id="executionTruthStream" d="M 160 300 C 300 120, 740 120, 880 300 C 740 480, 300 480, 160 300"></path>
+              <radialGradient id="pressureHeatHigh" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#1e3a5f" stop-opacity=".34"></stop>
+                <stop offset="65%" stop-color="#8ba2ba" stop-opacity=".13"></stop>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+              </radialGradient>
+              <radialGradient id="pressureHeatMedium" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#58708a" stop-opacity=".28"></stop>
+                <stop offset="70%" stop-color="#b8c5d3" stop-opacity=".12"></stop>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+              </radialGradient>
+              <radialGradient id="pressureHeatLow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#d8e0e8" stop-opacity=".38"></stop>
+                <stop offset="75%" stop-color="#f7f9fc" stop-opacity=".12"></stop>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+              </radialGradient>
             </defs>
             <ellipse class="topology-zone" cx="520" cy="300" rx="430" ry="260"></ellipse>
             <ellipse class="topology-zone" cx="520" cy="300" rx="270" ry="155"></ellipse>
+            <ellipse class="topology-pressure-heat zone-1" cx="520" cy="300" rx="370" ry="220" fill="url(#pressureHeatLow)"></ellipse>
+            <ellipse class="topology-pressure-heat zone-2" cx="700" cy="255" rx="210" ry="118" fill="url(#pressureHeatMedium)"></ellipse>
+            <ellipse class="topology-pressure-heat zone-3" cx="350" cy="355" rx="230" ry="132" fill="url(#pressureHeatHigh)"></ellipse>
+            <path class="topology-turbulence" d="M 180 285 C 300 210, 385 420, 520 300 C 655 180, 750 410, 860 300"></path>
+            <path class="topology-turbulence" d="M 250 165 C 420 250, 600 120, 790 235"></path>
+            <path class="topology-turbulence" d="M 275 455 C 430 365, 610 510, 785 370"></path>
             <ellipse class="topology-pressure-wave" cx="520" cy="300" rx="210" ry="124"></ellipse>
             <ellipse class="topology-pressure-wave delay-1" cx="520" cy="300" rx="270" ry="155"></ellipse>
             <ellipse class="topology-pressure-wave delay-2" cx="520" cy="300" rx="340" ry="205"></ellipse>
