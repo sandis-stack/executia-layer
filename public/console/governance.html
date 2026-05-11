@@ -3192,6 +3192,35 @@
     </div>
   </section>
 
+
+<section class="consciousness-engine-shell">
+    <div class="consciousness-engine-head">
+      <div class="consciousness-engine-title">
+        <div class="consciousness-engine-label">
+          EXECUTION-TIME CIVILIZATION CONSCIOUSNESS FIELD
+        </div>
+
+        <div class="consciousness-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationConsciousnessPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="consciousness-engine-grid" id="civilizationConsciousnessGrid">
+      <div class="consciousness-node warn">
+        <div class="consciousness-node-title">CIVILIZATION CONSCIOUSNESS FIELD</div>
+        <div class="consciousness-node-value">STANDBY</div>
+        <div class="consciousness-node-meta">
+          Awaiting execution-time consciousness materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4740,6 +4769,7 @@
         renderEvolutionEngine();
         renderDirectiveCore();
         renderCivilizationKernel();
+        renderCivilizationConsciousness();
           return;
         }
 
@@ -6774,6 +6804,97 @@
 
 
 
+
+
+    function renderCivilizationConsciousness(){
+      const el = $("civilizationConsciousnessGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+
+      const fieldText = [
+        truth,
+        evolution,
+        directive,
+        kernel
+      ].join(" ").toUpperCase();
+
+      let consciousnessState = "CONSCIOUSNESS SYNCHRONIZED";
+      let awareness = "GLOBAL EXECUTION AWARENESS";
+      let coherence = "COHERENT";
+      let continuity = "PRESERVED";
+      let propagationRisk = "LOW";
+      let fieldMode = "OBSERVING";
+
+      if(fieldText.includes("CONTAIN")){
+        consciousnessState = "CONSCIOUSNESS CONTAINING";
+        awareness = "STRUCTURAL RISK DETECTED";
+        coherence = "PROTECTED";
+        continuity = "ISOLATED";
+        propagationRisk = "CRITICAL";
+        fieldMode = "CONTAINMENT AWARENESS";
+      }
+      else if(
+        fieldText.includes("RECOVER") ||
+        fieldText.includes("DIVERG") ||
+        fieldText.includes("BROKEN") ||
+        fieldText.includes("REROUT")
+      ){
+        consciousnessState = "CONSCIOUSNESS STABILIZING";
+        awareness = "RECOVERY FIELD ACTIVE";
+        coherence = "REBALANCING";
+        continuity = "RECOVERING";
+        propagationRisk = "HIGH";
+        fieldMode = "STABILIZATION AWARENESS";
+      }
+      else if(
+        fieldText.includes("UNSTABLE") ||
+        fieldText.includes("STABILIZ")
+      ){
+        consciousnessState = "CONSCIOUSNESS OBSERVING";
+        awareness = "INSTABILITY UNDER OBSERVATION";
+        coherence = "ADAPTIVE";
+        continuity = "MONITORED";
+        propagationRisk = "ELEVATED";
+        fieldMode = "OBSERVATION FIELD";
+      }
+      else if(
+        fieldText.includes("EVOLV") ||
+        fieldText.includes("OPTIMIZE")
+      ){
+        consciousnessState = "CONSCIOUSNESS EVOLVING";
+        awareness = "SELF-EVOLUTION FIELD ACTIVE";
+        coherence = "SELF-ADAPTING";
+        continuity = "PRESERVED";
+        propagationRisk = "CONTROLLED";
+        fieldMode = "EVOLUTION AWARENESS";
+      }
+
+      const nodes = [
+        ["AWARENESS FIELD", awareness, "System-wide execution awareness across runtime layers."],
+        ["COHERENCE", coherence, "Global execution coherence and alignment state."],
+        ["CONTINUITY", continuity, "Civilization runtime continuity preservation level."],
+        ["PROPAGATION RISK", propagationRisk, "Structural instability propagation risk."],
+        ["FIELD MODE", fieldMode, "Current global execution awareness mode."],
+        ["CONSCIOUSNESS STATE", consciousnessState, "Top-level execution awareness materialized."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationConsciousnessPill")){
+        $("civilizationConsciousnessPill").textContent = consciousnessState;
+      }
+    }
 
     function renderCivilizationKernel(){
       const el = $("civilizationKernelGrid");
