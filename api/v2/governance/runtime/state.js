@@ -51,6 +51,10 @@ import {
   evaluateGovernanceEvolution
 } from "../../../../services/governance-evolution.js";
 
+import {
+  evaluateGovernanceImmune
+} from "../../../../services/governance-immune.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -208,6 +212,17 @@ export default async function handler(req, res) {
         prediction
       });
 
+    const immune =
+      evaluateGovernanceImmune({
+        runtime,
+        reality,
+        pressure,
+        gravity,
+        consciousness,
+        evolution,
+        consensus
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -224,6 +239,7 @@ export default async function handler(req, res) {
       time,
       consciousness,
       evolution,
+      immune,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -322,7 +338,16 @@ export default async function handler(req, res) {
           evolution.adaptation_index,
 
         optimization_mode:
-          evolution.optimization_mode
+          evolution.optimization_mode,
+
+        immune_state:
+          immune.immune_state,
+
+        infection_index:
+          immune.infection_index,
+
+        quarantine_required:
+          immune.quarantine_required
       }
     });
 
