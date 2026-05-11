@@ -1344,6 +1344,22 @@
     </div>
   </section>
 
+
+  <section class="heatmap-panel" id="liveExecutionMapPanel">
+    <div class="head">
+      <h2>LIVE EXECUTION MAP</h2>
+      <span class="pill" id="liveExecutionMapPill">MAP: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="liveExecutionMapGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">EXECUTION MAP</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load system state to materialize execution map.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2660,6 +2676,7 @@
         window.LAST_GOVERNANCE_RUNTIME_STATE = response;
         renderGovernanceRuntimeState();
         renderGovernanceRuntimeFlow();
+        renderLiveExecutionMap();
 
       }catch(err){
         console.error(err);
@@ -2672,6 +2689,92 @@
     }
 
 
+
+
+
+
+    function renderLiveExecutionMap(){
+      const el = $("liveExecutionMapGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const runtime = response?.runtime || null;
+      const state = response?.runtime_state || null;
+      const watchdog = response?.watchdog_cycle || null;
+      const healing = response?.healing_plan || null;
+
+      if($("liveExecutionMapPill")){
+        $("liveExecutionMapPill").textContent =
+          state ? "MAP: LIVE" : "MAP: STANDBY";
+      }
+
+      if(!state || !runtime){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">EXECUTION MAP</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load system state to materialize execution map.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const stages = runtime?.replay?.stages || [];
+      const hasStage = (name) => stages.some(stage => stage.stage === name);
+
+      const map = [
+        {
+          title: "REQUEST",
+          value: hasStage("REQUEST") ? "CAPTURED" : "MISSING",
+          meta: "Governance request intake",
+          cls: hasStage("REQUEST") ? "ok" : "warn"
+        },
+        {
+          title: "VALIDATION",
+          value: state.governance_verified ? "PASSED" : "FAILED",
+          meta: "Hash-chain and runtime verification",
+          cls: state.governance_verified ? "ok" : "bad"
+        },
+        {
+          title: "RISK",
+          value: runtime.risk?.level || "UNKNOWN",
+          meta: runtime.risk?.summary || "Risk engine state",
+          cls: runtime.risk?.level === "LOW" ? "ok" : "warn"
+        },
+        {
+          title: "CONTAINMENT",
+          value: state.containment_mode || "UNKNOWN",
+          meta: runtime.containment_plan?.summary || "Containment state",
+          cls: state.containment_mode === "MONITOR_ONLY" ? "ok" : "warn"
+        },
+        {
+          title: "RECOVERY",
+          value: state.recovery_allowed ? "AUTHORIZED" : "HELD",
+          meta: runtime.recovery_plan?.summary || "Recovery state",
+          cls: state.recovery_allowed ? "live" : "warn"
+        },
+        {
+          title: "SUPERVISION",
+          value: (healing?.supervisor_required || []).length ? "REQUIRED" : "CLEAR",
+          meta: (healing?.supervisor_required || []).join(" · ") || "No supervisor gate required",
+          cls: (healing?.supervisor_required || []).length ? "warn" : "ok"
+        },
+        {
+          title: "COMMIT",
+          value: state.execution_allowed ? "READY" : "BLOCKED",
+          meta: watchdog?.summary || "Execution commit readiness",
+          cls: state.execution_allowed ? "ok" : "bad"
+        }
+      ];
+
+      el.innerHTML = map.map((node, index) => `
+        <div class="heat-cell ${node.cls}">
+          <div class="heat-title">${escapeHtml(String(index + 1).padStart(2, "0"))} · ${escapeHtml(node.title)}</div>
+          <div class="heat-value">${escapeHtml(node.value)}</div>
+          <div class="heat-meta">${escapeHtml(node.meta)}</div>
+        </div>
+      `).join("");
+    }
 
 
     function renderGovernanceRuntimeFlow(){
