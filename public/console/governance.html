@@ -1392,6 +1392,21 @@
     </div>
   </section>
 
+  <section class="heatmap-panel" id="civilizationStateMatrixPanel">
+    <div class="head">
+      <h2>CIVILIZATION STATE MATRIX</h2>
+      <span class="pill" id="civilizationStateMatrixPill">MATRIX: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="civilizationStateMatrixGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">CIVILIZATION MATRIX</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load runtime state to materialize civilization control matrix.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2711,6 +2726,7 @@
         renderLiveExecutionMap();
         renderLiveGovernanceGraph();
         renderSystemVisualizationCore();
+        renderCivilizationStateMatrix();
 
       }catch(err){
         console.error(err);
@@ -2782,6 +2798,120 @@
           <div class="heat-title">${escapeHtml(title)}</div>
           <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
           <div class="heat-meta">EXECUTIA system visualization core</div>
+        </div>
+      `).join("");
+    }
+
+
+
+    function renderCivilizationStateMatrix(){
+      const el = $("civilizationStateMatrixGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const state = response?.runtime_state || null;
+
+      if($("civilizationStateMatrixPill")){
+        $("civilizationStateMatrixPill").textContent =
+          state ? "MATRIX: LIVE" : "MATRIX: STANDBY";
+      }
+
+      if(!state){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">CIVILIZATION MATRIX</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load runtime state to materialize civilization control matrix.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const score = (value) => {
+        const n = Number(value);
+        return Number.isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : null;
+      };
+
+      const statusClass = (value, danger = false) => {
+        const n = score(value);
+        if(n === null) return "warn";
+        if(danger){
+          if(n >= 75) return "bad";
+          if(n >= 45) return "warn";
+          return "ok";
+        }
+        if(n >= 75) return "ok";
+        if(n >= 45) return "warn";
+        return "bad";
+      };
+
+      const boolClass = (value) => value ? "ok" : "warn";
+
+      const integrityScore = score(state.dna_integrity ?? state.awareness_index ?? state.adaptation_index);
+      const entropyRisk = state.entropy_detected ? 78 : 18;
+      const quantumCoherence = state.convergence_required ? 42 : 88;
+      const singularityRisk = state.stabilization_required ? 86 : 14;
+      const fieldStability = state.field_stabilization_required ? 46 : 84;
+      const originCoherence = state.origin_stabilization_required ? 44 : 86;
+      const constitutionalIntegrity = state.civilization_integrity ? 92 : 52;
+      const realitySync = state.synchronization_stable ? 91 : 48;
+
+      const cells = [
+        [
+          "CIVILIZATION INTEGRITY",
+          integrityScore === null ? (state.constitutional_state || "UNKNOWN") : `${integrityScore}%`,
+          integrityScore === null ? boolClass(state.civilization_integrity) : statusClass(integrityScore),
+          state.constitutional_state || "Constitutional execution integrity"
+        ],
+        [
+          "ENTROPY",
+          `${entropyRisk}%`,
+          statusClass(entropyRisk, true),
+          state.entropy_detected ? "Entropy propagation detected" : "Entropy propagation stable"
+        ],
+        [
+          "QUANTUM COHERENCE",
+          `${quantumCoherence}%`,
+          statusClass(quantumCoherence),
+          state.quantum_state || "Execution probability coherence"
+        ],
+        [
+          "SINGULARITY RISK",
+          `${singularityRisk}%`,
+          statusClass(singularityRisk, true),
+          state.singularity_state || "Singularity stabilization state"
+        ],
+        [
+          "FIELD STABILITY",
+          `${fieldStability}%`,
+          statusClass(fieldStability),
+          state.field_state || "Governance field geometry"
+        ],
+        [
+          "ORIGIN COHERENCE",
+          `${originCoherence}%`,
+          statusClass(originCoherence),
+          state.origin_state || "Origin causality coherence"
+        ],
+        [
+          "CONSTITUTIONAL STATE",
+          state.constitutional_state || "UNKNOWN",
+          boolClass(state.civilization_integrity),
+          state.civilization_integrity ? "Civilization continuity intact" : "Civilization continuity requires review"
+        ],
+        [
+          "REALITY SYNC",
+          `${realitySync}%`,
+          statusClass(realitySync),
+          state.reality_fabric_state || "Reality synchronization fabric"
+        ]
+      ];
+
+      el.innerHTML = cells.map(([title, value, cls, meta]) => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">${escapeHtml(title)}</div>
+          <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(meta || "Civilization state matrix")}</div>
         </div>
       `).join("");
     }
