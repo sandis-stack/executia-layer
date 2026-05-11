@@ -1175,6 +1175,57 @@
       grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
     }
 
+  
+    /* EXECUTIA Secondary Governance Layer */
+    .secondary-governance-shell{
+      margin:16px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.96);
+      overflow:hidden;
+      box-shadow:0 8px 24px rgba(30,58,95,.05);
+    }
+
+    .secondary-governance-toggle{
+      width:100%;
+      margin:0;
+      border:0;
+      border-radius:0;
+      background:#fff;
+      color:var(--blue);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 18px;
+      font-size:11px;
+      letter-spacing:.16em;
+      font-weight:900;
+      border-bottom:1px solid var(--line);
+    }
+
+    .secondary-governance-toggle span:last-child{
+      color:var(--muted);
+      font-size:10px;
+      letter-spacing:.12em;
+    }
+
+    .secondary-governance-body{
+      display:none;
+      padding:14px;
+      background:#f8fafc;
+    }
+
+    .secondary-governance-shell.open .secondary-governance-body{
+      display:grid;
+      gap:12px;
+    }
+
+    .secondary-governance-body .heatmap-panel,
+    .secondary-governance-body section{
+      margin:0;
+      box-shadow:none;
+    }
+
   </style>
 </head>
 <body>
@@ -1307,6 +1358,14 @@
     <div class="incident-state" id="incidentState">CLEAR</div>
     <div class="incident-meta" id="incidentMeta">No active governance containment condition.</div>
   </section>
+
+  <section class="secondary-governance-shell" id="secondaryGovernanceLayer">
+    <button class="secondary-governance-toggle" type="button" onclick="document.getElementById('secondaryGovernanceLayer')?.classList.toggle('open')">
+      <span>SECONDARY GOVERNANCE LAYER</span>
+      <span>SHOW / HIDE EXECUTION INSTRUMENTS</span>
+    </button>
+
+    <div class="secondary-governance-body">
 
   <section class="heatmap-panel">
     <div class="head">
@@ -1505,6 +1564,9 @@
     </div>
   </section>
 
+
+    </div>
+  </section>
 
   <section class="heatmap-panel" id="governanceRuntimeStatePanel">
     <div class="head">
