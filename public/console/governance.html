@@ -3482,6 +3482,35 @@
     </div>
   </section>
 
+
+<section class="civilizationVisualization-engine-shell">
+    <div class="civilizationVisualization-engine-head">
+      <div class="civilizationVisualization-engine-title">
+        <div class="civilizationVisualization-engine-label">
+          EXECUTION-TIME CIVILIZATION VISUALIZATION MATRIX
+        </div>
+
+        <div class="civilizationVisualization-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationVisualizationPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="civilizationVisualization-engine-grid" id="civilizationVisualizationGrid">
+      <div class="civilizationVisualization-node warn">
+        <div class="civilizationVisualization-node-title">CIVILIZATION VISUALIZATION MATRIX</div>
+        <div class="civilizationVisualization-node-value">STANDBY</div>
+        <div class="civilizationVisualization-node-meta">
+          Awaiting execution-time civilizationVisualization materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -5040,6 +5069,7 @@
         renderCivilizationConsensusField();
         renderCivilizationMetaLawEngine();
         renderCivilizationCore();
+        renderCivilizationVisualizationMatrix();
           return;
         }
 
@@ -7084,6 +7114,125 @@
 
 
 
+
+
+    function renderCivilizationVisualizationMatrix(){
+      const el = $("civilizationVisualizationGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+      const reality = $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED";
+      const immune = $("civilizationImmunePill")?.textContent || "IMMUNE ACTIVE";
+      const regeneration = $("civilizationRegenerationPill")?.textContent || "REGENERATION SYNCHRONIZED";
+      const adaptation = $("civilizationAdaptationPill")?.textContent || "ADAPTATION SYNCHRONIZED";
+      const foresight = $("civilizationForesightPill")?.textContent || "FORESIGHT SYNCHRONIZED";
+      const sovereignty = $("civilizationSovereigntyPill")?.textContent || "SOVEREIGNTY VERIFIED";
+      const consensus = $("civilizationConsensusPill")?.textContent || "CONSENSUS VERIFIED";
+      const metalaw = $("civilizationMetaLawPill")?.textContent || "META-LAW VERIFIED";
+      const core = $("civilizationCorePill")?.textContent || "CIVILIZATION CORE SYNCHRONIZED";
+
+      const topologyText = [
+        truth,
+        evolution,
+        directive,
+        kernel,
+        consciousness,
+        reality,
+        immune,
+        regeneration,
+        adaptation,
+        foresight,
+        sovereignty,
+        consensus,
+        metalaw,
+        core
+      ].join(" ").toUpperCase();
+
+      let topologyState = "TOPOLOGY SYNCHRONIZED";
+      let dependencies = "MAPPED";
+      let propagation = "CONTROLLED";
+      let stabilityZones = "STABLE";
+      let pressureClusters = "LOW";
+      let syncDensity = "HIGH";
+
+      if(
+        topologyText.includes("CONTESTED") ||
+        topologyText.includes("FRAGMENT") ||
+        topologyText.includes("DIVERG") ||
+        topologyText.includes("BROKEN") ||
+        topologyText.includes("MISMATCH") ||
+        topologyText.includes("FRACTURE")
+      ){
+        topologyState = "TOPOLOGY MAPPING";
+        dependencies = "CRITICAL DEPENDENCIES DETECTED";
+        propagation = "RISK PATHS ACTIVE";
+        stabilityZones = "DEGRADED";
+        pressureClusters = "HIGH";
+        syncDensity = "LOW";
+      }
+      else if(
+        topologyText.includes("CONTAIN") ||
+        topologyText.includes("ISOLAT") ||
+        topologyText.includes("PROTECT")
+      ){
+        topologyState = "TOPOLOGY PROTECTED";
+        dependencies = "PROTECTED";
+        propagation = "CONTAINED";
+        stabilityZones = "ISOLATED";
+        pressureClusters = "CONTROLLED";
+        syncDensity = "PROTECTED";
+      }
+      else if(
+        topologyText.includes("RECOVER") ||
+        topologyText.includes("REBUILD") ||
+        topologyText.includes("STABILIZ")
+      ){
+        topologyState = "TOPOLOGY STABILIZING";
+        dependencies = "REBALANCING";
+        propagation = "MONITORED";
+        stabilityZones = "RESTORING";
+        pressureClusters = "ELEVATED";
+        syncDensity = "IMPROVING";
+      }
+      else if(
+        topologyText.includes("EVOLV") ||
+        topologyText.includes("ADAPT") ||
+        topologyText.includes("OPTIMIZ")
+      ){
+        topologyState = "TOPOLOGY EVOLVING";
+        dependencies = "ADAPTIVE";
+        propagation = "SYNCHRONIZED";
+        stabilityZones = "SELF-ADAPTING";
+        pressureClusters = "OPTIMIZED";
+        syncDensity = "INCREASING";
+      }
+
+      const nodes = [
+        ["RUNTIME TOPOLOGY", topologyState, "System-wide execution topology and civilization map."],
+        ["DEPENDENCY MAP", dependencies, "Execution dependencies across runtime layers."],
+        ["PROPAGATION CHAINS", propagation, "Runtime propagation chains and risk paths."],
+        ["STABILITY ZONES", stabilityZones, "Civilization stability zones across execution layers."],
+        ["PRESSURE CLUSTERS", pressureClusters, "Execution pressure clusters and concentration zones."],
+        ["SYNC DENSITY", syncDensity, "Synchronization density across the civilization runtime."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationVisualizationPill")){
+        $("civilizationVisualizationPill").textContent = topologyState;
+      }
+    }
 
     function renderCivilizationCore(){
       const el = $("civilizationCoreGrid");
