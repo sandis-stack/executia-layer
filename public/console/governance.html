@@ -1306,6 +1306,28 @@
     </div>
   </section>
 
+
+  <section class="heatmap-panel" id="governanceRuntimeStatePanel">
+    <div class="head">
+      <h2>GOVERNANCE RUNTIME STATE</h2>
+      <span class="pill" id="governanceRuntimeStatePill">RUNTIME: STANDBY</span>
+    </div>
+
+    <div style="margin:12px 0 18px 0;">
+      <button class="secondary" onclick="loadGovernanceRuntimeState()">
+        LOAD SYSTEM STATE
+      </button>
+    </div>
+
+    <div class="heatmap-grid" id="governanceRuntimeStateGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">SYSTEM STATE</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Replay context required.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2572,6 +2594,150 @@
 
 
 
+
+
+
+
+    async function loadGovernanceRuntimeState(){
+      try{
+        if(!DETERMINISTIC_REPLAY){
+          alert("No replay context loaded.");
+          return;
+        }
+
+        const reviewId =
+          DETERMINISTIC_REPLAY?.filters?.review_id ||
+          null;
+
+        const executionId =
+          DETERMINISTIC_REPLAY?.replay?.events?.find(e => e.execution_id)?.execution_id ||
+          DETERMINISTIC_REPLAY?.replay?.stages?.find(e => e.execution_id)?.execution_id ||
+          null;
+
+        if(!reviewId && !executionId){
+          alert("No review_id or execution_id available for runtime state.");
+          return;
+        }
+
+        const response = await api(
+          "/api/v2/governance/runtime/state",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              review_id: reviewId,
+              execution_id: executionId
+            })
+          }
+        );
+
+        if(!response?.ok){
+          throw new Error(
+            response?.error?.message ||
+            response?.error ||
+            "Governance runtime state failed."
+          );
+        }
+
+        window.LAST_GOVERNANCE_RUNTIME_STATE = response;
+        renderGovernanceRuntimeState();
+
+      }catch(err){
+        console.error(err);
+
+        alert(
+          "GOVERNANCE RUNTIME STATE FAILED\n\n" +
+          (err?.message || err)
+        );
+      }
+    }
+
+
+    function renderGovernanceRuntimeState(){
+      const el = $("governanceRuntimeStateGrid");
+      if(!el) return;
+
+      const state = window.LAST_GOVERNANCE_RUNTIME_STATE?.runtime_state || null;
+      const healing = window.LAST_GOVERNANCE_RUNTIME_STATE?.healing_plan || null;
+      const watchdog = window.LAST_GOVERNANCE_RUNTIME_STATE?.watchdog_cycle || null;
+
+      if($("governanceRuntimeStatePill")){
+        $("governanceRuntimeStatePill").textContent =
+          state ? "RUNTIME: LIVE" : "RUNTIME: STANDBY";
+      }
+
+      if(!state){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">SYSTEM STATE</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Runtime state not loaded.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const cls =
+        state.governance_verified !== true
+          ? "bad"
+          : state.execution_allowed !== true
+          ? "warn"
+          : state.survivability === "STABLE" && state.continuity === "STABLE"
+          ? "ok"
+          : "live";
+
+      el.innerHTML = `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">SYSTEM STATE</div>
+          <div class="heat-value">${escapeHtml(state.autonomous_state || "UNKNOWN")}</div>
+          <div class="heat-meta">Autonomous runtime state</div>
+        </div>
+
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">HEALING STATE</div>
+          <div class="heat-value">${escapeHtml(state.healing_state || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(healing?.summary || "Self-healing state")}</div>
+        </div>
+
+        <div class="heat-cell ${state.governance_verified ? "ok" : "bad"}">
+          <div class="heat-title">GOVERNANCE VERIFIED</div>
+          <div class="heat-value">${escapeHtml(state.governance_verified ? "YES" : "NO")}</div>
+          <div class="heat-meta">Hash-chain verification state</div>
+        </div>
+
+        <div class="heat-cell ${state.execution_allowed ? "ok" : "bad"}">
+          <div class="heat-title">EXECUTION ALLOWED</div>
+          <div class="heat-value">${escapeHtml(state.execution_allowed ? "YES" : "NO")}</div>
+          <div class="heat-meta">Runtime execution permission</div>
+        </div>
+
+        <div class="heat-cell ${state.recovery_allowed ? "live" : "warn"}">
+          <div class="heat-title">RECOVERY ALLOWED</div>
+          <div class="heat-value">${escapeHtml(state.recovery_allowed ? "YES" : "NO")}</div>
+          <div class="heat-meta">Recovery plan authorization</div>
+        </div>
+
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">CONTAINMENT MODE</div>
+          <div class="heat-value">${escapeHtml(state.containment_mode || "UNKNOWN")}</div>
+          <div class="heat-meta">Active containment state</div>
+        </div>
+
+        <div class="heat-cell ${state.survivability === "STABLE" ? "ok" : "warn"}">
+          <div class="heat-title">SURVIVABILITY</div>
+          <div class="heat-value">${escapeHtml(state.survivability || "UNKNOWN")}</div>
+          <div class="heat-meta">Runtime survivability</div>
+        </div>
+
+        <div class="heat-cell ${state.continuity === "STABLE" ? "ok" : "warn"}">
+          <div class="heat-title">CONTINUITY</div>
+          <div class="heat-value">${escapeHtml(state.continuity || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(watchdog?.summary || "Runtime continuity")}</div>
+        </div>
+      `;
+    }
 
 
     async function runGovernanceSchedulerPoll(){
