@@ -3511,6 +3511,35 @@
     </div>
   </section>
 
+
+<section class="civilizationTopology-engine-shell">
+    <div class="civilizationTopology-engine-head">
+      <div class="civilizationTopology-engine-title">
+        <div class="civilizationTopology-engine-label">
+          LIVE CIVILIZATION TOPOLOGY CANVAS
+        </div>
+
+        <div class="civilizationTopology-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationTopologyCanvasPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="civilizationTopology-engine-grid" id="civilizationTopologyCanvasGrid">
+      <div class="civilizationTopology-node warn">
+        <div class="civilizationTopology-node-title">CIVILIZATION TOPOLOGY CANVAS</div>
+        <div class="civilizationTopology-node-value">STANDBY</div>
+        <div class="civilizationTopology-node-meta">
+          Awaiting execution-time civilizationTopology materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -5070,6 +5099,7 @@
         renderCivilizationMetaLawEngine();
         renderCivilizationCore();
         renderCivilizationVisualizationMatrix();
+        renderCivilizationTopologyCanvas();
           return;
         }
 
@@ -7115,6 +7145,135 @@
 
 
 
+
+
+    function renderCivilizationTopologyCanvas(){
+      const el = $("civilizationTopologyCanvasGrid");
+
+      const layerStates = [
+        ["CAUSE", "CAUSE FIELD", "ROOT"],
+        ["MEMORY", $("memoryFabricPill")?.textContent || "MEMORY SYNCHRONIZED", "FABRIC"],
+        ["CONTINUITY", $("executionContinuityPill")?.textContent || "CONTINUITY STABLE", "FLOW"],
+        ["PREDICTION", $("predictionFieldPill")?.textContent || "PREDICTION STABLE", "MODEL"],
+        ["DECISION", $("decisionFieldPill")?.textContent || "DECISION SYNCHRONIZED", "INTENT"],
+        ["ACTION", $("actionEnginePill")?.textContent || "ACTION SYNCHRONIZED", "EXECUTE"],
+        ["COMMIT", $("commitEnginePill")?.textContent || "COMMIT SYNCHRONIZED", "STATE"],
+        ["PROOF", $("proofEnginePill")?.textContent || "PROOF VERIFIED", "VERIFY"],
+        ["TRUTH", $("truthEnginePill")?.textContent || "TRUTH VERIFIED", "TRUTH"],
+        ["EVOLUTION", $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED", "ADAPT"],
+        ["DIRECTIVE", $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE", "STEER"],
+        ["KERNEL", $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED", "CORE"],
+        ["AWARENESS", $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED", "FIELD"],
+        ["REALITY", $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED", "ALIGN"],
+        ["IMMUNE", $("civilizationImmunePill")?.textContent || "IMMUNE ACTIVE", "DEFEND"],
+        ["REGEN", $("civilizationRegenerationPill")?.textContent || "REGENERATION SYNCHRONIZED", "HEAL"],
+        ["ADAPT", $("civilizationAdaptationPill")?.textContent || "ADAPTATION SYNCHRONIZED", "LEARN"],
+        ["FORESIGHT", $("civilizationForesightPill")?.textContent || "FORESIGHT SYNCHRONIZED", "FUTURE"],
+        ["SOVEREIGNTY", $("civilizationSovereigntyPill")?.textContent || "SOVEREIGNTY VERIFIED", "AUTH"],
+        ["CONSENSUS", $("civilizationConsensusPill")?.textContent || "CONSENSUS VERIFIED", "LEGIT"],
+        ["META-LAW", $("civilizationMetaLawPill")?.textContent || "META-LAW VERIFIED", "LAW"],
+        ["CORE", $("civilizationCorePill")?.textContent || "CIVILIZATION CORE SYNCHRONIZED", "UNIFY"],
+        ["VISUAL", $("civilizationVisualizationPill")?.textContent || "TOPOLOGY SYNCHRONIZED", "MAP"]
+      ];
+
+      const topologyText = layerStates.map((x) => x[1]).join(" ").toUpperCase();
+
+      let canvasState = "TOPOLOGY CANVAS SYNCHRONIZED";
+      let graphMode = "LIVE EXECUTION UNIVERSE";
+      let linkHealth = "CONNECTED";
+      let pressureFlow = "LOW";
+      let syncDensity = "HIGH";
+      let propagationMode = "CONTROLLED";
+
+      if(
+        topologyText.includes("CONTESTED") ||
+        topologyText.includes("FRAGMENT") ||
+        topologyText.includes("DIVERG") ||
+        topologyText.includes("BROKEN") ||
+        topologyText.includes("MISMATCH") ||
+        topologyText.includes("FRACTURE")
+      ){
+        canvasState = "TOPOLOGY CANVAS MAPPING RISK";
+        graphMode = "RISK TOPOLOGY ACTIVE";
+        linkHealth = "DEGRADED";
+        pressureFlow = "HIGH";
+        syncDensity = "LOW";
+        propagationMode = "RISK PATHS VISIBLE";
+      }
+      else if(
+        topologyText.includes("CONTAIN") ||
+        topologyText.includes("ISOLAT") ||
+        topologyText.includes("PROTECT")
+      ){
+        canvasState = "TOPOLOGY CANVAS PROTECTED";
+        graphMode = "PROTECTION TOPOLOGY ACTIVE";
+        linkHealth = "ISOLATED";
+        pressureFlow = "CONTAINED";
+        syncDensity = "PROTECTED";
+        propagationMode = "CONTAINMENT PATHS";
+      }
+      else if(
+        topologyText.includes("RECOVER") ||
+        topologyText.includes("REBUILD") ||
+        topologyText.includes("STABILIZ")
+      ){
+        canvasState = "TOPOLOGY CANVAS STABILIZING";
+        graphMode = "STABILIZATION TOPOLOGY ACTIVE";
+        linkHealth = "REBALANCING";
+        pressureFlow = "ELEVATED";
+        syncDensity = "IMPROVING";
+        propagationMode = "MONITORED";
+      }
+      else if(
+        topologyText.includes("EVOLV") ||
+        topologyText.includes("ADAPT") ||
+        topologyText.includes("OPTIMIZ")
+      ){
+        canvasState = "TOPOLOGY CANVAS EVOLVING";
+        graphMode = "ADAPTIVE TOPOLOGY ACTIVE";
+        linkHealth = "ADAPTIVE";
+        pressureFlow = "OPTIMIZED";
+        syncDensity = "INCREASING";
+        propagationMode = "SYNCHRONIZED";
+      }
+
+      const nodes = [
+        ["LIVE GRAPH", graphMode, "Runtime graph of the execution civilization stack."],
+        ["EXECUTION LINKS", linkHealth, "Dynamic execution links between runtime layers."],
+        ["PRESSURE FLOW", pressureFlow, "Pressure propagation lines across execution topology."],
+        ["SYNC DENSITY", syncDensity, "Synchronization density across the topology canvas."],
+        ["PROPAGATION MODE", propagationMode, "Visible propagation behavior through the runtime graph."],
+        ["CANVAS STATUS", canvasState, "Interactive civilization topology layer active."]
+      ];
+
+      const topologyMap = layerStates.map(([name, state, tag], index) => {
+        const compact = String(state).replace(/\s+/g, " ").slice(0, 34);
+        return `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(String(index + 1).padStart(2, "0"))} · ${escapeHtml(name)}</div>
+            <div class="proof-node-value">${escapeHtml(tag)}</div>
+            <div class="proof-node-small">${escapeHtml(compact)}</div>
+          </div>
+        `;
+      }).join("");
+
+      if(el){
+        el.innerHTML = `
+          ${nodes.map(([title, state, text]) => `
+            <div class="proof-node">
+              <div class="proof-node-title">${escapeHtml(title)}</div>
+              <div class="proof-node-value">${escapeHtml(state)}</div>
+              <div class="proof-node-small">${escapeHtml(text)}</div>
+            </div>
+          `).join("")}
+          ${topologyMap}
+        `;
+      }
+
+      if($("civilizationTopologyCanvasPill")){
+        $("civilizationTopologyCanvasPill").textContent = canvasState;
+      }
+    }
 
     function renderCivilizationVisualizationMatrix(){
       const el = $("civilizationVisualizationGrid");
