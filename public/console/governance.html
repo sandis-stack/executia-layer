@@ -900,6 +900,92 @@
       color:#607089;
     }
 
+    .runtime-priority-shell{
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      margin-bottom:18px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.98) 0%,
+          rgba(241,246,252,.98) 100%
+        );
+      box-shadow:
+        0 10px 30px rgba(30,58,95,.06);
+    }
+
+    .runtime-priority-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:
+        linear-gradient(
+          90deg,
+          rgba(30,58,95,.05) 0%,
+          rgba(255,255,255,.95) 100%
+        );
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(12px);
+    }
+
+    .runtime-priority-left{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .runtime-priority-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--blue);
+    }
+
+    .runtime-priority-state{
+      font-size:24px;
+      font-weight:900;
+      color:var(--text);
+      letter-spacing:.03em;
+    }
+
+    .runtime-priority-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .runtime-priority-pill{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--blue);
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.14em;
+    }
+
+    .runtime-priority-pill.live{
+      background:#edf8f1;
+      border-color:#b7e4c7;
+      color:#1f7a4d;
+    }
+
+    .runtime-priority-grid{
+      display:grid;
+      gap:14px;
+      padding:16px;
+    }
+
+
     .execution-topology{
       margin:18px 16px;
       background:#ffffff;
@@ -1489,6 +1575,29 @@
     </div>
   </section>
 
+
+  <section class="runtime-priority-shell">
+
+    <div class="runtime-priority-header">
+      <div class="runtime-priority-left">
+        <div class="runtime-priority-label">EXECUTION-TIME CIVILIZATION RUNTIME</div>
+        <div class="runtime-priority-state" id="runtimePriorityState">
+          CIVILIZATION FIELD: LIVE
+        </div>
+      </div>
+
+      <div class="runtime-priority-right">
+        <div class="runtime-priority-pill">
+          EXECUTION PRIORITY LAYER
+        </div>
+
+        <div class="runtime-priority-pill live">
+          SYNCHRONIZED
+        </div>
+      </div>
+    </div>
+
+    <div class="runtime-priority-grid">
 
   <section class="heatmap-panel" id="civilizationCommandCenterPanel">
     <div class="head">
@@ -2946,6 +3055,17 @@
         renderCivilizationControlLayer();
         renderCivilizationPressureMap();
         renderAutonomousStabilizationField();
+        if($("runtimePriorityState")){
+          const runtime =
+            response?.runtime?.autonomous_state ||
+            response?.runtime?.healing_state ||
+            "LIVE";
+
+          $("runtimePriorityState").textContent =
+            "CIVILIZATION FIELD: " + String(runtime).replaceAll("_"," ");
+        }
+
+
         renderLiveExecutionPhysicsEngine();
 
       }catch(err){
