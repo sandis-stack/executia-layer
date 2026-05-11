@@ -3250,6 +3250,35 @@
     </div>
   </section>
 
+
+<section class="immune-engine-shell">
+    <div class="immune-engine-head">
+      <div class="immune-engine-title">
+        <div class="immune-engine-label">
+          EXECUTION-TIME CIVILIZATION IMMUNE SYSTEM
+        </div>
+
+        <div class="immune-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationImmunePill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="immune-engine-grid" id="civilizationImmuneGrid">
+      <div class="immune-node warn">
+        <div class="immune-node-title">CIVILIZATION IMMUNE SYSTEM</div>
+        <div class="immune-node-value">STANDBY</div>
+        <div class="immune-node-meta">
+          Awaiting execution-time immune materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4800,6 +4829,7 @@
         renderCivilizationKernel();
         renderCivilizationConsciousness();
         renderRealitySynchronization();
+        renderCivilizationImmuneSystem();
           return;
         }
 
@@ -6836,6 +6866,103 @@
 
 
 
+
+
+    function renderCivilizationImmuneSystem(){
+      const el = $("civilizationImmuneGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+      const reality = $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED";
+
+      const immuneText = [
+        truth,
+        evolution,
+        directive,
+        kernel,
+        consciousness,
+        reality
+      ].join(" ").toUpperCase();
+
+      let immuneState = "IMMUNE ACTIVE";
+      let anomaly = "NONE";
+      let containment = "STANDBY";
+      let isolation = "NOT REQUIRED";
+      let integrity = "PRESERVED";
+      let recovery = "READY";
+
+      if(
+        immuneText.includes("DIVERG") ||
+        immuneText.includes("BROKEN") ||
+        immuneText.includes("MISMATCH")
+      ){
+        immuneState = "IMMUNE CONTAINING";
+        anomaly = "STRUCTURAL ANOMALY DETECTED";
+        containment = "ACTIVE";
+        isolation = "ENABLED";
+        integrity = "PROTECTED";
+        recovery = "PREPARED";
+      }
+      else if(
+        immuneText.includes("CONTAIN")
+      ){
+        immuneState = "IMMUNE ISOLATING";
+        anomaly = "EXECUTION THREAT ISOLATED";
+        containment = "ISOLATION ACTIVE";
+        isolation = "ENFORCED";
+        integrity = "STABILIZING";
+        recovery = "ACTIVE";
+      }
+      else if(
+        immuneText.includes("UNSTABLE") ||
+        immuneText.includes("STABILIZ") ||
+        immuneText.includes("PENDING") ||
+        immuneText.includes("REVIEW")
+      ){
+        immuneState = "IMMUNE STABILIZING";
+        anomaly = "POTENTIAL INSTABILITY";
+        containment = "MONITORED";
+        isolation = "READY";
+        integrity = "ADAPTIVE";
+        recovery = "PREVENTIVE";
+      }
+      else if(
+        immuneText.includes("RECOVER")
+      ){
+        immuneState = "IMMUNE RECOVERING";
+        anomaly = "RECOVERY FLOW ACTIVE";
+        containment = "CONTROLLED";
+        isolation = "PARTIAL";
+        integrity = "RECOVERING";
+        recovery = "IN PROGRESS";
+      }
+
+      const nodes = [
+        ["ANOMALY DETECTION", anomaly, "Autonomous structural anomaly detection layer."],
+        ["CONTAINMENT", containment, "Propagation containment across execution runtime."],
+        ["ISOLATION", isolation, "Execution instability isolation behavior."],
+        ["INTEGRITY", integrity, "Execution integrity preservation state."],
+        ["RECOVERY", recovery, "Runtime recovery preparedness and response state."],
+        ["IMMUNE STATUS", immuneState, "Autonomous civilization defense layer active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationImmunePill")){
+        $("civilizationImmunePill").textContent = immuneState;
+      }
+    }
 
     function renderRealitySynchronization(){
       const el = $("realitySynchronizationGrid");
