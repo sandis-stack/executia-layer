@@ -1235,6 +1235,100 @@
 
 
 
+
+
+    .prediction-field-shell{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+      background:linear-gradient(180deg,#ffffff 0%,#f7fbff 100%);
+      box-shadow:0 12px 42px rgba(15,23,42,.06);
+    }
+
+    .prediction-field-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.94);
+    }
+
+    .prediction-field-title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .prediction-field-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .prediction-field-value{
+      font-size:20px;
+      font-weight:900;
+      color:var(--blue);
+      letter-spacing:.03em;
+    }
+
+    .prediction-field-grid{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:14px;
+      padding:20px;
+    }
+
+    .prediction-node{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+      padding:16px;
+      min-height:160px;
+      box-shadow:0 8px 24px rgba(15,23,42,.04);
+    }
+
+    .prediction-node.ok{border-color:#a9d6b7;background:linear-gradient(180deg,#f2fbf5 0%,#fff 100%)}
+    .prediction-node.warn{border-color:#f1cf83;background:linear-gradient(180deg,#fffaf0 0%,#fff 100%)}
+    .prediction-node.bad{border-color:#e4b1b1;background:linear-gradient(180deg,#fff5f5 0%,#fff 100%)}
+    .prediction-node.live{border-color:#b9ccff;background:linear-gradient(180deg,#f3f7ff 0%,#fff 100%)}
+
+    .prediction-title{
+      font-size:10px;
+      letter-spacing:.16em;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .prediction-value{
+      font-size:17px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1.2;
+      margin-bottom:10px;
+      word-break:break-word;
+    }
+
+    .prediction-meta{
+      font-size:12px;
+      color:#607086;
+      line-height:1.55;
+    }
+
+    @media (max-width:1300px){
+      .prediction-field-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+
+    @media (max-width:760px){
+      .prediction-field-grid{grid-template-columns:1fr;}
+    }
+
+
     .causality-fabric-shell{
       margin-top:18px;
       border:1px solid var(--line);
@@ -2452,6 +2546,34 @@
 
 
 
+
+
+
+  <section class="prediction-field-shell">
+    <div class="prediction-field-head">
+      <div class="prediction-field-title">
+        <div class="prediction-field-label">
+          EXECUTION-TIME PREDICTION FIELD
+        </div>
+
+        <div class="prediction-field-value">
+          FUTURE EXECUTION PROBABILITY CONTROL
+        </div>
+      </div>
+
+      <div class="pill" id="predictionFieldPill">
+        PREDICTION: LIVE
+      </div>
+    </div>
+
+    <div class="prediction-field-grid" id="predictionFieldGrid">
+      <div class="prediction-node warn">
+        <div class="prediction-title">PREDICTION FIELD</div>
+        <div class="prediction-value">STANDBY</div>
+        <div class="prediction-meta">Awaiting predictive governance intelligence.</div>
+      </div>
+    </div>
+  </section>
 
   <section class="causality-fabric-shell">
     <div class="causality-fabric-head">
@@ -3886,6 +4008,7 @@
         renderExecutionContinuityEngine();
         renderMemoryFabric();
         renderCausalityFabric();
+        renderPredictionField();
           return;
         }
 
@@ -5905,6 +6028,93 @@
 
 
 
+
+
+
+
+    function renderPredictionField(){
+      const el = $("predictionFieldGrid");
+      if(!el) return;
+
+      const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+      const state = runtime?.runtime_state || {};
+
+      const riskFlags = [
+        state.execution_allowed === false,
+        state.entropy_detected,
+        state.convergence_required,
+        state.stabilization_required,
+        state.field_stabilization_required,
+        state.origin_stabilization_required,
+        state.quarantine_required,
+        state.synchronization_stable === false
+      ].filter(Boolean).length;
+
+      const failureProbability = Math.min(95, Math.max(5, riskFlags * 14 + (state.execution_allowed === false ? 25 : 0)));
+      const successProbability = Math.max(5, 100 - failureProbability);
+
+      const nodes = [
+        {
+          title:"NEXT STATE",
+          value:
+            state.execution_allowed === false
+              ? "CONTAINMENT"
+              : riskFlags >= 3
+              ? "STABILIZATION"
+              : "EXECUTION",
+          meta:"Predicted next runtime transition.",
+          cls:riskFlags >= 3 ? "warn" : state.execution_allowed === false ? "bad" : "live"
+        },
+        {
+          title:"FUTURE DIVERGENCE",
+          value:
+            state.convergence_required || state.synchronization_stable === false
+              ? "DIVERGENCE"
+              : "ALIGNED",
+          meta:state.predictive_state || "Future branch remains aligned.",
+          cls:
+            state.convergence_required || state.synchronization_stable === false
+              ? "warn"
+              : "ok"
+        },
+        {
+          title:"FAILURE PROBABILITY",
+          value:`${failureProbability}%`,
+          meta:"Computed from active runtime instability flags.",
+          cls:failureProbability >= 55 ? "bad" : failureProbability >= 25 ? "warn" : "ok"
+        },
+        {
+          title:"STABILIZATION FORECAST",
+          value:
+            state.stabilization_required || state.field_stabilization_required || state.origin_stabilization_required
+              ? "REQUIRED"
+              : "NOT REQUIRED",
+          meta:"Forecasted stabilization demand.",
+          cls:
+            state.stabilization_required || state.field_stabilization_required || state.origin_stabilization_required
+              ? "warn"
+              : "ok"
+        },
+        {
+          title:"OUTCOME PROBABILITY",
+          value:`${successProbability}%`,
+          meta:"Execution outcome probability under current runtime field.",
+          cls:successProbability >= 75 ? "ok" : successProbability >= 45 ? "warn" : "bad"
+        }
+      ];
+
+      el.innerHTML = nodes.map(item => `
+        <div class="prediction-node ${item.cls}">
+          <div class="prediction-title">${escapeHtml(item.title)}</div>
+          <div class="prediction-value">${escapeHtml(item.value)}</div>
+          <div class="prediction-meta">${escapeHtml(item.meta)}</div>
+        </div>
+      `).join("");
+
+      if($("predictionFieldPill")){
+        $("predictionFieldPill").textContent = "PREDICTION: SYNCHRONIZED";
+      }
+    }
 
 
     function renderCausalityFabric(){
