@@ -67,6 +67,10 @@ import {
   evaluateGovernanceRealityFabric
 } from "../../../../services/governance-reality-fabric.js";
 
+import {
+  evaluateGovernanceSingularity
+} from "../../../../services/governance-singularity.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -266,6 +270,16 @@ export default async function handler(req, res) {
         dna
       });
 
+    const singularity =
+      evaluateGovernanceSingularity({
+        runtime,
+        gravity,
+        pressure,
+        constitutional,
+        reality_fabric,
+        immune
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -286,6 +300,7 @@ export default async function handler(req, res) {
       dna,
       constitutional,
       reality_fabric,
+      singularity,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -420,7 +435,16 @@ export default async function handler(req, res) {
           reality_fabric.coherence_index,
 
         synchronization_stable:
-          reality_fabric.synchronization_stable
+          reality_fabric.synchronization_stable,
+
+        singularity_state:
+          singularity.singularity_state,
+
+        singularity_index:
+          singularity.singularity_index,
+
+        stabilization_required:
+          singularity.stabilization_required
       }
     });
 
