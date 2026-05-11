@@ -1289,6 +1289,9 @@
       <button class="secondary" onclick="runGovernanceWatchdog()">
         RUN WATCHDOG CYCLE
       </button>
+      <button class="secondary" onclick="runAutonomousRuntimeCycle()">
+        RUN AUTONOMOUS RUNTIME CYCLE
+      </button>
     </div>
 
     <div class="heatmap-grid" id="governanceWatchdogGrid">
@@ -2562,6 +2565,76 @@
 
 
 
+
+
+
+
+    async function runAutonomousRuntimeCycle(){
+      try{
+        if(!DETERMINISTIC_REPLAY){
+          alert("No replay context loaded.");
+          return;
+        }
+
+        const reviewId =
+          DETERMINISTIC_REPLAY?.filters?.review_id ||
+          null;
+
+        const executionId =
+          DETERMINISTIC_REPLAY?.replay?.events?.find(e => e.execution_id)?.execution_id ||
+          DETERMINISTIC_REPLAY?.replay?.stages?.find(e => e.execution_id)?.execution_id ||
+          null;
+
+        if(!reviewId && !executionId){
+          alert("No review_id or execution_id available for autonomous runtime cycle.");
+          return;
+        }
+
+        const response = await api(
+          "/api/v2/governance/watchdog/cycle",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              review_id: reviewId,
+              execution_id: executionId
+            })
+          }
+        );
+
+        if(!response?.ok){
+          throw new Error(
+            response?.error?.message ||
+            response?.error ||
+            "Autonomous runtime cycle failed."
+          );
+        }
+
+        window.LAST_GOVERNANCE_WATCHDOG = response.cycle || null;
+
+        renderGovernanceWatchdogRuntime();
+
+        alert(
+          "AUTONOMOUS RUNTIME CYCLE EXECUTED\n\n" +
+          "STATE: " + (response.cycle?.autonomous_state || "—") + "\n" +
+          "EVENT: " + (response.event?.event_type || "GOVERNANCE_AUTONOMOUS_RUNTIME_CYCLE") + "\n" +
+          "HASH: " + (response.event?.hash || "—")
+        );
+
+        await loadGlobalGovernanceStream?.();
+        await loadOpenReviews?.();
+
+      }catch(err){
+        console.error(err);
+
+        alert(
+          "AUTONOMOUS RUNTIME CYCLE FAILED\n\n" +
+          (err?.message || err)
+        );
+      }
+    }
 
 
     async function runGovernanceWatchdog(){
