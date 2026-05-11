@@ -43,6 +43,10 @@ import {
   evaluateGovernanceTime
 } from "../../../../services/governance-time.js";
 
+import {
+  evaluateGovernanceConsciousness
+} from "../../../../services/governance-consciousness.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -178,6 +182,17 @@ export default async function handler(req, res) {
         gravity
       });
 
+    const consciousness =
+      evaluateGovernanceConsciousness({
+        runtime,
+        reality,
+        pressure,
+        gravity,
+        time,
+        prediction,
+        consensus
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -192,6 +207,7 @@ export default async function handler(req, res) {
       pressure,
       gravity,
       time,
+      consciousness,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -272,7 +288,16 @@ export default async function handler(req, res) {
           time.temporal_index,
 
         delayed_causality_detected:
-          time.delayed_causality_detected
+          time.delayed_causality_detected,
+
+        consciousness_state:
+          consciousness.consciousness_state,
+
+        awareness_index:
+          consciousness.awareness_index,
+
+        cognition_mode:
+          consciousness.cognition_mode
       }
     });
 
