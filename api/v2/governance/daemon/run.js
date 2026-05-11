@@ -29,7 +29,12 @@ export default async function handler(req, res) {
       "governance.review.read"
     );
 
-    if (!permission.ok && context?.user?.role !== "OPERATOR") {
+    const runtimeRole =
+      context?.user?.role ||
+      context?.user?.user_metadata?.role ||
+      null;
+
+    if (!permission.ok && runtimeRole !== "OPERATOR") {
       return json(res, 401, {
         ok: false,
         error: {
