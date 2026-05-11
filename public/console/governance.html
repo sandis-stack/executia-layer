@@ -3424,6 +3424,35 @@
     </div>
   </section>
 
+
+<section class="metalaw-engine-shell">
+    <div class="metalaw-engine-head">
+      <div class="metalaw-engine-title">
+        <div class="metalaw-engine-label">
+          EXECUTION-TIME CIVILIZATION META-LAW ENGINE
+        </div>
+
+        <div class="metalaw-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationMetaLawPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="metalaw-engine-grid" id="civilizationMetaLawGrid">
+      <div class="metalaw-node warn">
+        <div class="metalaw-node-title">CIVILIZATION META-LAW ENGINE</div>
+        <div class="metalaw-node-value">STANDBY</div>
+        <div class="metalaw-node-meta">
+          Awaiting execution-time metalaw materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4980,6 +5009,7 @@
         renderCivilizationForesightEngine();
         renderCivilizationSovereigntyLayer();
         renderCivilizationConsensusField();
+        renderCivilizationMetaLawEngine();
           return;
         }
 
@@ -7022,6 +7052,106 @@
 
 
 
+
+
+    function renderCivilizationMetaLawEngine(){
+      const el = $("civilizationMetaLawGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const sovereignty = $("civilizationSovereigntyPill")?.textContent || "SOVEREIGNTY VERIFIED";
+      const consensus = $("civilizationConsensusPill")?.textContent || "CONSENSUS VERIFIED";
+
+      const metalawText = [
+        truth,
+        directive,
+        kernel,
+        sovereignty,
+        consensus
+      ].join(" ").toUpperCase();
+
+      let metalawState = "META-LAW VERIFIED";
+      let ruleValidity = "VALID";
+      let authorityValidity = "VERIFIED";
+      let continuityConstraint = "UNBROKEN";
+      let adaptationBoundary = "ENFORCED";
+      let invariantPersistence = "PRESERVED";
+
+      if(
+        metalawText.includes("CONTESTED") ||
+        metalawText.includes("FRAGMENT") ||
+        metalawText.includes("DIVERG") ||
+        metalawText.includes("BROKEN") ||
+        metalawText.includes("MISMATCH") ||
+        metalawText.includes("FRACTURE")
+      ){
+        metalawState = "META-LAW CONTESTED";
+        ruleValidity = "UNDER REVIEW";
+        authorityValidity = "CONTESTED";
+        continuityConstraint = "THREATENED";
+        adaptationBoundary = "RESTRICTED";
+        invariantPersistence = "AT RISK";
+      }
+      else if(
+        metalawText.includes("CONTAIN") ||
+        metalawText.includes("ISOLAT")
+      ){
+        metalawState = "META-LAW ENFORCED";
+        ruleValidity = "ENFORCED";
+        authorityValidity = "PROTECTED";
+        continuityConstraint = "LOCKED";
+        adaptationBoundary = "HARD";
+        invariantPersistence = "PROTECTED";
+      }
+      else if(
+        metalawText.includes("RECOVER") ||
+        metalawText.includes("REBUILD") ||
+        metalawText.includes("STABILIZ")
+      ){
+        metalawState = "META-LAW STABILIZING";
+        ruleValidity = "STABILIZING";
+        authorityValidity = "RESTORING";
+        continuityConstraint = "MONITORED";
+        adaptationBoundary = "CONTROLLED";
+        invariantPersistence = "RECOVERING";
+      }
+      else if(
+        metalawText.includes("EVOLV") ||
+        metalawText.includes("ADAPT") ||
+        metalawText.includes("OPTIMIZ")
+      ){
+        metalawState = "META-LAW EVOLVING";
+        ruleValidity = "EVOLVING";
+        authorityValidity = "SYNCHRONIZED";
+        continuityConstraint = "PRESERVED";
+        adaptationBoundary = "ADAPTIVE";
+        invariantPersistence = "PERSISTENT";
+      }
+
+      const nodes = [
+        ["RULE VALIDITY", ruleValidity, "Defines which execution rules are allowed to exist."],
+        ["AUTHORITY VALIDITY", authorityValidity, "Defines which authority structures are valid."],
+        ["CONTINUITY CONSTRAINT", continuityConstraint, "Defines constraints that cannot be broken."],
+        ["ADAPTATION BOUNDARY", adaptationBoundary, "Defines permitted boundaries of runtime adaptation."],
+        ["CIVILIZATION INVARIANTS", invariantPersistence, "Protects invariants that must persist across execution."],
+        ["META-LAW STATUS", metalawState, "Higher-order constitutional execution layer active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationMetaLawPill")){
+        $("civilizationMetaLawPill").textContent = metalawState;
+      }
+    }
 
     function renderCivilizationConsensusField(){
       const el = $("civilizationConsensusGrid");
