@@ -39,6 +39,10 @@ import {
   evaluateGovernanceGravity
 } from "../../../../services/governance-gravity.js";
 
+import {
+  evaluateGovernanceTime
+} from "../../../../services/governance-time.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -165,6 +169,15 @@ export default async function handler(req, res) {
         consensus
       });
 
+    const time =
+      evaluateGovernanceTime({
+        runtime,
+        replay: runtime.replay,
+        reality,
+        pressure,
+        gravity
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -178,6 +191,7 @@ export default async function handler(req, res) {
       reality,
       pressure,
       gravity,
+      time,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -249,7 +263,16 @@ export default async function handler(req, res) {
           gravity.gravity_index,
 
         stabilization_field:
-          gravity.stabilization_field
+          gravity.stabilization_field,
+
+        temporal_state:
+          time.temporal_state,
+
+        temporal_index:
+          time.temporal_index,
+
+        delayed_causality_detected:
+          time.delayed_causality_detected
       }
     });
 
