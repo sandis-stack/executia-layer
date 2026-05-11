@@ -12,6 +12,10 @@ import {
   runGovernanceWatchdogCycle
 } from "./governance-watchdog.js";
 
+import {
+  planGovernanceSelfHealing
+} from "./governance-self-healing.js";
+
 /**
  * EXECUTIA Governance Scheduler
  * One-shot autonomous runtime loop runner.
@@ -56,9 +60,22 @@ export async function runGovernanceScheduler({
       replay: runtime.replay
     });
 
+    const healing_plan = planGovernanceSelfHealing({
+      verification: runtime.verification,
+      risk: runtime.risk,
+      intelligence: runtime.intelligence,
+      stability: runtime.stability,
+      containment_plan: runtime.containment_plan,
+      recovery_plan: runtime.recovery_plan,
+      orchestrator: runtime.orchestrator,
+      watchdog_cycle: cycle,
+      replay: runtime.replay
+    });
+
     const shouldMaterialize =
       materialize_monitor_events === true ||
-      !cycle.cycle_actions.includes("MONITOR");
+      !cycle.cycle_actions.includes("MONITOR") ||
+      healing_plan.healing_state !== "SELF_HEALING_MONITORING";
 
     let event = null;
 
@@ -81,6 +98,11 @@ export async function runGovernanceScheduler({
             survivability: cycle.survivability,
             continuity: cycle.continuity,
             summary: cycle.summary,
+            healing_state: healing_plan.healing_state,
+            healing_actions: healing_plan.actions,
+            healing_blocked_actions: healing_plan.blocked_actions,
+            healing_supervisor_required: healing_plan.supervisor_required,
+            autonomous_release_allowed: healing_plan.autonomous_release_allowed,
             scheduler_mode: "ONE_SHOT_AUTONOMOUS_RUNTIME_LOOP",
             materialize_monitor_events,
             operator_user_id: operator?.id || null,
@@ -97,6 +119,7 @@ export async function runGovernanceScheduler({
       execution_id: scope.execution_id,
       materialized: Boolean(event),
       cycle,
+      healing_plan,
       event
     });
   }
