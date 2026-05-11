@@ -3366,6 +3366,35 @@
     </div>
   </section>
 
+
+<section class="sovereignty-engine-shell">
+    <div class="sovereignty-engine-head">
+      <div class="sovereignty-engine-title">
+        <div class="sovereignty-engine-label">
+          EXECUTION-TIME CIVILIZATION SOVEREIGNTY LAYER
+        </div>
+
+        <div class="sovereignty-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationSovereigntyPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="sovereignty-engine-grid" id="civilizationSovereigntyGrid">
+      <div class="sovereignty-node warn">
+        <div class="sovereignty-node-title">CIVILIZATION SOVEREIGNTY LAYER</div>
+        <div class="sovereignty-node-value">STANDBY</div>
+        <div class="sovereignty-node-meta">
+          Awaiting execution-time sovereignty materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4920,6 +4949,7 @@
         renderCivilizationRegenerationEngine();
         renderCivilizationAdaptationMatrix();
         renderCivilizationForesightEngine();
+        renderCivilizationSovereigntyLayer();
           return;
         }
 
@@ -6960,6 +6990,117 @@
 
 
 
+
+
+    function renderCivilizationSovereigntyLayer(){
+      const el = $("civilizationSovereigntyGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+      const reality = $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED";
+      const immune = $("civilizationImmunePill")?.textContent || "IMMUNE ACTIVE";
+      const regeneration = $("civilizationRegenerationPill")?.textContent || "REGENERATION SYNCHRONIZED";
+      const adaptation = $("civilizationAdaptationPill")?.textContent || "ADAPTATION SYNCHRONIZED";
+      const foresight = $("civilizationForesightPill")?.textContent || "FORESIGHT SYNCHRONIZED";
+
+      const sovereigntyText = [
+        truth,
+        directive,
+        kernel,
+        consciousness,
+        reality,
+        immune,
+        regeneration,
+        adaptation,
+        foresight
+      ].join(" ").toUpperCase();
+
+      let sovereigntyState = "SOVEREIGNTY VERIFIED";
+      let authority = "EXECUTION AUTHORITY VERIFIED";
+      let truthControl = "TRUTH MATERIALIZED";
+      let continuityAuthorization = "AUTHORIZED";
+      let adaptationGovernance = "SYNCHRONIZED";
+      let integrityProtection = "ACTIVE";
+
+      if(
+        sovereigntyText.includes("DIVERG") ||
+        sovereigntyText.includes("BROKEN") ||
+        sovereigntyText.includes("MISMATCH") ||
+        sovereigntyText.includes("FRACTURE")
+      ){
+        sovereigntyState = "SOVEREIGNTY CONTESTED";
+        authority = "EXECUTION AUTHORITY CONTESTED";
+        truthControl = "TRUTH CONTROL DEGRADED";
+        continuityAuthorization = "REQUIRES REVIEW";
+        adaptationGovernance = "CONTESTED";
+        integrityProtection = "CRITICAL";
+      }
+      else if(
+        sovereigntyText.includes("CONTAIN") ||
+        sovereigntyText.includes("ISOLAT")
+      ){
+        sovereigntyState = "SOVEREIGNTY STABILIZING";
+        authority = "AUTHORITY PROTECTION ACTIVE";
+        truthControl = "PROTECTED";
+        continuityAuthorization = "RESTRICTED";
+        adaptationGovernance = "CONTROLLED";
+        integrityProtection = "ENFORCED";
+      }
+      else if(
+        sovereigntyText.includes("RECOVER") ||
+        sovereigntyText.includes("REBUILD")
+      ){
+        sovereigntyState = "SOVEREIGNTY STABILIZING";
+        authority = "AUTHORITY RECOVERY ACTIVE";
+        truthControl = "RESTORING";
+        continuityAuthorization = "RECOVERING";
+        adaptationGovernance = "REBALANCING";
+        integrityProtection = "ACTIVE";
+      }
+      else if(
+        sovereigntyText.includes("EVOLV") ||
+        sovereigntyText.includes("ADAPT") ||
+        sovereigntyText.includes("OPTIMIZ")
+      ){
+        sovereigntyState = "SOVEREIGNTY EVOLVING";
+        authority = "AUTHORITY EVOLUTION SYNCHRONIZED";
+        truthControl = "STABLE";
+        continuityAuthorization = "AUTHORIZED";
+        adaptationGovernance = "EVOLVING";
+        integrityProtection = "ACTIVE";
+      }
+      else if(
+        sovereigntyText.includes("SYNC") ||
+        sovereigntyText.includes("VERIFIED")
+      ){
+        sovereigntyState = "SOVEREIGNTY SYNCHRONIZED";
+      }
+
+      const nodes = [
+        ["EXECUTION AUTHORITY", authority, "Defines who controls execution at runtime."],
+        ["TRUTH CONTROL", truthControl, "Defines who materializes and protects execution-time truth."],
+        ["CONTINUITY AUTHORIZATION", continuityAuthorization, "Defines who authorizes continuity preservation."],
+        ["ADAPTATION GOVERNANCE", adaptationGovernance, "Defines how future execution adaptation is governed."],
+        ["INTEGRITY PROTECTION", integrityProtection, "Protects civilization execution integrity."],
+        ["SOVEREIGNTY STATUS", sovereigntyState, "Ultimate execution authority layer active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationSovereigntyPill")){
+        $("civilizationSovereigntyPill").textContent = sovereigntyState;
+      }
+    }
 
     function renderCivilizationForesightEngine(){
       const el = $("civilizationForesightGrid");
