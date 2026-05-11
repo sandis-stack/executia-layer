@@ -1243,6 +1243,101 @@
 
 
 
+
+
+    .proof-engine-shell{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+      background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+      box-shadow:0 12px 42px rgba(15,23,42,.06);
+    }
+
+    .proof-engine-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.94);
+    }
+
+    .proof-engine-title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .proof-engine-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .proof-engine-value{
+      font-size:20px;
+      font-weight:900;
+      color:var(--blue);
+      letter-spacing:.03em;
+    }
+
+    .proof-engine-grid{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:14px;
+      padding:20px;
+    }
+
+    .proof-node{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+      padding:16px;
+      min-height:170px;
+      box-shadow:0 8px 24px rgba(15,23,42,.04);
+      overflow:hidden;
+    }
+
+    .proof-node.ok{border-color:#a9d6b7;background:linear-gradient(180deg,#f2fbf5 0%,#fff 100%)}
+    .proof-node.warn{border-color:#f1cf83;background:linear-gradient(180deg,#fffaf0 0%,#fff 100%)}
+    .proof-node.bad{border-color:#e4b1b1;background:linear-gradient(180deg,#fff5f5 0%,#fff 100%)}
+    .proof-node.live{border-color:#b9ccff;background:linear-gradient(180deg,#f3f7ff 0%,#fff 100%)}
+
+    .proof-node-title{
+      font-size:10px;
+      letter-spacing:.16em;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .proof-node-value{
+      font-size:16px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1.25;
+      margin-bottom:10px;
+      word-break:break-word;
+    }
+
+    .proof-node-meta{
+      font-size:12px;
+      color:#607086;
+      line-height:1.55;
+    }
+
+    @media (max-width:1300px){
+      .proof-engine-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+
+    @media (max-width:760px){
+      .proof-engine-grid{grid-template-columns:1fr;}
+    }
+
+
     .commit-engine-shell{
       margin-top:18px;
       border:1px solid var(--line);
@@ -2951,6 +3046,36 @@
 
 
 
+
+
+  <section class="proof-engine-shell">
+    <div class="proof-engine-head">
+      <div class="proof-engine-title">
+        <div class="proof-engine-label">
+          EXECUTION-TIME PROOF ENGINE
+        </div>
+
+        <div class="proof-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="proofEnginePill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="proof-engine-grid" id="proofEngineGrid">
+      <div class="proof-node warn">
+        <div class="proof-node-title">PROOF ENGINE</div>
+        <div class="proof-node-value">STANDBY</div>
+        <div class="proof-node-meta">
+          Awaiting execution-time proof materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4494,6 +4619,7 @@
         renderDecisionField();
         renderActionEngine();
         renderCommitEngine();
+        renderProofEngine();
           return;
         }
 
@@ -6521,6 +6647,91 @@
 
 
 
+
+
+
+
+    function renderProofEngine(){
+      const el = $("proofEngineGrid");
+      if(!el) return;
+
+      const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+      const state = runtime?.runtime_state || {};
+      const replay = runtime?.runtime?.replay || {};
+      const events = replay?.events || [];
+
+      const lastEvent = Array.isArray(events) && events.length
+        ? events[events.length - 1]
+        : null;
+
+      const hash =
+        lastEvent?.hash ||
+        runtime?.runtime?.head_hash ||
+        runtime?.head_hash ||
+        "—";
+
+      const prevHash =
+        lastEvent?.prev_hash ||
+        "—";
+
+      const verified =
+        state.synchronization_stable !== false &&
+        state.delayed_causality_detected !== true &&
+        state.entropy_detected !== true;
+
+      const truthAnchored =
+        verified &&
+        state.convergence_required !== true &&
+        state.execution_allowed !== false;
+
+      const nodes = [
+        {
+          title:"PROOF HASH",
+          value:hash && hash !== "—" ? String(hash).slice(0,18) + "…" : "PENDING",
+          meta:"Latest execution proof hash.",
+          cls:hash && hash !== "—" ? "live" : "warn"
+        },
+        {
+          title:"AUDIT CHAIN",
+          value:events.length ? `${events.length} EVENTS` : "NO EVENTS",
+          meta:"Governance audit event chain.",
+          cls:events.length ? "ok" : "warn"
+        },
+        {
+          title:"LEDGER TRACE",
+          value:prevHash && prevHash !== "—" ? "TRACE LINKED" : "TRACE PENDING",
+          meta:prevHash && prevHash !== "—" ? String(prevHash).slice(0,18) + "…" : "Previous hash unavailable.",
+          cls:prevHash && prevHash !== "—" ? "ok" : "warn"
+        },
+        {
+          title:"TRUTH ANCHOR",
+          value:truthAnchored ? "ANCHORED" : "UNSTABLE",
+          meta:"Execution-time truth anchoring state.",
+          cls:truthAnchored ? "ok" : "warn"
+        },
+        {
+          title:"VERIFICATION RESULT",
+          value:verified ? "VERIFIED" : "REVIEW",
+          meta:verified ? "No causality, entropy or sync breach detected." : "Runtime verification requires review.",
+          cls:verified ? "ok" : "bad"
+        }
+      ];
+
+      el.innerHTML = nodes.map(item => `
+        <div class="proof-node ${item.cls}">
+          <div class="proof-node-title">${escapeHtml(item.title)}</div>
+          <div class="proof-node-value">${escapeHtml(item.value)}</div>
+          <div class="proof-node-meta">${escapeHtml(item.meta)}</div>
+        </div>
+      `).join("");
+
+      if($("proofEnginePill")){
+        $("proofEnginePill").textContent =
+          verified
+            ? "PROOF: VERIFIED"
+            : "PROOF: REVIEW";
+      }
+    }
 
 
     function renderCommitEngine(){
