@@ -1292,6 +1292,9 @@
       <button class="secondary" onclick="runAutonomousRuntimeCycle()">
         RUN AUTONOMOUS RUNTIME CYCLE
       </button>
+      <button class="secondary" onclick="runGovernanceSchedulerPoll()">
+        RUN SCHEDULER POLL
+      </button>
     </div>
 
     <div class="heatmap-grid" id="governanceWatchdogGrid">
@@ -2567,6 +2570,59 @@
 
 
 
+
+
+
+
+    async function runGovernanceSchedulerPoll(){
+      try{
+        const response = await api(
+          "/api/v2/governance/scheduler/poll",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              limit: 25,
+              materialize_monitor_events: false
+            })
+          }
+        );
+
+        if(!response?.ok){
+          throw new Error(
+            response?.error?.message ||
+            response?.error ||
+            "Governance scheduler poll failed."
+          );
+        }
+
+        const firstCycle = response.results?.[0]?.cycle || null;
+        if(firstCycle){
+          window.LAST_GOVERNANCE_WATCHDOG = firstCycle;
+          renderGovernanceWatchdogRuntime();
+        }
+
+        alert(
+          "GOVERNANCE SCHEDULER POLL EXECUTED\n\n" +
+          "POLLED REVIEWS: " + (response.polled_reviews ?? 0) + "\n" +
+          "CYCLES: " + (response.cycles_completed ?? 0) + "\n" +
+          "MATERIALIZED: " + (response.materialized_events ?? 0)
+        );
+
+        await loadGlobalGovernanceStream?.();
+        await loadOpenReviews?.();
+
+      }catch(err){
+        console.error(err);
+
+        alert(
+          "GOVERNANCE SCHEDULER POLL FAILED\n\n" +
+          (err?.message || err)
+        );
+      }
+    }
 
 
     async function runAutonomousRuntimeCycle(){
