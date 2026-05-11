@@ -27,6 +27,10 @@ import {
   buildGovernanceConsensus
 } from "../../../../services/governance-consensus.js";
 
+import {
+  evaluateGovernanceReality
+} from "../../../../services/governance-reality.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -126,6 +130,15 @@ export default async function handler(req, res) {
         watchdog_cycle
       });
 
+    const reality =
+      evaluateGovernanceReality({
+        runtime,
+        memory,
+        prediction,
+        consensus,
+        replay: runtime.replay
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -136,6 +149,7 @@ export default async function handler(req, res) {
       memory,
       prediction,
       consensus,
+      reality,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -180,7 +194,16 @@ export default async function handler(req, res) {
           consensus.quorum,
 
         autonomous_decision:
-          consensus.autonomous_decision
+          consensus.autonomous_decision,
+
+        reality_state:
+          reality.integrity_state,
+
+        execution_authenticity:
+          reality.execution_authenticity,
+
+        truth_state:
+          reality.truth_state
       }
     });
 
