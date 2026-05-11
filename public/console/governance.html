@@ -1278,6 +1278,28 @@
     </div>
   </section>
 
+
+  <section class="heatmap-panel" id="governanceWatchdogPanel">
+    <div class="head">
+      <h2>GOVERNANCE WATCHDOG RUNTIME</h2>
+      <span class="pill" id="governanceWatchdogState">WATCHDOG: STANDBY</span>
+    </div>
+
+    <div style="margin:12px 0 18px 0;">
+      <button class="secondary" onclick="runGovernanceWatchdog()">
+        RUN WATCHDOG CYCLE
+      </button>
+    </div>
+
+    <div class="heatmap-grid" id="governanceWatchdogGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">WATCHDOG</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Replay context required.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2538,6 +2560,208 @@
     }
 
 
+
+
+
+
+    async function runGovernanceWatchdog(){
+      try{
+        if(!DETERMINISTIC_REPLAY){
+          alert("No replay context loaded.");
+          return;
+        }
+
+        const reviewId =
+          DETERMINISTIC_REPLAY?.filters?.review_id ||
+          null;
+
+        const executionId =
+          DETERMINISTIC_REPLAY?.replay?.events?.find(e => e.execution_id)?.execution_id ||
+          DETERMINISTIC_REPLAY?.replay?.stages?.find(e => e.execution_id)?.execution_id ||
+          null;
+
+        if(!reviewId){
+          alert("No review_id available for watchdog.");
+          return;
+        }
+
+        const response = await api(
+          "/api/v2/governance/watchdog/run",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              review_id: reviewId,
+              execution_id: executionId,
+              verification: DETERMINISTIC_REPLAY.verification || null,
+              risk: DETERMINISTIC_REPLAY.risk || null,
+              intelligence: DETERMINISTIC_REPLAY.intelligence || null,
+              stability: DETERMINISTIC_REPLAY.stability || null,
+              containment_plan: DETERMINISTIC_REPLAY.containment_plan || null,
+              recovery_plan: DETERMINISTIC_REPLAY.recovery_plan || null,
+              orchestrator: DETERMINISTIC_REPLAY.orchestrator || null,
+              replay: DETERMINISTIC_REPLAY.replay || null
+            })
+          }
+        );
+
+        if(!response?.ok){
+          throw new Error(
+            response?.error?.message ||
+            response?.error ||
+            "Governance watchdog cycle failed."
+          );
+        }
+
+        window.LAST_GOVERNANCE_WATCHDOG = response.cycle || null;
+
+        renderGovernanceWatchdogRuntime();
+
+        alert(
+          "GOVERNANCE WATCHDOG CYCLE EXECUTED\n\n" +
+          "STATE: " + (response.cycle?.autonomous_state || "—") + "\n" +
+          "EVENT: " + (response.event?.event_type || "GOVERNANCE_WATCHDOG_CYCLE") + "\n" +
+          "HASH: " + (response.event?.hash || "—")
+        );
+
+        await loadGlobalGovernanceStream?.();
+        await loadOpenReviews?.();
+
+      }catch(err){
+        console.error(err);
+
+        alert(
+          "GOVERNANCE WATCHDOG FAILED\n\n" +
+          (err?.message || err)
+        );
+      }
+    }
+
+
+    function renderGovernanceWatchdogRuntime(){
+      const el = $("governanceWatchdogGrid");
+      if(!el) return;
+
+      const cycle = window.LAST_GOVERNANCE_WATCHDOG || null;
+      const orchestrator = DETERMINISTIC_REPLAY?.orchestrator || null;
+      const stability = DETERMINISTIC_REPLAY?.stability || null;
+
+      if($("governanceWatchdogState")){
+        $("governanceWatchdogState").textContent =
+          cycle
+            ? "WATCHDOG: LIVE"
+            : DETERMINISTIC_REPLAY
+            ? "WATCHDOG: READY"
+            : "WATCHDOG: STANDBY";
+      }
+
+      if(!DETERMINISTIC_REPLAY){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">WATCHDOG</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Replay context required.</div>
+          </div>
+        `;
+        return;
+      }
+
+      if(!cycle){
+        const priority = orchestrator?.priority || "READY";
+        const cls =
+          priority === "APPLY_CONTAINMENT" || stability?.continuity === "UNSTABLE"
+            ? "bad"
+            : priority === "MONITOR"
+            ? "ok"
+            : "warn";
+
+        el.innerHTML = `
+          <div class="heat-cell ${cls}">
+            <div class="heat-title">WATCHDOG</div>
+            <div class="heat-value">READY</div>
+            <div class="heat-meta">Replay loaded. Watchdog cycle can be executed.</div>
+          </div>
+
+          <div class="heat-cell ${cls}">
+            <div class="heat-title">SOURCE PRIORITY</div>
+            <div class="heat-value">${escapeHtml(priority)}</div>
+            <div class="heat-meta">Current orchestrator priority</div>
+          </div>
+
+          <div class="heat-cell ${cls}">
+            <div class="heat-title">CONTINUITY</div>
+            <div class="heat-value">${escapeHtml(stability?.continuity || "UNKNOWN")}</div>
+            <div class="heat-meta">Current stability continuity state</div>
+          </div>
+        `;
+        return;
+      }
+
+      const cls =
+        cycle.execution_allowed === false ||
+        cycle.autonomous_state === "WATCHDOG_CONTAINMENT_ACTIVE" ||
+        cycle.autonomous_state === "WATCHDOG_LOCKDOWN"
+          ? "bad"
+          : cycle.autonomous_state === "WATCHDOG_MONITORING"
+          ? "ok"
+          : "warn";
+
+      const actions = (cycle.cycle_actions || []).map(action => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">CYCLE ACTION</div>
+          <div class="heat-value">${escapeHtml(action)}</div>
+          <div class="heat-meta">Autonomous watchdog action</div>
+        </div>
+      `).join("");
+
+      const blockers = (cycle.blockers || []).map(blocker => `
+        <div class="heat-cell bad">
+          <div class="heat-title">BLOCKER</div>
+          <div class="heat-value">${escapeHtml(blocker)}</div>
+          <div class="heat-meta">Watchdog execution blocker</div>
+        </div>
+      `).join("");
+
+      const escalation = (cycle.escalation || []).map(item => `
+        <div class="heat-cell warn">
+          <div class="heat-title">ESCALATION</div>
+          <div class="heat-value">${escapeHtml(item)}</div>
+          <div class="heat-meta">Autonomous escalation signal</div>
+        </div>
+      `).join("");
+
+      el.innerHTML = `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">AUTONOMOUS STATE</div>
+          <div class="heat-value">${escapeHtml(cycle.autonomous_state || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(cycle.summary || "Watchdog cycle materialized.")}</div>
+        </div>
+
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">EXECUTION ALLOWED</div>
+          <div class="heat-value">${escapeHtml(cycle.execution_allowed ? "YES" : "NO")}</div>
+          <div class="heat-meta">Runtime execution permission after watchdog cycle</div>
+        </div>
+
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">SURVIVABILITY</div>
+          <div class="heat-value">${escapeHtml(cycle.survivability || "UNKNOWN")}</div>
+          <div class="heat-meta">Watchdog survivability state</div>
+        </div>
+
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">CONTINUITY</div>
+          <div class="heat-value">${escapeHtml(cycle.continuity || "UNKNOWN")}</div>
+          <div class="heat-meta">Watchdog continuity state</div>
+        </div>
+
+        ${actions}
+        ${blockers}
+        ${escalation}
+      `;
+    }
 
 
     async function runGovernanceOrchestrator(){
