@@ -31,6 +31,10 @@ import {
   evaluateGovernanceReality
 } from "../../../../services/governance-reality.js";
 
+import {
+  evaluateGovernancePressure
+} from "../../../../services/governance-pressure.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -139,6 +143,15 @@ export default async function handler(req, res) {
         replay: runtime.replay
       });
 
+    const pressure =
+      evaluateGovernancePressure({
+        runtime,
+        memory,
+        prediction,
+        consensus,
+        reality
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -150,6 +163,7 @@ export default async function handler(req, res) {
       prediction,
       consensus,
       reality,
+      pressure,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -203,7 +217,16 @@ export default async function handler(req, res) {
           reality.execution_authenticity,
 
         truth_state:
-          reality.truth_state
+          reality.truth_state,
+
+        pressure_state:
+          pressure.pressure_state,
+
+        pressure_index:
+          pressure.pressure_index,
+
+        overload_forecast:
+          pressure.overload_forecast
       }
     });
 
