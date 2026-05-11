@@ -3961,8 +3961,12 @@
 
     async function runAutonomousRuntimeCycle(){
       try{
+        if(!DETERMINISTIC_REPLAY && SELECTED?.id){
+          await loadDeterministicReplay(SELECTED.id);
+        }
+
         if(!DETERMINISTIC_REPLAY){
-          alert("No replay context loaded.");
+          alert("No replay context loaded. Select a review or refresh the queue first.");
           return;
         }
 
@@ -4029,8 +4033,12 @@
 
     async function runGovernanceWatchdog(){
       try{
+        if(!DETERMINISTIC_REPLAY && SELECTED?.id){
+          await loadDeterministicReplay(SELECTED.id);
+        }
+
         if(!DETERMINISTIC_REPLAY){
-          alert("No replay context loaded.");
+          alert("No replay context loaded. Select a review or refresh the queue first.");
           return;
         }
 
