@@ -2692,6 +2692,16 @@
   .topology-response-title{font-size:9px;font-weight:900;letter-spacing:.12em;fill:#1e3a5f;}
   .topology-response-text{font-size:8.5px;font-weight:700;fill:#60748a;}
 
+
+  .topology-evolution-path{stroke:#1e3a5f;stroke-width:1.8;opacity:.30;fill:none;stroke-linecap:round;stroke-dasharray:4 12;animation:topologyFlow 4.4s linear infinite;}
+  .topology-evolution-ring{fill:none;stroke:rgba(30,58,95,.26);stroke-width:1.8;stroke-dasharray:6 10;animation:topologyFlow 5.2s linear infinite;}
+  .topology-evolution-node{fill:#ffffff;stroke:#1e3a5f;stroke-width:2;filter:drop-shadow(0 0 12px rgba(30,58,95,.18));}
+  .topology-evolution-core{fill:#8ba2ba;stroke:#1e3a5f;stroke-width:1.2;}
+  .topology-evolution-label{font-size:8.5px;font-weight:900;letter-spacing:.1em;fill:#1e3a5f;text-anchor:middle;}
+  .topology-evolution-panel{fill:#fff;stroke:rgba(30,58,95,.14);stroke-width:1;filter:drop-shadow(0 8px 16px rgba(30,58,95,.08));}
+  .topology-evolution-title{font-size:9px;font-weight:900;letter-spacing:.12em;fill:#1e3a5f;}
+  .topology-evolution-text{font-size:8.5px;font-weight:700;fill:#60748a;}
+
 </style>
 </head>
 <body>
@@ -7513,7 +7523,7 @@
             <div>
               <div class="civilization-topology-title">LIVE CIVILIZATION TOPOLOGY GRAPH</div>
               <div class="civilization-topology-subtitle">
-                Runtime universe view: execution layers, animated flow streams, pressure heat zones, signal intelligence, autonomous response vectors and structural links.
+                Runtime universe view: execution layers, animated flow streams, pressure heat zones, signal intelligence, autonomous response vectors, self-evolution paths and structural links.
               </div>
             </div>
             <div class="civilization-topology-badge">${escapeHtml(canvasState)}</div>
@@ -7593,6 +7603,26 @@
               <circle class="topology-response-core" cx="455" cy="405" r="6"></circle>
               <text class="topology-response-label" x="455" y="433">REROUTE</text>
             </g>
+            <g>
+              <ellipse class="topology-evolution-ring" cx="520" cy="300" rx="150" ry="88"></ellipse>
+              <ellipse class="topology-evolution-ring" cx="520" cy="300" rx="205" ry="122"></ellipse>
+
+              <path class="topology-evolution-path" d="M 430 225 C 475 250, 565 250, 610 225"></path>
+              <path class="topology-evolution-path" d="M 455 405 C 500 370, 560 370, 605 405"></path>
+              <path class="topology-evolution-path" d="M 650 300 C 600 330, 525 340, 455 405"></path>
+
+              <circle class="topology-evolution-node" cx="610" cy="225" r="12"></circle>
+              <circle class="topology-evolution-core" cx="610" cy="225" r="5"></circle>
+              <text class="topology-evolution-label" x="610" y="252">OPTIMIZE</text>
+
+              <circle class="topology-evolution-node" cx="605" cy="405" r="12"></circle>
+              <circle class="topology-evolution-core" cx="605" cy="405" r="5"></circle>
+              <text class="topology-evolution-label" x="605" y="432">MUTATE</text>
+
+              <circle class="topology-evolution-node" cx="520" cy="205" r="12"></circle>
+              <circle class="topology-evolution-core" cx="520" cy="205" r="5"></circle>
+              <text class="topology-evolution-label" x="520" y="186">SELF-EVOLVE</text>
+            </g>
             <circle class="topology-flow-particle" r="5">
               <animateMotion dur="9s" repeatCount="indefinite">
                 <mpath href="#executionFlowOrbitOuter"></mpath>
@@ -7627,6 +7657,13 @@
               <text class="topology-response-text" x="840" y="372">CONTAIN · ready</text>
               <text class="topology-response-text" x="840" y="391">STABILIZE · active</text>
               <text class="topology-response-text" x="840" y="410">REROUTE · standby</text>
+            </g>
+            <g>
+              <rect class="topology-evolution-panel" x="42" y="322" width="178" height="98" rx="16"></rect>
+              <text class="topology-evolution-title" x="62" y="350">SELF-EVOLUTION</text>
+              <text class="topology-evolution-text" x="62" y="372">MUTATE · topology</text>
+              <text class="topology-evolution-text" x="62" y="391">OPTIMIZE · runtime</text>
+              <text class="topology-evolution-text" x="62" y="410">RECONFIGURE · adaptive</text>
             </g>
             ${graphNodeMarkup}
           </svg>
