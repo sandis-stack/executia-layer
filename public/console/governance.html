@@ -1214,6 +1214,28 @@
     </div>
   </section>
 
+
+  <section class="heatmap-panel" id="autonomousOrchestratorPanel">
+    <div class="head">
+      <h2>AUTONOMOUS GOVERNANCE ORCHESTRATOR</h2>
+      <span class="pill" id="autonomousOrchestratorState">ORCHESTRATOR: STANDBY</span>
+    </div>
+
+    <div style="margin:12px 0 18px 0;">
+      <button class="secondary" onclick="runGovernanceOrchestrator()">
+        RUN ORCHESTRATOR
+      </button>
+    </div>
+
+    <div class="heatmap-grid" id="autonomousOrchestratorGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">ORCHESTRATOR</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Replay orchestrator context required.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="heatmap-panel" id="autonomousContainmentPanel">
     <div class="head">
       <h2>AUTONOMOUS CONTAINMENT PLAN</h2>
@@ -1600,7 +1622,8 @@
         renderGovernanceRiskEngine();
       renderAutonomousGovernanceDecisionEngine();
       renderGovernanceStabilityEngine();
-      renderAutonomousContainmentPlan();
+      renderGovernanceOrchestrator();
+        renderAutonomousContainmentPlan();
       renderAutonomousRecoveryPlan();
       }
     }
@@ -2511,6 +2534,138 @@
 
         ${actions}
         ${signals}
+      `;
+    }
+
+
+
+
+    async function runGovernanceOrchestrator(){
+      try{
+        const orchestrator = DETERMINISTIC_REPLAY?.orchestrator || null;
+
+        if(!orchestrator){
+          alert("No orchestrator context loaded.");
+          return;
+        }
+
+        const reviewId =
+          DETERMINISTIC_REPLAY?.filters?.review_id ||
+          null;
+
+        const executionId =
+          DETERMINISTIC_REPLAY?.replay?.events?.find(e => e.execution_id)?.execution_id ||
+          DETERMINISTIC_REPLAY?.replay?.stages?.find(e => e.execution_id)?.execution_id ||
+          null;
+
+        if(!reviewId){
+          alert("No review_id available for orchestrator.");
+          return;
+        }
+
+        const response = await api(
+          "/api/v2/governance/orchestrator/run",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              review_id: reviewId,
+              execution_id: executionId,
+              orchestrator
+            })
+          }
+        );
+
+        if(!response?.ok){
+          throw new Error(
+            response?.error?.message ||
+            response?.error ||
+            "Governance orchestrator run failed."
+          );
+        }
+
+        alert(
+          "GOVERNANCE ORCHESTRATOR EXECUTED\n\n" +
+          "EVENT: " + (response.event?.event_type || "GOVERNANCE_ORCHESTRATOR_DECISION") + "\n" +
+          "HASH: " + (response.event?.hash || "—")
+        );
+
+        await loadGlobalGovernanceStream?.();
+        await loadOpenReviews?.();
+
+      }catch(err){
+        console.error(err);
+
+        alert(
+          "GOVERNANCE ORCHESTRATOR FAILED\n\n" +
+          (err?.message || err)
+        );
+      }
+    }
+
+
+    function renderGovernanceOrchestrator(){
+      const el = $("autonomousOrchestratorGrid");
+      if(!el) return;
+
+      const orchestrator = DETERMINISTIC_REPLAY?.orchestrator || null;
+
+      if($("autonomousOrchestratorState")){
+        $("autonomousOrchestratorState").textContent =
+          orchestrator ? "ORCHESTRATOR: LIVE" : "ORCHESTRATOR: STANDBY";
+      }
+
+      if(!orchestrator){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">ORCHESTRATOR</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Replay orchestrator context required.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const priority = orchestrator.priority || "UNKNOWN";
+      const state = orchestrator.autonomous_state || orchestrator.state || "UNKNOWN";
+
+      const cls =
+        priority === "APPLY_CONTAINMENT" || state === "ACTIVE_GOVERNANCE_CONTROL"
+          ? "bad"
+          : priority === "HOLD_RECOVERY" || priority === "ESCALATE_QUORUM"
+          ? "warn"
+          : "live";
+
+      const decisions = (orchestrator.decisions || []).map(decision => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">DECISION</div>
+          <div class="heat-value">${escapeHtml(decision)}</div>
+          <div class="heat-meta">Autonomous governance decision</div>
+        </div>
+      `).join("");
+
+      el.innerHTML = `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">AUTONOMOUS STATE</div>
+          <div class="heat-value">${escapeHtml(state)}</div>
+          <div class="heat-meta">Governance runtime control state</div>
+        </div>
+
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">PRIORITY</div>
+          <div class="heat-value">${escapeHtml(priority)}</div>
+          <div class="heat-meta">Current orchestrator priority</div>
+        </div>
+
+        ${decisions || `
+          <div class="heat-cell warn">
+            <div class="heat-title">DECISIONS</div>
+            <div class="heat-value">NONE</div>
+            <div class="heat-meta">No autonomous decisions loaded.</div>
+          </div>
+        `}
       `;
     }
 
