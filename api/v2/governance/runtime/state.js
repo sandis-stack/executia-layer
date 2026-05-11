@@ -35,6 +35,10 @@ import {
   evaluateGovernancePressure
 } from "../../../../services/governance-pressure.js";
 
+import {
+  evaluateGovernanceGravity
+} from "../../../../services/governance-gravity.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -152,6 +156,15 @@ export default async function handler(req, res) {
         reality
       });
 
+    const gravity =
+      evaluateGovernanceGravity({
+        runtime,
+        pressure,
+        reality,
+        prediction,
+        consensus
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -164,6 +177,7 @@ export default async function handler(req, res) {
       consensus,
       reality,
       pressure,
+      gravity,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -226,7 +240,16 @@ export default async function handler(req, res) {
           pressure.pressure_index,
 
         overload_forecast:
-          pressure.overload_forecast
+          pressure.overload_forecast,
+
+        gravity_state:
+          gravity.gravity_state,
+
+        gravity_index:
+          gravity.gravity_index,
+
+        stabilization_field:
+          gravity.stabilization_field
       }
     });
 
