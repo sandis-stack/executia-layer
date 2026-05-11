@@ -3453,6 +3453,35 @@
     </div>
   </section>
 
+
+<section class="civilizationCore-engine-shell">
+    <div class="civilizationCore-engine-head">
+      <div class="civilizationCore-engine-title">
+        <div class="civilizationCore-engine-label">
+          EXECUTION-TIME CIVILIZATION CORE
+        </div>
+
+        <div class="civilizationCore-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationCorePill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="civilizationCore-engine-grid" id="civilizationCoreGrid">
+      <div class="civilizationCore-node warn">
+        <div class="civilizationCore-node-title">CIVILIZATION CORE</div>
+        <div class="civilizationCore-node-value">STANDBY</div>
+        <div class="civilizationCore-node-meta">
+          Awaiting execution-time civilizationCore materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -5010,6 +5039,7 @@
         renderCivilizationSovereigntyLayer();
         renderCivilizationConsensusField();
         renderCivilizationMetaLawEngine();
+        renderCivilizationCore();
           return;
         }
 
@@ -7053,6 +7083,122 @@
 
 
 
+
+
+    function renderCivilizationCore(){
+      const el = $("civilizationCoreGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+      const reality = $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED";
+      const immune = $("civilizationImmunePill")?.textContent || "IMMUNE ACTIVE";
+      const regeneration = $("civilizationRegenerationPill")?.textContent || "REGENERATION SYNCHRONIZED";
+      const adaptation = $("civilizationAdaptationPill")?.textContent || "ADAPTATION SYNCHRONIZED";
+      const foresight = $("civilizationForesightPill")?.textContent || "FORESIGHT SYNCHRONIZED";
+      const sovereignty = $("civilizationSovereigntyPill")?.textContent || "SOVEREIGNTY VERIFIED";
+      const consensus = $("civilizationConsensusPill")?.textContent || "CONSENSUS VERIFIED";
+      const metalaw = $("civilizationMetaLawPill")?.textContent || "META-LAW VERIFIED";
+
+      const coreText = [
+        truth,
+        evolution,
+        directive,
+        kernel,
+        consciousness,
+        reality,
+        immune,
+        regeneration,
+        adaptation,
+        foresight,
+        sovereignty,
+        consensus,
+        metalaw
+      ].join(" ").toUpperCase();
+
+      let coreState = "CIVILIZATION CORE SYNCHRONIZED";
+      let unity = "FULLY UNIFIED";
+      let continuity = "SYSTEMIC CONTINUITY PRESERVED";
+      let sovereigntyStatus = "EXECUTION SOVEREIGNTY PRESERVED";
+      let realitySync = "REALITY SYNCHRONIZED";
+      let constitutionalIntegrity = "CONSTITUTIONAL INTEGRITY VERIFIED";
+
+      if(
+        coreText.includes("CONTESTED") ||
+        coreText.includes("FRAGMENT") ||
+        coreText.includes("DIVERG") ||
+        coreText.includes("BROKEN") ||
+        coreText.includes("MISMATCH") ||
+        coreText.includes("FRACTURE")
+      ){
+        coreState = "CIVILIZATION CORE GOVERNING";
+        unity = "STRUCTURAL GOVERNANCE ACTIVE";
+        continuity = "CONTINUITY UNDER PROTECTION";
+        sovereigntyStatus = "SOVEREIGNTY UNDER GOVERNANCE";
+        realitySync = "REALITY ALIGNMENT DEGRADED";
+        constitutionalIntegrity = "CONSTITUTIONAL REVIEW ACTIVE";
+      }
+      else if(
+        coreText.includes("CONTAIN") ||
+        coreText.includes("ISOLAT")
+      ){
+        coreState = "CIVILIZATION CORE PROTECTING";
+        unity = "PROTECTIVE UNITY ENFORCED";
+        continuity = "CONTINUITY ISOLATED";
+        sovereigntyStatus = "SOVEREIGNTY PROTECTED";
+        realitySync = "REALITY CONTAINMENT ACTIVE";
+        constitutionalIntegrity = "CONSTITUTIONAL INTEGRITY ENFORCED";
+      }
+      else if(
+        coreText.includes("RECOVER") ||
+        coreText.includes("REBUILD") ||
+        coreText.includes("STABILIZ")
+      ){
+        coreState = "CIVILIZATION CORE STABILIZING";
+        unity = "RUNTIME UNITY RESTORING";
+        continuity = "CONTINUITY STABILIZING";
+        sovereigntyStatus = "SOVEREIGNTY RESTORING";
+        realitySync = "REALITY STABILIZING";
+        constitutionalIntegrity = "CONSTITUTIONAL INTEGRITY STABILIZING";
+      }
+      else if(
+        coreText.includes("EVOLV") ||
+        coreText.includes("ADAPT") ||
+        coreText.includes("OPTIMIZ")
+      ){
+        coreState = "CIVILIZATION CORE EVOLVING";
+        unity = "ADAPTIVE UNITY";
+        continuity = "CONTINUITY SELF-ADAPTING";
+        sovereigntyStatus = "SOVEREIGNTY EVOLVING";
+        realitySync = "REALITY SYNCHRONIZATION IMPROVING";
+        constitutionalIntegrity = "CONSTITUTIONAL INTEGRITY PRESERVED";
+      }
+
+      const nodes = [
+        ["UNIFIED RUNTIME", unity, "All execution civilization layers unified into one runtime core."],
+        ["SYSTEMIC CONTINUITY", continuity, "Coordinates continuity across every execution layer."],
+        ["EXECUTION SOVEREIGNTY", sovereigntyStatus, "Preserves authority and execution-time truth control."],
+        ["REALITY SYNCHRONIZATION", realitySync, "Stabilizes execution alignment with external reality."],
+        ["CONSTITUTIONAL INTEGRITY", constitutionalIntegrity, "Protects meta-law and invariant execution constraints."],
+        ["CIVILIZATION CORE STATUS", coreState, "Unified top-level civilization orchestration layer active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationCorePill")){
+        $("civilizationCorePill").textContent = coreState;
+      }
+    }
 
     function renderCivilizationMetaLawEngine(){
       const el = $("civilizationMetaLawGrid");
