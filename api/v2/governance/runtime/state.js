@@ -23,6 +23,10 @@ import {
   predictGovernanceState
 } from "../../../../services/governance-prediction.js";
 
+import {
+  buildGovernanceConsensus
+} from "../../../../services/governance-consensus.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -113,6 +117,15 @@ export default async function handler(req, res) {
         orchestrator: runtime.orchestrator
       });
 
+    const consensus =
+      buildGovernanceConsensus({
+        runtime,
+        memory,
+        prediction,
+        healing_plan,
+        watchdog_cycle
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -122,6 +135,7 @@ export default async function handler(req, res) {
       healing_plan,
       memory,
       prediction,
+      consensus,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -157,7 +171,16 @@ export default async function handler(req, res) {
           prediction.predictive_state,
 
         collapse_probability:
-          prediction.collapse_probability
+          prediction.collapse_probability,
+
+        consensus:
+          consensus.consensus,
+
+        consensus_quorum:
+          consensus.quorum,
+
+        autonomous_decision:
+          consensus.autonomous_decision
       }
     });
 
