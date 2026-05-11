@@ -3308,6 +3308,35 @@
     </div>
   </section>
 
+
+<section class="adaptation-engine-shell">
+    <div class="adaptation-engine-head">
+      <div class="adaptation-engine-title">
+        <div class="adaptation-engine-label">
+          EXECUTION-TIME CIVILIZATION ADAPTATION MATRIX
+        </div>
+
+        <div class="adaptation-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationAdaptationPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="adaptation-engine-grid" id="civilizationAdaptationGrid">
+      <div class="adaptation-node warn">
+        <div class="adaptation-node-title">CIVILIZATION ADAPTATION MATRIX</div>
+        <div class="adaptation-node-value">STANDBY</div>
+        <div class="adaptation-node-meta">
+          Awaiting execution-time adaptation materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4860,6 +4889,7 @@
         renderRealitySynchronization();
         renderCivilizationImmuneSystem();
         renderCivilizationRegenerationEngine();
+        renderCivilizationAdaptationMatrix();
           return;
         }
 
@@ -6898,6 +6928,110 @@
 
 
 
+
+
+    function renderCivilizationAdaptationMatrix(){
+      const el = $("civilizationAdaptationGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+      const reality = $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED";
+      const immune = $("civilizationImmunePill")?.textContent || "IMMUNE ACTIVE";
+      const regeneration = $("civilizationRegenerationPill")?.textContent || "REGENERATION SYNCHRONIZED";
+
+      const adaptationText = [
+        truth,
+        evolution,
+        directive,
+        kernel,
+        consciousness,
+        reality,
+        immune,
+        regeneration
+      ].join(" ").toUpperCase();
+
+      let adaptationState = "ADAPTATION SYNCHRONIZED";
+      let learning = "PASSIVE";
+      let optimization = "STABLE";
+      let structuralBehavior = "UNCHANGED";
+      let divergenceMemory = "CLEAR";
+      let syncEfficiency = "OPTIMAL";
+
+      if(
+        adaptationText.includes("DIVERG") ||
+        adaptationText.includes("BROKEN") ||
+        adaptationText.includes("MISMATCH") ||
+        adaptationText.includes("FRACTURE")
+      ){
+        adaptationState = "ADAPTATION LEARNING";
+        learning = "ACTIVE FROM FAILURE PATTERN";
+        optimization = "RECALIBRATING";
+        structuralBehavior = "RESTRUCTURING";
+        divergenceMemory = "CAPTURED";
+        syncEfficiency = "IMPROVING";
+      }
+      else if(
+        adaptationText.includes("REBUILD") ||
+        adaptationText.includes("RECOVER")
+      ){
+        adaptationState = "ADAPTATION STABILIZING";
+        learning = "RECOVERY PATTERN ABSORBED";
+        optimization = "CONTROLLED";
+        structuralBehavior = "ADAPTIVE";
+        divergenceMemory = "INDEXED";
+        syncEfficiency = "RESTORING";
+      }
+      else if(
+        adaptationText.includes("CONTAIN") ||
+        adaptationText.includes("ISOLAT")
+      ){
+        adaptationState = "ADAPTATION OPTIMIZING";
+        learning = "CONTAINMENT PATTERN STORED";
+        optimization = "PREVENTIVE";
+        structuralBehavior = "HARDENING";
+        divergenceMemory = "PROTECTED";
+        syncEfficiency = "ELEVATED";
+      }
+      else if(
+        adaptationText.includes("UNSTABLE") ||
+        adaptationText.includes("STABILIZ") ||
+        adaptationText.includes("PENDING") ||
+        adaptationText.includes("REVIEW")
+      ){
+        adaptationState = "ADAPTATION EVOLVING";
+        learning = "INSTABILITY SIGNAL ACTIVE";
+        optimization = "ADAPTIVE";
+        structuralBehavior = "TUNING";
+        divergenceMemory = "MONITORED";
+        syncEfficiency = "ADAPTIVE";
+      }
+
+      const nodes = [
+        ["LEARNING", learning, "Runtime learns from instability and execution divergence."],
+        ["OPTIMIZATION", optimization, "Future execution paths are optimized from observed pressure."],
+        ["STRUCTURAL BEHAVIOR", structuralBehavior, "Civilization runtime behavior adaptation state."],
+        ["DIVERGENCE MEMORY", divergenceMemory, "Persistent memory of divergence and recovery patterns."],
+        ["SYNC EFFICIENCY", syncEfficiency, "Execution-reality synchronization efficiency improvement."],
+        ["ADAPTATION STATUS", adaptationState, "Persistent adaptive evolution layer active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationAdaptationPill")){
+        $("civilizationAdaptationPill").textContent = adaptationState;
+      }
+    }
 
     function renderCivilizationRegenerationEngine(){
       const el = $("civilizationRegenerationGrid");
