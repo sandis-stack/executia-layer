@@ -3221,6 +3221,35 @@
     </div>
   </section>
 
+
+<section class="reality-engine-shell">
+    <div class="reality-engine-head">
+      <div class="reality-engine-title">
+        <div class="reality-engine-label">
+          EXECUTION-TIME REALITY SYNCHRONIZATION LAYER
+        </div>
+
+        <div class="reality-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="realitySynchronizationPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="reality-engine-grid" id="realitySynchronizationGrid">
+      <div class="reality-node warn">
+        <div class="reality-node-title">REALITY SYNCHRONIZATION LAYER</div>
+        <div class="reality-node-value">STANDBY</div>
+        <div class="reality-node-meta">
+          Awaiting execution-time reality materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4770,6 +4799,7 @@
         renderDirectiveCore();
         renderCivilizationKernel();
         renderCivilizationConsciousness();
+        renderRealitySynchronization();
           return;
         }
 
@@ -6805,6 +6835,105 @@
 
 
 
+
+
+    function renderRealitySynchronization(){
+      const el = $("realitySynchronizationGrid");
+
+      const prediction = $("predictionFieldPill")?.textContent || "PREDICTION STABLE";
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const evolution = $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+
+      const realityText = [
+        prediction,
+        truth,
+        evolution,
+        directive,
+        kernel,
+        consciousness
+      ].join(" ").toUpperCase();
+
+      let realityState = "REALITY SYNCHRONIZED";
+      let alignment = "EXTERNAL REALITY ALIGNED";
+      let drift = "NONE";
+      let latency = "CONTROLLED";
+      let fracture = "NONE";
+      let recovery = "NOT REQUIRED";
+
+      if(
+        realityText.includes("DIVERG") ||
+        realityText.includes("BROKEN") ||
+        realityText.includes("MISMATCH") ||
+        realityText.includes("REROUT")
+      ){
+        realityState = "REALITY DIVERGING";
+        alignment = "REALITY ALIGNMENT DEGRADED";
+        drift = "CRITICAL";
+        latency = "HIGH";
+        fracture = "ACTIVE";
+        recovery = "REQUIRED";
+      }
+      else if(
+        realityText.includes("CONTAIN")
+      ){
+        realityState = "REALITY RECOVERING";
+        alignment = "REALITY CONTAINMENT ACTIVE";
+        drift = "ISOLATED";
+        latency = "ELEVATED";
+        fracture = "CONTAINED";
+        recovery = "ACTIVE";
+      }
+      else if(
+        realityText.includes("UNSTABLE") ||
+        realityText.includes("STABILIZ") ||
+        realityText.includes("PENDING") ||
+        realityText.includes("REVIEW")
+      ){
+        realityState = "REALITY STABILIZING";
+        alignment = "REALITY STABILIZATION ACTIVE";
+        drift = "ELEVATED";
+        latency = "MONITORED";
+        fracture = "POTENTIAL";
+        recovery = "PREPARED";
+      }
+      else if(
+        realityText.includes("DRIFT") ||
+        realityText.includes("VOLATILE")
+      ){
+        realityState = "REALITY DRIFTING";
+        alignment = "REALITY DRIFT DETECTED";
+        drift = "ACTIVE";
+        latency = "ADAPTIVE";
+        fracture = "MONITORED";
+        recovery = "STANDBY";
+      }
+
+      const nodes = [
+        ["REALITY ALIGNMENT", alignment, "External reality alignment against execution-time state."],
+        ["EXECUTION DRIFT", drift, "Detected deviation between planned execution and runtime reality."],
+        ["STRUCTURAL LATENCY", latency, "Delay pressure between execution state and external state."],
+        ["CONTINUITY FRACTURE", fracture, "Potential break in execution-reality continuity."],
+        ["RECOVERY MODE", recovery, "Reality synchronization recovery requirement."],
+        ["REALITY STATE", realityState, "Top-level execution-reality synchronization verdict."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("realitySynchronizationPill")){
+        $("realitySynchronizationPill").textContent = realityState;
+      }
+    }
 
     function renderCivilizationConsciousness(){
       const el = $("civilizationConsciousnessGrid");
