@@ -2293,6 +2293,15 @@
         if($("lastRefresh")) $("lastRefresh").textContent = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
 
         renderQueue();
+
+        if(!SELECTED && REVIEWS.length){
+          SELECTED = REVIEWS[0];
+          if($("selectedReview")) $("selectedReview").textContent = SELECTED?.id || "—";
+          if($("detailState")) $("detailState").textContent = "AUTO SELECTED";
+          await loadDeterministicReplay(SELECTED.id);
+          await renderDetail();
+        }
+
         await loadRecentEvents();
         await loadFreezeBlockProof();
         await loadForensicReplay();
@@ -2869,8 +2878,18 @@
 
     async function loadGovernanceRuntimeState(){
       try{
+        if(!DETERMINISTIC_REPLAY && SELECTED?.id){
+          await loadDeterministicReplay(SELECTED.id);
+        }
+
         if(!DETERMINISTIC_REPLAY){
-          alert("No replay context loaded.");
+          renderCivilizationCommandCenter();
+          renderSystemVisualizationCore();
+          renderCivilizationStateMatrix();
+          renderCivilizationControlLayer();
+          renderCivilizationPressureMap();
+          renderAutonomousStabilizationField();
+          renderLiveExecutionPhysicsEngine();
           return;
         }
 
@@ -2884,7 +2903,13 @@
           null;
 
         if(!reviewId && !executionId){
-          alert("No review_id or execution_id available for runtime state.");
+          renderCivilizationCommandCenter();
+          renderSystemVisualizationCore();
+          renderCivilizationStateMatrix();
+          renderCivilizationControlLayer();
+          renderCivilizationPressureMap();
+          renderAutonomousStabilizationField();
+          renderLiveExecutionPhysicsEngine();
           return;
         }
 
@@ -5046,15 +5071,17 @@
       if(!detail) return;
 
       if(!SELECTED){
-        await loadDeterministicReplay(SELECTED.id);
-
-      detail.innerHTML = `
+        detail.innerHTML = `
           <div class="block">
             <div class="k">STATE</div>
             <div class="v">NO REVIEW SELECTED</div>
           </div>
         `;
         return;
+      }
+
+      if(!DETERMINISTIC_REPLAY){
+        await loadDeterministicReplay(SELECTED.id);
       }
 
       let timeline = { events: [] };
