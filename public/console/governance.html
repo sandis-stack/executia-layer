@@ -1228,7 +1228,137 @@
 
   
     /* EXECUTIA Runtime Status Rail */
-    .runtime-status-rail{
+
+    .state-machine-shell{
+      margin-top:16px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      background:linear-gradient(180deg,#ffffff 0%,#f7fafc 100%);
+      box-shadow:0 10px 40px rgba(15,23,42,.06);
+    }
+
+    .state-machine-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.92);
+    }
+
+    .state-machine-title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .state-machine-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .state-machine-value{
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:.03em;
+      color:var(--blue);
+    }
+
+    .state-machine-grid{
+      display:grid;
+      grid-template-columns:repeat(8,minmax(0,1fr));
+      gap:12px;
+      padding:18px;
+    }
+
+    .state-node{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px 14px;
+      background:#fff;
+      min-height:132px;
+      overflow:hidden;
+    }
+
+    .state-node.active{
+      border-color:#2563eb;
+      box-shadow:0 0 0 2px rgba(37,99,235,.08);
+      background:linear-gradient(180deg,#eff6ff 0%,#ffffff 100%);
+    }
+
+    .state-node.complete{
+      border-color:#9dd8b6;
+      background:linear-gradient(180deg,#f3fbf6 0%,#ffffff 100%);
+    }
+
+    .state-node.warn{
+      border-color:#f0c36d;
+      background:linear-gradient(180deg,#fff9ef 0%,#ffffff 100%);
+    }
+
+    .state-node.locked{
+      border-color:#e2a7a7;
+      background:linear-gradient(180deg,#fff5f5 0%,#ffffff 100%);
+    }
+
+    .state-step{
+      font-size:10px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .state-name{
+      font-size:15px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1.2;
+      margin-bottom:10px;
+      word-break:break-word;
+    }
+
+    .state-meta{
+      font-size:11px;
+      line-height:1.5;
+      color:#617086;
+    }
+
+    .state-arrow{
+      position:absolute;
+      right:-9px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:20px;
+      color:#b3bfd1;
+      font-weight:900;
+      z-index:5;
+    }
+
+    @media (max-width:1500px){
+      .state-machine-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+      }
+      .state-arrow{display:none;}
+    }
+
+    @media (max-width:900px){
+      .state-machine-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+
+    @media (max-width:640px){
+      .state-machine-grid{
+        grid-template-columns:1fr;
+      }
+    }
+\n    .runtime-status-rail{
       position:sticky;
       top:0;
       z-index:30;
@@ -1828,6 +1958,35 @@
         <div class="heat-title">PHYSICS ENGINE</div>
         <div class="heat-value">STANDBY</div>
         <div class="heat-meta">Load runtime state to materialize execution physics vectors.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="state-machine-shell">
+    <div class="state-machine-head">
+      <div class="state-machine-title">
+        <div class="state-machine-label">
+          LIVE EXECUTION STATE MACHINE
+        </div>
+
+        <div class="state-machine-value">
+          EXECUTION-TIME TRANSITION ENGINE
+        </div>
+      </div>
+
+      <div class="pill" id="stateMachinePill">
+        STATE MACHINE: LIVE
+      </div>
+    </div>
+
+    <div class="state-machine-grid" id="executionStateMachine">
+      <div class="state-node warn">
+        <div class="state-step">01 · REQUEST</div>
+        <div class="state-name">STANDBY</div>
+        <div class="state-meta">
+          Awaiting execution-time transition materialization.
+        </div>
       </div>
     </div>
   </section>
@@ -3126,7 +3285,7 @@
           renderCivilizationPressureMap();
           renderAutonomousStabilizationField();
           renderLiveExecutionPhysicsEngine();
-        renderRuntimeStatusRail();
+        renderRuntimeStatusRail();\n        renderExecutionStateMachine();
           return;
         }
 
@@ -5141,7 +5300,110 @@
     }
 
 
-    function renderExecutionTopology(){
+
+    function renderExecutionStateMachine(){
+      const el = $("executionStateMachine");
+      if(!el) return;
+
+      const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+
+      const flow = [
+        {
+          step:"01",
+          label:"REQUEST",
+          value:"CAPTURED",
+          meta:"Execution-time request intake",
+          cls:"complete"
+        },
+        {
+          step:"02",
+          label:"VALIDATION",
+          value:"VERIFIED",
+          meta:"Deterministic governance validation",
+          cls:"complete"
+        },
+        {
+          step:"03",
+          label:"RISK",
+          value:
+            runtime?.runtime_state?.survivability || "LOW",
+          meta:"Governance execution risk layer",
+          cls:"active"
+        },
+        {
+          step:"04",
+          label:"CONTAINMENT",
+          value:
+            runtime?.runtime_state?.containment_mode || "MONITOR_ONLY",
+          meta:"Autonomous containment transition",
+          cls:"complete"
+        },
+        {
+          step:"05",
+          label:"HEALING",
+          value:
+            runtime?.runtime_state?.healing_state || "SELF_HEALING_READY",
+          meta:"Self-healing execution planner",
+          cls:"active"
+        },
+        {
+          step:"06",
+          label:"SUPERVISION",
+          value:"SUPERVISOR_REQUIRED",
+          meta:"Institutional execution supervision",
+          cls:"warn"
+        },
+        {
+          step:"07",
+          label:"COMMIT",
+          value:"COMMIT_STREAM",
+          meta:"Execution-time truth materialization",
+          cls:"complete"
+        },
+        {
+          step:"08",
+          label:"EXECUTION",
+          value:
+            runtime?.runtime_state?.execution_allowed
+              ? "ALLOWED"
+              : "BLOCKED",
+          meta:"Final execution continuity state",
+          cls:
+            runtime?.runtime_state?.execution_allowed
+              ? "complete"
+              : "locked"
+        }
+      ];
+
+      el.innerHTML = flow.map((item, index) => `
+        <div class="state-node ${item.cls}">
+          <div class="state-step">
+            ${item.step} · ${item.label}
+          </div>
+
+          <div class="state-name">
+            ${escapeHtml(item.value)}
+          </div>
+
+          <div class="state-meta">
+            ${escapeHtml(item.meta)}
+          </div>
+
+          ${
+            index < flow.length - 1
+              ? '<div class="state-arrow">→</div>'
+              : ''
+          }
+        </div>
+      `).join("");
+
+      if($("stateMachinePill")){
+        $("stateMachinePill").textContent =
+          "STATE MACHINE: SYNCHRONIZED";
+      }
+    }
+
+\n    function renderExecutionTopology(){
       const el = $("executionTopology");
       if(!el) return;
 
