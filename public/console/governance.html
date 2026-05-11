@@ -3395,6 +3395,35 @@
     </div>
   </section>
 
+
+<section class="consensus-engine-shell">
+    <div class="consensus-engine-head">
+      <div class="consensus-engine-title">
+        <div class="consensus-engine-label">
+          EXECUTION-TIME CIVILIZATION CONSENSUS FIELD
+        </div>
+
+        <div class="consensus-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="civilizationConsensusPill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="consensus-engine-grid" id="civilizationConsensusGrid">
+      <div class="consensus-node warn">
+        <div class="consensus-node-title">CIVILIZATION CONSENSUS FIELD</div>
+        <div class="consensus-node-value">STANDBY</div>
+        <div class="consensus-node-meta">
+          Awaiting execution-time consensus materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4950,6 +4979,7 @@
         renderCivilizationAdaptationMatrix();
         renderCivilizationForesightEngine();
         renderCivilizationSovereigntyLayer();
+        renderCivilizationConsensusField();
           return;
         }
 
@@ -6991,6 +7021,121 @@
 
 
 
+
+
+    function renderCivilizationConsensusField(){
+      const el = $("civilizationConsensusGrid");
+
+      const truth = $("truthEnginePill")?.textContent || "TRUTH VERIFIED";
+      const directive = $("directiveCorePill")?.textContent || "DIRECTIVE ACTIVE";
+      const kernel = $("civilizationKernelPill")?.textContent || "KERNEL SYNCHRONIZED";
+      const consciousness = $("civilizationConsciousnessPill")?.textContent || "CONSCIOUSNESS SYNCHRONIZED";
+      const reality = $("realitySynchronizationPill")?.textContent || "REALITY SYNCHRONIZED";
+      const immune = $("civilizationImmunePill")?.textContent || "IMMUNE ACTIVE";
+      const regeneration = $("civilizationRegenerationPill")?.textContent || "REGENERATION SYNCHRONIZED";
+      const adaptation = $("civilizationAdaptationPill")?.textContent || "ADAPTATION SYNCHRONIZED";
+      const foresight = $("civilizationForesightPill")?.textContent || "FORESIGHT SYNCHRONIZED";
+      const sovereignty = $("civilizationSovereigntyPill")?.textContent || "SOVEREIGNTY VERIFIED";
+
+      const consensusText = [
+        truth,
+        directive,
+        kernel,
+        consciousness,
+        reality,
+        immune,
+        regeneration,
+        adaptation,
+        foresight,
+        sovereignty
+      ].join(" ").toUpperCase();
+
+      let consensusState = "CONSENSUS VERIFIED";
+      let legitimacy = "EXECUTION LEGITIMACY VERIFIED";
+      let agreement = "SYNCHRONIZED";
+      let authorityAlignment = "ALIGNED";
+      let fragmentation = "NONE";
+      let coherence = "STABLE";
+
+      if(
+        consensusText.includes("CONTESTED") ||
+        consensusText.includes("DIVERG") ||
+        consensusText.includes("BROKEN") ||
+        consensusText.includes("MISMATCH") ||
+        consensusText.includes("FRACTURE")
+      ){
+        consensusState = "CONSENSUS FRAGMENTING";
+        legitimacy = "LEGITIMACY CONTESTED";
+        agreement = "DEGRADED";
+        authorityAlignment = "FRAGMENTED";
+        fragmentation = "ACTIVE";
+        coherence = "AT RISK";
+      }
+      else if(
+        consensusText.includes("CONTAIN") ||
+        consensusText.includes("ISOLAT")
+      ){
+        consensusState = "CONSENSUS STABILIZING";
+        legitimacy = "LEGITIMACY PROTECTED";
+        agreement = "RESTRICTED";
+        authorityAlignment = "CONTROLLED";
+        fragmentation = "CONTAINED";
+        coherence = "STABILIZING";
+      }
+      else if(
+        consensusText.includes("RECOVER") ||
+        consensusText.includes("REBUILD") ||
+        consensusText.includes("STABILIZ")
+      ){
+        consensusState = "CONSENSUS STABILIZING";
+        legitimacy = "LEGITIMACY RESTORING";
+        agreement = "REBALANCING";
+        authorityAlignment = "REALIGNING";
+        fragmentation = "MONITORED";
+        coherence = "RECOVERING";
+      }
+      else if(
+        consensusText.includes("EVOLV") ||
+        consensusText.includes("ADAPT") ||
+        consensusText.includes("OPTIMIZ")
+      ){
+        consensusState = "CONSENSUS EVOLVING";
+        legitimacy = "LEGITIMACY EVOLVING";
+        agreement = "ADAPTIVE";
+        authorityAlignment = "EVOLVING";
+        fragmentation = "LOW";
+        coherence = "SELF-ADAPTING";
+      }
+      else if(
+        consensusText.includes("SYNC") ||
+        consensusText.includes("VERIFIED")
+      ){
+        consensusState = "CONSENSUS SYNCHRONIZED";
+      }
+
+      const nodes = [
+        ["LEGITIMACY", legitimacy, "Execution legitimacy across distributed authority layers."],
+        ["AGREEMENT", agreement, "Runtime agreement between execution, truth, and authority."],
+        ["AUTHORITY ALIGNMENT", authorityAlignment, "Distributed authority synchronization state."],
+        ["FRAGMENTATION", fragmentation, "Governance fragmentation and legitimacy split risk."],
+        ["COHERENCE", coherence, "Civilization coherence across distributed execution actors."],
+        ["CONSENSUS STATUS", consensusState, "Multi-agent civilization coordination layer active."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("civilizationConsensusPill")){
+        $("civilizationConsensusPill").textContent = consensusState;
+      }
+    }
 
     function renderCivilizationSovereigntyLayer(){
       const el = $("civilizationSovereigntyGrid");
