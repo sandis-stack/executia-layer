@@ -1231,6 +1231,166 @@
 
 
 
+
+
+    .memory-fabric-shell{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+      background:
+        linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #f5f9ff 100%
+        );
+      box-shadow:
+        0 12px 40px rgba(15,23,42,.06);
+    }
+
+    .memory-fabric-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.94);
+    }
+
+    .memory-fabric-title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .memory-fabric-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .memory-fabric-value{
+      font-size:20px;
+      font-weight:900;
+      color:var(--blue);
+      letter-spacing:.03em;
+    }
+
+    .memory-fabric-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+      padding:18px;
+    }
+
+    .memory-node{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      min-height:180px;
+      box-shadow:
+        0 8px 24px rgba(15,23,42,.04);
+    }
+
+    .memory-node::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      top:0;
+      height:4px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(37,99,235,.15),
+          rgba(37,99,235,.65),
+          rgba(37,99,235,.15)
+        );
+    }
+
+    .memory-node.ok::before{
+      background:
+        linear-gradient(
+          90deg,
+          rgba(34,197,94,.15),
+          rgba(34,197,94,.70),
+          rgba(34,197,94,.15)
+        );
+    }
+
+    .memory-node.warn::before{
+      background:
+        linear-gradient(
+          90deg,
+          rgba(245,158,11,.15),
+          rgba(245,158,11,.70),
+          rgba(245,158,11,.15)
+        );
+    }
+
+    .memory-node.bad::before{
+      background:
+        linear-gradient(
+          90deg,
+          rgba(239,68,68,.15),
+          rgba(239,68,68,.70),
+          rgba(239,68,68,.15)
+        );
+    }
+
+    .memory-node-body{
+      padding:18px;
+    }
+
+    .memory-node-title{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:12px;
+    }
+
+    .memory-node-value{
+      font-size:17px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1.2;
+      margin-bottom:12px;
+      word-break:break-word;
+    }
+
+    .memory-node-meta{
+      font-size:12px;
+      line-height:1.6;
+      color:#607086;
+    }
+
+    .memory-node-trace{
+      margin-top:14px;
+      border-top:1px dashed var(--line);
+      padding-top:12px;
+      font-size:11px;
+      color:#748295;
+      line-height:1.5;
+    }
+
+    @media (max-width:1200px){
+      .memory-fabric-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+
+    @media (max-width:760px){
+      .memory-fabric-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+
     .continuity-shell{
       margin-top:18px;
       border:1px solid var(--line);
@@ -2133,6 +2293,44 @@
 
 
 
+
+
+
+  <section class="memory-fabric-shell">
+    <div class="memory-fabric-head">
+      <div class="memory-fabric-title">
+        <div class="memory-fabric-label">
+          LIVE MEMORY FABRIC
+        </div>
+
+        <div class="memory-fabric-value">
+          EXECUTION-TIME MEMORY INFRASTRUCTURE
+        </div>
+      </div>
+
+      <div class="pill" id="memoryFabricPill">
+        MEMORY FABRIC: LIVE
+      </div>
+    </div>
+
+    <div class="memory-fabric-grid" id="memoryFabricGrid">
+      <div class="memory-node warn">
+        <div class="memory-node-body">
+          <div class="memory-node-title">
+            MEMORY FABRIC
+          </div>
+
+          <div class="memory-node-value">
+            STANDBY
+          </div>
+
+          <div class="memory-node-meta">
+            Awaiting civilization runtime memory materialization.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="continuity-shell">
     <div class="continuity-head">
@@ -3495,6 +3693,7 @@
         renderRuntimeStatusRail();
         renderExecutionStateMachine();
         renderExecutionContinuityEngine();
+        renderMemoryFabric();
           return;
         }
 
@@ -5510,6 +5709,117 @@
 
 
 
+
+
+
+
+    function renderMemoryFabric(){
+      const el = $("memoryFabricGrid");
+      if(!el) return;
+
+      const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+      const state = runtime?.runtime_state || {};
+
+      const memory = [
+        {
+          title:"CAUSAL MEMORY",
+          value:
+            state.memory_state || "PERSISTENT",
+          meta:"Execution causality retention layer",
+          trace:"Retains execution-time causality relationships.",
+          cls:"ok"
+        },
+        {
+          title:"EXECUTION SCARS",
+          value:
+            state.entropy_detected
+              ? "RECORDED"
+              : "MINIMAL",
+          meta:"Historical execution fracture traces",
+          trace:"Tracks prior integrity disturbances and scars.",
+          cls:
+            state.entropy_detected
+              ? "warn"
+              : "ok"
+        },
+        {
+          title:"STABILIZATION MEMORY",
+          value:
+            state.healing_state ||
+            "SELF_HEALING_READY",
+          meta:"Recovery stabilization retention",
+          trace:"Persists prior containment and recovery patterns.",
+          cls:
+            String(state.healing_state || "")
+              .includes("FAILED")
+              ? "bad"
+              : "ok"
+        },
+        {
+          title:"RECURRING FAILURES",
+          value:
+            state.quarantine_required
+              ? "PATTERN DETECTED"
+              : "NO RECURSION",
+          meta:"Failure recursion intelligence",
+          trace:"Monitors repeated execution instability vectors.",
+          cls:
+            state.quarantine_required
+              ? "bad"
+              : "ok"
+        },
+        {
+          title:"PREDICTION MEMORY",
+          value:
+            state.predictive_state ||
+            "PREDICTIVE_READY",
+          meta:"Prediction continuity memory",
+          trace:"Retains predictive governance probability paths.",
+          cls:"ok"
+        },
+        {
+          title:"EVOLUTION MEMORY",
+          value:
+            state.evolution_state ||
+            "ADAPTIVE",
+          meta:"Civilization adaptation retention",
+          trace:"Persists institutional adaptation intelligence.",
+          cls:
+            state.adaptation_index >= 70
+              ? "ok"
+              : "warn"
+        }
+      ];
+
+      el.innerHTML = memory.map(item => `
+        <div class="memory-node ${item.cls}">
+          <div class="memory-node-body">
+
+            <div class="memory-node-title">
+              ${escapeHtml(item.title)}
+            </div>
+
+            <div class="memory-node-value">
+              ${escapeHtml(item.value)}
+            </div>
+
+            <div class="memory-node-meta">
+              ${escapeHtml(item.meta)}
+            </div>
+
+            <div class="memory-node-trace">
+              ${escapeHtml(item.trace)}
+            </div>
+
+          </div>
+        </div>
+      `).join("");
+
+      if($("memoryFabricPill")){
+        $("memoryFabricPill").textContent =
+          "MEMORY FABRIC: SYNCHRONIZED";
+      }
+    }
 
 
     function renderExecutionContinuityEngine(){
