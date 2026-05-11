@@ -63,6 +63,10 @@ import {
   evaluateGovernanceConstitutionalEngine
 } from "../../../../services/governance-constitutional-engine.js";
 
+import {
+  evaluateGovernanceRealityFabric
+} from "../../../../services/governance-reality-fabric.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -251,6 +255,17 @@ export default async function handler(req, res) {
         reality
       });
 
+    const reality_fabric =
+      evaluateGovernanceRealityFabric({
+        runtime,
+        reality,
+        gravity,
+        pressure,
+        consciousness,
+        constitutional,
+        dna
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -270,6 +285,7 @@ export default async function handler(req, res) {
       immune,
       dna,
       constitutional,
+      reality_fabric,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -395,7 +411,16 @@ export default async function handler(req, res) {
           constitutional.constitutional_integrity,
 
         civilization_integrity:
-          constitutional.civilization_integrity
+          constitutional.civilization_integrity,
+
+        reality_fabric_state:
+          reality_fabric.reality_fabric_state,
+
+        coherence_index:
+          reality_fabric.coherence_index,
+
+        synchronization_stable:
+          reality_fabric.synchronization_stable
       }
     });
 
