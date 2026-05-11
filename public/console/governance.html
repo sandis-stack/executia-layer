@@ -3105,6 +3105,35 @@
     </div>
   </section>
 
+
+<section class="evolution-engine-shell">
+    <div class="evolution-engine-head">
+      <div class="evolution-engine-title">
+        <div class="evolution-engine-label">
+          EXECUTION-TIME EVOLUTION ENGINE
+        </div>
+
+        <div class="evolution-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="evolutionEnginePill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="evolution-engine-grid" id="evolutionEngineGrid">
+      <div class="evolution-node warn">
+        <div class="evolution-node-title">EVOLUTION ENGINE</div>
+        <div class="evolution-node-value">STANDBY</div>
+        <div class="evolution-node-meta">
+          Awaiting execution-time evolution materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4650,6 +4679,7 @@
         renderCommitEngine();
         renderProofEngine();
         renderTruthEngine();
+        renderEvolutionEngine();
           return;
         }
 
@@ -6681,6 +6711,81 @@
 
 
 
+
+
+    function renderEvolutionEngine(){
+      const el = $("evolutionEngineGrid");
+
+      const prediction = runtimeState?.prediction || runtimeState?.prediction_field || {};
+      const decision = runtimeState?.decision || runtimeState?.decision_field || {};
+      const action = runtimeState?.action || runtimeState?.action_engine || {};
+      const commit = runtimeState?.commit || runtimeState?.commit_engine || {};
+      const proof = runtimeState?.proof || runtimeState?.proof_engine || {};
+      const truth = runtimeState?.truth || runtimeState?.truth_engine || {};
+
+      const readState = (obj, fallback) => String(
+        obj.status || obj.verdict || obj.state || fallback
+      ).toUpperCase();
+
+      const predictionState = readState(prediction, "STABLE");
+      const decisionState = readState(decision, "SYNCHRONIZED");
+      const actionState = readState(action, "SYNCHRONIZED");
+      const commitState = readState(commit, "SYNCHRONIZED");
+      const proofState = readState(proof, "VERIFIED");
+      const truthState = readState(truth, $("truthEnginePill")?.textContent || "TRUTH VERIFIED");
+
+      const joined = [
+        predictionState,
+        decisionState,
+        actionState,
+        commitState,
+        proofState,
+        truthState
+      ].join(" ");
+
+      let directive = "EVOLUTION STABLE";
+      let mode = "OBSERVE";
+
+      if(joined.includes("BLOCK")){
+        directive = "EVOLUTION CONTAINMENT REQUIRED";
+        mode = "CONTAIN";
+      } else if(joined.includes("DIVERG") || joined.includes("BROKEN") || joined.includes("MISMATCH")){
+        directive = "EVOLUTION CORRECTION REQUIRED";
+        mode = "CORRECT";
+      } else if(joined.includes("UNSTABLE") || joined.includes("PENDING") || joined.includes("REVIEW")){
+        directive = "EVOLUTION STABILIZATION REQUIRED";
+        mode = "STABILIZE";
+      } else if(joined.includes("VOLATILE") || joined.includes("DRIFT")){
+        directive = "EVOLUTION ADAPTATION REQUIRED";
+        mode = "ADAPT";
+      } else if(joined.includes("SYNC") || joined.includes("VERIFIED")){
+        directive = "EVOLUTION SYNCHRONIZED";
+        mode = "OPTIMIZE";
+      }
+
+      const nodes = [
+        ["OBSERVE", predictionState, "Reads prediction drift and runtime pressure before structural change."],
+        ["ADAPT", decisionState, "Adjusts decision stability without breaking execution continuity."],
+        ["STABILIZE", actionState, "Detects action latency and prepares runtime stabilization."],
+        ["CORRECT", commitState, "Watches commit divergence and prepares correction directives."],
+        ["VERIFY", proofState, "Uses proof consistency to validate evolution safety."],
+        ["EVOLVE", directive, `Self-correction mode: ${mode}.`]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("evolutionEnginePill")){
+        $("evolutionEnginePill").textContent = directive;
+      }
+    }
 
     function renderTruthEngine(){
       const el = $("truthEngineGrid");
