@@ -30,6 +30,7 @@ export default async function handler(req, res) {
     );
 
     const runtimeRole =
+      context?.role ||
       context?.user?.role ||
       context?.user?.user_metadata?.role ||
       null;
@@ -39,11 +40,13 @@ export default async function handler(req, res) {
       runtimeRole !== "OPERATOR" &&
       runtimeRole !== "SUPERVISOR"
     ) {
-      return json(res, 401, {
+      return json(res, permission.status || 401, {
         ok: false,
         error: {
-          code: "INVALID_JWT",
-          message: "Governance daemon permission required."
+          code: permission.error || "INVALID_JWT",
+          message:
+            permission.reason ||
+            "Governance daemon permission required."
         }
       });
     }
