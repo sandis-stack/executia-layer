@@ -2467,7 +2467,124 @@
     .runtime-rail-cell.warn{border-color:#f1d38a;background:#fffaf0}
     .runtime-rail-cell.bad{border-color:#e2aaaa;background:#fff5f5}
 
-  </style>
+  
+  .civilization-topology-universe{
+    grid-column: 1 / -1;
+    background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(246,249,252,.96));
+    border: 1px solid rgba(30,58,95,.16);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: 0 18px 45px rgba(30,58,95,.08);
+    overflow: hidden;
+  }
+
+  .civilization-topology-header{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    align-items:flex-start;
+    margin-bottom:14px;
+  }
+
+  .civilization-topology-title{
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:#1e3a5f;
+    font-weight:800;
+  }
+
+  .civilization-topology-subtitle{
+    margin-top:6px;
+    font-size:12px;
+    color:#58708a;
+    max-width:760px;
+    line-height:1.45;
+  }
+
+  .civilization-topology-badge{
+    border:1px solid rgba(30,58,95,.18);
+    background:#fff;
+    color:#1e3a5f;
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  .civilization-topology-svg{
+    width:100%;
+    min-height:560px;
+    display:block;
+    border-radius:18px;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(30,58,95,.08), transparent 38%),
+      linear-gradient(180deg, #ffffff, #f7f9fc);
+    border:1px solid rgba(30,58,95,.10);
+  }
+
+  .topology-link{
+    stroke:#b8c5d3;
+    stroke-width:2;
+    fill:none;
+    stroke-linecap:round;
+    stroke-dasharray:8 8;
+    animation: topologyFlow 4s linear infinite;
+  }
+
+  .topology-link-strong{
+    stroke:#1e3a5f;
+    stroke-width:2.4;
+    opacity:.72;
+  }
+
+  .topology-node-ring{
+    fill:#ffffff;
+    stroke:#d8e0e8;
+    stroke-width:2;
+    filter: drop-shadow(0 8px 16px rgba(30,58,95,.12));
+  }
+
+  .topology-node-core{
+    fill:#1e3a5f;
+  }
+
+  .topology-node-pressure{
+    fill:#f8fbff;
+    stroke:#8ba2ba;
+    stroke-width:1.5;
+  }
+
+  .topology-node-label{
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.08em;
+    fill:#1e3a5f;
+    text-anchor:middle;
+  }
+
+  .topology-node-state{
+    font-size:8.5px;
+    font-weight:700;
+    fill:#60748a;
+    text-anchor:middle;
+  }
+
+  .topology-zone{
+    fill:rgba(30,58,95,.035);
+    stroke:rgba(30,58,95,.12);
+    stroke-width:1.2;
+    stroke-dasharray:5 7;
+  }
+
+  @keyframes topologyFlow{
+    to{ stroke-dashoffset:-160; }
+  }
+
+</style>
 </head>
 <body>
   <header>
@@ -7257,8 +7374,58 @@
         `;
       }).join("");
 
+      const graphNodes = layerStates.map(([name, state, tag], index) => {
+        const cx = 520 + Math.cos((index / layerStates.length) * Math.PI * 2 - Math.PI / 2) * 360;
+        const cy = 300 + Math.sin((index / layerStates.length) * Math.PI * 2 - Math.PI / 2) * 220;
+        const status = String(state).toUpperCase();
+        const risky = status.includes("DIVERG") || status.includes("BROKEN") || status.includes("MISMATCH") || status.includes("CONTESTED") || status.includes("FRAGMENT");
+        const protectedState = status.includes("CONTAIN") || status.includes("ISOLAT") || status.includes("PROTECT");
+        const radius = risky ? 18 : protectedState ? 16 : 14;
+        return { name, state, tag, index, cx, cy, radius, risky, protectedState };
+      });
+
+      const graphLinks = graphNodes.map((node, index) => {
+        const next = graphNodes[(index + 1) % graphNodes.length];
+        const cls = node.risky || next.risky ? "topology-link topology-link-strong" : "topology-link";
+        return `<path class="${cls}" d="M ${node.cx.toFixed(1)} ${node.cy.toFixed(1)} Q 520 300 ${next.cx.toFixed(1)} ${next.cy.toFixed(1)}" />`;
+      }).join("");
+
+      const graphNodeMarkup = graphNodes.map((node) => `
+        <g>
+          <circle class="topology-node-ring" cx="${node.cx.toFixed(1)}" cy="${node.cy.toFixed(1)}" r="${node.radius + 9}"></circle>
+          <circle class="${node.risky ? "topology-node-core" : "topology-node-pressure"}" cx="${node.cx.toFixed(1)}" cy="${node.cy.toFixed(1)}" r="${node.radius}"></circle>
+          <text class="topology-node-label" x="${node.cx.toFixed(1)}" y="${(node.cy + node.radius + 22).toFixed(1)}">${escapeHtml(node.name)}</text>
+          <text class="topology-node-state" x="${node.cx.toFixed(1)}" y="${(node.cy + node.radius + 36).toFixed(1)}">${escapeHtml(node.tag)}</text>
+        </g>
+      `).join("");
+
+      const topologyUniverse = `
+        <div class="civilization-topology-universe">
+          <div class="civilization-topology-header">
+            <div>
+              <div class="civilization-topology-title">LIVE CIVILIZATION TOPOLOGY GRAPH</div>
+              <div class="civilization-topology-subtitle">
+                Runtime universe view: execution layers, pressure propagation, synchronization density and structural links.
+              </div>
+            </div>
+            <div class="civilization-topology-badge">${escapeHtml(canvasState)}</div>
+          </div>
+          <svg class="civilization-topology-svg" viewBox="0 0 1040 600" role="img" aria-label="EXECUTIA civilization topology graph">
+            <ellipse class="topology-zone" cx="520" cy="300" rx="430" ry="260"></ellipse>
+            <ellipse class="topology-zone" cx="520" cy="300" rx="270" ry="155"></ellipse>
+            ${graphLinks}
+            <circle class="topology-node-ring" cx="520" cy="300" r="58"></circle>
+            <circle class="topology-node-core" cx="520" cy="300" r="38"></circle>
+            <text class="topology-node-label" x="520" y="292">EXECUTIA</text>
+            <text class="topology-node-state" x="520" y="308">RUNTIME CORE</text>
+            ${graphNodeMarkup}
+          </svg>
+        </div>
+      `;
+
       if(el){
         el.innerHTML = `
+          ${topologyUniverse}
           ${nodes.map(([title, state, text]) => `
             <div class="proof-node">
               <div class="proof-node-title">${escapeHtml(title)}</div>
