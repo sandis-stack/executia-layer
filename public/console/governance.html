@@ -1241,6 +1241,139 @@
 
 
 
+
+
+    .commit-engine-shell{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+      background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+      box-shadow:0 12px 42px rgba(15,23,42,.06);
+    }
+
+    .commit-engine-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.94);
+    }
+
+    .commit-engine-title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .commit-engine-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .commit-engine-value{
+      font-size:20px;
+      font-weight:900;
+      color:var(--blue);
+      letter-spacing:.03em;
+    }
+
+    .commit-engine-grid{
+      display:grid;
+      grid-template-columns:repeat(6,minmax(0,1fr));
+      gap:14px;
+      padding:20px;
+    }
+
+    .commit-node{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+      padding:16px;
+      min-height:185px;
+      box-shadow:0 8px 24px rgba(15,23,42,.04);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .commit-node::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      right:0;
+      height:4px;
+      background:#c9d4e5;
+    }
+
+    .commit-node.ok{
+      background:linear-gradient(180deg,#f2fbf5 0%,#fff 100%);
+      border-color:#a9d6b7;
+    }
+
+    .commit-node.ok::before{background:#6dbb86}
+
+    .commit-node.warn{
+      background:linear-gradient(180deg,#fffaf0 0%,#fff 100%);
+      border-color:#f1cf83;
+    }
+
+    .commit-node.warn::before{background:#d9a441}
+
+    .commit-node.bad{
+      background:linear-gradient(180deg,#fff5f5 0%,#fff 100%);
+      border-color:#e4b1b1;
+    }
+
+    .commit-node.bad::before{background:#c05656}
+
+    .commit-node.live{
+      background:linear-gradient(180deg,#f3f7ff 0%,#fff 100%);
+      border-color:#b9ccff;
+    }
+
+    .commit-node.live::before{background:#2563eb}
+
+    .commit-node-title{
+      font-size:10px;
+      letter-spacing:.16em;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .commit-node-value{
+      font-size:17px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1.2;
+      margin-bottom:12px;
+      word-break:break-word;
+    }
+
+    .commit-node-meta{
+      font-size:12px;
+      color:#607086;
+      line-height:1.55;
+    }
+
+    @media (max-width:1450px){
+      .commit-engine-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+    }
+
+    @media (max-width:760px){
+      .commit-engine-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+
     .action-engine-shell{
       margin-top:18px;
       border:1px solid var(--line);
@@ -2816,6 +2949,36 @@
 
 
 
+
+
+  <section class="commit-engine-shell">
+    <div class="commit-engine-head">
+      <div class="commit-engine-title">
+        <div class="commit-engine-label">
+          EXECUTION-TIME COMMIT ENGINE
+        </div>
+
+        <div class="commit-engine-value">
+          ACTION → COMMIT → LEDGER → AUDIT → PROOF
+        </div>
+      </div>
+
+      <div class="pill" id="commitEnginePill">
+        COMMIT: LIVE
+      </div>
+    </div>
+
+    <div class="commit-engine-grid" id="commitEngineGrid">
+      <div class="commit-node warn">
+        <div class="commit-node-title">COMMIT ENGINE</div>
+        <div class="commit-node-value">STANDBY</div>
+        <div class="commit-node-meta">
+          Awaiting execution-time commit materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="action-engine-shell">
     <div class="action-engine-head">
       <div class="action-engine-title">
@@ -4330,6 +4493,7 @@
         renderPredictionField();
         renderDecisionField();
         renderActionEngine();
+        renderCommitEngine();
           return;
         }
 
@@ -6355,6 +6519,144 @@
 
 
 
+
+
+
+
+    function renderCommitEngine(){
+      const el = $("commitEngineGrid");
+      if(!el) return;
+
+      const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+      const state = runtime?.runtime_state || {};
+      const replay = runtime?.runtime?.replay || {};
+      const events = replay?.events || [];
+
+      const executionAllowed = state.execution_allowed !== false;
+
+      const commitReady =
+        executionAllowed &&
+        !state.quarantine_required &&
+        !state.entropy_detected;
+
+      const ledgerReady =
+        commitReady &&
+        events.length > 0;
+
+      const auditReady =
+        ledgerReady &&
+        state.synchronization_stable !== false;
+
+      const proofReady =
+        auditReady &&
+        !state.delayed_causality_detected;
+
+      const truthAnchor =
+        proofReady &&
+        !state.convergence_required;
+
+      const nodes = [
+        {
+          title:"ACTION RECEIVED",
+          value:
+            events.length
+              ? "RECEIVED"
+              : "WAITING",
+          meta:"Execution-time action received by commit layer.",
+          cls:
+            events.length
+              ? "live"
+              : "warn"
+        },
+        {
+          title:"COMMIT READINESS",
+          value:
+            commitReady
+              ? "READY"
+              : "HELD",
+          meta:"Commit authorization state.",
+          cls:
+            commitReady
+              ? "ok"
+              : "warn"
+        },
+        {
+          title:"LEDGER MATERIALIZATION",
+          value:
+            ledgerReady
+              ? "MATERIALIZED"
+              : "PENDING",
+          meta:"Execution materialized into ledger layer.",
+          cls:
+            ledgerReady
+              ? "ok"
+              : "warn"
+        },
+        {
+          title:"AUDIT TRACE",
+          value:
+            auditReady
+              ? "TRACE ACTIVE"
+              : "TRACE HELD",
+          meta:"Audit continuity generation state.",
+          cls:
+            auditReady
+              ? "ok"
+              : "warn"
+        },
+        {
+          title:"PROOF GENERATION",
+          value:
+            proofReady
+              ? "PROOF READY"
+              : "BLOCKED",
+          meta:"Proof generation materialization.",
+          cls:
+            proofReady
+              ? "live"
+              : "bad"
+        },
+        {
+          title:"TRUTH ANCHOR",
+          value:
+            truthAnchor
+              ? "ANCHORED"
+              : "UNSTABLE",
+          meta:"Execution-time truth anchoring state.",
+          cls:
+            truthAnchor
+              ? "ok"
+              : "warn"
+        }
+      ];
+
+      el.innerHTML = nodes.map(item => `
+        <div class="commit-node ${item.cls}">
+          <div class="commit-node-title">
+            ${escapeHtml(item.title)}
+          </div>
+
+          <div class="commit-node-value">
+            ${escapeHtml(item.value)}
+          </div>
+
+          <div class="commit-node-meta">
+            ${escapeHtml(item.meta)}
+          </div>
+        </div>
+      `).join("");
+
+      if($("commitEnginePill")){
+        $("commitEnginePill").textContent =
+          truthAnchor
+            ? "COMMIT: ANCHORED"
+            : proofReady
+            ? "COMMIT: PROOF READY"
+            : commitReady
+            ? "COMMIT: READY"
+            : "COMMIT: HELD";
+      }
+    }
 
 
     function renderActionEngine(){
