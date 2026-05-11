@@ -1,0 +1,133 @@
+import {
+  resolveJwtContext,
+  requireJwtPermission
+} from "../../../../services/jwt-auth.js";
+
+import {
+  buildGovernanceRuntime
+} from "../../../../services/governance-runtime.js";
+
+import {
+  runGovernanceWatchdogCycle
+} from "../../../../services/governance-watchdog.js";
+
+import {
+  planGovernanceSelfHealing
+} from "../../../../services/governance-self-healing.js";
+
+function json(res, status, body) {
+  return res.status(status).json(body);
+}
+
+export default async function handler(req, res) {
+  try {
+
+    if (req.method !== "POST") {
+      return json(res, 405, {
+        ok: false,
+        error: {
+          code: "METHOD_NOT_ALLOWED",
+          message: "POST required"
+        }
+      });
+    }
+
+    const context = await resolveJwtContext(req);
+
+    const permission = requireJwtPermission(
+      context,
+      "governance.review.read"
+    );
+
+    if (!permission.ok) {
+      return json(res, permission.status || 401, {
+        ok: false,
+        error: {
+          code: permission.error || "INVALID_JWT",
+          message:
+            permission.reason ||
+            "Governance runtime permission required."
+        }
+      });
+    }
+
+    const body = req.body || {};
+
+    const runtime = await buildGovernanceRuntime({
+      review_id: body.review_id || null,
+      execution_id: body.execution_id || null
+    });
+
+    const watchdog_cycle =
+      runGovernanceWatchdogCycle({
+        verification: runtime.verification,
+        risk: runtime.risk,
+        intelligence: runtime.intelligence,
+        stability: runtime.stability,
+        containment_plan: runtime.containment_plan,
+        recovery_plan: runtime.recovery_plan,
+        orchestrator: runtime.orchestrator,
+        replay: runtime.replay
+      });
+
+    const healing_plan =
+      planGovernanceSelfHealing({
+        runtime,
+        watchdog_cycle
+      });
+
+    return json(res, 200, {
+      ok: true,
+      scope: "EXECUTIA_RUNTIME_STATE",
+      organization_id: context.organization_id,
+      runtime,
+      watchdog_cycle,
+      healing_plan,
+      runtime_state: {
+        autonomous_state:
+          watchdog_cycle.autonomous_state,
+
+        healing_state:
+          healing_plan.healing_state,
+
+        execution_allowed:
+          watchdog_cycle.execution_allowed,
+
+        recovery_allowed:
+          runtime.recovery_plan?.recovery_allowed || false,
+
+        containment_mode:
+          runtime.containment_plan?.mode || null,
+
+        survivability:
+          runtime.stability?.survivability || null,
+
+        continuity:
+          runtime.stability?.continuity || null,
+
+        governance_verified:
+          runtime.verification?.verified || false
+      }
+    });
+
+  } catch (error) {
+
+    console.error(
+      "[EXECUTIA RUNTIME STATE ERROR]",
+      error
+    );
+
+    return json(res, 500, {
+      ok: false,
+      error: {
+        code:
+          error.code ||
+          "EXECUTIA_RUNTIME_STATE_FAILED",
+
+        message:
+          error.message ||
+          "Runtime state failed."
+      }
+    });
+  }
+}
