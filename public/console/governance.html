@@ -1407,6 +1407,21 @@
     </div>
   </section>
 
+  <section class="heatmap-panel" id="civilizationControlLayerPanel">
+    <div class="head">
+      <h2>CIVILIZATION CONTROL LAYER</h2>
+      <span class="pill" id="civilizationControlLayerPill">CONTROL: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="civilizationControlLayerGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">CIVILIZATION CONTROL</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load runtime state to materialize execution physics control layer.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2727,6 +2742,7 @@
         renderLiveGovernanceGraph();
         renderSystemVisualizationCore();
         renderCivilizationStateMatrix();
+        renderCivilizationControlLayer();
 
       }catch(err){
         console.error(err);
@@ -2912,6 +2928,96 @@
           <div class="heat-title">${escapeHtml(title)}</div>
           <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
           <div class="heat-meta">${escapeHtml(meta || "Civilization state matrix")}</div>
+        </div>
+      `).join("");
+    }
+
+
+
+
+    function renderCivilizationControlLayer(){
+      const el = $("civilizationControlLayerGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const state = response?.runtime_state || null;
+
+      if($("civilizationControlLayerPill")){
+        $("civilizationControlLayerPill").textContent =
+          state ? "CONTROL: LIVE" : "CONTROL: STANDBY";
+      }
+
+      if(!state){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">CIVILIZATION CONTROL</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load runtime state to materialize execution physics control layer.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const cells = [
+        [
+          "EXECUTION FIELD MAP",
+          state.field_state || "UNKNOWN",
+          state.field_stabilization_required ? "warn" : "ok",
+          state.field_stabilization_required
+            ? "Field geometry requires stabilization"
+            : "Field geometry stable"
+        ],
+        [
+          "ENTROPY PROPAGATION",
+          state.entropy_detected ? "DETECTED" : "STABLE",
+          state.entropy_detected ? "bad" : "ok",
+          state.entropy_detected
+            ? "Cosmology layer detected entropy propagation"
+            : "No entropy propagation detected"
+        ],
+        [
+          "COHERENCE STATE",
+          state.convergence_required ? "CONVERGENCE REQUIRED" : "COHERENT",
+          state.convergence_required ? "warn" : "ok",
+          state.quantum_state || "Quantum execution probability state"
+        ],
+        [
+          "STABILIZATION FLOW",
+          state.stabilization_required ? "ACTIVE REQUIRED" : "STABLE",
+          state.stabilization_required ? "bad" : "ok",
+          state.singularity_state || "Singularity stabilization flow"
+        ],
+        [
+          "REALITY FABRIC",
+          state.synchronization_stable ? "SYNCHRONIZED" : "UNSTABLE",
+          state.synchronization_stable ? "ok" : "warn",
+          state.reality_fabric_state || "Reality synchronization fabric"
+        ],
+        [
+          "ORIGIN CAUSALITY",
+          state.origin_stabilization_required ? "REVIEW REQUIRED" : "COHERENT",
+          state.origin_stabilization_required ? "warn" : "ok",
+          state.origin_state || "Origin coherence state"
+        ],
+        [
+          "CONSTITUTIONAL CONTROL",
+          state.civilization_integrity ? "INTACT" : "REVIEW",
+          state.civilization_integrity ? "ok" : "warn",
+          state.constitutional_state || "Constitutional governance state"
+        ],
+        [
+          "AUTONOMOUS SURVIVABILITY",
+          state.execution_allowed ? "EXECUTION ALLOWED" : "EXECUTION BLOCKED",
+          state.execution_allowed ? "ok" : "bad",
+          state.autonomous_state || "Autonomous execution state"
+        ]
+      ];
+
+      el.innerHTML = cells.map(([title, value, cls, meta]) => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">${escapeHtml(title)}</div>
+          <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(meta || "EXECUTIA civilization control layer")}</div>
         </div>
       `).join("");
     }
