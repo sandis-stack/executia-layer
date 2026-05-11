@@ -34,7 +34,11 @@ export default async function handler(req, res) {
       context?.user?.user_metadata?.role ||
       null;
 
-    if (!permission.ok && runtimeRole !== "OPERATOR") {
+    if (
+      !permission.ok &&
+      runtimeRole !== "OPERATOR" &&
+      runtimeRole !== "SUPERVISOR"
+    ) {
       return json(res, 401, {
         ok: false,
         error: {
