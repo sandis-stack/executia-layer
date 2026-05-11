@@ -65,7 +65,7 @@ export default async function handler(req, res) {
         governance_state,
         organization_id
       `)
-      .in("governance_state", statuses)
+      .in("review_status", statuses)
       .order("updated_at", {
         ascending: true
       })
