@@ -976,6 +976,119 @@
       .topology-body{ grid-template-columns:1fr; }
     }
 
+  
+    /* EXECUTIA Civilization Runtime Compact Layer */
+    #civilizationCommandCenterPanel,
+    #systemVisualizationCorePanel,
+    #civilizationStateMatrixPanel,
+    #civilizationControlLayerPanel,
+    #civilizationPressureMapPanel,
+    #autonomousStabilizationFieldPanel,
+    #liveExecutionPhysicsEnginePanel{
+      margin:10px 16px 0;
+      border-radius:14px;
+      box-shadow:0 10px 28px rgba(30,58,95,.06);
+    }
+
+    #civilizationCommandCenterPanel .head,
+    #systemVisualizationCorePanel .head,
+    #civilizationStateMatrixPanel .head,
+    #civilizationControlLayerPanel .head,
+    #civilizationPressureMapPanel .head,
+    #autonomousStabilizationFieldPanel .head,
+    #liveExecutionPhysicsEnginePanel .head{
+      height:44px;
+      padding:0 14px;
+      background:linear-gradient(90deg,#ffffff,#f7fafd);
+    }
+
+    #civilizationCommandCenterPanel h2,
+    #systemVisualizationCorePanel h2,
+    #civilizationStateMatrixPanel h2,
+    #civilizationControlLayerPanel h2,
+    #civilizationPressureMapPanel h2,
+    #autonomousStabilizationFieldPanel h2,
+    #liveExecutionPhysicsEnginePanel h2{
+      margin:0;
+      font-size:11px;
+      letter-spacing:.16em;
+    }
+
+    #civilizationCommandCenterGrid,
+    #systemVisualizationCoreGrid,
+    #civilizationStateMatrixGrid,
+    #civilizationControlLayerGrid,
+    #civilizationPressureMapGrid,
+    #autonomousStabilizationFieldGrid,
+    #liveExecutionPhysicsEngineGrid{
+      padding:10px;
+      gap:8px;
+      grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    }
+
+    #civilizationCommandCenterGrid .heat-cell,
+    #systemVisualizationCoreGrid .heat-cell,
+    #civilizationStateMatrixGrid .heat-cell,
+    #civilizationControlLayerGrid .heat-cell,
+    #civilizationPressureMapGrid .heat-cell,
+    #autonomousStabilizationFieldGrid .heat-cell,
+    #liveExecutionPhysicsEngineGrid .heat-cell{
+      min-height:76px;
+      padding:10px;
+      border-radius:12px;
+    }
+
+    #civilizationCommandCenterGrid .heat-title,
+    #systemVisualizationCoreGrid .heat-title,
+    #civilizationStateMatrixGrid .heat-title,
+    #civilizationControlLayerGrid .heat-title,
+    #civilizationPressureMapGrid .heat-title,
+    #autonomousStabilizationFieldGrid .heat-title,
+    #liveExecutionPhysicsEngineGrid .heat-title{
+      font-size:9px;
+      letter-spacing:.12em;
+    }
+
+    #civilizationCommandCenterGrid .heat-value,
+    #systemVisualizationCoreGrid .heat-value,
+    #civilizationStateMatrixGrid .heat-value,
+    #civilizationControlLayerGrid .heat-value,
+    #civilizationPressureMapGrid .heat-value,
+    #autonomousStabilizationFieldGrid .heat-value,
+    #liveExecutionPhysicsEngineGrid .heat-value{
+      margin-top:5px;
+      font-size:13px;
+      line-height:1.15;
+    }
+
+    #civilizationCommandCenterGrid .heat-meta,
+    #systemVisualizationCoreGrid .heat-meta,
+    #civilizationStateMatrixGrid .heat-meta,
+    #civilizationControlLayerGrid .heat-meta,
+    #civilizationPressureMapGrid .heat-meta,
+    #autonomousStabilizationFieldGrid .heat-meta,
+    #liveExecutionPhysicsEngineGrid .heat-meta{
+      margin-top:5px;
+      font-size:10px;
+      line-height:1.25;
+    }
+
+    #civilizationCommandCenterPanel,
+    #liveExecutionPhysicsEnginePanel{
+      border-color:#c8d6e6;
+      box-shadow:0 14px 34px rgba(30,58,95,.10);
+    }
+
+    #civilizationCommandCenterPanel .head,
+    #liveExecutionPhysicsEnginePanel .head{
+      background:linear-gradient(90deg,#ffffff,#eef3f8);
+    }
+
+    #civilizationCommandCenterGrid,
+    #liveExecutionPhysicsEngineGrid{
+      grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    }
+
   </style>
 </head>
 <body>
