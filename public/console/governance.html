@@ -3134,6 +3134,35 @@
     </div>
   </section>
 
+
+<section class="directive-engine-shell">
+    <div class="directive-engine-head">
+      <div class="directive-engine-title">
+        <div class="directive-engine-label">
+          EXECUTION-TIME DIRECTIVE CORE
+        </div>
+
+        <div class="directive-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="directiveCorePill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="directive-engine-grid" id="directiveCoreGrid">
+      <div class="directive-node warn">
+        <div class="directive-node-title">DIRECTIVE CORE</div>
+        <div class="directive-node-value">STANDBY</div>
+        <div class="directive-node-meta">
+          Awaiting execution-time directive materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4680,6 +4709,7 @@
         renderProofEngine();
         renderTruthEngine();
         renderEvolutionEngine();
+        renderDirectiveCore();
           return;
         }
 
@@ -6712,6 +6742,88 @@
 
 
 
+
+
+    function renderDirectiveCore(){
+      const el = $("directiveCoreGrid");
+
+      const prediction = runtimeState?.prediction || runtimeState?.prediction_field || {};
+      const decision = runtimeState?.decision || runtimeState?.decision_field || {};
+      const action = runtimeState?.action || runtimeState?.action_engine || {};
+      const commit = runtimeState?.commit || runtimeState?.commit_engine || {};
+      const proof = runtimeState?.proof || runtimeState?.proof_engine || {};
+      const truth = runtimeState?.truth || runtimeState?.truth_engine || {};
+      const evolution = runtimeState?.evolution || runtimeState?.evolution_engine || {};
+
+      const readState = (obj, fallback) => String(
+        obj.status || obj.verdict || obj.state || fallback
+      ).toUpperCase();
+
+      const states = [
+        readState(prediction, "STABLE"),
+        readState(decision, "SYNCHRONIZED"),
+        readState(action, "SYNCHRONIZED"),
+        readState(commit, "SYNCHRONIZED"),
+        readState(proof, "VERIFIED"),
+        readState(truth, $("truthEnginePill")?.textContent || "TRUTH VERIFIED"),
+        readState(evolution, $("evolutionEnginePill")?.textContent || "EVOLUTION SYNCHRONIZED")
+      ];
+
+      const joined = states.join(" ");
+
+      let directive = "DIRECTIVE SYNCHRONIZED";
+      let priority = "NORMAL";
+      let target = "GLOBAL CONTINUITY";
+      let propagation = "CONTROLLED";
+
+      if(joined.includes("BLOCK")){
+        directive = "DIRECTIVE CONTAINING";
+        priority = "CRITICAL";
+        target = "EXECUTION CONTAINMENT";
+        propagation = "IMMEDIATE";
+      }
+      else if(joined.includes("DIVERG") || joined.includes("BROKEN") || joined.includes("MISMATCH")){
+        directive = "DIRECTIVE REROUTING";
+        priority = "HIGH";
+        target = "EXECUTION RECOVERY";
+        propagation = "CASCADE";
+      }
+      else if(joined.includes("UNSTABLE") || joined.includes("REVIEW") || joined.includes("PENDING")){
+        directive = "DIRECTIVE STABILIZING";
+        priority = "HIGH";
+        target = "RUNTIME STABILIZATION";
+        propagation = "ADAPTIVE";
+      }
+      else if(joined.includes("SYNC") || joined.includes("VERIFIED")){
+        directive = "DIRECTIVE ACTIVE";
+        priority = "OPTIMAL";
+        target = "EXECUTION OPTIMIZATION";
+        propagation = "SYNCHRONIZED";
+      }
+
+      const nodes = [
+        ["DIRECTIVE PRIORITY", priority, "Autonomous runtime prioritization layer."],
+        ["DIRECTIVE TARGET", target, "Primary execution stabilization target."],
+        ["DIRECTIVE ORIGIN", "EVOLUTION ENGINE", "Generated from runtime adaptation analysis."],
+        ["DIRECTIVE IMPACT", directive, "Execution steering impact across runtime."],
+        ["DIRECTIVE PROPAGATION", propagation, "Directive propagation through execution layers."],
+        ["DIRECTIVE STATUS", directive, "Autonomous directive materialized into runtime."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("directiveCorePill")){
+        $("directiveCorePill").textContent = directive;
+      }
+    }
 
     function renderEvolutionEngine(){
       const el = $("evolutionEngineGrid");
