@@ -1229,6 +1229,175 @@
   
     /* EXECUTIA Runtime Status Rail */
 
+
+
+    .continuity-shell{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      background:
+        linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #f8fbff 100%
+        );
+      box-shadow:
+        0 12px 36px rgba(15,23,42,.06);
+    }
+
+    .continuity-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.94);
+    }
+
+    .continuity-title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .continuity-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .continuity-value{
+      font-size:20px;
+      font-weight:900;
+      color:var(--blue);
+      letter-spacing:.03em;
+    }
+
+    .continuity-ribbon{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      overflow:hidden;
+      padding:18px;
+      min-height:120px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(30,58,95,.03) 0%,
+          rgba(255,255,255,.95) 50%,
+          rgba(30,58,95,.03) 100%
+        );
+    }
+
+    .continuity-track{
+      position:absolute;
+      left:0;
+      right:0;
+      top:50%;
+      transform:translateY(-50%);
+      height:4px;
+      border-radius:999px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(37,99,235,.10),
+          rgba(37,99,235,.45),
+          rgba(37,99,235,.10)
+        );
+      overflow:hidden;
+    }
+
+    .continuity-track::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(255,255,255,.9) 50%,
+          transparent 100%
+        );
+      animation:continuityFlow 4s linear infinite;
+    }
+
+    @keyframes continuityFlow{
+      0%{ transform:translateX(-100%); }
+      100%{ transform:translateX(100%); }
+    }
+
+    .continuity-node{
+      position:relative;
+      z-index:2;
+      flex:1;
+      min-width:120px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      padding:14px;
+      text-align:center;
+      box-shadow:0 6px 20px rgba(15,23,42,.04);
+    }
+
+    .continuity-node.ok{
+      border-color:#a9d6b7;
+      background:linear-gradient(180deg,#f2fbf5 0%,#ffffff 100%);
+    }
+
+    .continuity-node.warn{
+      border-color:#f1cf83;
+      background:linear-gradient(180deg,#fffaf0 0%,#ffffff 100%);
+    }
+
+    .continuity-node.bad{
+      border-color:#e4b1b1;
+      background:linear-gradient(180deg,#fff5f5 0%,#ffffff 100%);
+    }
+
+    .continuity-node-title{
+      font-size:10px;
+      letter-spacing:.16em;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .continuity-node-value{
+      font-size:14px;
+      font-weight:900;
+      color:var(--blue);
+      margin-bottom:8px;
+      line-height:1.2;
+      word-break:break-word;
+    }
+
+    .continuity-node-meta{
+      font-size:11px;
+      color:#607086;
+      line-height:1.45;
+    }
+
+    @media (max-width:1200px){
+      .continuity-ribbon{
+        flex-wrap:wrap;
+      }
+
+      .continuity-node{
+        min-width:calc(50% - 12px);
+      }
+    }
+
+    @media (max-width:720px){
+      .continuity-node{
+        min-width:100%;
+      }
+    }
+
+
     .state-machine-shell{
       margin-top:16px;
       border:1px solid var(--line);
@@ -1962,6 +2131,44 @@
     </div>
   </section>
 
+
+
+
+  <section class="continuity-shell">
+    <div class="continuity-head">
+      <div class="continuity-title">
+        <div class="continuity-label">
+          LIVE EXECUTION CONTINUITY ENGINE
+        </div>
+
+        <div class="continuity-value">
+          EXECUTION-TIME CONTINUITY INFRASTRUCTURE
+        </div>
+      </div>
+
+      <div class="pill" id="continuityPill">
+        CONTINUITY: LIVE
+      </div>
+    </div>
+
+    <div class="continuity-ribbon" id="continuityRibbon">
+      <div class="continuity-track"></div>
+
+      <div class="continuity-node ok">
+        <div class="continuity-node-title">
+          CONTINUITY
+        </div>
+
+        <div class="continuity-node-value">
+          SYNCHRONIZED
+        </div>
+
+        <div class="continuity-node-meta">
+          Runtime continuity infrastructure active.
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="state-machine-shell">
     <div class="state-machine-head">
@@ -3287,6 +3494,7 @@
           renderLiveExecutionPhysicsEngine();
         renderRuntimeStatusRail();
         renderExecutionStateMachine();
+        renderExecutionContinuityEngine();
           return;
         }
 
@@ -5300,6 +5508,129 @@
       `).join("");
     }
 
+
+
+
+
+    function renderExecutionContinuityEngine(){
+      const el = $("continuityRibbon");
+      if(!el) return;
+
+      const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+      const state = runtime?.runtime_state || {};
+
+      const continuity = [
+        {
+          title:"TEMPORAL",
+          value:
+            state.delayed_causality_detected
+              ? "DRIFT"
+              : "CONTINUOUS",
+          meta:"Temporal execution continuity",
+          cls:
+            state.delayed_causality_detected
+              ? "warn"
+              : "ok"
+        },
+        {
+          title:"CAUSAL",
+          value:
+            state.execution_authenticity
+              ? "AUTHENTIC"
+              : "UNVERIFIED",
+          meta:"Execution causality integrity",
+          cls:
+            state.execution_authenticity
+              ? "ok"
+              : "warn"
+        },
+        {
+          title:"GOVERNANCE",
+          value:
+            state.civilization_integrity
+              ? "STABLE"
+              : "UNSTABLE",
+          meta:"Governance continuity chain",
+          cls:
+            state.civilization_integrity
+              ? "ok"
+              : "warn"
+        },
+        {
+          title:"SYNCHRONIZATION",
+          value:
+            state.synchronization_stable
+              ? "SYNCED"
+              : "DRIFT",
+          meta:"Reality synchronization continuity",
+          cls:
+            state.synchronization_stable
+              ? "ok"
+              : "warn"
+        },
+        {
+          title:"ENTROPY",
+          value:
+            state.entropy_detected
+              ? "BREACH"
+              : "CONTROLLED",
+          meta:"Entropy breach propagation",
+          cls:
+            state.entropy_detected
+              ? "bad"
+              : "ok"
+        },
+        {
+          title:"RECOVERY",
+          value:
+            state.healing_state ||
+            "SELF_HEALING_READY",
+          meta:"Recovery continuity layer",
+          cls:
+            String(state.healing_state || "")
+              .includes("FAILED")
+              ? "bad"
+              : "ok"
+        },
+        {
+          title:"SURVIVABILITY",
+          value:
+            state.survivability ||
+            "HIGH",
+          meta:"Execution survivability state",
+          cls:
+            String(state.survivability || "HIGH")
+              .includes("LOW")
+              ? "warn"
+              : "ok"
+        }
+      ];
+
+      el.innerHTML = `
+        <div class="continuity-track"></div>
+
+        ${continuity.map(item => `
+          <div class="continuity-node ${item.cls}">
+            <div class="continuity-node-title">
+              ${escapeHtml(item.title)}
+            </div>
+
+            <div class="continuity-node-value">
+              ${escapeHtml(item.value)}
+            </div>
+
+            <div class="continuity-node-meta">
+              ${escapeHtml(item.meta)}
+            </div>
+          </div>
+        `).join("")}
+      `;
+
+      if($("continuityPill")){
+        $("continuityPill").textContent =
+          "CONTINUITY: SYNCHRONIZED";
+      }
+    }
 
 
     function renderExecutionStateMachine(){
