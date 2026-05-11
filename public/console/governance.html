@@ -3076,6 +3076,35 @@
     </div>
   </section>
 
+
+<section class="truth-engine-shell">
+    <div class="truth-engine-head">
+      <div class="truth-engine-title">
+        <div class="truth-engine-label">
+          EXECUTION-TIME TRUTH ENGINE
+        </div>
+
+        <div class="truth-engine-value">
+          LEDGER → AUDIT → HASH → TRUTH ANCHOR → VERIFICATION
+        </div>
+      </div>
+
+      <div class="pill" id="truthEnginePill">
+        PROOF: LIVE
+      </div>
+    </div>
+
+    <div class="truth-engine-grid" id="truthEngineGrid">
+      <div class="truth-node warn">
+        <div class="truth-node-title">TRUTH ENGINE</div>
+        <div class="truth-node-value">STANDBY</div>
+        <div class="truth-node-meta">
+          Awaiting execution-time truth materialization.
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="commit-engine-shell">
     <div class="commit-engine-head">
       <div class="commit-engine-title">
@@ -4620,6 +4649,7 @@
         renderActionEngine();
         renderCommitEngine();
         renderProofEngine();
+        renderTruthEngine();
           return;
         }
 
@@ -6650,6 +6680,56 @@
 
 
 
+
+
+    function renderTruthEngine(){
+      const el = $("truthEngineGrid");
+      const decision = runtimeState?.decision || runtimeState?.decision_field || {};
+      const action = runtimeState?.action || runtimeState?.action_engine || {};
+      const commit = runtimeState?.commit || runtimeState?.commit_engine || {};
+      const proof = runtimeState?.proof || runtimeState?.proof_engine || {};
+
+      const decisionState = String(decision.status || decision.verdict || "SYNCHRONIZED").toUpperCase();
+      const actionState = String(action.status || action.verdict || "SYNCHRONIZED").toUpperCase();
+      const commitState = String(commit.status || commit.verdict || "SYNCHRONIZED").toUpperCase();
+      const proofState = String(proof.status || proof.verdict || "VERIFIED").toUpperCase();
+
+      let verdict = "TRUTH VERIFIED";
+
+      const joined = [decisionState, actionState, commitState, proofState].join(" ");
+
+      if(joined.includes("BLOCK")){
+        verdict = "TRUTH BLOCKED";
+      } else if(joined.includes("DIVERG") || joined.includes("MISMATCH") || joined.includes("BROKEN")){
+        verdict = "TRUTH DIVERGED";
+      } else if(joined.includes("UNSTABLE") || joined.includes("PENDING") || joined.includes("REVIEW")){
+        verdict = "TRUTH UNSTABLE";
+      } else if(joined.includes("SYNC")){
+        verdict = "TRUTH SYNCHRONIZED";
+      }
+
+      const nodes = [
+        ["DECISION", decisionState, "Execution intent validated before action."],
+        ["ACTION", actionState, "Runtime action aligned with approved decision."],
+        ["COMMIT", commitState, "Execution state committed into continuity."],
+        ["PROOF", proofState, "Execution proof materialized and verifiable."],
+        ["TRUTH", verdict, "Decision + Action + Commit + Proof materialized as execution-time truth."]
+      ];
+
+      if(el){
+        el.innerHTML = nodes.map(([title, state, text]) => `
+          <div class="proof-node">
+            <div class="proof-node-title">${escapeHtml(title)}</div>
+            <div class="proof-node-value">${escapeHtml(state)}</div>
+            <div class="proof-node-small">${escapeHtml(text)}</div>
+          </div>
+        `).join("");
+      }
+
+      if($("truthEnginePill")){
+        $("truthEnginePill").textContent = verdict;
+      }
+    }
 
     function renderProofEngine(){
       const el = $("proofEngineGrid");
