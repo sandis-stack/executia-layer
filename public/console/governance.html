@@ -1233,6 +1233,161 @@
 
 
 
+
+
+    .causality-fabric-shell{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+      background:
+        linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #f6faff 100%
+        );
+      box-shadow:
+        0 12px 42px rgba(15,23,42,.06);
+    }
+
+    .causality-fabric-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.94);
+    }
+
+    .causality-fabric-title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .causality-fabric-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .causality-fabric-value{
+      font-size:20px;
+      font-weight:900;
+      color:var(--blue);
+      letter-spacing:.03em;
+    }
+
+    .causality-flow{
+      position:relative;
+      display:grid;
+      grid-template-columns:repeat(6,minmax(0,1fr));
+      gap:14px;
+      padding:20px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(30,58,95,.025) 0%,
+          rgba(255,255,255,.95) 50%,
+          rgba(30,58,95,.025) 100%
+        );
+    }
+
+    .causality-flow::before{
+      content:"";
+      position:absolute;
+      left:24px;
+      right:24px;
+      top:50%;
+      height:3px;
+      border-radius:999px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(30,58,95,.10),
+          rgba(30,58,95,.40),
+          rgba(30,58,95,.10)
+        );
+    }
+
+    .causality-node{
+      position:relative;
+      z-index:2;
+      min-height:170px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+      padding:16px;
+      box-shadow:0 8px 24px rgba(15,23,42,.04);
+      overflow:hidden;
+    }
+
+    .causality-node::after{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:4px;
+      background:rgba(30,58,95,.28);
+    }
+
+    .causality-node.ok::after{background:#6dbb86}
+    .causality-node.warn::after{background:#d9a441}
+    .causality-node.bad::after{background:#c05656}
+    .causality-node.live::after{background:#2563eb}
+
+    .causality-node-title{
+      font-size:10px;
+      letter-spacing:.16em;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .causality-node-value{
+      font-size:16px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1.2;
+      margin-bottom:10px;
+      word-break:break-word;
+    }
+
+    .causality-node-meta{
+      font-size:12px;
+      color:#607086;
+      line-height:1.55;
+    }
+
+    .causality-node-signal{
+      margin-top:12px;
+      padding-top:10px;
+      border-top:1px dashed var(--line);
+      font-size:11px;
+      color:#748295;
+      line-height:1.45;
+    }
+
+    @media (max-width:1400px){
+      .causality-flow{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+
+      .causality-flow::before{
+        display:none;
+      }
+    }
+
+    @media (max-width:760px){
+      .causality-flow{
+        grid-template-columns:1fr;
+      }
+    }
+
+
     .memory-fabric-shell{
       margin-top:18px;
       border:1px solid var(--line);
@@ -2295,6 +2450,42 @@
 
 
 
+
+
+
+  <section class="causality-fabric-shell">
+    <div class="causality-fabric-head">
+      <div class="causality-fabric-title">
+        <div class="causality-fabric-label">
+          LIVE CAUSALITY FABRIC
+        </div>
+
+        <div class="causality-fabric-value">
+          EXECUTION-TIME CAUSE → EFFECT CONTROL
+        </div>
+      </div>
+
+      <div class="pill" id="causalityFabricPill">
+        CAUSALITY: LIVE
+      </div>
+    </div>
+
+    <div class="causality-flow" id="causalityFabricFlow">
+      <div class="causality-node warn">
+        <div class="causality-node-title">
+          CAUSALITY FABRIC
+        </div>
+
+        <div class="causality-node-value">
+          STANDBY
+        </div>
+
+        <div class="causality-node-meta">
+          Awaiting execution-time causality materialization.
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="memory-fabric-shell">
     <div class="memory-fabric-head">
@@ -3694,6 +3885,7 @@
         renderExecutionStateMachine();
         renderExecutionContinuityEngine();
         renderMemoryFabric();
+        renderCausalityFabric();
           return;
         }
 
@@ -5711,6 +5903,148 @@
 
 
 
+
+
+
+
+    function renderCausalityFabric(){
+      const el = $("causalityFabricFlow");
+      if(!el) return;
+
+      const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+      const state = runtime?.runtime_state || {};
+      const replay = runtime?.runtime?.replay || {};
+      const events = replay?.events || [];
+
+      const hasEvents = Array.isArray(events) && events.length > 0;
+
+      const entropy = Boolean(state.entropy_detected);
+      const drift = Boolean(state.delayed_causality_detected);
+      const convergence = Boolean(state.convergence_required);
+      const containment = Boolean(state.quarantine_required) || state.execution_allowed === false;
+      const stabilization =
+        Boolean(state.stabilization_required) ||
+        Boolean(state.field_stabilization_required) ||
+        Boolean(state.origin_stabilization_required);
+
+      const nodes = [
+        {
+          title:"CAUSE CAPTURE",
+          value:hasEvents ? "MATERIALIZED" : "READY",
+          meta:"Execution cause is captured before outcome.",
+          signal:hasEvents ? `${events.length} causal events available` : "Awaiting replay events",
+          cls:hasEvents ? "ok" : "warn"
+        },
+        {
+          title:"PROPAGATION VECTOR",
+          value:
+            entropy || drift
+              ? "DISTURBED"
+              : "STABLE",
+          meta:"Cause propagation through runtime layers.",
+          signal:
+            entropy
+              ? "Entropy is propagating through causality field"
+              : drift
+              ? "Temporal drift detected"
+              : "Propagation vector stable",
+          cls:
+            entropy
+              ? "bad"
+              : drift
+              ? "warn"
+              : "ok"
+        },
+        {
+          title:"FUTURE DIVERGENCE",
+          value:
+            convergence
+              ? "DIVERGENCE"
+              : "ALIGNED",
+          meta:"Predicted branch divergence from current cause.",
+          signal:
+            state.predictive_state ||
+            "No divergence requiring convergence",
+          cls:
+            convergence
+              ? "warn"
+              : "ok"
+        },
+        {
+          title:"CONTAINMENT SPREAD",
+          value:
+            containment
+              ? "ACTIVE"
+              : "CLEAR",
+          meta:"Containment effect propagation.",
+          signal:
+            containment
+              ? "Containment is influencing execution path"
+              : "No containment propagation",
+          cls:
+            containment
+              ? "bad"
+              : "ok"
+        },
+        {
+          title:"SHOCKWAVE CONTROL",
+          value:
+            stabilization
+              ? "STABILIZING"
+              : "ABSORBED",
+          meta:"Execution shockwave stabilization.",
+          signal:
+            state.singularity_state ||
+            state.field_state ||
+            state.origin_state ||
+            "No active shockwave",
+          cls:
+            stabilization
+              ? "warn"
+              : "ok"
+        },
+        {
+          title:"EFFECT LOCK",
+          value:
+            state.execution_allowed
+              ? "EFFECT ALLOWED"
+              : "EFFECT BLOCKED",
+          meta:"Final cause-effect execution lock.",
+          signal:
+            state.autonomous_state ||
+            "Execution effect controlled by runtime",
+          cls:
+            state.execution_allowed
+              ? "live"
+              : "bad"
+        }
+      ];
+
+      el.innerHTML = nodes.map(item => `
+        <div class="causality-node ${item.cls}">
+          <div class="causality-node-title">
+            ${escapeHtml(item.title)}
+          </div>
+
+          <div class="causality-node-value">
+            ${escapeHtml(item.value)}
+          </div>
+
+          <div class="causality-node-meta">
+            ${escapeHtml(item.meta)}
+          </div>
+
+          <div class="causality-node-signal">
+            ${escapeHtml(item.signal)}
+          </div>
+        </div>
+      `).join("");
+
+      if($("causalityFabricPill")){
+        $("causalityFabricPill").textContent =
+          "CAUSALITY: SYNCHRONIZED";
+      }
+    }
 
 
     function renderMemoryFabric(){
