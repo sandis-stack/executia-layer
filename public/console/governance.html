@@ -1422,6 +1422,21 @@
     </div>
   </section>
 
+  <section class="heatmap-panel" id="civilizationPressureMapPanel">
+    <div class="head">
+      <h2>CIVILIZATION PRESSURE MAP</h2>
+      <span class="pill" id="civilizationPressureMapPill">PRESSURE: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="civilizationPressureMapGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">PRESSURE MAP</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load runtime state to materialize pressure, entropy and stabilization vectors.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2744,6 +2759,7 @@
         renderSystemVisualizationCore();
         renderCivilizationStateMatrix();
         renderCivilizationControlLayer();
+        renderCivilizationPressureMap();
 
       }catch(err){
         console.error(err);
@@ -3019,6 +3035,122 @@
           <div class="heat-title">${escapeHtml(title)}</div>
           <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
           <div class="heat-meta">${escapeHtml(meta || "EXECUTIA civilization control layer")}</div>
+        </div>
+      `).join("");
+    }
+
+
+
+
+    function renderCivilizationPressureMap(){
+      const el = $("civilizationPressureMapGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const state = response?.runtime_state || null;
+
+      if($("civilizationPressureMapPill")){
+        $("civilizationPressureMapPill").textContent =
+          state ? "PRESSURE: LIVE" : "PRESSURE: STANDBY";
+      }
+
+      if(!state){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">PRESSURE MAP</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load runtime state to materialize pressure, entropy and stabilization vectors.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const pressure = Number(state.pressure_index);
+      const gravity = Number(state.gravity_index);
+      const awareness = Number(state.awareness_index);
+      const adaptation = Number(state.adaptation_index);
+      const dna = Number(state.dna_integrity);
+
+      const safeNumber = (value, fallback) => Number.isFinite(value) ? Math.round(value) : fallback;
+
+      const pressureScore = safeNumber(pressure, state.pressure_state ? 52 : 0);
+      const gravityScore = safeNumber(gravity, state.gravity_state ? 48 : 0);
+      const awarenessScore = safeNumber(awareness, state.consciousness_state ? 72 : 0);
+      const adaptationScore = safeNumber(adaptation, state.evolution_state ? 70 : 0);
+      const dnaScore = safeNumber(dna, state.dna_state ? 74 : 0);
+
+      const pressureClass = pressureScore >= 75 ? "bad" : pressureScore >= 45 ? "warn" : "ok";
+      const gravityClass = gravityScore >= 75 ? "bad" : gravityScore >= 45 ? "warn" : "ok";
+      const entropyClass = state.entropy_detected ? "bad" : "ok";
+      const stabilizationClass = state.stabilization_required || state.field_stabilization_required || state.origin_stabilization_required
+        ? "warn"
+        : "ok";
+      const coherenceClass = state.convergence_required || !state.synchronization_stable
+        ? "warn"
+        : "ok";
+
+      const cells = [
+        [
+          "PRESSURE ZONE",
+          `${pressureScore}%`,
+          pressureClass,
+          state.pressure_state || "Governance pressure field"
+        ],
+        [
+          "GRAVITY FLOW",
+          `${gravityScore}%`,
+          gravityClass,
+          state.gravity_state || "Execution gravity vector"
+        ],
+        [
+          "ENTROPY DIRECTION",
+          state.entropy_detected ? "PROPAGATING" : "CONTAINED",
+          entropyClass,
+          state.entropy_detected ? "Entropy moves through cosmology layer" : "Entropy direction contained"
+        ],
+        [
+          "STABILIZATION FIELD",
+          stabilizationClass === "warn" ? "ACTIVE" : "STABLE",
+          stabilizationClass,
+          state.stabilization_required
+            ? "Singularity stabilization required"
+            : state.field_stabilization_required
+            ? "Field stabilization required"
+            : state.origin_stabilization_required
+            ? "Origin stabilization required"
+            : "No stabilization demand"
+        ],
+        [
+          "COHERENCE VECTOR",
+          coherenceClass === "warn" ? "DRIFT" : "COHERENT",
+          coherenceClass,
+          state.quantum_state || state.reality_fabric_state || "Runtime coherence vector"
+        ],
+        [
+          "AWARENESS FIELD",
+          `${awarenessScore}%`,
+          awarenessScore >= 70 ? "ok" : "warn",
+          state.consciousness_state || "Governance awareness index"
+        ],
+        [
+          "ADAPTATION VECTOR",
+          `${adaptationScore}%`,
+          adaptationScore >= 70 ? "ok" : "warn",
+          state.evolution_state || "Evolutionary adaptation state"
+        ],
+        [
+          "EXECUTION DNA",
+          `${dnaScore}%`,
+          dnaScore >= 70 ? "ok" : "warn",
+          state.dna_state || "Execution DNA continuity"
+        ]
+      ];
+
+      el.innerHTML = cells.map(([title, value, cls, meta]) => `
+        <div class="heat-cell ${cls}">
+          <div class="heat-title">${escapeHtml(title)}</div>
+          <div class="heat-value">${escapeHtml(value || "UNKNOWN")}</div>
+          <div class="heat-meta">${escapeHtml(meta || "EXECUTIA civilization pressure map")}</div>
         </div>
       `).join("");
     }
