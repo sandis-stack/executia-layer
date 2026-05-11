@@ -59,6 +59,10 @@ import {
   evaluateGovernanceDNA
 } from "../../../../services/governance-dna.js";
 
+import {
+  evaluateGovernanceConstitutionalEngine
+} from "../../../../services/governance-constitutional-engine.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -237,6 +241,16 @@ export default async function handler(req, res) {
         prediction
       });
 
+    const constitutional =
+      evaluateGovernanceConstitutionalEngine({
+        runtime,
+        immune,
+        dna,
+        consciousness,
+        evolution,
+        reality
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -255,6 +269,7 @@ export default async function handler(req, res) {
       evolution,
       immune,
       dna,
+      constitutional,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -371,7 +386,16 @@ export default async function handler(req, res) {
           dna.dna_integrity,
 
         civilization_class:
-          dna.civilization_class
+          dna.civilization_class,
+
+        constitutional_state:
+          constitutional.constitutional_state,
+
+        constitutional_integrity:
+          constitutional.constitutional_integrity,
+
+        civilization_integrity:
+          constitutional.civilization_integrity
       }
     });
 
