@@ -55,6 +55,10 @@ import {
   evaluateGovernanceImmune
 } from "../../../../services/governance-immune.js";
 
+import {
+  evaluateGovernanceDNA
+} from "../../../../services/governance-dna.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -223,6 +227,16 @@ export default async function handler(req, res) {
         consensus
       });
 
+    const dna =
+      evaluateGovernanceDNA({
+        runtime,
+        evolution,
+        immune,
+        consciousness,
+        memory,
+        prediction
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -240,6 +254,7 @@ export default async function handler(req, res) {
       consciousness,
       evolution,
       immune,
+      dna,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -347,7 +362,16 @@ export default async function handler(req, res) {
           immune.infection_index,
 
         quarantine_required:
-          immune.quarantine_required
+          immune.quarantine_required,
+
+        dna_state:
+          dna.dna_state,
+
+        dna_integrity:
+          dna.dna_integrity,
+
+        civilization_class:
+          dna.civilization_class
       }
     });
 
