@@ -1360,6 +1360,22 @@
     </div>
   </section>
 
+
+  <section class="heatmap-panel" id="liveGovernanceGraphPanel">
+    <div class="head">
+      <h2>LIVE GOVERNANCE GRAPH</h2>
+      <span class="pill" id="liveGovernanceGraphPill">GRAPH: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="liveGovernanceGraphGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">GOVERNANCE GRAPH</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load system state to materialize governance graph.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2677,6 +2693,7 @@
         renderGovernanceRuntimeState();
         renderGovernanceRuntimeFlow();
         renderLiveExecutionMap();
+        renderLiveGovernanceGraph();
 
       }catch(err){
         console.error(err);
@@ -2691,6 +2708,61 @@
 
 
 
+
+
+
+
+    function renderLiveGovernanceGraph(){
+      const el = $("liveGovernanceGraphGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const runtime = response?.runtime || null;
+      const events = runtime?.replay?.events || [];
+
+      if($("liveGovernanceGraphPill")){
+        $("liveGovernanceGraphPill").textContent =
+          events.length ? "GRAPH: LIVE" : "GRAPH: STANDBY";
+      }
+
+      if(!events.length){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">GOVERNANCE GRAPH</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load system state to materialize governance graph.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const latestEvents = events.slice(-10);
+
+      el.innerHTML = latestEvents.map((event, index) => {
+        const type = event.type || "UNKNOWN";
+        const hash = event.hash || "—";
+        const prev = event.prev_hash || "—";
+
+        const cls =
+          type.includes("BLOCK") || type.includes("FREEZE")
+            ? "bad"
+            : type.includes("RECOVERY") || type.includes("RESUMED")
+            ? "live"
+            : type.includes("APPROVED") || type.includes("VERIFIED")
+            ? "ok"
+            : type.includes("SELF_HEALING") || type.includes("SCHEDULER")
+            ? "warn"
+            : "ok";
+
+        return `
+          <div class="heat-cell ${cls}">
+            <div class="heat-title">${escapeHtml(String(index + 1).padStart(2, "0"))} · ${escapeHtml(event.stage || event.source || "EVENT")}</div>
+            <div class="heat-value">${escapeHtml(type)}</div>
+            <div class="heat-meta">Hash: ${escapeHtml(hash.slice(0, 16))} · Prev: ${escapeHtml(prev.slice(0, 16))}</div>
+          </div>
+        `;
+      }).join("");
+    }
 
 
     function renderLiveExecutionMap(){
