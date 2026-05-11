@@ -1328,6 +1328,22 @@
     </div>
   </section>
 
+
+  <section class="heatmap-panel" id="governanceRuntimeFlowPanel">
+    <div class="head">
+      <h2>LIVE AUTONOMOUS STATE STREAM</h2>
+      <span class="pill" id="governanceRuntimeFlowPill">FLOW: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="governanceRuntimeFlowGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">STATE FLOW</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Load system state to materialize runtime flow.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="execution-topology">
     <div class="head">
       <h2>LIVE EXECUTION TOPOLOGY</h2>
@@ -2643,6 +2659,7 @@
 
         window.LAST_GOVERNANCE_RUNTIME_STATE = response;
         renderGovernanceRuntimeState();
+        renderGovernanceRuntimeFlow();
 
       }catch(err){
         console.error(err);
@@ -2652,6 +2669,89 @@
           (err?.message || err)
         );
       }
+    }
+
+
+
+
+    function renderGovernanceRuntimeFlow(){
+      const el = $("governanceRuntimeFlowGrid");
+      if(!el) return;
+
+      const response = window.LAST_GOVERNANCE_RUNTIME_STATE || null;
+      const state = response?.runtime_state || null;
+      const healing = response?.healing_plan || null;
+      const watchdog = response?.watchdog_cycle || null;
+      const runtime = response?.runtime || null;
+
+      if($("governanceRuntimeFlowPill")){
+        $("governanceRuntimeFlowPill").textContent =
+          state ? "FLOW: LIVE" : "FLOW: STANDBY";
+      }
+
+      if(!state){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">STATE FLOW</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">Load system state to materialize runtime flow.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const flow = [
+        {
+          title: "REPLAY",
+          value: "RECONSTRUCTED",
+          meta: "Events: " + escapeHtml(runtime?.replay?.event_count ?? "—"),
+          cls: "ok"
+        },
+        {
+          title: "VERIFY",
+          value: state.governance_verified ? "VERIFIED" : "BROKEN",
+          meta: "Hash-chain governance verification",
+          cls: state.governance_verified ? "ok" : "bad"
+        },
+        {
+          title: "WATCHDOG",
+          value: watchdog?.autonomous_state || state.autonomous_state || "UNKNOWN",
+          meta: watchdog?.summary || "Autonomous watchdog cycle",
+          cls: state.execution_allowed ? "ok" : "warn"
+        },
+        {
+          title: "HEALING",
+          value: healing?.healing_state || state.healing_state || "UNKNOWN",
+          meta: healing?.summary || "Self-healing planner",
+          cls: healing?.autonomous_release_allowed ? "live" : "warn"
+        },
+        {
+          title: "SUPERVISION",
+          value: (healing?.supervisor_required || []).length ? "REQUIRED" : "CLEAR",
+          meta: (healing?.supervisor_required || []).join(" · ") || "No supervisor gate required",
+          cls: (healing?.supervisor_required || []).length ? "warn" : "ok"
+        },
+        {
+          title: "RECOVERY",
+          value: state.recovery_allowed ? "AUTHORIZED" : "HELD",
+          meta: "Recovery plan authorization",
+          cls: state.recovery_allowed ? "live" : "warn"
+        },
+        {
+          title: "EXECUTION",
+          value: state.execution_allowed ? "ALLOWED" : "BLOCKED",
+          meta: "Final runtime execution state",
+          cls: state.execution_allowed ? "ok" : "bad"
+        }
+      ];
+
+      el.innerHTML = flow.map((node, index) => `
+        <div class="heat-cell ${node.cls}">
+          <div class="heat-title">${escapeHtml(String(index + 1).padStart(2, "0"))} · ${escapeHtml(node.title)}</div>
+          <div class="heat-value">${escapeHtml(node.value)}</div>
+          <div class="heat-meta">${escapeHtml(node.meta)}</div>
+        </div>
+      `).join("");
     }
 
 
