@@ -1237,6 +1237,132 @@
 
 
 
+
+
+    .decision-field-shell{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      overflow:hidden;
+      background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+      box-shadow:0 12px 42px rgba(15,23,42,.06);
+    }
+
+    .decision-field-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:18px 22px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,.94);
+    }
+
+    .decision-field-title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .decision-field-label{
+      font-size:11px;
+      letter-spacing:.18em;
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .decision-field-value{
+      font-size:20px;
+      font-weight:900;
+      color:var(--blue);
+      letter-spacing:.03em;
+    }
+
+    .decision-field-body{
+      display:grid;
+      grid-template-columns:1.4fr repeat(4,minmax(0,1fr));
+      gap:14px;
+      padding:20px;
+    }
+
+    .decision-primary{
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:22px;
+      background:#fff;
+      min-height:180px;
+      box-shadow:0 8px 24px rgba(15,23,42,.04);
+    }
+
+    .decision-primary.ok{border-color:#a9d6b7;background:linear-gradient(180deg,#f2fbf5 0%,#fff 100%)}
+    .decision-primary.warn{border-color:#f1cf83;background:linear-gradient(180deg,#fffaf0 0%,#fff 100%)}
+    .decision-primary.bad{border-color:#e4b1b1;background:linear-gradient(180deg,#fff5f5 0%,#fff 100%)}
+    .decision-primary.live{border-color:#b9ccff;background:linear-gradient(180deg,#f3f7ff 0%,#fff 100%)}
+
+    .decision-primary-label,
+    .decision-node-title{
+      font-size:10px;
+      letter-spacing:.16em;
+      font-weight:900;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .decision-primary-value{
+      font-size:34px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1;
+      margin-bottom:14px;
+    }
+
+    .decision-primary-meta,
+    .decision-node-meta{
+      font-size:12px;
+      color:#607086;
+      line-height:1.55;
+    }
+
+    .decision-node{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+      padding:16px;
+      min-height:180px;
+      box-shadow:0 8px 24px rgba(15,23,42,.04);
+    }
+
+    .decision-node.ok{border-color:#a9d6b7;background:linear-gradient(180deg,#f2fbf5 0%,#fff 100%)}
+    .decision-node.warn{border-color:#f1cf83;background:linear-gradient(180deg,#fffaf0 0%,#fff 100%)}
+    .decision-node.bad{border-color:#e4b1b1;background:linear-gradient(180deg,#fff5f5 0%,#fff 100%)}
+    .decision-node.live{border-color:#b9ccff;background:linear-gradient(180deg,#f3f7ff 0%,#fff 100%)}
+
+    .decision-node-value{
+      font-size:17px;
+      font-weight:900;
+      color:var(--blue);
+      line-height:1.2;
+      margin-bottom:10px;
+      word-break:break-word;
+    }
+
+    @media (max-width:1400px){
+      .decision-field-body{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+
+      .decision-primary{
+        grid-column:1 / -1;
+      }
+    }
+
+    @media (max-width:760px){
+      .decision-field-body{
+        grid-template-columns:1fr;
+      }
+    }
+
+
     .prediction-field-shell{
       margin-top:18px;
       border:1px solid var(--line);
@@ -2548,6 +2674,34 @@
 
 
 
+
+
+
+  <section class="decision-field-shell">
+    <div class="decision-field-head">
+      <div class="decision-field-title">
+        <div class="decision-field-label">
+          EXECUTION-TIME DECISION FIELD
+        </div>
+
+        <div class="decision-field-value">
+          PREDICTION → CAUSALITY → MEMORY → CONTINUITY → DECISION
+        </div>
+      </div>
+
+      <div class="pill" id="decisionFieldPill">
+        DECISION: LIVE
+      </div>
+    </div>
+
+    <div class="decision-field-body" id="decisionFieldBody">
+      <div class="decision-primary warn">
+        <div class="decision-primary-label">FINAL DECISION</div>
+        <div class="decision-primary-value">STANDBY</div>
+        <div class="decision-primary-meta">Awaiting execution-time decision materialization.</div>
+      </div>
+    </div>
+  </section>
 
   <section class="prediction-field-shell">
     <div class="prediction-field-head">
@@ -4009,6 +4163,7 @@
         renderMemoryFabric();
         renderCausalityFabric();
         renderPredictionField();
+        renderDecisionField();
           return;
         }
 
@@ -6030,6 +6185,105 @@
 
 
 
+
+
+
+
+    function renderDecisionField(){
+      const el = $("decisionFieldBody");
+      if(!el) return;
+
+      const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+      const state = runtime?.runtime_state || {};
+
+      const hardBlock =
+        state.execution_allowed === false ||
+        Boolean(state.quarantine_required);
+
+      const stabilize =
+        Boolean(state.stabilization_required) ||
+        Boolean(state.field_stabilization_required) ||
+        Boolean(state.origin_stabilization_required) ||
+        Boolean(state.convergence_required) ||
+        state.synchronization_stable === false;
+
+      const contain =
+        Boolean(state.entropy_detected) ||
+        Boolean(state.delayed_causality_detected);
+
+      let decision = "PROCEED";
+      let cls = "live";
+
+      if(hardBlock){
+        decision = "BLOCK";
+        cls = "bad";
+      }else if(contain){
+        decision = "CONTAIN";
+        cls = "bad";
+      }else if(stabilize){
+        decision = "STABILIZE";
+        cls = "warn";
+      }
+
+      const nodes = [
+        {
+          title:"PREDICTION INPUT",
+          value:
+            state.predictive_state ||
+            (stabilize ? "DIVERGENCE RISK" : "ALIGNED"),
+          meta:"Prediction field input into decision layer.",
+          cls:stabilize ? "warn" : "ok"
+        },
+        {
+          title:"CAUSALITY INPUT",
+          value:
+            contain ? "DISTURBED" : "STABLE",
+          meta:"Cause-effect propagation signal.",
+          cls:contain ? "bad" : "ok"
+        },
+        {
+          title:"MEMORY INPUT",
+          value:
+            state.memory_state || "PERSISTENT",
+          meta:"Execution memory and recurring pattern signal.",
+          cls:"ok"
+        },
+        {
+          title:"CONTINUITY INPUT",
+          value:
+            state.synchronization_stable === false || state.delayed_causality_detected
+              ? "DRIFT"
+              : "CONTINUOUS",
+          meta:"Continuity infrastructure signal.",
+          cls:
+            state.synchronization_stable === false || state.delayed_causality_detected
+              ? "warn"
+              : "ok"
+        }
+      ];
+
+      el.innerHTML = `
+        <div class="decision-primary ${cls}">
+          <div class="decision-primary-label">FINAL DECISION</div>
+          <div class="decision-primary-value">${escapeHtml(decision)}</div>
+          <div class="decision-primary-meta">
+            Execution-time decision derived from prediction, causality, memory and continuity.
+          </div>
+        </div>
+
+        ${nodes.map(item => `
+          <div class="decision-node ${item.cls}">
+            <div class="decision-node-title">${escapeHtml(item.title)}</div>
+            <div class="decision-node-value">${escapeHtml(item.value)}</div>
+            <div class="decision-node-meta">${escapeHtml(item.meta)}</div>
+          </div>
+        `).join("")}
+      `;
+
+      if($("decisionFieldPill")){
+        $("decisionFieldPill").textContent = "DECISION: " + decision;
+      }
+    }
 
 
     function renderPredictionField(){
