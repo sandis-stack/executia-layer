@@ -71,6 +71,10 @@ import {
   evaluateGovernanceSingularity
 } from "../../../../services/governance-singularity.js";
 
+import {
+  evaluateGovernanceQuantum
+} from "../../../../services/governance-quantum.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -280,6 +284,15 @@ export default async function handler(req, res) {
         immune
       });
 
+    const quantum =
+      evaluateGovernanceQuantum({
+        runtime,
+        prediction,
+        singularity,
+        reality_fabric,
+        constitutional
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -301,6 +314,7 @@ export default async function handler(req, res) {
       constitutional,
       reality_fabric,
       singularity,
+      quantum,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -444,7 +458,16 @@ export default async function handler(req, res) {
           singularity.singularity_index,
 
         stabilization_required:
-          singularity.stabilization_required
+          singularity.stabilization_required,
+
+        quantum_state:
+          quantum.quantum_state,
+
+        coherence_probability:
+          quantum.coherence_probability,
+
+        convergence_required:
+          quantum.convergence_required
       }
     });
 
