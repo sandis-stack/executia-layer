@@ -75,6 +75,10 @@ import {
   evaluateGovernanceQuantum
 } from "../../../../services/governance-quantum.js";
 
+import {
+  evaluateGovernanceField
+} from "../../../../services/governance-field.js";
+
 function json(res, status, body) {
   return res.status(status).json(body);
 }
@@ -293,6 +297,16 @@ export default async function handler(req, res) {
         constitutional
       });
 
+    const field =
+      evaluateGovernanceField({
+        gravity,
+        pressure,
+        reality_fabric,
+        singularity,
+        quantum,
+        constitutional
+      });
+
     return json(res, 200, {
       ok: true,
       scope: "EXECUTIA_RUNTIME_STATE",
@@ -315,6 +329,7 @@ export default async function handler(req, res) {
       reality_fabric,
       singularity,
       quantum,
+      field,
       runtime_state: {
         autonomous_state:
           watchdog_cycle.autonomous_state,
@@ -467,7 +482,16 @@ export default async function handler(req, res) {
           quantum.coherence_probability,
 
         convergence_required:
-          quantum.convergence_required
+          quantum.convergence_required,
+
+        field_state:
+          field.field_state,
+
+        field_stability:
+          field.field_stability,
+
+        field_stabilization_required:
+          field.stabilization_required
       }
     });
 
