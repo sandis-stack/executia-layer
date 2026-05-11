@@ -2584,6 +2584,50 @@
     to{ stroke-dashoffset:-160; }
   }
 
+  .topology-flow-orbit{
+    fill:none;
+    stroke:rgba(30,58,95,.10);
+    stroke-width:1;
+    stroke-dasharray:4 10;
+  }
+
+  .topology-flow-particle{
+    fill:#1e3a5f;
+    opacity:.88;
+    filter: drop-shadow(0 0 8px rgba(30,58,95,.35));
+  }
+
+  .topology-flow-particle-soft{
+    fill:#8ba2ba;
+    opacity:.72;
+  }
+
+  .topology-pressure-wave{
+    fill:none;
+    stroke:rgba(30,58,95,.22);
+    stroke-width:2;
+    transform-origin:520px 300px;
+    animation: topologyPulse 4.8s ease-in-out infinite;
+  }
+
+  .topology-pressure-wave.delay-1{ animation-delay:1.2s; }
+  .topology-pressure-wave.delay-2{ animation-delay:2.4s; }
+
+  .topology-sync-stream{
+    stroke:#1e3a5f;
+    stroke-width:1.6;
+    fill:none;
+    opacity:.34;
+    stroke-dasharray:3 12;
+    animation: topologyFlow 2.8s linear infinite;
+  }
+
+  @keyframes topologyPulse{
+    0%{ transform:scale(.72); opacity:.38; }
+    55%{ opacity:.12; }
+    100%{ transform:scale(1.12); opacity:0; }
+  }
+
 </style>
 </head>
 <body>
@@ -7405,14 +7449,40 @@
             <div>
               <div class="civilization-topology-title">LIVE CIVILIZATION TOPOLOGY GRAPH</div>
               <div class="civilization-topology-subtitle">
-                Runtime universe view: execution layers, pressure propagation, synchronization density and structural links.
+                Runtime universe view: execution layers, animated flow streams, pressure waves, synchronization density and structural links.
               </div>
             </div>
             <div class="civilization-topology-badge">${escapeHtml(canvasState)}</div>
           </div>
           <svg class="civilization-topology-svg" viewBox="0 0 1040 600" role="img" aria-label="EXECUTIA civilization topology graph">
+            <defs>
+              <path id="executionFlowOrbitOuter" d="M 520 40 A 430 260 0 1 1 519.9 40"></path>
+              <path id="executionFlowOrbitInner" d="M 520 145 A 270 155 0 1 1 519.9 145"></path>
+              <path id="executionTruthStream" d="M 160 300 C 300 120, 740 120, 880 300 C 740 480, 300 480, 160 300"></path>
+            </defs>
             <ellipse class="topology-zone" cx="520" cy="300" rx="430" ry="260"></ellipse>
             <ellipse class="topology-zone" cx="520" cy="300" rx="270" ry="155"></ellipse>
+            <ellipse class="topology-pressure-wave" cx="520" cy="300" rx="210" ry="124"></ellipse>
+            <ellipse class="topology-pressure-wave delay-1" cx="520" cy="300" rx="270" ry="155"></ellipse>
+            <ellipse class="topology-pressure-wave delay-2" cx="520" cy="300" rx="340" ry="205"></ellipse>
+            <use href="#executionFlowOrbitOuter" class="topology-flow-orbit"></use>
+            <use href="#executionFlowOrbitInner" class="topology-flow-orbit"></use>
+            <use href="#executionTruthStream" class="topology-sync-stream"></use>
+            <circle class="topology-flow-particle" r="5">
+              <animateMotion dur="9s" repeatCount="indefinite">
+                <mpath href="#executionFlowOrbitOuter"></mpath>
+              </animateMotion>
+            </circle>
+            <circle class="topology-flow-particle-soft" r="4">
+              <animateMotion dur="7s" begin="1.5s" repeatCount="indefinite">
+                <mpath href="#executionFlowOrbitInner"></mpath>
+              </animateMotion>
+            </circle>
+            <circle class="topology-flow-particle" r="4">
+              <animateMotion dur="6.5s" begin=".7s" repeatCount="indefinite">
+                <mpath href="#executionTruthStream"></mpath>
+              </animateMotion>
+            </circle>
             ${graphLinks}
             <circle class="topology-node-ring" cx="520" cy="300" r="58"></circle>
             <circle class="topology-node-core" cx="520" cy="300" r="38"></circle>
