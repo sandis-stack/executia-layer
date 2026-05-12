@@ -954,6 +954,37 @@ button.secondary,
   opacity:.72 !important;
 }
 
+
+.engine-nav{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  padding:12px 20px;
+  border-top:1px solid #d8e1ec;
+  border-bottom:1px solid #d8e1ec;
+  background:#fff;
+}
+
+.engine-nav a{
+  text-decoration:none;
+  color:#183a5b;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  border:1px solid #d8e1ec;
+  border-radius:999px;
+  padding:8px 12px;
+  background:#f7fbff;
+}
+
+.engine-nav a.active{
+  background:#183a5b;
+  color:#fff;
+  border-color:#183a5b;
+}
+
 </style>
 
 <style id="operator-safe-stabilization-css">
@@ -1015,6 +1046,18 @@ button.secondary,
       </div>
     </div>
   </header>
+
+<nav class="engine-nav" aria-label="Engine navigation">
+  <a data-engine-nav="dashboard" href="/dashboard">Dashboard</a>
+  <a data-engine-nav="control" class="active" href="/control">Control</a>
+  <a data-engine-nav="governance" href="/console/governance.html">Governance</a>
+  <a data-engine-nav="ledger" href="/console/ledger.html">Ledger</a>
+  <a data-engine-nav="audit" href="/console/audit.html">Audit</a>
+  <a data-engine-nav="audit-ledger" href="/console/audit-ledger.html">Audit Ledger</a>
+  <a data-engine-nav="operations" href="/console/operations.html">Operations</a>
+  <a data-engine-nav="health" href="/api/v1/health" target="_blank" rel="noopener">Health</a>
+</nav>
+
 
   <div class="titlebar">
     <h1>EXECUTIA™ OPERATOR CONSOLE</h1>

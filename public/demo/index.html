@@ -26,12 +26,43 @@
     .stat-box{background:var(--ex-surface,#F8FAFC);border:1px solid var(--ex-border,#E6ECF2);border-radius:8px;padding:18px 16px}
     .stat-box .val{font-size:22px;font-weight:800;color:var(--ex-text,#1E3A5F);font-variant-numeric:tabular-nums}
     .stat-box .lbl{font-size:12px;color:var(--ex-muted,#6B7280);margin-top:3px}
-  </style>
+  
+.engine-nav{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  padding:12px 20px;
+  border-top:1px solid #d8e1ec;
+  border-bottom:1px solid #d8e1ec;
+  background:#fff;
+}
+
+.engine-nav a{
+  text-decoration:none;
+  color:#183a5b;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  border:1px solid #d8e1ec;
+  border-radius:999px;
+  padding:8px 12px;
+  background:#f7fbff;
+}
+
+.engine-nav a.active{
+  background:#183a5b;
+  color:#fff;
+  border-color:#183a5b;
+}
+
+</style>
 </head>
 <body>
   <div class="ex-header-shell" data-ex-header>
     <header class="ex-header">
-      <div class="ex-brand"><span class="ex-brand-name">EXECUTIA™</span><span class="ex-brand-context">EXECUTION ENGINE</span></div>
+      <a class="ex-brand" href="https://executia.io" aria-label="EXECUTIA entry"><span class="ex-brand-name">EXECUTIA™</span><span class="ex-brand-context">EXECUTION ENGINE</span></a>
       <button class="ex-mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-ex-menu-toggle><span></span><span></span></button>
       <nav class="ex-nav">
         <a href="/dashboard">LIVE</a><a href="/control">CONTROL</a><a href="/history">HISTORY</a><a href="/operations">OPS</a>
@@ -39,6 +70,18 @@
       </nav>
       <a class="ex-header-action" href="https://executia.io">Entry ↗</a>
     </header>
+
+<nav class="engine-nav" aria-label="Engine navigation">
+  <a data-engine-nav="dashboard" class="active" href="/dashboard">Dashboard</a>
+  <a data-engine-nav="control" href="/control">Control</a>
+  <a data-engine-nav="governance" href="/console/governance.html">Governance</a>
+  <a data-engine-nav="ledger" href="/console/ledger.html">Ledger</a>
+  <a data-engine-nav="audit" href="/console/audit.html">Audit</a>
+  <a data-engine-nav="audit-ledger" href="/console/audit-ledger.html">Audit Ledger</a>
+  <a data-engine-nav="operations" href="/console/operations.html">Operations</a>
+  <a data-engine-nav="health" href="/api/v1/health" target="_blank" rel="noopener">Health</a>
+</nav>
+
     <div class="ex-statusbar">
       <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
       <span class="ex-status-item">Registry Locked</span>

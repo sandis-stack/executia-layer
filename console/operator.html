@@ -259,6 +259,37 @@ body::before{
   backdrop-filter:blur(8px);
 }
 
+
+.engine-nav{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  padding:12px 20px;
+  border-top:1px solid #d8e1ec;
+  border-bottom:1px solid #d8e1ec;
+  background:#fff;
+}
+
+.engine-nav a{
+  text-decoration:none;
+  color:#183a5b;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  border:1px solid #d8e1ec;
+  border-radius:999px;
+  padding:8px 12px;
+  background:#f7fbff;
+}
+
+.engine-nav a.active{
+  background:#183a5b;
+  color:#fff;
+  border-color:#183a5b;
+}
+
 </style>
 </head>
 <body>
@@ -267,6 +298,18 @@ body::before{
   <nav class="nav"><a href="/dashboard">LIVE</a><a class="active" href="/console/operator.html">OPERATOR</a><a href="/demo">DEMO</a></nav>
   <a class="entry" href="https://executia.io">Entry ↗</a>
 </header>
+
+<nav class="engine-nav" aria-label="Engine navigation">
+  <a data-engine-nav="dashboard" href="/dashboard">Dashboard</a>
+  <a data-engine-nav="control" class="active" href="/control">Control</a>
+  <a data-engine-nav="governance" href="/console/governance.html">Governance</a>
+  <a data-engine-nav="ledger" href="/console/ledger.html">Ledger</a>
+  <a data-engine-nav="audit" href="/console/audit.html">Audit</a>
+  <a data-engine-nav="audit-ledger" href="/console/audit-ledger.html">Audit Ledger</a>
+  <a data-engine-nav="operations" href="/console/operations.html">Operations</a>
+  <a data-engine-nav="health" href="/api/v1/health" target="_blank" rel="noopener">Health</a>
+</nav>
+
 <div class="state"><span>● JWT SESSION</span><span>TENANT ISOLATED</span><span>ROLE GOVERNED</span><span>AUDIT RECORDING</span></div>
 
 <main class="shell">

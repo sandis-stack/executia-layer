@@ -24,14 +24,45 @@
     });
   })();
 </script>
+<style>
+.engine-nav{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  padding:12px 20px;
+  border-top:1px solid #d8e1ec;
+  border-bottom:1px solid #d8e1ec;
+  background:#fff;
+}
+
+.engine-nav a{
+  text-decoration:none;
+  color:#183a5b;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  border:1px solid #d8e1ec;
+  border-radius:999px;
+  padding:8px 12px;
+  background:#f7fbff;
+}
+
+.engine-nav a.active{
+  background:#183a5b;
+  color:#fff;
+  border-color:#183a5b;
+}
+</style>
 </head>
 <body>
   <div class="ex-header-shell" data-ex-header>
     <header class="ex-header">
-      <div class="ex-brand">
+      <a class="ex-brand" href="https://executia.io" aria-label="EXECUTIA entry">
         <span class="ex-brand-name">EXECUTIA™</span>
         <span class="ex-brand-context">AUDIT ENGINE</span>
-      </div>
+      </a>
       <nav class="ex-nav" aria-label="Engine navigation">
         <a href="/dashboard">LIVE</a>
         <a href="/control">CONTROL</a>
