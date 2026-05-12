@@ -6,7 +6,7 @@ import {
 } from "../../../../services/jwt-auth.js";
 
 import {
-  buildGovernanceRuntimeState
+  buildGovernanceRuntime
 } from "../../../../services/governance-runtime.js";
 
 import {
@@ -63,8 +63,7 @@ export default async function handler(req, res){
 
     const supabase = db();
 
-    const runtime = await buildGovernanceRuntimeState({
-      supabase,
+    const runtime = await buildGovernanceRuntime({
       review_id,
       execution_id
     });

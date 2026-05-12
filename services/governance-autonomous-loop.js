@@ -1,17 +1,17 @@
 import {
-  runGovernanceWatchdog
+  runGovernanceWatchdogCycle
 } from "./governance-watchdog.js";
 
 import {
-  runGovernanceOrchestrator
+  orchestrateGovernanceCycle
 } from "./governance-orchestrator.js";
 
 import {
-  applyGovernanceContainment
+  buildGovernanceContainmentPlan
 } from "./governance-containment.js";
 
 import {
-  runGovernanceRecovery
+  buildGovernanceRecoveryPlan
 } from "./governance-recovery.js";
 
 function now(){
@@ -19,25 +19,28 @@ function now(){
 }
 
 function buildAutonomousState(runtime = {}) {
-  const state = runtime.runtime_state || {};
+  const verification = runtime.verification || {};
+  const risk = runtime.risk || {};
+  const intelligence = runtime.intelligence || {};
+  const stability = runtime.stability || {};
+  const replay = runtime.replay || {};
 
   const riskScore =
-    Number(state.systemic_risk_score || 0) +
-    Number(state.entropy_score || 0) +
-    Number(state.instability_score || 0);
+    Number(risk.score || 0) +
+    Number(intelligence.score || 0);
 
   const freezeDetected =
-    state.execution_allowed === false ||
-    state.freeze_active === true;
+    replay.stopped === true ||
+    runtime.freeze_active === true;
 
   const chainBroken =
-    state.synchronization_stable === false ||
-    state.delayed_causality_detected === true;
+    verification.verified === false;
 
   const recoveryRequired =
     chainBroken ||
     freezeDetected ||
-    riskScore >= 70;
+    riskScore >= 70 ||
+    stability.continuity === "UNSTABLE";
 
   return {
     timestamp: now(),
@@ -60,39 +63,43 @@ export async function runAutonomousGovernanceLoop({
 
   const autonomous = buildAutonomousState(runtime);
 
-  const watchdog = await runGovernanceWatchdog({
-    runtime,
-    review_id,
-    execution_id
+  const containment_plan = buildGovernanceContainmentPlan({
+    verification: runtime.verification,
+    risk: runtime.risk,
+    intelligence: runtime.intelligence,
+    stability: runtime.stability,
+    replay: runtime.replay
   });
 
-  let orchestrator = null;
-  let containment = null;
-  let recovery = null;
+  const recovery_plan = buildGovernanceRecoveryPlan({
+    verification: runtime.verification,
+    risk: runtime.risk,
+    intelligence: runtime.intelligence,
+    stability: runtime.stability,
+    containment_plan,
+    replay: runtime.replay
+  });
 
-  if (autonomous.recovery_required) {
+  const orchestrator = orchestrateGovernanceCycle({
+    verification: runtime.verification,
+    risk: runtime.risk,
+    intelligence: runtime.intelligence,
+    stability: runtime.stability,
+    containment_plan,
+    recovery_plan,
+    replay: runtime.replay
+  });
 
-    orchestrator = await runGovernanceOrchestrator({
-      runtime,
-      review_id,
-      execution_id,
-      autonomous_state: autonomous.autonomous_state
-    });
-
-    containment = await applyGovernanceContainment({
-      runtime,
-      review_id,
-      execution_id,
-      reason: "AUTONOMOUS_RUNTIME_CONTAINMENT"
-    });
-
-    recovery = await runGovernanceRecovery({
-      runtime,
-      review_id,
-      execution_id,
-      autonomous: true
-    });
-  }
+  const watchdog = runGovernanceWatchdogCycle({
+    verification: runtime.verification,
+    risk: runtime.risk,
+    intelligence: runtime.intelligence,
+    stability: runtime.stability,
+    containment_plan,
+    recovery_plan,
+    orchestrator,
+    replay: runtime.replay
+  });
 
   return {
     ok: true,
@@ -103,10 +110,9 @@ export async function runAutonomousGovernanceLoop({
     execution_id,
 
     autonomous,
-
-    watchdog: watchdog || null,
-    orchestrator: orchestrator || null,
-    containment: containment || null,
-    recovery: recovery || null
+    watchdog,
+    orchestrator,
+    containment: containment_plan,
+    recovery: recovery_plan
   };
 }
