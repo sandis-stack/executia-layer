@@ -134,16 +134,30 @@ export default async function handler(req, res){
       created_at:new Date().toISOString()
     };
 
-    await supabase
-      .from("audit_events")
-      .insert(autonomousEvent);
+    const { data: insertedAutonomousEvent, error: autonomousInsertError } =
+      await supabase
+        .from("audit_events")
+        .insert(autonomousEvent)
+        .select("*")
+        .single();
+
+    if(autonomousInsertError){
+      return json(res, 500, {
+        ok:false,
+        error:{
+          code:"AUTONOMOUS_EVENT_PERSISTENCE_FAILED",
+          message:autonomousInsertError.message
+        },
+        attempted_event:autonomousEvent
+      });
+    }
 
     return json(res, 200, {
       ok:true,
       mode:"EXECUTIA_AUTONOMOUS_GOVERNANCE_LOOP",
       cycle,
       persisted:true,
-      autonomous_event:autonomousEvent
+      autonomous_event:insertedAutonomousEvent
     });
 
   }catch(error){
