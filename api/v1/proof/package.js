@@ -24,17 +24,36 @@ function resolveDecision(execution, latestOperatorEvent) {
 function buildReplay(proof, auditEvents = [], coreLedgerEntries = []) {
   const trace = proof.unified_execution_object.trace || [];
 
-  const auditReplay = auditEvents.map((event, index) => ({
-    index: trace.length + index,
-    source: "AUDIT",
-    event_type: event.event_type || event.action || "AUDIT_EVENT",
-    state: event.event_state || event.next_state || event.status || "RECORDED",
-    actor: event.actor || event.actor_email || "audit",
-    timestamp: event.created_at || new Date().toISOString()
+  const autonomousEvents = auditEvents.filter(
+    (event) => event.event_type === "GOVERNANCE_AUTONOMOUS_RUNTIME_CYCLE"
+  );
+
+  const auditReplay = auditEvents
+    .filter((event) => event.event_type !== "GOVERNANCE_AUTONOMOUS_RUNTIME_CYCLE")
+    .map((event, index) => ({
+      index: trace.length + index,
+      source: "AUDIT",
+      event_type: event.event_type || event.action || "AUDIT_EVENT",
+      state: event.event_state || event.next_state || event.status || "RECORDED",
+      actor: event.actor || event.actor_email || "audit",
+      timestamp: event.created_at || new Date().toISOString()
+    }));
+
+  const autonomousReplay = autonomousEvents.map((event, index) => ({
+    index: trace.length + auditReplay.length + index,
+    source: "AUTONOMOUS_GOVERNANCE",
+    event_type: event.event_type,
+    state: event.event_state || event.payload?.autonomous?.autonomous_state || "AUTONOMOUS_RECORDED",
+    actor: event.actor || event.actor_email || "autonomous",
+    timestamp: event.created_at || new Date().toISOString(),
+    watchdog: event.payload?.watchdog?.next_action || null,
+    orchestrator: event.payload?.orchestrator?.priority || null,
+    containment: event.payload?.containment?.mode || null,
+    recovery: event.payload?.recovery?.mode || null
   }));
 
   const ledgerReplay = coreLedgerEntries.map((entry, index) => ({
-    index: trace.length + auditReplay.length + index,
+    index: trace.length + auditReplay.length + autonomousReplay.length + index,
     source: "CORE_LEDGER",
     event_type: "CORE_LEDGER_LINKED",
     state: entry.settlement_status || entry.payload?.settlement_state || "LINKED",
@@ -46,7 +65,8 @@ function buildReplay(proof, auditEvents = [], coreLedgerEntries = []) {
 
   return {
     type: "EXECUTIA_EXECUTION_REPLAY",
-    event_count: trace.length + auditReplay.length + ledgerReplay.length,
+    event_count: trace.length + auditReplay.length + autonomousReplay.length + ledgerReplay.length,
+    autonomous_event_count: autonomousReplay.length,
     path: [
       ...trace.map((event) => ({
         source: "PROOF_TRACE",
@@ -56,6 +76,7 @@ function buildReplay(proof, auditEvents = [], coreLedgerEntries = []) {
         timestamp: event.timestamp
       })),
       ...auditReplay,
+      ...autonomousReplay,
       ...ledgerReplay
     ]
   };
@@ -140,6 +161,10 @@ export default async function handler(req, res) {
       };
     }
 
+    const autonomousEvents = (auditEvents || []).filter(
+      (event) => event.event_type === "GOVERNANCE_AUTONOMOUS_RUNTIME_CYCLE"
+    );
+
     const replay = buildReplay(
       proof,
       auditEvents || [],
@@ -174,6 +199,25 @@ export default async function handler(req, res) {
       audit: {
         verified: audit.verified,
         entries: audit.entries || auditEvents?.length || 0
+      },
+      autonomous_governance: {
+        events: autonomousEvents.length,
+        latest_state:
+          autonomousEvents.at(-1)?.event_state ||
+          autonomousEvents.at(-1)?.payload?.autonomous?.autonomous_state ||
+          null,
+        latest_watchdog:
+          autonomousEvents.at(-1)?.payload?.watchdog?.next_action ||
+          null,
+        latest_orchestrator:
+          autonomousEvents.at(-1)?.payload?.orchestrator?.priority ||
+          null,
+        latest_containment:
+          autonomousEvents.at(-1)?.payload?.containment?.mode ||
+          null,
+        latest_recovery:
+          autonomousEvents.at(-1)?.payload?.recovery?.mode ||
+          null
       },
       replay,
       unified_execution_object: proof.unified_execution_object,
