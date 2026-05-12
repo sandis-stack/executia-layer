@@ -109,13 +109,13 @@ export default async function handler(req, res){
       review_id: review_id || null,
       execution_id: auditExecutionId,
       event_type: "GOVERNANCE_AUTONOMOUS_RUNTIME_CYCLE",
-      event_state:
-        cycle?.autonomous?.autonomous_state ||
-        "AUTONOMOUS_UNKNOWN",
       actor:
         context?.user?.email ||
         "autonomous@executia.io",
       payload:{
+        event_state:
+          cycle?.autonomous?.autonomous_state ||
+          "AUTONOMOUS_UNKNOWN",
         autonomous: cycle.autonomous,
         watchdog: cycle.watchdog,
         orchestrator: cycle.orchestrator,
@@ -126,6 +126,9 @@ export default async function handler(req, res){
         source:"autonomous_runtime_loop",
         organization_id:
           context?.organization_id || null,
+        autonomous_state:
+          cycle?.autonomous?.autonomous_state ||
+          "AUTONOMOUS_UNKNOWN",
         public_execution_id: publicExecutionId,
         audit_execution_id: auditExecutionId,
         generated_at:
