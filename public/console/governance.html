@@ -3283,6 +3283,22 @@
 
 
 
+  <section class="heatmap-panel" id="autonomousLoopSummaryPanel">
+    <div class="head">
+      <h2>AUTONOMOUS GOVERNANCE LOOP</h2>
+      <span class="pill" id="autonomousLoopSummaryPill">LOOP: STANDBY</span>
+    </div>
+
+    <div class="heatmap-grid" id="autonomousLoopSummaryGrid">
+      <div class="heat-cell warn">
+        <div class="heat-title">AUTONOMOUS LOOP</div>
+        <div class="heat-value">STANDBY</div>
+        <div class="heat-meta">Run autonomous loop to materialize watchdog, orchestrator, containment and recovery state.</div>
+      </div>
+    </div>
+  </section>
+
+
   <section class="proof-engine-shell">
     <div class="proof-engine-head">
       <div class="proof-engine-title">
@@ -10924,6 +10940,84 @@
 
 
 
+    function renderAutonomousLoopSummary(){
+      const el = $("autonomousLoopSummaryGrid");
+      if(!el) return;
+
+      const result = window.LAST_AUTONOMOUS_RUNTIME || {};
+
+      if(!result?.ok){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">AUTONOMOUS LOOP</div>
+            <div class="heat-value">STANDBY</div>
+            <div class="heat-meta">No autonomous loop result loaded.</div>
+          </div>
+        `;
+
+        if($("autonomousLoopSummaryPill")){
+          $("autonomousLoopSummaryPill").textContent = "LOOP: STANDBY";
+        }
+
+        return;
+      }
+
+      const autonomous = result.autonomous || {};
+      const watchdog = result.watchdog || {};
+      const orchestrator = result.orchestrator || {};
+      const containment = result.containment || {};
+      const recovery = result.recovery || {};
+
+      const nodes = [
+        {
+          title:"AUTONOMOUS STATE",
+          value:autonomous.autonomous_state || "UNKNOWN",
+          meta:"Risk score: " + String(autonomous.risk_score ?? "—"),
+          cls:autonomous.recovery_required ? "warn" : "ok"
+        },
+        {
+          title:"WATCHDOG ACTION",
+          value:watchdog.next_action || watchdog.autonomous_state || "UNKNOWN",
+          meta:watchdog.summary || "Watchdog runtime cycle.",
+          cls:watchdog.execution_allowed === false ? "bad" : "ok"
+        },
+        {
+          title:"ORCHESTRATOR",
+          value:orchestrator.priority || orchestrator.next_action || "UNKNOWN",
+          meta:orchestrator.summary || "Autonomous governance orchestration.",
+          cls:orchestrator.execution_allowed === false ? "bad" : "live"
+        },
+        {
+          title:"CONTAINMENT",
+          value:containment.mode || "UNKNOWN",
+          meta:containment.summary || "Containment plan.",
+          cls:containment.execution_allowed === false ? "warn" : "ok"
+        },
+        {
+          title:"RECOVERY",
+          value:recovery.mode || "UNKNOWN",
+          meta:recovery.summary || "Recovery plan.",
+          cls:recovery.recovery_allowed ? "live" : "warn"
+        }
+      ];
+
+      el.innerHTML = nodes.map(item => `
+        <div class="heat-cell ${item.cls}">
+          <div class="heat-title">${escapeHtml(item.title)}</div>
+          <div class="heat-value">${escapeHtml(item.value)}</div>
+          <div class="heat-meta">${escapeHtml(item.meta)}</div>
+        </div>
+      `).join("");
+
+      if($("autonomousLoopSummaryPill")){
+        $("autonomousLoopSummaryPill").textContent =
+          autonomous.recovery_required
+            ? "LOOP: STABILIZATION"
+            : "LOOP: STABLE";
+      }
+    }
+
+
     window.runAutonomousGovernanceLoop = async function(){
 
       try{
@@ -10957,6 +11051,7 @@
         );
 
         window.LAST_AUTONOMOUS_RUNTIME = result;
+        renderAutonomousLoopSummary();
 
         alert(
           result?.autonomous?.autonomous_state ||
