@@ -291,6 +291,7 @@ body::before{
 }
 
 </style>
+  <link rel="stylesheet" href="/components/engine-shell.css">
 </head>
 <body>
 <header class="header">
@@ -381,5 +382,6 @@ $("loginBtn").onclick=login;$("logoutBtn").onclick=()=>{localStorage.removeItem(
 document.addEventListener("click",e=>{const b=e.target.closest("button[data-action]");if(b)decide(b.dataset.action,b.dataset.id)});
 render();loadQueue();
 </script>
+  <script src="/components/engine-shell.js"></script>
 </body>
 </html>
