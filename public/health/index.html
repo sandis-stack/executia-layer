@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Health — EXECUTIA™ Engine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/components/engine-shell.css">
+  <link rel="stylesheet" href="/enterprise.css">
+</head>
+<body>
+
+<main class="ex-section">
+  <div class="ex-wrap">
+
+    <section class="ex-hero">
+      <span class="ex-kicker">SYSTEM HEALTH</span>
+      <h1 class="ex-title">Execution engine status.</h1>
+      <p class="ex-lead">
+        Live operational status for runtime, proof, ledger, audit and settlement layers.
+      </p>
+    </section>
+
+    <section class="ex-grid ex-grid-4" id="healthCards">
+      <article class="ex-card">
+        <span class="ex-metric-label">Runtime</span>
+        <span class="ex-metric-value">Loading</span>
+      </article>
+      <article class="ex-card">
+        <span class="ex-metric-label">Proof</span>
+        <span class="ex-metric-value">Loading</span>
+      </article>
+      <article class="ex-card">
+        <span class="ex-metric-label">Ledger</span>
+        <span class="ex-metric-value">Loading</span>
+      </article>
+      <article class="ex-card">
+        <span class="ex-metric-label">Audit</span>
+        <span class="ex-metric-value">Loading</span>
+      </article>
+    </section>
+
+    <section class="ex-card" style="margin-top:24px">
+      <div class="ex-panel-header">
+        <div>
+          <h2 class="ex-panel-title">Health response</h2>
+          <p class="ex-panel-subtitle">Raw response from /api/v1/health.</p>
+        </div>
+        <a class="ex-btn" href="/api/v1/health" target="_blank" rel="noopener">Open JSON</a>
+      </div>
+      <pre id="healthJson" class="ex-json">Loading health state...</pre>
+    </section>
+
+  </div>
+</main>
+
+<script>
+async function loadHealth(){
+  const jsonBox = document.getElementById("healthJson");
+  const cards = document.getElementById("healthCards");
+
+  try{
+    const res = await fetch("/api/v1/health", { cache:"no-store" });
+    const data = await res.json();
+
+    jsonBox.textContent = JSON.stringify(data, null, 2);
+
+    const proof = data.proof_layer?.enabled ? "ACTIVE" : "CHECK";
+    const ledger = data.integrity?.core_ledger || "UNKNOWN";
+    const audit = data.integrity?.audit_chain || "UNKNOWN";
+
+    cards.innerHTML = `
+      <article class="ex-card"><span class="ex-metric-label">Runtime</span><span class="ex-metric-value">${data.status || "UNKNOWN"}</span></article>
+      <article class="ex-card"><span class="ex-metric-label">Proof</span><span class="ex-metric-value">${proof}</span></article>
+      <article class="ex-card"><span class="ex-metric-label">Ledger</span><span class="ex-metric-value">${ledger}</span></article>
+      <article class="ex-card"><span class="ex-metric-label">Audit</span><span class="ex-metric-value">${audit}</span></article>
+    `;
+  }catch(error){
+    jsonBox.textContent = "HEALTH_CHECK_FAILED: " + error.message;
+    cards.innerHTML = `
+      <article class="ex-card"><span class="ex-metric-label">Runtime</span><span class="ex-metric-value">ERROR</span></article>
+      <article class="ex-card"><span class="ex-metric-label">Proof</span><span class="ex-metric-value">CHECK</span></article>
+      <article class="ex-card"><span class="ex-metric-label">Ledger</span><span class="ex-metric-value">CHECK</span></article>
+      <article class="ex-card"><span class="ex-metric-label">Audit</span><span class="ex-metric-value">CHECK</span></article>
+    `;
+  }
+}
+
+loadHealth();
+</script>
+
+<script src="/components/engine-shell.js"></script>
+</body>
+</html>

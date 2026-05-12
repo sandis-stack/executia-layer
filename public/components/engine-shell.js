@@ -8,6 +8,7 @@
     if(path.includes("ledger")) return "ledger";
     if(path.includes("operations")) return "operations";
     if(path.includes("proof")) return "proofs";
+    if(path.includes("/health")) return "health";
     return "dashboard";
   }
 
@@ -20,14 +21,15 @@
       ["audit","/console/audit.html","Audit"],
       ["audit-ledger","/console/audit-ledger.html","Audit Ledger"],
       ["operations","/console/operations.html","Operations"],
-      ["proofs","/console/governance.html#proof","Proofs"]
+      ["proofs","/console/governance.html#proof","Proofs"],
+      ["health","/health","Health"]
     ];
 
     return '<nav class="ex-engine-nav" aria-label="Engine navigation">' +
       items.map(function(item){
         return '<a class="' + (item[0] === active ? 'active' : '') + '" href="' + item[1] + '">' + item[2] + '</a>';
       }).join("") +
-      '<a href="/api/v1/health" target="_blank" rel="noopener">Health</a>' +
+      '' +
     '</nav>';
   }
 
