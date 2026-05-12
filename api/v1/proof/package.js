@@ -1,0 +1,190 @@
+import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
+import { buildExecutionProof } from "../../../services/proof/build-proof.js";
+import { verifyAuditChain } from "../../../services/audit.js";
+import { verifyCoreLedgerChain } from "../../../services/core-ledger.js";
+import { ok, fail, methodGuard } from "../../../shared/response.js";
+
+function db() {
+  return createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    { realtime: { transport: ws } }
+  );
+}
+
+function resolveDecision(execution, latestOperatorEvent) {
+  if (latestOperatorEvent?.action === "APPROVE") return "APPROVE";
+  if (latestOperatorEvent?.action === "REJECT") return "BLOCK";
+  if (latestOperatorEvent?.action === "FREEZE") return "FREEZE";
+  if (latestOperatorEvent?.action === "ESCALATE") return "REVIEW";
+  return execution.decision || "REVIEW";
+}
+
+function buildReplay(proof, auditEvents = [], coreLedgerEntries = []) {
+  const trace = proof.unified_execution_object.trace || [];
+
+  const auditReplay = auditEvents.map((event, index) => ({
+    index: trace.length + index,
+    source: "AUDIT",
+    event_type: event.event_type || event.action || "AUDIT_EVENT",
+    state: event.event_state || event.next_state || event.status || "RECORDED",
+    actor: event.actor || event.actor_email || "audit",
+    timestamp: event.created_at || new Date().toISOString()
+  }));
+
+  const ledgerReplay = coreLedgerEntries.map((entry, index) => ({
+    index: trace.length + auditReplay.length + index,
+    source: "CORE_LEDGER",
+    event_type: "CORE_LEDGER_LINKED",
+    state: entry.settlement_status || entry.payload?.settlement_state || "LINKED",
+    actor: entry.actor || "ledger",
+    timestamp: entry.created_at || new Date().toISOString(),
+    hash: entry.hash || null,
+    prev_hash: entry.prev_hash || null
+  }));
+
+  return {
+    type: "EXECUTIA_EXECUTION_REPLAY",
+    event_count: trace.length + auditReplay.length + ledgerReplay.length,
+    path: [
+      ...trace.map((event) => ({
+        source: "PROOF_TRACE",
+        event_type: event.event_type,
+        state: event.status || "RECORDED",
+        actor: event.actor || "system",
+        timestamp: event.timestamp
+      })),
+      ...auditReplay,
+      ...ledgerReplay
+    ]
+  };
+}
+
+export default async function handler(req, res) {
+  try {
+    if (!methodGuard(req, res, ["GET"])) return;
+
+    const execution_id = req.query.execution_id;
+
+    if (!execution_id) {
+      return fail(res, "EXECUTION_ID_REQUIRED", "execution_id is required.", 400);
+    }
+
+    const supabase = db();
+
+    const { data: execution, error: executionError } = await supabase
+      .from("execution_results")
+      .select("*")
+      .eq("execution_id", execution_id)
+      .single();
+
+    if (executionError || !execution) {
+      return fail(
+        res,
+        "EXECUTION_NOT_FOUND",
+        executionError?.message || "Execution not found.",
+        404
+      );
+    }
+
+    const { data: coreLedgerEntries } = await supabase
+      .from("core_ledger")
+      .select("*")
+      .eq("execution_id", execution_id)
+      .order("created_at", { ascending: true });
+
+    const { data: auditEvents } = await supabase
+      .from("audit_events")
+      .select("*")
+      .eq("execution_id", execution_id)
+      .order("created_at", { ascending: true });
+
+    const latestOperatorEvent =
+      (auditEvents || [])
+        .filter((event) => event.event_type === "OPERATOR_ACTION")
+        .at(-1) || null;
+
+    const resolvedStatus =
+      latestOperatorEvent?.next_state ||
+      execution.status;
+
+    const resolvedDecision =
+      resolveDecision(execution, latestOperatorEvent);
+
+    const proof = buildExecutionProof({
+      ...execution,
+      status: resolvedStatus,
+      decision: resolvedDecision,
+      reason: latestOperatorEvent?.reason || execution.reason,
+      actor: latestOperatorEvent?.actor_email || execution.actor,
+      operator_email: latestOperatorEvent?.actor_email || execution.operator_email,
+      operator_role: latestOperatorEvent?.actor_role || execution.operator_role,
+      core_ledger_entries: coreLedgerEntries || []
+    });
+
+    const audit = await verifyAuditChain(execution_id);
+
+    let coreLedgerVerification = {
+      verified: false,
+      mode: "UNAVAILABLE"
+    };
+
+    try {
+      coreLedgerVerification = await verifyCoreLedgerChain();
+    } catch (err) {
+      coreLedgerVerification = {
+        verified: false,
+        mode: "ERROR",
+        error: err.message
+      };
+    }
+
+    const replay = buildReplay(
+      proof,
+      auditEvents || [],
+      coreLedgerEntries || []
+    );
+
+    const packageVerified =
+      Boolean(proof.verified) &&
+      Boolean(audit.verified) &&
+      Boolean(coreLedgerVerification.verified);
+
+    return ok(res, {
+      mode: "EXECUTIA_EXECUTION_PROOF_PACKAGE_V1",
+      execution_id,
+      package_state: packageVerified ? "PACKAGE_VERIFIED" : "PACKAGE_PARTIAL",
+      verified: packageVerified,
+      proof: {
+        proof_state: proof.proof_state,
+        proof_version: proof.proof_version,
+        proof_hash: proof.proof_hash,
+        verified: proof.verified
+      },
+      decision: proof.unified_execution_object.decision,
+      actor: proof.unified_execution_object.actor,
+      ledger: {
+        linked: proof.unified_execution_object.ledger.linked,
+        core_ledger_entries: coreLedgerEntries?.length || 0,
+        core_ledger_verified: coreLedgerVerification.verified,
+        settlement_state: proof.unified_execution_object.ledger.settlement_state,
+        reconciliation_state: proof.unified_execution_object.ledger.reconciliation_state
+      },
+      audit: {
+        verified: audit.verified,
+        entries: audit.entries || auditEvents?.length || 0
+      },
+      replay,
+      unified_execution_object: proof.unified_execution_object,
+      generated_at: new Date().toISOString()
+    });
+  } catch (err) {
+    return fail(
+      res,
+      "PROOF_PACKAGE_FAILED",
+      err.message || "Execution proof package failed.",
+      500
+    );
+  }
+}
