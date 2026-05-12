@@ -9147,13 +9147,14 @@
       const events = replay?.events || [];
 
       const executionId =
+        SELECTED?.execution_id ||
+        window.ACTIVE_EXECUTION_ID ||
+        window.LAST_EXECUTION_ID ||
+        localStorage.getItem("executia_active_execution_id") ||
         runtime?.execution_id ||
         runtime?.runtime?.execution_id ||
         runtime?.review?.execution_id ||
         runtime?.runtime?.review?.execution_id ||
-        window.ACTIVE_EXECUTION_ID ||
-        window.LAST_EXECUTION_ID ||
-        localStorage.getItem("executia_active_execution_id") ||
         "";
 
       function fallbackProofEngine(){
@@ -10511,6 +10512,12 @@
         return;
       }
 
+      if(SELECTED?.execution_id){
+        window.ACTIVE_EXECUTION_ID = SELECTED.execution_id;
+        window.LAST_EXECUTION_ID = SELECTED.execution_id;
+        localStorage.setItem("executia_active_execution_id", SELECTED.execution_id);
+      }
+
       if(!DETERMINISTIC_REPLAY){
         await loadDeterministicReplay(SELECTED.id);
       }
@@ -10666,12 +10673,26 @@
 
       alert(result?.status === "QUORUM_PENDING" ? "Approval recorded. Quorum pending." : "Governance action completed.");
 
+      if(SELECTED?.execution_id){
+        window.ACTIVE_EXECUTION_ID = SELECTED.execution_id;
+        window.LAST_EXECUTION_ID = SELECTED.execution_id;
+        localStorage.setItem("executia_active_execution_id", SELECTED.execution_id);
+      }
+
       await window.loadOpenReviews();
       await loadOperationsStatus();
 
-      SELECTED = REVIEWS.find((review) => review.id === SELECTED.id) || null;
+      SELECTED = REVIEWS.find((review) => review.id === SELECTED.id) || SELECTED || null;
+
+      if(SELECTED?.execution_id){
+        window.ACTIVE_EXECUTION_ID = SELECTED.execution_id;
+        window.LAST_EXECUTION_ID = SELECTED.execution_id;
+        localStorage.setItem("executia_active_execution_id", SELECTED.execution_id);
+      }
+
       if(SELECTED) await loadDeterministicReplay(SELECTED.id);
       if(SELECTED) await renderDetail();
+      await renderProofEngine();
     }
 
     window.simulateChainBreak = async function(){
