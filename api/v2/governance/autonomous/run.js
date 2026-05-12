@@ -82,9 +82,32 @@ export default async function handler(req, res){
 
     const supabase = db();
 
+    let executionRecord = null;
+
+    if(execution_id){
+      const { data } = await supabase
+        .from("execution_results")
+        .select("id,execution_id")
+        .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
+        .limit(1)
+        .maybeSingle();
+
+      executionRecord = data || null;
+    }
+
+    const auditExecutionId =
+      executionRecord?.id ||
+      execution_id ||
+      null;
+
+    const publicExecutionId =
+      executionRecord?.execution_id ||
+      execution_id ||
+      null;
+
     const autonomousEvent = {
       review_id: review_id || null,
-      execution_id: execution_id || null,
+      execution_id: auditExecutionId,
       event_type: "GOVERNANCE_AUTONOMOUS_RUNTIME_CYCLE",
       event_state:
         cycle?.autonomous?.autonomous_state ||
@@ -103,6 +126,8 @@ export default async function handler(req, res){
         source:"autonomous_runtime_loop",
         organization_id:
           context?.organization_id || null,
+        public_execution_id: publicExecutionId,
+        audit_execution_id: auditExecutionId,
         generated_at:
           cycle.generated_at || new Date().toISOString()
       },
