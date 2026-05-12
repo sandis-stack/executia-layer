@@ -19,7 +19,6 @@ function json(res, status, body){
 
 export default async function handler(req, res){
   try{
-
     if(req.method !== "POST"){
       return json(res, 405, {
         ok:false,
@@ -41,7 +40,7 @@ export default async function handler(req, res){
         ok:false,
         error:{
           code:"INVALID_JWT",
-          message:"Autonomous governance permission required."
+          message:"Governance autonomous runtime permission required."
         }
       });
     }
@@ -49,7 +48,7 @@ export default async function handler(req, res){
     const body =
       typeof req.body === "string"
         ? JSON.parse(req.body || "{}")
-        : (req.body || {});
+        : req.body || {};
 
     const review_id =
       body.review_id ||
@@ -61,39 +60,73 @@ export default async function handler(req, res){
       body.executionId ||
       null;
 
-    const supabase = db();
+    if(!review_id && !execution_id){
+      return json(res, 400, {
+        ok:false,
+        error:{
+          code:"REVIEW_OR_EXECUTION_REQUIRED"
+        }
+      });
+    }
 
     const runtime = await buildGovernanceRuntime({
       review_id,
       execution_id
     });
 
-    const autonomous =
-      await runAutonomousGovernanceLoop({
-        runtime,
-        review_id,
-        execution_id
-      });
+    const cycle = await runAutonomousGovernanceLoop({
+      runtime,
+      review_id,
+      execution_id
+    });
 
-    return json(res, 200, autonomous);
+    const supabase = db();
+
+    const autonomousEvent = {
+      review_id: review_id || null,
+      execution_id: execution_id || null,
+      event_type: "GOVERNANCE_AUTONOMOUS_RUNTIME_CYCLE",
+      event_state:
+        cycle?.autonomous?.autonomous_state ||
+        "AUTONOMOUS_UNKNOWN",
+      actor:
+        context?.user?.email ||
+        "autonomous@executia.io",
+      payload:{
+        autonomous: cycle.autonomous,
+        watchdog: cycle.watchdog,
+        orchestrator: cycle.orchestrator,
+        containment: cycle.containment,
+        recovery: cycle.recovery
+      },
+      metadata:{
+        source:"autonomous_runtime_loop",
+        organization_id:
+          context?.organization_id || null,
+        generated_at:
+          cycle.generated_at || new Date().toISOString()
+      },
+      created_at:new Date().toISOString()
+    };
+
+    await supabase
+      .from("audit_events")
+      .insert(autonomousEvent);
+
+    return json(res, 200, {
+      ok:true,
+      mode:"EXECUTIA_AUTONOMOUS_GOVERNANCE_LOOP",
+      cycle,
+      persisted:true,
+      autonomous_event:autonomousEvent
+    });
 
   }catch(error){
-
-    console.error(
-      "[EXECUTIA AUTONOMOUS GOVERNANCE LOOP ERROR]",
-      error
-    );
-
     return json(res, 500, {
       ok:false,
       error:{
-        code:
-          error.code ||
-          "AUTONOMOUS_GOVERNANCE_FAILED",
-
-        message:
-          error.message ||
-          "Autonomous governance loop failed."
+        code:"AUTONOMOUS_RUNTIME_FAILED",
+        message:error.message
       }
     });
   }
