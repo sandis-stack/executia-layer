@@ -104,10 +104,16 @@ async function buildExecutionProofPackage(execution_id) {
     .eq("execution_id", execution_id)
     .order("created_at", { ascending: true });
 
+  const auditExecutionIds = [
+    execution.id,
+    execution.execution_id,
+    execution_id
+  ].filter(Boolean);
+
   const { data: auditEvents } = await supabase
     .from("audit_events")
     .select("*")
-    .eq("execution_id", execution_id)
+    .in("execution_id", [...new Set(auditExecutionIds)])
     .order("created_at", { ascending: true });
 
   const latestOperatorEvent =
