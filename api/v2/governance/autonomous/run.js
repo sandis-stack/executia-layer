@@ -106,13 +106,15 @@ export default async function handler(req, res){
       null;
 
     const autonomousEvent = {
-      review_id: review_id || null,
       execution_id: auditExecutionId,
       event_type: "GOVERNANCE_AUTONOMOUS_RUNTIME_CYCLE",
       actor:
         context?.user?.email ||
         "autonomous@executia.io",
       payload:{
+        review_id: review_id || null,
+        public_execution_id: publicExecutionId,
+        audit_execution_id: auditExecutionId,
         event_state:
           cycle?.autonomous?.autonomous_state ||
           "AUTONOMOUS_UNKNOWN",
