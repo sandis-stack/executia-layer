@@ -9137,7 +9137,7 @@
       }
     }
 
-    function renderProofEngine(){
+    async function renderProofEngine(){
       const el = $("proofEngineGrid");
       if(!el) return;
 
@@ -9146,76 +9146,184 @@
       const replay = runtime?.runtime?.replay || {};
       const events = replay?.events || [];
 
-      const lastEvent = Array.isArray(events) && events.length
-        ? events[events.length - 1]
-        : null;
+      const executionId =
+        runtime?.execution_id ||
+        runtime?.runtime?.execution_id ||
+        runtime?.review?.execution_id ||
+        runtime?.runtime?.review?.execution_id ||
+        window.ACTIVE_EXECUTION_ID ||
+        window.LAST_EXECUTION_ID ||
+        localStorage.getItem("executia_active_execution_id") ||
+        "";
 
-      const hash =
-        lastEvent?.hash ||
-        runtime?.runtime?.head_hash ||
-        runtime?.head_hash ||
-        "—";
+      function fallbackProofEngine(){
+        const lastEvent = Array.isArray(events) && events.length
+          ? events[events.length - 1]
+          : null;
 
-      const prevHash =
-        lastEvent?.prev_hash ||
-        "—";
+        const hash =
+          lastEvent?.hash ||
+          runtime?.runtime?.head_hash ||
+          runtime?.head_hash ||
+          "—";
 
-      const verified =
-        state.synchronization_stable !== false &&
-        state.delayed_causality_detected !== true &&
-        state.entropy_detected !== true;
+        const prevHash =
+          lastEvent?.prev_hash ||
+          "—";
 
-      const truthAnchored =
-        verified &&
-        state.convergence_required !== true &&
-        state.execution_allowed !== false;
+        const verified =
+          state.synchronization_stable !== false &&
+          state.delayed_causality_detected !== true &&
+          state.entropy_detected !== true;
 
-      const nodes = [
-        {
-          title:"PROOF HASH",
-          value:hash && hash !== "—" ? String(hash).slice(0,18) + "…" : "PENDING",
-          meta:"Latest execution proof hash.",
-          cls:hash && hash !== "—" ? "live" : "warn"
-        },
-        {
-          title:"AUDIT CHAIN",
-          value:events.length ? `${events.length} EVENTS` : "NO EVENTS",
-          meta:"Governance audit event chain.",
-          cls:events.length ? "ok" : "warn"
-        },
-        {
-          title:"LEDGER TRACE",
-          value:prevHash && prevHash !== "—" ? "TRACE LINKED" : "TRACE PENDING",
-          meta:prevHash && prevHash !== "—" ? String(prevHash).slice(0,18) + "…" : "Previous hash unavailable.",
-          cls:prevHash && prevHash !== "—" ? "ok" : "warn"
-        },
-        {
-          title:"TRUTH ANCHOR",
-          value:truthAnchored ? "ANCHORED" : "UNSTABLE",
-          meta:"Execution-time truth anchoring state.",
-          cls:truthAnchored ? "ok" : "warn"
-        },
-        {
-          title:"VERIFICATION RESULT",
-          value:verified ? "VERIFIED" : "REVIEW",
-          meta:verified ? "No causality, entropy or sync breach detected." : "Runtime verification requires review.",
-          cls:verified ? "ok" : "bad"
+        const truthAnchored =
+          verified &&
+          state.convergence_required !== true &&
+          state.execution_allowed !== false;
+
+        const nodes = [
+          {
+            title:"PROOF HASH",
+            value:hash && hash !== "—" ? String(hash).slice(0,18) + "…" : "PENDING",
+            meta:"Latest execution proof hash.",
+            cls:hash && hash !== "—" ? "live" : "warn"
+          },
+          {
+            title:"AUDIT CHAIN",
+            value:events.length ? `${events.length} EVENTS` : "NO EVENTS",
+            meta:"Governance audit event chain.",
+            cls:events.length ? "ok" : "warn"
+          },
+          {
+            title:"LEDGER TRACE",
+            value:prevHash && prevHash !== "—" ? "TRACE LINKED" : "TRACE PENDING",
+            meta:prevHash && prevHash !== "—" ? String(prevHash).slice(0,18) + "…" : "Previous hash unavailable.",
+            cls:prevHash && prevHash !== "—" ? "ok" : "warn"
+          },
+          {
+            title:"TRUTH ANCHOR",
+            value:truthAnchored ? "ANCHORED" : "UNSTABLE",
+            meta:"Execution-time truth anchoring state.",
+            cls:truthAnchored ? "ok" : "warn"
+          },
+          {
+            title:"VERIFICATION RESULT",
+            value:verified ? "VERIFIED" : "REVIEW",
+            meta:verified ? "No causality, entropy or sync breach detected." : "Runtime verification requires review.",
+            cls:verified ? "ok" : "bad"
+          }
+        ];
+
+        renderProofNodes(nodes);
+
+        if($("proofEnginePill")){
+          $("proofEnginePill").textContent =
+            verified
+              ? "PROOF: VERIFIED"
+              : "PROOF: REVIEW";
         }
-      ];
+      }
 
-      el.innerHTML = nodes.map(item => `
-        <div class="proof-node ${item.cls}">
-          <div class="proof-node-title">${escapeHtml(item.title)}</div>
-          <div class="proof-node-value">${escapeHtml(item.value)}</div>
-          <div class="proof-node-meta">${escapeHtml(item.meta)}</div>
-        </div>
-      `).join("");
+      function renderProofNodes(nodes){
+        el.innerHTML = nodes.map(item => `
+          <div class="proof-node ${item.cls}">
+            <div class="proof-node-title">${escapeHtml(item.title)}</div>
+            <div class="proof-node-value">${escapeHtml(item.value)}</div>
+            <div class="proof-node-meta">${escapeHtml(item.meta)}</div>
+          </div>
+        `).join("");
+      }
 
-      if($("proofEnginePill")){
-        $("proofEnginePill").textContent =
-          verified
-            ? "PROOF: VERIFIED"
-            : "PROOF: REVIEW";
+      if(!executionId){
+        fallbackProofEngine();
+        return;
+      }
+
+      try{
+        const token =
+          localStorage.getItem("EXECUTIA_JWT") ||
+          localStorage.getItem("executia_jwt") ||
+          localStorage.getItem("access_token") ||
+          "";
+
+        const response = await fetch(
+          "/api/v1/proof/package?execution_id=" + encodeURIComponent(executionId),
+          {
+            method:"GET",
+            headers:{
+              "Accept":"application/json",
+              ...(token ? { "Authorization":"Bearer " + token } : {})
+            },
+            cache:"no-store"
+          }
+        );
+
+        const proofPackage = await response.json();
+
+        if(!response.ok || !proofPackage.ok){
+          throw new Error(proofPackage?.error?.code || "PROOF_PACKAGE_UNAVAILABLE");
+        }
+
+        const proofHash = proofPackage?.proof?.proof_hash || "—";
+        const packageState = proofPackage?.package_state || "PACKAGE_PARTIAL";
+        const decision = proofPackage?.decision?.decision || "REVIEW";
+        const decisionStatus = proofPackage?.decision?.status || "PENDING";
+        const ledgerLinked = proofPackage?.ledger?.linked === true;
+        const auditVerified = proofPackage?.audit?.verified === true;
+        const replayCount = proofPackage?.replay?.event_count || 0;
+
+        const nodes = [
+          {
+            title:"PROOF HASH",
+            value:proofHash && proofHash !== "—" ? String(proofHash).slice(0,18) + "…" : "PENDING",
+            meta:proofPackage?.proof?.proof_state || "Execution proof hash.",
+            cls:proofHash && proofHash !== "—" ? "live" : "warn"
+          },
+          {
+            title:"PACKAGE STATE",
+            value:String(packageState).replace("PACKAGE_",""),
+            meta:proofPackage.verified ? "Unified proof package verified." : "Package available with partial verification.",
+            cls:proofPackage.verified ? "ok" : "warn"
+          },
+          {
+            title:"DECISION",
+            value:String(decision).toUpperCase(),
+            meta:String(decisionStatus).toUpperCase(),
+            cls:decision === "APPROVE" ? "ok" : decision === "BLOCK" ? "bad" : "warn"
+          },
+          {
+            title:"LEDGER LINK",
+            value:ledgerLinked ? "LINKED" : "PENDING",
+            meta:"Core ledger entries: " + String(proofPackage?.ledger?.core_ledger_entries || 0),
+            cls:ledgerLinked ? "ok" : "warn"
+          },
+          {
+            title:"AUDIT STATUS",
+            value:auditVerified ? "VERIFIED" : "RECORDED",
+            meta:"Audit entries: " + String(proofPackage?.audit?.entries || 0),
+            cls:auditVerified ? "ok" : "warn"
+          },
+          {
+            title:"REPLAY PATH",
+            value:replayCount ? `${replayCount} EVENTS` : "NO REPLAY",
+            meta:"Execution replay package generated.",
+            cls:replayCount ? "live" : "warn"
+          }
+        ];
+
+        window.LAST_EXECUTIA_PROOF_PACKAGE = proofPackage;
+        renderProofNodes(nodes);
+
+        if($("proofEnginePill")){
+          $("proofEnginePill").textContent =
+            proofPackage.verified
+              ? "PROOF PACKAGE: VERIFIED"
+              : "PROOF PACKAGE: PARTIAL";
+        }
+      }
+
+      catch(error){
+        fallbackProofEngine();
       }
     }
 
