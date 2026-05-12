@@ -10589,6 +10589,8 @@
           <button class="secondary" onclick="exportGovernanceProofPdf()">EXPORT GOVERNANCE PROOF PDF</button>
           <button class="secondary" onclick="exportExecutionProof()">EXPORT EXECUTION PROOF JSON</button>
           <button class="secondary" onclick="exportExecutionProofPdf()">EXPORT EXECUTION PROOF PDF</button>
+
+          <button class="warn" onclick="runAutonomousGovernanceLoop()">RUN AUTONOMOUS LOOP</button>
         </div>
 
         ${renderGovernanceMap(SELECTED, quorum, freeze)}
@@ -10918,6 +10920,66 @@
         a.remove();
         URL.revokeObjectURL(url);
       }catch(error){ alert("Execution proof PDF failed: " + error.message); }
+    }
+
+
+
+    window.runAutonomousGovernanceLoop = async function(){
+
+      try{
+
+        const reviewId =
+          SELECTED?.id ||
+          DETERMINISTIC_REPLAY?.filters?.review_id ||
+          null;
+
+        const executionId =
+          SELECTED?.execution_id ||
+          DETERMINISTIC_REPLAY?.replay?.events?.find(e => e.execution_id)?.execution_id ||
+          window.ACTIVE_EXECUTION_ID ||
+          window.LAST_EXECUTION_ID ||
+          null;
+
+        if(!reviewId && !executionId){
+          alert("No review_id or execution_id available.");
+          return;
+        }
+
+        const result = await api(
+          "/api/v2/governance/autonomous/run",
+          {
+            method:"POST",
+            body:JSON.stringify({
+              review_id:reviewId,
+              execution_id:executionId
+            })
+          }
+        );
+
+        window.LAST_AUTONOMOUS_RUNTIME = result;
+
+        alert(
+          result?.autonomous?.autonomous_state ||
+          "AUTONOMOUS LOOP EXECUTED"
+        );
+
+        await loadOperationsStatus();
+
+        if(SELECTED){
+          await loadDeterministicReplay(SELECTED.id);
+          await renderDetail();
+        }
+
+        renderProofEngine();
+        renderCommitEngine();
+
+      }catch(error){
+
+        alert(
+          "Autonomous governance failed: " +
+          error.message
+        );
+      }
     }
 
     async function authorize(){
