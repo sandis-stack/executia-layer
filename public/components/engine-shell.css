@@ -13,6 +13,8 @@
 }
 
 .ex-engine-header{
+  position:relative;
+  z-index:50;
   background:#fff;
   border-bottom:1px solid var(--ex-line);
 }
