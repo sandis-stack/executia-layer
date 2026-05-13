@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EXECUTIA™ — Execution Governance Engine</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --ink:#111827;
+      --muted:#6b7280;
+      --line:#d9e1ec;
+      --primary:#1E3A5F;
+      --primary-soft:#e8eef6;
+      --blocked:#b42318;
+      --blocked-soft:#fff1f0;
+      --ok:#166534;
+      --shadow:0 18px 45px rgba(17,24,39,.08);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+    }
+
+    .shell{
+      min-height:100vh;
+      padding:28px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      max-width:1280px;
+      margin:0 auto 24px;
+      padding:18px 22px;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .brand strong{
+      color:var(--primary);
+      font-size:20px;
+      letter-spacing:.04em;
+    }
+
+    .brand span{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .live-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      padding:10px 14px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--primary);
+      background:var(--primary-soft);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.08em;
+      white-space:nowrap;
+    }
+
+    .live-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--ok);
+    }
+
+    .grid{
+      max-width:1280px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1.05fr 1fr 1.05fr;
+      gap:20px;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px;
+      min-height:430px;
+    }
+
+    .panel h2{
+      margin:0 0 16px;
+      color:var(--primary);
+      font-size:13px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    pre{
+      margin:0;
+      padding:18px;
+      background:#f9fafb;
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:auto;
+      color:#1f2937;
+      font-size:13px;
+      line-height:1.65;
+    }
+
+    .button{
+      width:100%;
+      margin-top:18px;
+      border:0;
+      border-radius:16px;
+      padding:15px 18px;
+      background:var(--primary);
+      color:white;
+      font-weight:800;
+      letter-spacing:.08em;
+      cursor:pointer;
+      transition:transform .15s ease, opacity .15s ease;
+    }
+
+    .button:hover{transform:translateY(-1px)}
+    .button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+    .timeline{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .step{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#f9fafb;
+      opacity:.45;
+      transition:opacity .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .step.active{
+      opacity:1;
+      background:var(--primary-soft);
+      border-color:#b7c7dc;
+    }
+
+    .step.blocked{
+      opacity:1;
+      background:var(--blocked-soft);
+      border-color:#f0b8b4;
+    }
+
+    .step-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      margin-top:5px;
+      background:#94a3b8;
+      flex:0 0 auto;
+    }
+
+    .step.active .step-dot{background:var(--primary)}
+    .step.blocked .step-dot{background:var(--blocked)}
+
+    .step strong{
+      display:block;
+      font-size:13px;
+      letter-spacing:.06em;
+      color:#111827;
+    }
+
+    .step span{
+      display:block;
+      margin-top:4px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .decision{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .decision-card{
+      padding:22px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#f9fafb;
+    }
+
+    .decision-card.blocked{
+      background:var(--blocked-soft);
+      border-color:#f0b8b4;
+    }
+
+    .decision-label{
+      margin-bottom:8px;
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:800;
+    }
+
+    .decision-result{
+      color:var(--blocked);
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:.04em;
+    }
+
+    .decision-subtext{
+      margin-top:10px;
+      color:#374151;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .proof{
+      display:grid;
+      gap:10px;
+    }
+
+    .proof-row{
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+    }
+
+    .proof-row span{
+      display:block;
+      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      font-weight:800;
+      margin-bottom:5px;
+    }
+
+    .proof-row strong{
+      display:block;
+      color:#111827;
+      font-size:13px;
+      line-height:1.4;
+      word-break:break-word;
+    }
+
+    .footer-note{
+      max-width:1280px;
+      margin:20px auto 0;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+
+    @media (max-width:1000px){
+      .grid{grid-template-columns:1fr}
+      .panel{min-height:auto}
+    }
+
+    @media (max-width:640px){
+      .shell{padding:16px}
+      .topbar{align-items:flex-start;flex-direction:column}
+      .decision-result{font-size:23px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <strong>EXECUTIA™</strong>
+        <span>Execution Governance Engine</span>
+      </div>
+      <div class="live-pill"><span class="live-dot"></span> LIVE GOVERNANCE</div>
+    </header>
+
+    <section class="grid" aria-label="EXECUTIA live governance demo">
+      <article class="panel">
+        <h2>Execution Request</h2>
+        <pre>{
+  "execution_type": "PROCUREMENT_PAYMENT",
+  "vendor": "External Contractor",
+  "amount": 250000,
+  "approval_status": "MISSING"
+}</pre>
+        <button id="validateBtn" class="button" type="button">VALIDATE EXECUTION</button>
+      </article>
+
+      <article class="panel">
+        <h2>Execution Timeline</h2>
+        <div class="timeline">
+          <div class="step" data-step="0">
+            <span class="step-dot"></span>
+            <div><strong>REQUEST_RECEIVED</strong><span>Execution request entered governance engine.</span></div>
+          </div>
+          <div class="step" data-step="1">
+            <span class="step-dot"></span>
+            <div><strong>VALIDATION_STARTED</strong><span>Execution rules and approval requirements evaluated.</span></div>
+          </div>
+          <div class="step" data-step="2">
+            <span class="step-dot"></span>
+            <div><strong>RULE_VIOLATION_DETECTED</strong><span>Required approval is missing.</span></div>
+          </div>
+          <div class="step" data-step="3">
+            <span class="step-dot"></span>
+            <div><strong>EXECUTION_BLOCKED</strong><span>Governance engine prevents execution before damage occurs.</span></div>
+          </div>
+          <div class="step" data-step="4">
+            <span class="step-dot"></span>
+            <div><strong>PROOF_GENERATED</strong><span>Immutable proof materialized for audit and replay.</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>Governance Decision</h2>
+        <div class="decision">
+          <div id="decisionCard" class="decision-card">
+            <div class="decision-label">Status</div>
+            <div id="decisionResult" class="decision-result">STANDBY</div>
+            <div id="decisionSubtext" class="decision-subtext">Press validate to run execution-time governance.</div>
+          </div>
+
+          <div>
+            <h2>Immutable Proof</h2>
+            <div class="proof">
+              <div class="proof-row"><span>execution_id</span><strong id="executionId">—</strong></div>
+              <div class="proof-row"><span>proof_hash</span><strong id="proofHash">—</strong></div>
+              <div class="proof-row"><span>timestamp</span><strong id="timestamp">—</strong></div>
+              <div class="proof-row"><span>governance_status</span><strong id="governanceStatus">—</strong></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">Human defines outcome. EXECUTIA governs execution. AI realizes and evolves the system.</p>
+  </main>
+
+  <script>
+    const validateBtn = document.getElementById('validateBtn');
+    const steps = Array.from(document.querySelectorAll('.step'));
+    const decisionCard = document.getElementById('decisionCard');
+    const decisionResult = document.getElementById('decisionResult');
+    const decisionSubtext = document.getElementById('decisionSubtext');
+    const executionId = document.getElementById('executionId');
+    const proofHash = document.getElementById('proofHash');
+    const timestamp = document.getElementById('timestamp');
+    const governanceStatus = document.getElementById('governanceStatus');
+
+    function resetDemo(){
+      steps.forEach(step => step.classList.remove('active', 'blocked'));
+      decisionCard.classList.remove('blocked');
+      decisionResult.textContent = 'VALIDATING';
+      decisionResult.style.color = 'var(--primary)';
+      decisionSubtext.textContent = 'Execution governance validation in progress.';
+      executionId.textContent = '—';
+      proofHash.textContent = '—';
+      timestamp.textContent = '—';
+      governanceStatus.textContent = 'VALIDATING';
+    }
+
+    function randomHex(length){
+      const values = 'abcdef0123456789';
+      let output = '';
+      for(let i = 0; i < length; i++) output += values[Math.floor(Math.random() * values.length)];
+      return output;
+    }
+
+    function createProof(){
+      const now = new Date();
+      executionId.textContent = `exec_${randomHex(8)}_${now.getTime()}`;
+      proofHash.textContent = `0x${randomHex(64)}`;
+      timestamp.textContent = now.toISOString();
+      governanceStatus.textContent = 'BLOCKED';
+    }
+
+    async function runDemo(){
+      validateBtn.disabled = true;
+      resetDemo();
+
+      for(let i = 0; i < steps.length; i++){
+        await new Promise(resolve => setTimeout(resolve, i === 0 ? 250 : 650));
+        steps[i].classList.add(i >= 2 ? 'blocked' : 'active');
+
+        if(i === 2){
+          decisionResult.textContent = 'VIOLATION DETECTED';
+          decisionResult.style.color = 'var(--blocked)';
+          decisionSubtext.textContent = 'Required approval missing. Governance validation failed.';
+        }
+
+        if(i === 3){
+          decisionCard.classList.add('blocked');
+          decisionResult.textContent = 'EXECUTION BLOCKED';
+          decisionResult.style.color = 'var(--blocked)';
+          decisionSubtext.textContent = 'Execution was blocked before operational damage occurred.';
+        }
+
+        if(i === 4){
+          createProof();
+        }
+      }
+
+      validateBtn.disabled = false;
+    }
+
+    validateBtn.addEventListener('click', runDemo);
+  </script>
+</body>
+</html>
+
