@@ -2736,6 +2736,65 @@
 </style>
   <link rel="stylesheet" href="/components/engine-shell.css">
   <link rel="stylesheet" href="/components/engine-system.css">
+
+<!-- GOVERNANCE STABLE LAYOUT CSS START -->
+<style>
+  nav:has(a[data-engine-nav]){
+    display:none !important;
+  }
+
+  main{
+    display:grid !important;
+    grid-template-columns:320px minmax(0,1fr) 420px !important;
+    gap:18px !important;
+    margin:18px 22px 26px !important;
+    align-items:stretch !important;
+  }
+
+  main > aside,
+  main > section{
+    margin:0 !important;
+    min-width:0 !important;
+    width:auto !important;
+  }
+
+  main input{
+    height:40px !important;
+    border-radius:12px !important;
+    font-size:12px !important;
+  }
+
+  main button{
+    height:40px !important;
+    border-radius:12px !important;
+    font-size:10px !important;
+    letter-spacing:.14em !important;
+  }
+
+  .command-center{
+    margin:18px 22px 20px !important;
+    gap:14px !important;
+  }
+
+  .command-card{
+    min-height:88px !important;
+    padding:18px !important;
+  }
+
+  .command-value,
+  .metric .v{
+    font-size:18px !important;
+    font-weight:680 !important;
+  }
+
+  @media(max-width:1180px){
+    main{
+      grid-template-columns:1fr !important;
+    }
+  }
+</style>
+<!-- GOVERNANCE STABLE LAYOUT CSS END -->
+
 </head>
 <body>
 <nav class="engine-nav" aria-label="Engine navigation">
