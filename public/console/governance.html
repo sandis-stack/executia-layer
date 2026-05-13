@@ -9386,27 +9386,11 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
       }
 
       try{
-        const token =
-          localStorage.getItem("EXECUTIA_JWT") ||
-          localStorage.getItem("executia_jwt") ||
-          localStorage.getItem("access_token") ||
-          "";
-
-        const response = await fetch(
-          "/api/v1/proof/export.js?execution_id=" + encodeURIComponent(executionId),
-          {
-            method:"GET",
-            headers:{
-              "Accept":"application/json",
-              ...(token ? { "Authorization":"Bearer " + token } : {})
-            },
-            cache:"no-store"
-          }
+        const proofPackage = await api(
+          "/api/v1/proof/export.js?execution_id=" + encodeURIComponent(executionId)
         );
 
-        const proofPackage = await response.json();
-
-        if(!response.ok || !proofPackage.ok){
+        if(!proofPackage?.ok){
           throw new Error(proofPackage?.error?.code || "EXECUTION_PROOF_UNAVAILABLE");
         }
 
