@@ -2783,6 +2783,91 @@
     </div>
   </div>
 
+  <main>
+
+    <aside>
+      <div class="pad">
+        <h2>AUTHORITY ACCESS</h2>
+
+        <label>EMAIL</label>
+        <input id="email" value="operator@executia.io" />
+
+        <label>PASSWORD</label>
+        <input id="password" type="password" placeholder="Operator password" />
+
+        <button onclick="login()">AUTHORIZE</button>
+
+        <label>ACCESS TOKEN</label>
+        <input id="tokenInput" placeholder="Paste JWT token" />
+
+        <button class="secondary" onclick="authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
+        <button class="secondary" onclick="loadOpenReviews()">REFRESH QUEUE</button>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="k">OPERATOR</div>
+            <div class="v" id="operatorEmail">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">ORGANIZATION</div>
+            <div class="v" id="organizationId">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">OPEN REVIEWS</div>
+            <div class="v" id="openCount">0</div>
+          </div>
+          <div class="metric">
+            <div class="k">SELECTED REVIEW</div>
+            <div class="v" id="selectedReview">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">GOVERNANCE CHAIN</div>
+            <div class="v" id="governanceChainStatus">UNKNOWN</div>
+          </div>
+          <div class="metric">
+            <div class="k">CHAIN HEAD</div>
+            <div class="v" id="governanceChainHead">—</div>
+          </div>
+          <div class="metric">
+            <div class="k">EMERGENCY FREEZE</div>
+            <div class="v" id="emergencyFreezeStatus">UNKNOWN</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section>
+      <div class="head">
+        <h2>OPEN GOVERNANCE REVIEWS</h2>
+        <span class="pill" id="lastRefresh">NOT LOADED</span>
+      </div>
+      <div class="queue" id="queue">
+        <div class="pad">
+          <div class="block">
+            <div class="k">QUEUE LOCKED</div>
+            <div class="small">Authorize operator access to load governance review queue.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="head">
+        <h2>REVIEW DETAIL</h2>
+        <span class="pill" id="detailState">NO SELECTION</span>
+      </div>
+
+      <div class="detail" id="detail">
+        <div class="block">
+          <div class="k">STATE</div>
+          <div class="v">AWAITING REVIEW SELECTION</div>
+          <div class="small">Select an open governance review to inspect policy, risk and event history.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
   <section class="forensic-replay-panel" id="forensicReplayPanel">
     <div class="head">
       <h2>FORENSIC REPLAY</h2>
@@ -4074,90 +4159,6 @@
       </div>
     </div>
   </section>
-
-  <main>
-
-    <aside>
-      <div class="pad">
-        <h2>AUTHORITY ACCESS</h2>
-
-        <label>EMAIL</label>
-        <input id="email" value="operator@executia.io" />
-
-        <label>PASSWORD</label>
-        <input id="password" type="password" placeholder="Operator password" />
-
-        <button onclick="login()">AUTHORIZE</button>
-
-        <label>ACCESS TOKEN</label>
-        <input id="tokenInput" placeholder="Paste JWT token" />
-
-        <button class="secondary" onclick="authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
-        <button class="secondary" onclick="loadOpenReviews()">REFRESH QUEUE</button>
-
-        <div class="metrics">
-          <div class="metric">
-            <div class="k">OPERATOR</div>
-            <div class="v" id="operatorEmail">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">ORGANIZATION</div>
-            <div class="v" id="organizationId">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">OPEN REVIEWS</div>
-            <div class="v" id="openCount">0</div>
-          </div>
-          <div class="metric">
-            <div class="k">SELECTED REVIEW</div>
-            <div class="v" id="selectedReview">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">GOVERNANCE CHAIN</div>
-            <div class="v" id="governanceChainStatus">UNKNOWN</div>
-          </div>
-          <div class="metric">
-            <div class="k">CHAIN HEAD</div>
-            <div class="v" id="governanceChainHead">—</div>
-          </div>
-          <div class="metric">
-            <div class="k">EMERGENCY FREEZE</div>
-            <div class="v" id="emergencyFreezeStatus">UNKNOWN</div>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <section>
-      <div class="head">
-        <h2>OPEN GOVERNANCE REVIEWS</h2>
-        <span class="pill" id="lastRefresh">NOT LOADED</span>
-      </div>
-      <div class="queue" id="queue">
-        <div class="pad">
-          <div class="block">
-            <div class="k">QUEUE LOCKED</div>
-            <div class="small">Authorize operator access to load governance review queue.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="head">
-        <h2>REVIEW DETAIL</h2>
-        <span class="pill" id="detailState">NO SELECTION</span>
-      </div>
-
-      <div class="detail" id="detail">
-        <div class="block">
-          <div class="k">STATE</div>
-          <div class="v">AWAITING REVIEW SELECTION</div>
-          <div class="small">Select an open governance review to inspect policy, risk and event history.</div>
-        </div>
-      </div>
-    </section>
-  </main>
 
   <section class="global-stream-panel">
     <div class="head">
