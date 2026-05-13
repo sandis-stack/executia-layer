@@ -39,16 +39,16 @@
 }
 
 .ex-engine-brand-main{
-  font-size:18px;
+  font-size:17px;
   line-height:1;
-  letter-spacing:.18em;
+  letter-spacing:.16em;
   font-weight:900;
 }
 
 .ex-engine-brand-sub{
-  font-size:11px;
+  font-size:10px;
   line-height:1;
-  letter-spacing:.24em;
+  letter-spacing:.22em;
   font-weight:800;
   color:#9aa5b5;
 }
@@ -60,9 +60,9 @@
   border:1px solid #d9e2ec;
   border-radius:999px;
   color:var(--ex-blue);
-  font-size:14px;
+  font-size:13px;
   font-weight:800;
-  letter-spacing:.04em;
+  letter-spacing:.02em;
   background:#fff;
 }
 
@@ -85,8 +85,8 @@
   position:relative;
   text-decoration:none;
   color:#bcc5d2;
-  font-size:12px;
-  letter-spacing:.18em;
+  font-size:11px;
+  letter-spacing:.16em;
   font-weight:900;
   text-transform:uppercase;
   border:none;
