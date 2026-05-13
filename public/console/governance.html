@@ -4245,7 +4245,32 @@
     </div>
   </section>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+<script>
+window.replayClass = window.replayClass || function(event){
+  const value = String(
+    event?.status ||
+    event?.decision ||
+    event?.type ||
+    event ||
+    ""
+  ).toUpperCase();
+
+  if(value.includes("BLOCK") || value.includes("FAIL")) return "status-blocked";
+  if(value.includes("FREEZE") || value.includes("REVIEW") || value.includes("PENDING")) return "status-review";
+  if(value.includes("APPROVE") || value.includes("COMMIT") || value.includes("VERIFY")) return "status-approved";
+
+  return "";
+};
+
+window.LAST_OPERATIONS_STATUS = window.LAST_OPERATIONS_STATUS || {
+  emergency:{active_freeze_count:0},
+  runtime:"STANDBY",
+  incidents:[]
+};
+</script>
+
+</script>
 
   <script>
     const API_BASE = "";
