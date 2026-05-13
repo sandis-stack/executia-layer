@@ -9384,15 +9384,10 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
         fallbackProofEngine();
         return;
       }
-
       try{
-        const proofPackage = await api(
-          "/api/v1/proof/summary.js?execution_id=" + encodeURIComponent(executionId)
-        );
-
-        if(!proofPackage?.ok){
-          throw new Error(proofPackage?.error?.code || "EXECUTION_PROOF_UNAVAILABLE");
-        }
+        fallbackProofEngine();
+        return;
+      }
 
         const proofHash = proofPackage?.proof?.proof_hash || "—";
         const packageState = proofPackage?.package_state || "PACKAGE_PARTIAL";
