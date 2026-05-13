@@ -4267,7 +4267,17 @@
     let GOVERNANCE_MODE = "LEVEL_0_NORMAL";
 
     function $(id){
-      return document.getElementById(id);
+      return document.getElementById(id) || {
+        textContent:"",
+        innerHTML:"",
+        value:"",
+        className:"",
+        style:{},
+        dataset:{},
+        appendChild:function(){},
+        remove:function(){},
+        addEventListener:function(){}
+      };
     }
 
     function escapeHtml(value){
