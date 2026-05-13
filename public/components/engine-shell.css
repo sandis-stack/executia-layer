@@ -19,7 +19,7 @@
 
 .ex-engine-header-inner{
   max-width:1440px;
-  height:112px;
+  height:86px;
   margin:0 auto;
   padding:0 36px;
   display:grid;
@@ -29,6 +29,7 @@
 }
 
 .ex-engine-brand{
+  transform:translateY(-2px);
   text-decoration:none;
   color:var(--ex-blue);
   display:flex;
@@ -67,7 +68,7 @@
 }
 
 .ex-engine-nav{
-  height:112px;
+  height:58px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -107,7 +108,7 @@
 }
 
 .ex-engine-status{
-  height:46px;
+  height:40px;
   display:flex;
   align-items:center;
   gap:14px;
@@ -161,6 +162,7 @@
   }
 
   .ex-engine-brand{
+  transform:translateY(-2px);
     flex-direction:column;
     align-items:flex-start;
     gap:6px;
