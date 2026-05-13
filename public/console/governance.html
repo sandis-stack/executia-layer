@@ -11384,5 +11384,114 @@
 </script>
 <!-- GOVERNANCE SYSTEM STANDARD END -->
 
+
+<!-- GOVERNANCE OPERATOR WORKSPACE STANDARD START -->
+<style>
+  .gov-operator-workspace{
+    margin:18px 22px 22px !important;
+    display:grid !important;
+    grid-template-columns:320px 1fr 420px !important;
+    gap:18px !important;
+    align-items:stretch !important;
+  }
+
+  .gov-operator-workspace > *{
+    margin:0 !important;
+    height:auto !important;
+  }
+
+  .gov-operator-workspace input{
+    height:38px !important;
+    border:1px solid #d9e2ec !important;
+    border-radius:12px !important;
+    padding:0 12px !important;
+    font-size:12px !important;
+    font-weight:500 !important;
+  }
+
+  .gov-operator-workspace button{
+    height:38px !important;
+    border-radius:12px !important;
+    font-size:10px !important;
+    font-weight:680 !important;
+    letter-spacing:.14em !important;
+  }
+
+  .gov-operator-workspace h2,
+  .gov-operator-workspace h3{
+    font-size:12px !important;
+    font-weight:680 !important;
+    letter-spacing:.15em !important;
+  }
+
+  .gov-operator-workspace .card,
+  .gov-operator-workspace .panel{
+    min-height:100% !important;
+  }
+
+  .gov-actions-layer{
+    margin-top:18px !important;
+  }
+
+  @media(max-width:1200px){
+    .gov-operator-workspace{
+      grid-template-columns:1fr !important;
+    }
+  }
+</style>
+
+<script>
+(function(){
+  function clean(t){
+    return (t || "").replace(/\s+/g," ").trim().toUpperCase();
+  }
+
+  function moduleFor(el){
+    return el.closest("section,.panel,.card,.heatmap-panel,.command-panel,.operator-card,.auth,.grid") || el.parentElement;
+  }
+
+  function findModule(title){
+    const nodes = [...document.querySelectorAll("h1,h2,h3,strong,div")];
+    const hit = nodes.find(el => clean(el.textContent) === title);
+    return hit ? moduleFor(hit) : null;
+  }
+
+  function apply(){
+    const statusCards = [...document.querySelectorAll(".command-card,.card,.panel")]
+      .filter(el => {
+        const t = clean(el.textContent);
+        return t.includes("GLOBAL STATE") || t.includes("CHAIN HEALTH") || t.includes("ACTIVE FREEZES") || t.includes("LIVE EVENTS") || t.includes("SUPERVISION");
+      });
+
+    const anchor = statusCards.length ? statusCards[statusCards.length - 1] : document.querySelector(".ex-engine-header");
+
+    const authority = findModule("AUTHORITY ACCESS");
+    const reviews = findModule("OPEN GOVERNANCE REVIEWS");
+    const detail = findModule("REVIEW DETAIL");
+
+    if(!authority || !reviews || !detail || document.querySelector(".gov-operator-workspace")) return;
+
+    const workspace = document.createElement("section");
+    workspace.className = "gov-operator-workspace";
+
+    anchor.parentNode.insertBefore(workspace, anchor.nextSibling);
+
+    workspace.appendChild(authority);
+    workspace.appendChild(reviews);
+    workspace.appendChild(detail);
+
+    const freeze = findModule("EXECUTION FREEZE CONTROL");
+    if(freeze) freeze.classList.add("gov-actions-layer");
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", () => setTimeout(apply, 300));
+  }else{
+    setTimeout(apply, 300);
+  }
+})();
+</script>
+<!-- GOVERNANCE OPERATOR WORKSPACE STANDARD END -->
+
 </body>
 </html>
