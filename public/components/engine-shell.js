@@ -15,14 +15,14 @@
   function nav(){
     var active = moduleKey();
     var items = [
-      ["control","/control","Control"],
-      ["governance","/console/governance.html","Governance"],
-      ["ledger","/console/ledger.html","Ledger"],
-      ["audit","/console/audit.html","Audit"],
-      ["audit-ledger","/console/audit-ledger.html","Audit Ledger"],
-      ["operations","/console/operations.html","Operations"],
-      ["proofs","/console/governance.html#proof","Proofs"],
-      ["health","/health","Health"]
+      ["control","/dashboard","CONTROL"],
+      ["governance","/console/governance.html","GOVERNANCE"],
+      ["ledger","/console/ledger.html","LEDGER"],
+      ["audit","/console/audit.html","AUDIT"],
+      ["audit-ledger","/console/audit-ledger.html","AUDIT LEDGER"],
+      ["operations","/console/operations.html","OPERATIONS"],
+      ["proofs","/console/governance.html#proof","PROOFS"],
+      ["health","/health","HEALTH"]
     ];
 
     return '<nav class="ex-engine-nav" aria-label="Engine navigation">' +
