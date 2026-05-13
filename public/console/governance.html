@@ -9393,7 +9393,7 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
           "";
 
         const response = await fetch(
-          "/api/v1/proof/package?execution_id=" + encodeURIComponent(executionId),
+          "/api/v1/proof/export?execution_id=" + encodeURIComponent(executionId),
           {
             method:"GET",
             headers:{
@@ -9407,7 +9407,7 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
         const proofPackage = await response.json();
 
         if(!response.ok || !proofPackage.ok){
-          throw new Error(proofPackage?.error?.code || "PROOF_PACKAGE_UNAVAILABLE");
+          throw new Error(proofPackage?.error?.code || "EXECUTION_PROOF_UNAVAILABLE");
         }
 
         const proofHash = proofPackage?.proof?.proof_hash || "—";
