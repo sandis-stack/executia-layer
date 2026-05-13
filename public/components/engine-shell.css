@@ -19,22 +19,21 @@
 
 .ex-engine-header-inner{
   max-width:1440px;
-  height:68px;
+  height:72px;
   margin:0 auto;
   padding:0 34px;
   display:grid;
   grid-template-columns:320px 1fr 170px;
-  align-items:flex-start;
-  gap:34px;
+  align-items:center;
+  gap:32px;
 }
 
 .ex-engine-brand{
-  transform:translateY(-7px);
   text-decoration:none;
   color:var(--ex-blue);
   display:flex;
   align-items:center;
-  gap:18px;
+  gap:16px;
   text-transform:uppercase;
   white-space:nowrap;
 }
@@ -49,20 +48,19 @@
 .ex-engine-brand-sub{
   font-size:11px;
   line-height:1;
-  letter-spacing:.28em;
+  letter-spacing:.24em;
   font-weight:800;
   color:#9aa5b5;
 }
 
 .ex-engine-entry{
   justify-self:end;
-  transform:translateY(-7px);
   text-decoration:none;
-  padding:12px 24px;
+  padding:12px 22px;
   border:1px solid #d9e2ec;
   border-radius:999px;
   color:var(--ex-blue);
-  font-size:15px;
+  font-size:14px;
   font-weight:800;
   letter-spacing:.04em;
   background:#fff;
@@ -70,9 +68,9 @@
 
 .ex-engine-nav{
   max-width:1440px;
-  height:68px;
-  margin:-68px auto 0;
-  padding:0 170px 0 360px;
+  height:72px;
+  margin:-72px auto 0;
+  padding:0 190px 0 360px;
   display:flex;
   align-items:center;
   justify-content:flex-start;
@@ -86,9 +84,9 @@
   align-items:center;
   position:relative;
   text-decoration:none;
-  color:#c3cad5;
+  color:#bcc5d2;
   font-size:12px;
-  letter-spacing:.22em;
+  letter-spacing:.18em;
   font-weight:900;
   text-transform:uppercase;
   border:none;
@@ -106,7 +104,7 @@
   position:absolute;
   left:0;
   right:0;
-  bottom:6px;
+  bottom:0;
   height:2px;
   background:var(--ex-blue);
 }
@@ -162,20 +160,20 @@
   .ex-engine-header-inner{
     height:68px;
     padding:0 22px;
-    grid-template-columns:280px 1fr 170px;
-    gap:22px;
+    grid-template-columns:260px 1fr 150px;
+    gap:18px;
   }
 
   .ex-engine-nav{
     height:68px;
     margin:-68px auto 0;
-    padding:0 22px 0 360px;
-    gap:26px;
+    padding:0 150px 0 280px;
+    gap:24px;
   }
 
   .ex-engine-nav a{
     font-size:11px;
-    letter-spacing:.16em;
+    letter-spacing:.14em;
   }
 
   .ex-engine-entry{
