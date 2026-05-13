@@ -1146,4 +1146,52 @@ window.addEventListener('load', loadExecutiaLive);
 
 
 
+
+<script>
+(function(){
+  function cleanText(el){
+    return (el.textContent || "").replace(/\s+/g," ").trim().toUpperCase();
+  }
+
+  function isInsideNewHeader(el){
+    return !!el.closest(".exec-header");
+  }
+
+  function removeLegacyChrome(){
+    const nodes = Array.from(document.querySelectorAll("div, nav, section"));
+
+    for (const el of nodes) {
+      if (isInsideNewHeader(el)) continue;
+
+      const t = cleanText(el);
+
+      const legacyNav =
+        t.includes("AUDIT LEDGER") &&
+        t.includes("OPERATIONS") &&
+        t.includes("CONTROL") &&
+        t.includes("GOVERNANCE") &&
+        t.includes("PROOFS") &&
+        t.includes("HEALTH");
+
+      const legacyStatus =
+        t.includes("RUNTIME: ACTIVE") &&
+        t.includes("LEDGER: VERIFIED") &&
+        t.includes("AUDIT: RECORDING") &&
+        t.includes("PROOF: ENABLED");
+
+      if (legacyNav || legacyStatus) {
+        el.remove();
+      }
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", function(){
+    removeLegacyChrome();
+    setTimeout(removeLegacyChrome, 100);
+    setTimeout(removeLegacyChrome, 500);
+    setTimeout(removeLegacyChrome, 1200);
+  });
+})();
+</script>
+
 </body>
