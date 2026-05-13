@@ -30,89 +30,6 @@
       font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    .exec-header{
-      background:#fff;
-      border-bottom:1px solid #e1e7ef;
-    }
-
-    .exec-header-inner{
-      max-width:1440px;
-      height:92px;
-      margin:0 auto;
-      padding:0 36px;
-      display:grid;
-      grid-template-columns:260px 1fr 180px;
-      align-items:center;
-      gap:32px;
-    }
-
-    .exec-brand{
-      text-decoration:none;
-      color:var(--primary);
-      display:flex;
-      flex-direction:column;
-      gap:5px;
-    }
-
-    .exec-brand span{
-      font-size:22px;
-      letter-spacing:.16em;
-      font-weight:900;
-      line-height:1;
-    }
-
-    .exec-brand small{
-      font-size:11px;
-      letter-spacing:.34em;
-      font-weight:800;
-      color:#7b8797;
-    }
-
-    .exec-nav{
-      height:100%;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:34px;
-    }
-
-    .exec-nav a{
-      height:100%;
-      display:flex;
-      align-items:center;
-      position:relative;
-      text-decoration:none;
-      color:#a4afbf;
-      font-size:13px;
-      letter-spacing:.22em;
-      font-weight:900;
-    }
-
-    .exec-nav a.active{color:var(--primary)}
-
-    .exec-nav a.active::after{
-      content:"";
-      position:absolute;
-      left:0;
-      right:0;
-      bottom:0;
-      height:3px;
-      background:var(--primary);
-    }
-
-    .exec-action{
-      justify-self:end;
-      text-decoration:none;
-      padding:14px 24px;
-      border:1px solid #d6deea;
-      border-radius:999px;
-      color:var(--primary);
-      font-size:14px;
-      font-weight:800;
-      letter-spacing:.08em;
-      background:#fff;
-    }
-
     .page{
       max-width:1440px;
       margin:0 auto;
@@ -413,21 +330,6 @@
     }
 
     @media(max-width:1100px){
-      .exec-header-inner{
-        grid-template-columns:1fr;
-        height:auto;
-        padding:24px;
-      }
-
-      .exec-nav{
-        justify-content:flex-start;
-        flex-wrap:wrap;
-        gap:18px;
-      }
-
-      .exec-action{
-        justify-self:start;
-      }
 
       .status-row,
       .step-grid,
