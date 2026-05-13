@@ -151,6 +151,43 @@
   background:#fff;
 }
 
+
+/* EXECUTIA HEADER CLEANUP */
+.exec-header-inner{
+  height:88px !important;
+  grid-template-columns:260px 1fr 180px !important;
+}
+
+.exec-nav a{
+  border:none !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  padding:0 !important;
+}
+
+.exec-status-inner{
+  height:42px !important;
+}
+
+.exec-status-inner span{
+  font-size:11px !important;
+  padding:7px 12px !important;
+}
+
+main,
+.dashboard,
+.page,
+.content,
+.container{
+  max-width:1440px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.exec-header + .exec-status-row + .exec-status-row{
+  display:none !important;
+}
+
 </style>
   <link rel="stylesheet" href="/components/engine-shell.css">
 </head>
@@ -750,4 +787,47 @@ window.addEventListener('load', loadExecutiaLive);
 
 
   <script src="/components/engine-shell.js"></script>
+
+<script>
+(function(){
+  function norm(el){
+    return (el.textContent || "").replace(/\s+/g," ").trim().toUpperCase();
+  }
+
+  function smallestMatching(selector, test){
+    const nodes = Array.from(document.querySelectorAll(selector)).filter(test);
+    return nodes.filter(node => !Array.from(node.children).some(child => test(child)));
+  }
+
+  window.addEventListener("DOMContentLoaded", function(){
+    const oldNav = smallestMatching("div,nav,section", function(el){
+      if(el.closest(".exec-header")) return false;
+      const t = norm(el);
+      return t.includes("CONTROL") &&
+             t.includes("GOVERNANCE") &&
+             t.includes("LEDGER") &&
+             t.includes("AUDIT LEDGER") &&
+             t.includes("OPERATIONS") &&
+             t.includes("PROOFS") &&
+             t.includes("HEALTH");
+    });
+
+    oldNav.forEach(el => el.remove());
+
+    const statusRows = smallestMatching("div,section", function(el){
+      if(el.classList.contains("exec-status-row")) return false;
+      const t = norm(el);
+      return t.includes("RUNTIME: ACTIVE") &&
+             t.includes("LEDGER: VERIFIED") &&
+             t.includes("AUDIT: RECORDING") &&
+             t.includes("PROOF: ENABLED");
+    });
+
+    statusRows.forEach((el, index) => {
+      if(index >= 0) el.remove();
+    });
+  });
+})();
+</script>
+
 </body>
