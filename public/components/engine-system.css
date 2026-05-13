@@ -1,0 +1,100 @@
+:root{
+  --ex-system-font:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --ex-system-ink:#10233f;
+  --ex-system-muted:#6f7f95;
+  --ex-system-soft:#f5f8fc;
+  --ex-system-line:#d9e2ec;
+  --ex-system-line-soft:#e6edf5;
+  --ex-system-card:#ffffff;
+  --ex-system-radius:18px;
+  --ex-system-radius-sm:14px;
+  --ex-system-shadow:0 18px 42px rgba(15,53,93,.045);
+}
+
+body{
+  font-family:var(--ex-system-font);
+  background:var(--ex-system-soft);
+  color:var(--ex-system-ink);
+}
+
+h1,h2,h3,h4,h5,h6{
+  color:var(--ex-system-ink);
+  font-weight:760;
+  letter-spacing:.08em;
+}
+
+p,span,div,td,th,input,button,a{
+  font-weight:500;
+}
+
+strong,b{
+  font-weight:760;
+}
+
+button,
+input,
+select,
+textarea{
+  font-family:var(--ex-system-font);
+}
+
+.ex-system-card,
+.card,
+.panel,
+.tile,
+.command-card,
+.heatmap-panel,
+.proofs-card,
+.ex-protected-state{
+  background:var(--ex-system-card);
+  border:1px solid var(--ex-system-line);
+  border-radius:var(--ex-system-radius);
+  box-shadow:var(--ex-system-shadow);
+}
+
+.pill,
+.badge,
+.status,
+.state,
+.ex-engine-status span{
+  border:1px solid var(--ex-system-line);
+  border-radius:999px;
+  font-size:10px;
+  font-weight:760;
+  letter-spacing:.14em;
+}
+
+pre,
+code,
+.raw,
+.summary{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+  font-size:12px;
+  font-weight:500;
+  line-height:1.55;
+}
+
+table{
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+th{
+  font-size:10px;
+  font-weight:760;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:#8b99aa;
+}
+
+td{
+  font-size:13px;
+  color:var(--ex-system-ink);
+}
+
+.ex-muted,
+.muted,
+small{
+  color:var(--ex-system-muted);
+  font-weight:500;
+}
