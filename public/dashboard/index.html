@@ -527,5 +527,157 @@
     validateBtn.addEventListener("click", runDemo);
   </script>
   <script src="/components/engine-shell.js"></script>
+
+<!-- EXECUTION STRUCTURE STANDARD START -->
+<style>
+  .ex-structure-standard{
+    max-width:1440px;
+    margin:0 auto;
+    padding:48px 42px 56px;
+  }
+
+  .ex-structure-standard h2,
+  .ex-structure-standard h3,
+  .ex-structure-standard strong{
+    font-size:12px !important;
+    font-weight:760 !important;
+    letter-spacing:.18em !important;
+    text-transform:uppercase !important;
+    color:#1E3A5F !important;
+  }
+
+  .ex-structure-tabs{
+    display:flex !important;
+    gap:12px !important;
+    margin:28px 0 28px !important;
+    flex-wrap:wrap !important;
+  }
+
+  .ex-structure-tab{
+    height:42px !important;
+    padding:0 28px !important;
+    border:1px solid #d9e2ec !important;
+    border-radius:999px !important;
+    background:#fff !important;
+    color:#1E3A5F !important;
+    font-size:12px !important;
+    font-weight:650 !important;
+    letter-spacing:.04em !important;
+    box-shadow:none !important;
+  }
+
+  .ex-structure-grid{
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(150px,1fr)) minmax(260px,1.3fr) 190px !important;
+    gap:12px !important;
+    align-items:stretch !important;
+    max-width:100% !important;
+  }
+
+  .ex-structure-field{
+    width:100% !important;
+    min-width:0 !important;
+    height:56px !important;
+    min-height:56px !important;
+    padding:0 16px !important;
+    border:1px solid #d9e2ec !important;
+    border-radius:14px !important;
+    background:#fff !important;
+    color:#10233f !important;
+    font-size:13px !important;
+    font-weight:500 !important;
+    letter-spacing:0 !important;
+    box-shadow:none !important;
+    box-sizing:border-box !important;
+  }
+
+  textarea.ex-structure-field{
+    padding:10px 16px !important;
+    line-height:1.35 !important;
+    resize:vertical !important;
+  }
+
+  .ex-structure-action{
+    height:56px !important;
+    min-width:180px !important;
+    padding:0 22px !important;
+    border:0 !important;
+    border-radius:999px !important;
+    background:#294d70 !important;
+    color:#fff !important;
+    font-size:12px !important;
+    font-weight:760 !important;
+    letter-spacing:.04em !important;
+    box-shadow:none !important;
+    white-space:nowrap !important;
+  }
+
+  @media(max-width:1100px){
+    .ex-structure-grid{
+      grid-template-columns:repeat(2,minmax(160px,1fr)) !important;
+    }
+    .ex-structure-action{
+      grid-column:1 / -1 !important;
+      width:100% !important;
+    }
+  }
+</style>
+<script>
+(function(){
+  function commonAncestor(nodes){
+    if(!nodes.length) return null;
+    let a = nodes[0].parentElement;
+    while(a){
+      if(nodes.every(n => a.contains(n))) return a;
+      a = a.parentElement;
+    }
+    return null;
+  }
+
+  function apply(){
+    const heading = [...document.querySelectorAll("h1,h2,h3,strong,div")]
+      .find(el => el.textContent.trim().toUpperCase() === "EXECUTION STRUCTURE");
+
+    if(!heading) return;
+
+    let root = heading.parentElement;
+    while(root && root !== document.body){
+      if(root.querySelectorAll("input,select,textarea,button").length >= 6) break;
+      root = root.parentElement;
+    }
+    if(!root) return;
+
+    root.classList.add("ex-structure-standard");
+
+    const controls = [...root.querySelectorAll("input,select,textarea")];
+    controls.forEach(el => el.classList.add("ex-structure-field"));
+
+    const buttons = [...root.querySelectorAll("button")];
+
+    buttons
+      .filter(b => /DEMO/i.test(b.textContent))
+      .forEach(b => {
+        b.classList.add("ex-structure-tab");
+        b.parentElement && b.parentElement.classList.add("ex-structure-tabs");
+      });
+
+    buttons
+      .filter(b => /ANALYZE/i.test(b.textContent))
+      .forEach(b => b.classList.add("ex-structure-action"));
+
+    const gridNodes = [...controls, ...buttons.filter(b => /ANALYZE/i.test(b.textContent))];
+    const grid = commonAncestor(gridNodes);
+    if(grid) grid.classList.add("ex-structure-grid");
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", apply);
+  }else{
+    apply();
+  }
+})();
+</script>
+<!-- EXECUTION STRUCTURE STANDARD END -->
+
 </body>
 </html>
