@@ -188,19 +188,105 @@ main,
   display:none !important;
 }
 
+
+/* FINAL EXECUTIA ENGINE HEADER */
+.exec-header{
+  width:100%;
+  background:#fff;
+  border-bottom:1px solid #e1e7ef;
+}
+
+.exec-header-inner{
+  max-width:1440px !important;
+  height:88px !important;
+  margin:0 auto !important;
+  padding:0 36px !important;
+  display:grid !important;
+  grid-template-columns:260px 1fr 180px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.exec-brand{
+  text-decoration:none !important;
+  color:#1E3A5F !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:5px !important;
+}
+
+.exec-brand span{
+  font-size:22px !important;
+  line-height:1 !important;
+  letter-spacing:.16em !important;
+  font-weight:900 !important;
+}
+
+.exec-brand small{
+  font-size:11px !important;
+  letter-spacing:.34em !important;
+  font-weight:800 !important;
+  color:#7b8797 !important;
+}
+
+.exec-nav{
+  height:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:34px !important;
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+.exec-nav a{
+  height:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  position:relative !important;
+  text-decoration:none !important;
+  color:#a4afbf !important;
+  font-size:13px !important;
+  letter-spacing:.22em !important;
+  font-weight:900 !important;
+  border:none !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  padding:0 !important;
+}
+
+.exec-nav a.active{
+  color:#1E3A5F !important;
+}
+
+.exec-nav a.active::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  height:3px !important;
+  background:#1E3A5F !important;
+}
+
+.exec-action{
+  justify-self:end !important;
+}
+
 </style>
   <link rel="stylesheet" href="/components/engine-shell.css">
 </head>
 <body>
 
+
 <header class="exec-header">
   <div class="exec-header-inner">
-    <a class="exec-brand" href="/">
+    <a class="exec-brand" href="/dashboard">
       <span>EXECUTIA™</span>
       <small>EXECUTION ENGINE</small>
     </a>
 
-    <nav class="exec-nav">
+    <nav class="exec-nav" aria-label="Execution engine navigation">
       <a class="active" href="/dashboard">CONTROL</a>
       <a href="/governance">GOVERNANCE</a>
       <a href="/ledger">LEDGER</a>
@@ -214,6 +300,7 @@ main,
     </a>
   </div>
 </header>
+
 
 <div class="exec-status-row">
   <div class="exec-status-inner">
@@ -788,46 +875,6 @@ window.addEventListener('load', loadExecutiaLive);
 
   <script src="/components/engine-shell.js"></script>
 
-<script>
-(function(){
-  function norm(el){
-    return (el.textContent || "").replace(/\s+/g," ").trim().toUpperCase();
-  }
 
-  function smallestMatching(selector, test){
-    const nodes = Array.from(document.querySelectorAll(selector)).filter(test);
-    return nodes.filter(node => !Array.from(node.children).some(child => test(child)));
-  }
-
-  window.addEventListener("DOMContentLoaded", function(){
-    const oldNav = smallestMatching("div,nav,section", function(el){
-      if(el.closest(".exec-header")) return false;
-      const t = norm(el);
-      return t.includes("CONTROL") &&
-             t.includes("GOVERNANCE") &&
-             t.includes("LEDGER") &&
-             t.includes("AUDIT LEDGER") &&
-             t.includes("OPERATIONS") &&
-             t.includes("PROOFS") &&
-             t.includes("HEALTH");
-    });
-
-    oldNav.forEach(el => el.remove());
-
-    const statusRows = smallestMatching("div,section", function(el){
-      if(el.classList.contains("exec-status-row")) return false;
-      const t = norm(el);
-      return t.includes("RUNTIME: ACTIVE") &&
-             t.includes("LEDGER: VERIFIED") &&
-             t.includes("AUDIT: RECORDING") &&
-             t.includes("PROOF: ENABLED");
-    });
-
-    statusRows.forEach((el, index) => {
-      if(index >= 0) el.remove();
-    });
-  });
-})();
-</script>
 
 </body>
