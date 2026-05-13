@@ -2821,45 +2821,6 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
 };
 </script>
 
-
-<style>
-  .operator-decision-grid{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:14px;
-    margin-bottom:14px;
-  }
-
-  .operator-action-panel{
-    margin:14px 0;
-  }
-
-  .operator-action-panel textarea{
-    min-height:84px;
-    resize:vertical;
-  }
-
-  .operator-action-panel .actions{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
-  }
-
-  .operator-action-panel .actions:nth-of-type(2),
-  .operator-action-panel .actions:nth-of-type(3){
-    grid-template-columns:repeat(3,minmax(0,1fr));
-  }
-
-  @media(max-width:1180px){
-    .operator-decision-grid,
-    .operator-action-panel .actions,
-    .operator-action-panel .actions:nth-of-type(2),
-    .operator-action-panel .actions:nth-of-type(3){
-      grid-template-columns:1fr;
-    }
-  }
-</style>
-
 </head>
 <body>
 <nav class="engine-nav" aria-label="Engine navigation">
@@ -10688,28 +10649,67 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
 
       if(!SELECTED){
         detail.innerHTML = `
-        <div class="operator-decision-grid">
           <div class="block">
-            <div class="k">SELECTED REVIEW</div>
-            <div class="v">${escapeHtml(SELECTED.governance_state || SELECTED.review_status || "REVIEW")}</div>
-            <div class="small">Review: ${escapeHtml(SELECTED.id)}</div>
-            <div class="small">Execution: ${escapeHtml(SELECTED.execution_id || "—")}</div>
+            <div class="k">STATE</div>
+            <div class="v">NO REVIEW SELECTED</div>
           </div>
+        `;
+        return;
+      }
 
-          <div class="block">
-            <div class="k">QUORUM</div>
-            <div class="v">${quorum?.ok ? (quorum.quorum_met ? "MET" : "PENDING") : "ERROR"}</div>
-            <div class="small">Approvals: ${escapeHtml(quorum?.ok ? (quorum.approvals_recorded + " / " + quorum.required_approvals) : "—")}</div>
-            <div class="small">Role: ${escapeHtml(quorum?.required_role || "—")}</div>
-          </div>
+      if(SELECTED?.execution_id){
+        window.ACTIVE_EXECUTION_ID = SELECTED.execution_id;
+        window.LAST_EXECUTION_ID = SELECTED.execution_id;
+        localStorage.setItem("executia_active_execution_id", SELECTED.execution_id);
+      }
 
-          <div class="block">
-            <div class="k">EMERGENCY CONTROL</div>
-            <div class="v">${freeze?.frozen ? "LOCKED" : "CLEAR"}</div>
-            <div class="small">Scope: ${escapeHtml(freeze?.active_freeze?.freeze_scope || "—")}</div>
-            <div class="small">Level: ${escapeHtml(freeze?.active_freeze?.freeze_level || "—")}</div>
-            <div class="small">Reason: ${escapeHtml(freeze?.active_freeze?.freeze_reason || "—")}</div>
-          </div>
+      if(!DETERMINISTIC_REPLAY){
+        await loadDeterministicReplay(SELECTED.id);
+      }
+
+      let timeline = { events: [] };
+      let quorum = null;
+      let freeze = null;
+
+      try{
+        timeline = await api("/api/v2/governance/reviews/timeline?review_id=" + encodeURIComponent(SELECTED.id));
+      }catch(error){}
+
+      try{
+        quorum = await api("/api/v2/governance/quorum/state?review_id=" + encodeURIComponent(SELECTED.id));
+      }catch(error){
+        quorum = { ok:false, error:error.message };
+      }
+
+      try{
+        freeze = await api("/api/v2/governance/freeze/status?review_id=" + encodeURIComponent(SELECTED.id) + "&execution_id=" + encodeURIComponent(SELECTED.execution_id || ""));
+      }catch(error){
+        freeze = { ok:false, frozen:false, error:error.message };
+      }
+
+      detail.innerHTML = `
+        <div class="block">
+          <div class="k">REVIEW</div>
+          <div class="v">${escapeHtml(SELECTED.governance_state || SELECTED.review_status)}</div>
+          <div class="small">ID: ${escapeHtml(SELECTED.id)}</div>
+          <div class="small">Execution: ${escapeHtml(SELECTED.execution_id || "—")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">QUORUM STATE</div>
+          <div class="v">${quorum?.ok ? (quorum.quorum_met ? "QUORUM MET" : "QUORUM PENDING") : "QUORUM ERROR"}</div>
+          <div class="small">Approvals: ${escapeHtml(quorum?.ok ? (quorum.approvals_recorded + " / " + quorum.required_approvals) : "—")}</div>
+          <div class="small">Required role: ${escapeHtml(quorum?.required_role || "—")}</div>
+        </div>
+
+        <div class="block">
+          <div class="k">EMERGENCY GOVERNANCE</div>
+          <div class="v">${freeze?.frozen ? "EXECUTION LOCKED" : "CLEAR"}</div>
+          <div class="small">Scope: ${escapeHtml(freeze?.active_freeze?.freeze_scope || "—")}</div>
+          <div class="small">Level: ${escapeHtml(freeze?.active_freeze?.freeze_level || "—")}</div>
+          <div class="small">Reason: ${escapeHtml(freeze?.active_freeze?.freeze_reason || "—")}</div>
+          <button class="danger" onclick="createSystemFreeze()" ${isForensicLocked() ? "disabled" : ""}>SYSTEM FREEZE</button>
+          <button class="warn" onclick="releaseActiveFreeze()">RELEASE FREEZE</button>
         </div>
 
         ${isForensicLocked() ? `
@@ -10720,31 +10720,22 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
           </div>
         ` : ""}
 
-        <div class="operator-action-panel">
-          <div class="block">
-            <div class="k">OPERATOR DECISION</div>
-            <textarea id="reviewReason" placeholder="Add operator reason for override, approval, rejection, or freeze release."></textarea>
+        <div class="block">
+          <div class="k">OPERATOR REASON</div>
+          <textarea id="reviewReason" placeholder="Required for override. Optional for approve/reject."></textarea>
 
-            <div class="actions" style="margin-top:12px;">
-              <button onclick="approveReview()" ${isForensicLocked() ? "disabled" : ""}>APPROVE</button>
-              <button class="danger" onclick="rejectReview()" ${isForensicLocked() ? "disabled" : ""}>REJECT</button>
-            </div>
-
-            <div class="actions" style="margin-top:10px;">
-              <button class="warn" onclick="overrideReview()" ${isForensicLocked() ? "disabled" : ""}>OVERRIDE</button>
-              <button class="danger" onclick="createSystemFreeze()" ${isForensicLocked() ? "disabled" : ""}>SYSTEM FREEZE</button>
-              <button class="warn" onclick="releaseActiveFreeze()">RELEASE FREEZE</button>
-            </div>
-
-            <div class="actions" style="margin-top:10px;">
-              <button class="secondary" onclick="exportGovernanceProof()">GOVERNANCE PROOF JSON</button>
-              <button class="secondary" onclick="exportGovernanceProofPdf()">GOVERNANCE PROOF PDF</button>
-              <button class="secondary" onclick="exportExecutionProof()">EXECUTION PROOF JSON</button>
-              <button class="secondary" onclick="exportExecutionProofPdf()">EXECUTION PROOF PDF</button>
-            </div>
-
-            <button class="warn" onclick="runAutonomousGovernanceLoop()">RUN AUTONOMOUS LOOP</button>
+          <div class="actions" style="margin-top:10px;">
+            <button onclick="approveReview()" ${isForensicLocked() ? "disabled" : ""}>APPROVE</button>
+            <button class="danger" onclick="rejectReview()" ${isForensicLocked() ? "disabled" : ""}>REJECT</button>
           </div>
+
+          <button class="warn" onclick="overrideReview()" ${isForensicLocked() ? "disabled" : ""}>OVERRIDE</button>
+          <button class="secondary" onclick="exportGovernanceProof()">EXPORT GOVERNANCE PROOF JSON</button>
+          <button class="secondary" onclick="exportGovernanceProofPdf()">EXPORT GOVERNANCE PROOF PDF</button>
+          <button class="secondary" onclick="exportExecutionProof()">EXPORT EXECUTION PROOF JSON</button>
+          <button class="secondary" onclick="exportExecutionProofPdf()">EXPORT EXECUTION PROOF PDF</button>
+
+          <button class="warn" onclick="runAutonomousGovernanceLoop()">RUN AUTONOMOUS LOOP</button>
         </div>
 
         ${renderGovernanceMap(SELECTED, quorum, freeze)}
