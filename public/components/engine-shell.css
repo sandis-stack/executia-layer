@@ -23,7 +23,7 @@
   margin:0 auto;
   padding:0 34px;
   display:grid;
-  grid-template-columns:320px 1fr 170px;
+  grid-template-columns:300px 1fr 220px;
   align-items:center;
   gap:32px;
 }
@@ -70,11 +70,11 @@
   max-width:1440px;
   height:72px;
   margin:-72px auto 0;
-  padding:0 190px 0 360px;
+  padding:0 260px 0 330px;
   display:flex;
   align-items:center;
   justify-content:flex-start;
-  gap:38px;
+  gap:32px;
   background:transparent;
 }
 
