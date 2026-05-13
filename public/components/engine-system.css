@@ -98,3 +98,48 @@ small{
   color:var(--ex-system-muted);
   font-weight:500;
 }
+
+/* SYSTEM NUMERIC / STATUS SCALE — LIGHTER */
+.ex-engine-shell h1,
+.ex-engine-shell h2,
+.ex-engine-shell h3{
+  font-weight:680 !important;
+}
+
+.ex-engine-shell .card strong,
+.ex-engine-shell .tile strong,
+.ex-engine-shell .command-value,
+.ex-engine-shell .stat-value,
+.ex-engine-shell .metric-value,
+.ex-engine-shell [class*="value"],
+.ex-engine-shell [class*="Value"]{
+  font-size:22px !important;
+  line-height:1.05 !important;
+  font-weight:680 !important;
+  letter-spacing:-.02em !important;
+}
+
+.ex-engine-shell .card,
+.ex-engine-shell .tile,
+.ex-engine-shell .panel,
+.ex-engine-shell .command-card{
+  border:1px solid #dbe5ef !important;
+  box-shadow:0 14px 34px rgba(15,53,93,.035) !important;
+}
+
+.ex-engine-shell .label,
+.ex-engine-shell .command-label,
+.ex-engine-shell .card-label,
+.ex-engine-shell [class*="label"],
+.ex-engine-shell [class*="Label"]{
+  font-size:10px !important;
+  font-weight:680 !important;
+  letter-spacing:.16em !important;
+  color:#9aa8b8 !important;
+}
+
+.ex-engine-shell p,
+.ex-engine-shell span,
+.ex-engine-shell div{
+  font-weight:500;
+}
