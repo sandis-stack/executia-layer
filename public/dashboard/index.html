@@ -273,6 +273,43 @@ main,
   justify-self:end !important;
 }
 
+
+/* REMOVE LEGACY ENGINE CHROME */
+.exec-header{
+  position:relative;
+  z-index:20;
+}
+
+.exec-header-inner{
+  max-width:1440px !important;
+  height:88px !important;
+  margin:0 auto !important;
+  padding:0 36px !important;
+  display:grid !important;
+  grid-template-columns:260px 1fr 180px !important;
+  align-items:center !important;
+  gap:32px !important;
+}
+
+.exec-nav{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:34px !important;
+  height:100% !important;
+}
+
+.exec-nav a{
+  border:none !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  padding:0 !important;
+}
+
+body > .exec-status-row{
+  display:none !important;
+}
+
 </style>
   <link rel="stylesheet" href="/components/engine-shell.css">
 </head>
@@ -876,5 +913,56 @@ window.addEventListener('load', loadExecutiaLive);
   <script src="/components/engine-shell.js"></script>
 
 
+
+
+<script>
+(function(){
+  function text(el){
+    return (el.textContent || "").replace(/\s+/g, " ").trim().toUpperCase();
+  }
+
+  function removeOldEngineChrome(){
+    const protectedSelectors = [
+      ".exec-header",
+      ".exec-header-inner"
+    ];
+
+    function isProtected(el){
+      return protectedSelectors.some(sel => el.closest(sel));
+    }
+
+    document.querySelectorAll("nav, div, section, header").forEach(el => {
+      if(isProtected(el)) return;
+
+      const t = text(el);
+
+      const oldNav =
+        t.includes("CONTROL") &&
+        t.includes("GOVERNANCE") &&
+        t.includes("LEDGER") &&
+        t.includes("AUDIT LEDGER") &&
+        t.includes("OPERATIONS") &&
+        t.includes("PROOFS") &&
+        t.includes("HEALTH");
+
+      const oldStatus =
+        t.includes("RUNTIME: ACTIVE") &&
+        t.includes("LEDGER: VERIFIED") &&
+        t.includes("AUDIT: RECORDING") &&
+        t.includes("PROOF: ENABLED");
+
+      if(oldNav || oldStatus){
+        el.remove();
+      }
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", function(){
+    removeOldEngineChrome();
+    setTimeout(removeOldEngineChrome, 200);
+    setTimeout(removeOldEngineChrome, 800);
+  });
+})();
+</script>
 
 </body>
