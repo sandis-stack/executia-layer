@@ -310,11 +310,104 @@ body > .exec-status-row{
   display:none !important;
 }
 
+
+/* FINAL STATIC EXECUTIA ENGINE HEADER */
+.exec-header{
+  width:100%;
+  background:#fff;
+  border-bottom:1px solid #e1e7ef;
+  position:relative;
+  z-index:50;
+}
+
+.exec-header-inner{
+  max-width:1440px;
+  height:88px;
+  margin:0 auto;
+  padding:0 36px;
+  display:grid;
+  grid-template-columns:260px 1fr 180px;
+  align-items:center;
+  gap:32px;
+}
+
+.exec-brand{
+  text-decoration:none;
+  color:#1E3A5F;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.exec-brand span{
+  font-size:22px;
+  line-height:1;
+  letter-spacing:.16em;
+  font-weight:900;
+}
+
+.exec-brand small{
+  font-size:11px;
+  letter-spacing:.34em;
+  font-weight:800;
+  color:#7b8797;
+}
+
+.exec-nav{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:34px;
+}
+
+.exec-nav a{
+  height:100%;
+  display:flex;
+  align-items:center;
+  position:relative;
+  text-decoration:none;
+  color:#a4afbf;
+  font-size:13px;
+  letter-spacing:.22em;
+  font-weight:900;
+  border:none;
+  border-radius:0;
+  background:transparent;
+  padding:0;
+}
+
+.exec-nav a.active{
+  color:#1E3A5F;
+}
+
+.exec-nav a.active::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:3px;
+  background:#1E3A5F;
+}
+
+.exec-action{
+  justify-self:end;
+  text-decoration:none;
+  padding:14px 24px;
+  border:1px solid #d6deea;
+  border-radius:999px;
+  color:#1E3A5F;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.08em;
+  background:#fff;
+}
+
 </style>
   <link rel="stylesheet" href="/components/engine-shell.css">
 </head>
 <body>
-
 
 <header class="exec-header">
   <div class="exec-header-inner">
@@ -332,11 +425,13 @@ body > .exec-status-row{
       <a href="/health">HEALTH</a>
     </nav>
 
-    <a class="exec-action" href="https://executia.io">
-      Entry ↗
-    </a>
+    <a class="exec-action" href="https://executia.io">Entry ↗</a>
   </div>
 </header>
+
+
+
+
 
 
 <div class="exec-status-row">
@@ -921,54 +1016,6 @@ window.addEventListener('load', loadExecutiaLive);
 
 
 
-<script>
-(function(){
-  function text(el){
-    return (el.textContent || "").replace(/\s+/g, " ").trim().toUpperCase();
-  }
 
-  function removeOldEngineChrome(){
-    const protectedSelectors = [
-      ".exec-header",
-      ".exec-header-inner"
-    ];
-
-    function isProtected(el){
-      return protectedSelectors.some(sel => el.closest(sel));
-    }
-
-    document.querySelectorAll("nav, div, section, header").forEach(el => {
-      if(isProtected(el)) return;
-
-      const t = text(el);
-
-      const oldNav =
-        t.includes("CONTROL") &&
-        t.includes("GOVERNANCE") &&
-        t.includes("LEDGER") &&
-        t.includes("AUDIT LEDGER") &&
-        t.includes("OPERATIONS") &&
-        t.includes("PROOFS") &&
-        t.includes("HEALTH");
-
-      const oldStatus =
-        t.includes("RUNTIME: ACTIVE") &&
-        t.includes("LEDGER: VERIFIED") &&
-        t.includes("AUDIT: RECORDING") &&
-        t.includes("PROOF: ENABLED");
-
-      if(oldNav || oldStatus){
-        el.remove();
-      }
-    });
-  }
-
-  window.addEventListener("DOMContentLoaded", function(){
-    removeOldEngineChrome();
-    setTimeout(removeOldEngineChrome, 200);
-    setTimeout(removeOldEngineChrome, 800);
-  });
-})();
-</script>
 
 </body>
