@@ -11169,5 +11169,220 @@
   <script src="./runtime/distributed-node-mesh.js"></script>
   <script src="./runtime/cross-node-cognition-mesh.js"></script>
   <script src="/components/engine-shell.js"></script>
+
+<!-- GOVERNANCE SYSTEM STANDARD START -->
+<style>
+  body.gov-system-standard{
+    --gov-line:#dbe5ef;
+    --gov-soft:#f5f8fc;
+    --gov-ink:#10233f;
+    --gov-muted:#718299;
+  }
+
+  body.gov-system-standard .gov-hide-legacy-nav{
+    display:none !important;
+  }
+
+  body.gov-system-standard .heatmap-panel,
+  body.gov-system-standard .command-panel,
+  body.gov-system-standard .panel,
+  body.gov-system-standard .card{
+    border:1px solid var(--gov-line) !important;
+    border-radius:18px !important;
+    box-shadow:0 14px 34px rgba(15,53,93,.035) !important;
+  }
+
+  body.gov-system-standard h1,
+  body.gov-system-standard h2,
+  body.gov-system-standard h3{
+    font-size:13px !important;
+    font-weight:680 !important;
+    letter-spacing:.14em !important;
+    text-transform:uppercase !important;
+    color:var(--gov-ink) !important;
+  }
+
+  body.gov-system-standard .command-value,
+  body.gov-system-standard .metric-value,
+  body.gov-system-standard .stat-value,
+  body.gov-system-standard [class*="value"],
+  body.gov-system-standard [class*="Value"]{
+    font-size:18px !important;
+    line-height:1.15 !important;
+    font-weight:680 !important;
+    letter-spacing:-.01em !important;
+  }
+
+  body.gov-system-standard .command-label,
+  body.gov-system-standard .label,
+  body.gov-system-standard [class*="label"],
+  body.gov-system-standard [class*="Label"]{
+    font-size:10px !important;
+    font-weight:680 !important;
+    letter-spacing:.16em !important;
+    color:#8d9caf !important;
+  }
+
+  body.gov-system-standard p,
+  body.gov-system-standard span,
+  body.gov-system-standard div{
+    font-weight:500;
+  }
+
+  body.gov-system-standard .pill,
+  body.gov-system-standard .badge,
+  body.gov-system-standard [class*="pill"],
+  body.gov-system-standard [class*="badge"]{
+    font-size:10px !important;
+    font-weight:680 !important;
+    letter-spacing:.14em !important;
+  }
+
+  .gov-advanced-shell{
+    margin:18px 22px 28px !important;
+    border:1px solid var(--gov-line) !important;
+    border-radius:20px !important;
+    background:#fff !important;
+    overflow:hidden !important;
+  }
+
+  .gov-advanced-shell summary{
+    cursor:pointer;
+    list-style:none;
+    padding:18px 22px;
+    border-bottom:1px solid var(--gov-line);
+    font-size:12px;
+    font-weight:760;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--gov-ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .gov-advanced-shell summary::-webkit-details-marker{
+    display:none;
+  }
+
+  .gov-advanced-shell summary::after{
+    content:"SHOW / HIDE";
+    border:1px solid var(--gov-line);
+    border-radius:999px;
+    padding:7px 12px;
+    font-size:10px;
+    font-weight:680;
+    letter-spacing:.14em;
+    color:var(--gov-ink);
+    background:#f3f7fc;
+  }
+
+  .gov-advanced-shell .gov-advanced-body{
+    padding:18px;
+    background:#f5f8fc;
+  }
+
+  .gov-advanced-shell .gov-module{
+    margin:0 0 14px !important;
+  }
+
+  .gov-module{
+    overflow:hidden;
+  }
+
+  .gov-module.gov-advanced{
+    opacity:.96;
+  }
+
+  .gov-module.gov-advanced h2,
+  .gov-module.gov-advanced h3{
+    font-size:12px !important;
+    font-weight:650 !important;
+  }
+
+  .gov-module.gov-advanced .command-value,
+  .gov-module.gov-advanced [class*="value"],
+  .gov-module.gov-advanced [class*="Value"]{
+    font-size:16px !important;
+    font-weight:650 !important;
+  }
+</style>
+
+<script>
+(function(){
+  function txt(el){
+    return (el.textContent || "").replace(/\s+/g," ").trim().toUpperCase();
+  }
+
+  function rootForHeading(h){
+    return h.closest("section,.heatmap-panel,.command-panel,.panel,.card") || h.parentElement;
+  }
+
+  function apply(){
+    document.body.classList.add("gov-system-standard");
+
+    [...document.querySelectorAll("nav,.nav,.tabs,.rail,.subnav,div")].forEach(el=>{
+      const t = txt(el);
+      if(
+        t.includes("DASHBOARD") &&
+        t.includes("CONTROL") &&
+        t.includes("GOVERNANCE") &&
+        t.includes("LEDGER") &&
+        t.length < 160
+      ){
+        el.classList.add("gov-hide-legacy-nav");
+      }
+    });
+
+    const advancedWords = [
+      "CIVILIZATION","PREDICTION","CAUSALITY","MEMORY","TOPOLOGY",
+      "EVOLUTION","DIRECTIVE","IMMUNE","REGENERATION","ADAPTATION",
+      "FORESIGHT","SOVEREIGNTY","CONSENSUS","META-LAW","REALITY",
+      "PHYSICS","CONSCIOUSNESS","PRESSURE","REGENERATION","VISUALIZATION"
+    ];
+
+    [...document.querySelectorAll("h1,h2,h3")].forEach(h=>{
+      const root = rootForHeading(h);
+      if(!root || root.classList.contains("ex-engine-header")) return;
+
+      root.classList.add("gov-module");
+
+      const t = txt(h);
+      if(advancedWords.some(w => t.includes(w))){
+        root.classList.add("gov-advanced");
+      }
+    });
+
+    const advanced = [...document.querySelectorAll(".gov-module.gov-advanced")]
+      .filter(el => !el.closest(".gov-advanced-shell"));
+
+    if(advanced.length){
+      const first = advanced[0];
+      const details = document.createElement("details");
+      details.className = "gov-advanced-shell";
+
+      const summary = document.createElement("summary");
+      summary.textContent = "Advanced System Layers";
+
+      const body = document.createElement("div");
+      body.className = "gov-advanced-body";
+
+      first.parentNode.insertBefore(details, first);
+      details.appendChild(summary);
+      details.appendChild(body);
+
+      advanced.forEach(el => body.appendChild(el));
+    }
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", () => setTimeout(apply, 250));
+  }else{
+    setTimeout(apply, 250);
+  }
+})();
+</script>
+<!-- GOVERNANCE SYSTEM STANDARD END -->
+
 </body>
 </html>
