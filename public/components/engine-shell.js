@@ -15,14 +15,11 @@
     return path.replace(/index\.html$/,"");
   }
 
-  function active(path){
-    const current = normalize(location.pathname);
-    return normalize(path) === current;
+  function isActive(path){
+    return normalize(location.pathname) === normalize(path);
   }
 
-  function render(){
-    const shell = document.querySelector(".ex-engine-shell");
-    if(!shell) return;
+  function buildHeader(){
 
     const header = document.createElement("header");
     header.className = "ex-engine-header";
@@ -42,7 +39,10 @@
 
         <nav class="ex-engine-nav">
           ${NAV.map(([label,path]) => `
-            <a href="${path}" class="${active(path) ? "active" : ""}">
+            <a
+              href="${path}"
+              class="${isActive(path) ? "active" : ""}"
+            >
               ${label}
             </a>
           `).join("")}
@@ -55,13 +55,28 @@
       </div>
     `;
 
-    shell.prepend(header);
+    return header;
+  }
+
+  function mount(){
+
+    let shell = document.querySelector(".ex-engine-shell");
+
+    if(!shell){
+      shell = document.body;
+    }
+
+    if(document.querySelector(".ex-engine-header")){
+      return;
+    }
+
+    shell.prepend(buildHeader());
   }
 
   if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", render);
+    document.addEventListener("DOMContentLoaded", mount);
   }else{
-    render();
+    mount();
   }
 
 })();
