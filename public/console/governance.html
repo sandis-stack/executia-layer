@@ -4510,7 +4510,7 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
       }
     }
 
-    function window.__replayClass = function(event){
+    window.__replayClass = function(event){
       const t = String(event?.type || "").toUpperCase();
       if(t.includes("CONSTITUTION")) return "constitution";
       if(t.includes("FREEZE") || t.includes("BLOCKED")) return "freeze";
