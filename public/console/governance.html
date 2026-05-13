@@ -9393,7 +9393,7 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
           "";
 
         const response = await fetch(
-          "/api/v1/proof/export?execution_id=" + encodeURIComponent(executionId),
+          "/api/v1/proof/export.js?execution_id=" + encodeURIComponent(executionId),
           {
             method:"GET",
             headers:{
@@ -11022,7 +11022,7 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
           return;
         }
 
-        const data = await api("/api/v1/proof/export?execution_id=" + encodeURIComponent(executionId));
+        const data = await api("/api/v1/proof/export.js?execution_id=" + encodeURIComponent(executionId));
         const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -11049,7 +11049,7 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
           return;
         }
 
-        const response = await fetch("/api/v1/proof/pdf?execution_id=" + encodeURIComponent(executionId), {
+        const response = await fetch("/api/v1/proof/pdf.js?execution_id=" + encodeURIComponent(executionId), {
           headers:{ "Authorization":"Bearer " + TOKEN }
         });
 
