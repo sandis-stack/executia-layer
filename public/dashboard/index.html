@@ -1,1197 +1,644 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="executia-demo-key" content="">
-  <script src="/enterprise.js"></script>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>EXECUTIA™ — Execution Engine</title>
-  <meta name="description" content="EXECUTIA™ execution engine." />
-  <link rel="stylesheet" href="/enterprise.css" />
-<style>
-.engine-nav{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
-  padding:12px 20px;
-  border-top:1px solid #d8e1ec;
-  border-bottom:1px solid #d8e1ec;
-  background:#fff;
-}
-
-.engine-nav a{
-  text-decoration:none;
-  color:#183a5b;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  border:1px solid #d8e1ec;
-  border-radius:999px;
-  padding:8px 12px;
-  background:#f7fbff;
-}
-
-.engine-nav a.active{
-  background:#183a5b;
-  color:#fff;
-  border-color:#183a5b;
-}
-
-.exec-header{
-  width:100%;
-  background:#fff;
-  border-bottom:1px solid #e1e7ef;
-}
-
-.exec-header-inner{
-  max-width:1440px;
-  height:92px;
-  margin:0 auto;
-  padding:0 36px;
-  display:grid;
-  grid-template-columns:260px 1fr 180px;
-  align-items:center;
-  gap:32px;
-}
-
-.exec-brand{
-  text-decoration:none;
-  color:#1E3A5F;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-
-.exec-brand span{
-  font-size:22px;
-  line-height:1;
-  letter-spacing:.16em;
-  font-weight:900;
-}
-
-.exec-brand small{
-  font-size:11px;
-  letter-spacing:.34em;
-  font-weight:800;
-  color:#7b8797;
-}
-
-.exec-nav{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:34px;
-}
-
-.exec-nav a{
-  height:100%;
-  display:flex;
-  align-items:center;
-  position:relative;
-  text-decoration:none;
-  color:#a7b0bf;
-  font-size:13px;
-  letter-spacing:.22em;
-  font-weight:900;
-}
-
-.exec-nav a.active{
-  color:#1E3A5F;
-}
-
-.exec-nav a.active::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:3px;
-  background:#1E3A5F;
-}
-
-.exec-action{
-  justify-self:end;
-  text-decoration:none;
-  padding:14px 24px;
-  border:1px solid #d6deea;
-  border-radius:999px;
-  color:#1E3A5F;
-  font-size:14px;
-  font-weight:800;
-  letter-spacing:.08em;
-  background:#fff;
-}
-
-.exec-status-row{
-  background:#f6f9fd;
-  border-bottom:1px solid #dbe4ef;
-}
-
-.exec-status-inner{
-  max-width:1440px;
-  height:44px;
-  margin:0 auto;
-  padding:0 36px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.exec-status-inner span{
-  font-size:12px;
-  letter-spacing:.16em;
-  font-weight:900;
-  color:#1E3A5F;
-  padding:8px 14px;
-  border:1px solid #d6deea;
-  border-radius:999px;
-  background:#fff;
-}
-
-
-/* EXECUTIA HEADER CLEANUP */
-.exec-header-inner{
-  height:88px !important;
-  grid-template-columns:260px 1fr 180px !important;
-}
-
-.exec-nav a{
-  border:none !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  padding:0 !important;
-}
-
-.exec-status-inner{
-  height:42px !important;
-}
-
-.exec-status-inner span{
-  font-size:11px !important;
-  padding:7px 12px !important;
-}
-
-main,
-.dashboard,
-.page,
-.content,
-.container{
-  max-width:1440px;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-.exec-header + .exec-status-row + .exec-status-row{
-  display:none !important;
-}
-
-
-/* FINAL EXECUTIA ENGINE HEADER */
-.exec-header{
-  width:100%;
-  background:#fff;
-  border-bottom:1px solid #e1e7ef;
-}
-
-.exec-header-inner{
-  max-width:1440px !important;
-  height:88px !important;
-  margin:0 auto !important;
-  padding:0 36px !important;
-  display:grid !important;
-  grid-template-columns:260px 1fr 180px !important;
-  align-items:center !important;
-  gap:32px !important;
-}
-
-.exec-brand{
-  text-decoration:none !important;
-  color:#1E3A5F !important;
-  display:flex !important;
-  flex-direction:column !important;
-  gap:5px !important;
-}
-
-.exec-brand span{
-  font-size:22px !important;
-  line-height:1 !important;
-  letter-spacing:.16em !important;
-  font-weight:900 !important;
-}
-
-.exec-brand small{
-  font-size:11px !important;
-  letter-spacing:.34em !important;
-  font-weight:800 !important;
-  color:#7b8797 !important;
-}
-
-.exec-nav{
-  height:100% !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:34px !important;
-  visibility:visible !important;
-  opacity:1 !important;
-}
-
-.exec-nav a{
-  height:100% !important;
-  display:flex !important;
-  align-items:center !important;
-  position:relative !important;
-  text-decoration:none !important;
-  color:#a4afbf !important;
-  font-size:13px !important;
-  letter-spacing:.22em !important;
-  font-weight:900 !important;
-  border:none !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  padding:0 !important;
-}
-
-.exec-nav a.active{
-  color:#1E3A5F !important;
-}
-
-.exec-nav a.active::after{
-  content:"" !important;
-  position:absolute !important;
-  left:0 !important;
-  right:0 !important;
-  bottom:0 !important;
-  height:3px !important;
-  background:#1E3A5F !important;
-}
-
-.exec-action{
-  justify-self:end !important;
-}
-
-
-/* REMOVE LEGACY ENGINE CHROME */
-.exec-header{
-  position:relative;
-  z-index:20;
-}
-
-.exec-header-inner{
-  max-width:1440px !important;
-  height:88px !important;
-  margin:0 auto !important;
-  padding:0 36px !important;
-  display:grid !important;
-  grid-template-columns:260px 1fr 180px !important;
-  align-items:center !important;
-  gap:32px !important;
-}
-
-.exec-nav{
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:34px !important;
-  height:100% !important;
-}
-
-.exec-nav a{
-  border:none !important;
-  border-radius:0 !important;
-  background:transparent !important;
-  padding:0 !important;
-}
-
-body > .exec-status-row{
-  display:none !important;
-}
-
-
-/* FINAL STATIC EXECUTIA ENGINE HEADER */
-.exec-header{
-  width:100%;
-  background:#fff;
-  border-bottom:1px solid #e1e7ef;
-  position:relative;
-  z-index:50;
-}
-
-.exec-header-inner{
-  max-width:1440px;
-  height:88px;
-  margin:0 auto;
-  padding:0 36px;
-  display:grid;
-  grid-template-columns:260px 1fr 180px;
-  align-items:center;
-  gap:32px;
-}
-
-.exec-brand{
-  text-decoration:none;
-  color:#1E3A5F;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-
-.exec-brand span{
-  font-size:22px;
-  line-height:1;
-  letter-spacing:.16em;
-  font-weight:900;
-}
-
-.exec-brand small{
-  font-size:11px;
-  letter-spacing:.34em;
-  font-weight:800;
-  color:#7b8797;
-}
-
-.exec-nav{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:34px;
-}
-
-.exec-nav a{
-  height:100%;
-  display:flex;
-  align-items:center;
-  position:relative;
-  text-decoration:none;
-  color:#a4afbf;
-  font-size:13px;
-  letter-spacing:.22em;
-  font-weight:900;
-  border:none;
-  border-radius:0;
-  background:transparent;
-  padding:0;
-}
-
-.exec-nav a.active{
-  color:#1E3A5F;
-}
-
-.exec-nav a.active::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:3px;
-  background:#1E3A5F;
-}
-
-.exec-action{
-  justify-self:end;
-  text-decoration:none;
-  padding:14px 24px;
-  border:1px solid #d6deea;
-  border-radius:999px;
-  color:#1E3A5F;
-  font-size:14px;
-  font-weight:800;
-  letter-spacing:.08em;
-  background:#fff;
-}
-
-
-/* EXECUTIA FINAL ENGINE HEADER */
-
-.exec-header{
-  width:100%;
-  background:#fff;
-  border-bottom:1px solid #e4ebf3;
-}
-
-.exec-header-inner{
-  max-width:1440px;
-  height:88px;
-  margin:0 auto;
-  padding:0 36px;
-  display:grid;
-  grid-template-columns:260px 1fr 180px;
-  align-items:center;
-  gap:32px;
-}
-
-.exec-brand{
-  text-decoration:none;
-  color:#1E3A5F;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-
-.exec-brand span{
-  font-size:22px;
-  line-height:1;
-  letter-spacing:.16em;
-  font-weight:900;
-}
-
-.exec-brand small{
-  font-size:11px;
-  letter-spacing:.34em;
-  font-weight:800;
-  color:#7d8898;
-}
-
-.exec-nav{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:34px;
-}
-
-.exec-nav a{
-  height:100%;
-  display:flex;
-  align-items:center;
-  position:relative;
-  text-decoration:none;
-  color:#a4afbf !important;
-  font-size:13px;
-  letter-spacing:.22em;
-  font-weight:900;
-  background:transparent !important;
-  border:none !important;
-  border-radius:0 !important;
-  padding:0 !important;
-  box-shadow:none !important;
-}
-
-.exec-nav a.active{
-  color:#1E3A5F !important;
-}
-
-.exec-nav a.active::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:3px;
-  background:#1E3A5F;
-}
-
-.exec-action{
-  justify-self:end;
-  text-decoration:none;
-  padding:14px 24px;
-  border:1px solid #d9e2ec;
-  border-radius:999px;
-  color:#1E3A5F;
-  font-size:14px;
-  font-weight:800;
-  letter-spacing:.08em;
-  background:#fff;
-}
-
-/* REMOVE OLD PILLS */
-.exec-header .pill,
-.exec-header .tab,
-.exec-header button,
-.exec-header-inner button{
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-}
-
-/* SINGLE STATUS ROW LOOK */
-.exec-status-row{
-  background:#f5f8fc;
-  border-top:1px solid #edf2f7;
-  border-bottom:1px solid #edf2f7;
-}
-
-/* CONTENT */
-main,
-.page,
-.dashboard,
-.container{
-  max-width:1440px;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-/* CARDS */
-.card,
-.panel,
-section{
-  box-shadow:0 8px 24px rgba(15,23,42,.03);
-}
-
-</style>
-  <link rel="stylesheet" href="/components/engine-shell.css">
-</head>
-<body>
-
-<header class="exec-header">
-  <div class="exec-header-inner">
-    <a class="exec-brand" href="/dashboard">
-      <span>EXECUTIA™</span>
-      <small>EXECUTION ENGINE</small>
-    </a>
-
-    <nav class="exec-nav" aria-label="Execution engine navigation">
-      <a class="active" href="/dashboard">CONTROL</a>
-      <a href="/governance">GOVERNANCE</a>
-      <a href="/ledger">LEDGER</a>
-      <a href="/audit">AUDIT</a>
-      <a href="/proofs">PROOFS</a>
-      <a href="/health">HEALTH</a>
-    </nav>
-
-    <a class="exec-action" href="https://executia.io">Entry ↗</a>
-  </div>
-</header>
-
-
-
-
-
-
-<div class="exec-status-row">
-  <div class="exec-status-inner">
-    <span>RUNTIME: ACTIVE</span>
-    <span>LEDGER: VERIFIED</span>
-    <span>AUDIT: RECORDING</span>
-    <span>PROOF: ENABLED</span>
-  </div>
-</div>
-
-
-  <div class="ex-header-shell" data-ex-header>
-    <header class="ex-header">
-      <a class="ex-brand" href="https://executia.io" aria-label="EXECUTIA entry"><span class="ex-brand-name">EXECUTIA™</span><span class="ex-brand-context">EXECUTION ENGINE</span></a>
-      <button class="ex-mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-ex-menu-toggle><span></span><span></span></button>
-      <nav class="ex-nav" aria-label="Engine navigation"><a href="/dashboard" class="active" aria-current="page">LIVE</a><a href="/control">CONTROL</a><a href="/history">HISTORY</a><a href="/operations">OPS</a><a href="/demo">DEMO</a></nav>
-      <a class="ex-header-action" href="https://executia.io">Entry ↗</a>
-    </header>
-    <div class="ex-statusbar" aria-label="Engine status">
-      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
-      <span class="ex-status-item">Registry Locked</span>
-      <span class="ex-status-item">Ledger Verified</span>
-      <span class="ex-status-item">Audit Recording</span>
-    </div>
-  </div>
-  <main class="ex-main">
-
-<section class="ex-system-strip">
-  <span>UTC <strong id="utcClock">--:--:--</strong></span>
-  <span>Ledger <strong id="ledgerTopState">VERIFYING</strong></span>
-  <span>Execution State <strong>LIVE</strong></span>
-  <span>Synchronization <strong>MATCHED</strong></span>
-</section>
-
-<script>
-function updateUtcClock() {
-  const el = document.getElementById('utcClock');
-  if (el) el.textContent = new Date().toISOString().slice(11, 19);
-}
-setInterval(updateUtcClock, 1000);
-window.addEventListener('load', updateUtcClock);
-</script>
-
-
-
-<section class="ex-operator-flow">
-  <div class="ex-flow-step">
-    <small>01 SESSION</small>
-    <strong>Activate operator access</strong>
-    <span>Protected operator session</span>
-  </div>
-  <div class="ex-flow-step">
-    <small>02 EXECUTION</small>
-    <strong>Commit strategic execution</strong>
-    <span>Atomic execution commitment</span>
-  </div>
-  <div class="ex-flow-step">
-    <small>03 VERIFICATION</small>
-    <strong>Verify execution chain</strong>
-    <span>Truth chain verification</span>
-  </div>
-  <div class="ex-flow-step">
-    <small>04 LIVE STATE</small>
-    <strong>Update operational stream</strong>
-    <span>Operational state synchronized</span>
-  </div>
-</section>
-
-
-
-<section class="ex-card" style="margin-top:18px">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">OPERATOR SESSION</div>
-      <h2>Protected verification access</h2>
-      <p>Activate protected operator access for ledger verification and execution controls.</p>
-    </div>
-  </div>
-
-  <div style="display:flex; gap:10px; align-items:center">
-    <input id="operatorKeyInput" type="password" placeholder="Operator access key" style="flex:1; padding:12px 14px; border:1px solid var(--ex-line); border-radius:12px">
-    <button class="ex-btn" onclick="saveOperatorKey()">Activate session</button>
-  </div>
-  <small id="operatorKeyStatus" style="display:block; margin-top:10px; color:var(--ex-muted)">Session not activated</small>
-</section>
-
-<script>
-function saveOperatorKey() {
-  const input = document.getElementById('operatorKeyInput');
-  const status = document.getElementById('operatorKeyStatus');
-  const key = (input.value || '').trim();
-
-  if (!key) {
-    status.textContent = 'No key entered';
-    return;
-  }
-
-  localStorage.setItem('executia_api_key', key);
-  status.textContent = 'Operator session activated';
-  loadExecutiaLive();
-}
-</script>
-
-
-<section class="ex-card" style="margin-top:18px">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">LIVE EXECUTION TEST</div>
-      <h2>Commit strategic execution</h2>
-      <p>Create a real execution result in Supabase and update the live stream.</p>
-    </div>
-  </div>
-
-  <div style="display:grid; grid-template-columns:1fr 180px 160px; gap:10px">
-    <input id="execSubject" value="Strategic Energy Corridor" style="padding:12px 14px; border:1px solid var(--ex-line); border-radius:12px">
-    <input id="execAmount" value="1200000000" style="padding:12px 14px; border:1px solid var(--ex-line); border-radius:12px">
-    <button class="ex-btn" onclick="runLiveExecution()">Commit execution</button>
-  </div>
-
-  <small id="execRunStatus" style="display:block; margin-top:10px; color:var(--ex-muted)">Ready to commit execution.</small>
-</section>
-
-<script>
-async function runLiveExecution() {
-  const status = document.getElementById('execRunStatus');
-  const key = localStorage.getItem('executia_api_key') || '';
-  const subject = document.getElementById('execSubject').value || 'Strategic Energy Corridor';
-  const amount = Number(document.getElementById('execAmount').value || 1200000000);
-
-  if (!key) {
-    status.textContent = 'Activate operator session first.';
-    return;
-  }
-
-  status.textContent = 'Committing execution...';
-
-  const res = await window.executiaApi('/api/v1/execute', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': key
-    },
-    body: JSON.stringify({
-      request_type: 'PROJECT_EXECUTION',
-      actor: 'operator',
-      subject,
-      amount
-    })
-  });
-
-  const data = await res.json();
-
-  if (!data.ok) {
-    status.textContent = data.error?.message || 'Execution failed';
-    return;
-  }
-
-  status.textContent = `Execution committed: ${data.execution_id}`;
-  loadExecutiaLive();
-}
-</script>
-
-
-<section class="ex-card" style="margin-top:18px">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">TRUTH VERIFICATION</div>
-      <h2>Ledger verification</h2>
-      <p>Verify execution chain, ledger chain and audit state against Supabase.</p>
-    </div>
-    <button class="ex-btn" onclick="verifyLedgerNow()">Verify now</button>
-  </div>
-
-  <div id="ledgerVerifyResult" class="ex-stream-row">
-    <strong>Verification state</strong>
-    <span>Waiting for operator session</span>
-    <small>Protected endpoint</small>
-  </div>
-</section>
-
-<script>
-async function verifyLedgerNow() {
-  const box = document.getElementById('ledgerVerifyResult');
-  const key = localStorage.getItem('executia_api_key') || '';
-
-  if (!key) {
-    box.innerHTML = '<strong>LOGIN REQUIRED</strong><span>Activate operator session first</span><small>ledger-verify</small>';
-    return;
-  }
-
-  box.innerHTML = '<strong>VERIFYING</strong><span>Checking ledger chain...</span><small>ledger-verify</small>';
-
-  const res = await window.executiaApi('/api/v1/ledger-verify', {
-    headers: { 'x-api-key': key }
-  });
-
-  const data = await res.json();
-
-  box.innerHTML = `
-    <strong>${data.verified ? 'VERIFIED' : 'NOT VERIFIED'}</strong>
-    <span>Ledger: ${data.ledger_chain?.verified ? 'OK' : 'CHECK'} · Execution: ${data.execution_chain?.verified ? 'OK' : 'CHECK'}</span>
-    <small>Entries: ${data.execution_chain?.entries ?? 0}</small>
-  `;
-}
-</script>
-
-
-<section class="ex-proof-card">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">SYSTEM PROOF</div>
-      <h2>Execution integrity proof</h2>
-      <p>Protected verification state across ledger, execution chain and audit controls.</p>
-    </div>
-  </div>
-
-  <div class="ex-proof-grid">
-    <div class="ex-proof-item">
-      <small>Ledger chain</small>
-      <strong id="proofLedger">Protected</strong>
-    </div>
-    <div class="ex-proof-item">
-      <small>Execution chain</small>
-      <strong id="proofExecution">Protected</strong>
-    </div>
-    <div class="ex-proof-item">
-      <small>Account audit</small>
-      <strong id="proofAudit">Protected</strong>
-    </div>
-    <div class="ex-proof-item">
-      <small>Truth anchors</small>
-      <strong id="proofAnchors">Protected</strong>
-    </div>
-  </div>
-</section>
-
-
-<section class="ex-card" style="margin-top:18px">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">OPERATIONAL CONTINUITY</div>
-      <h2>Synchronization stability</h2>
-      <p>Continuity state for large-scale coordinated execution environments.</p>
-    </div>
-    <span class="ex-pill ex-pill-green">STABLE</span>
-  </div>
-
-  <div class="ex-continuity-grid">
-    <div class="ex-continuity-card">
-      <small>Treasury synchronization</small>
-      <strong>MATCHED</strong>
-      <span>No settlement inconsistency detected.</span>
-    </div>
-    <div class="ex-continuity-card">
-      <small>Registry alignment</small>
-      <strong>VERIFIED</strong>
-      <span>Execution actors remain aligned.</span>
-    </div>
-    <div class="ex-continuity-card">
-      <small>Operational drift</small>
-      <strong>LOW</strong>
-      <span>Execution reality remains synchronized.</span>
-    </div>
-  </div>
-</section>
-
-
-<section class="ex-crossborder">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">CROSS-BORDER EXECUTION</div>
-      <h2>Strategic energy corridor</h2>
-      <p>Operational synchronization across treasury, registry, infrastructure and audit layers.</p>
-    </div>
-    <span class="ex-pill ex-pill-green">SYNCHRONIZED</span>
-  </div>
-
-  <div class="ex-route">
-    <span class="ex-route-node">EU</span>
-    <span class="ex-route-arrow">→</span>
-    <span class="ex-route-node">Norway</span>
-    <span class="ex-route-arrow">→</span>
-    <span class="ex-route-node">Germany</span>
-    <span class="ex-route-arrow">→</span>
-    <span class="ex-route-node">Audit</span>
-  </div>
-
-  <div class="ex-route-meta">
-    <div><small>Execution value</small><strong>€1.2B</strong></div>
-    <div><small>Continuity</small><strong>ACTIVE</strong></div>
-    <div><small>Coordination</small><strong>MATCHED</strong></div>
-    <div><small>Drift risk</small><strong>LOW</strong></div>
-  </div>
-</section>
-
-
-<section class="ex-consequence">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">EXECUTION CONSEQUENCE</div>
-      <h2>Conflict prevention state</h2>
-      <p>EXECUTIA detects execution drift before it becomes institutional failure.</p>
-    </div>
-    <span class="ex-pill ex-pill-green">RISK CONTAINED</span>
-  </div>
-
-  <div class="ex-consequence-flow">
-    <div class="ex-consequence-box">
-      <small>Without execution integrity</small>
-      <strong>Desynchronization risk</strong>
-      <span>Treasury state diverges → registry verification delays → audit truth arrives after execution → operational confidence degrades.</span>
-    </div>
-
-    <div class="ex-consequence-arrow">→</div>
-
-    <div class="ex-consequence-box">
-      <small>With EXECUTIA</small>
-      <strong>Continuity preserved</strong>
-      <span>Execution inconsistency detected → commitment paused → truth chain verified → operational reality remains synchronized.</span>
-    </div>
-  </div>
-</section>
-
-<section class="ex-card ex-live-panel" style="margin-top:48px">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">LIVE EXECUTION STATE</div>
-      <h2>Operational execution state</h2>
-      <p>Real-time data from EXECUTIA execution ledger.</p>
-    </div>
-    <span id="ledgerBadge" class="ex-pill ex-pill-green">VERIFYING</span>
-  </div>
-
-  <div id="liveStats" class="ex-metric-grid"></div>
-</section>
-
-<section class="ex-card" style="margin-top:24px">
-  <div class="ex-section-head">
-    <div>
-      <div class="ex-eyebrow">EXECUTION STREAM</div>
-      <h2>Latest execution commitments</h2>
-      <p>Approved, blocked and pending execution results from Supabase.</p>
-    </div>
-  </div>
-
-  <div id="executionStream" class="ex-stream"></div>
-</section>
-
-<script>
-async function loadExecutiaLive() {
-  try {
-    const stateRes = await window.executiaApi('/api/v1/live-state');
-    const state = await stateRes.json();
-
-    let ledger = { verified: false };
-    try {
-      const ledgerRes = await window.executiaApi('/api/v1/ledger-verify', {
-        headers: { 'x-api-key': localStorage.getItem('executia_api_key') || '' }
-      });
-      ledger = await ledgerRes.json();
-    } catch (_) {}
-
-    const historyRes = await window.executiaApi('/api/v1/history', {
-      headers: {
-        'x-api-key': localStorage.getItem('executia_api_key') || ''
+
+  <style>
+    :root{
+      --bg:#f5f8fc;
+      --panel:#ffffff;
+      --line:#d9e3ef;
+      --text:#0f243f;
+      --muted:#71819a;
+      --primary:#1E3A5F;
+      --soft:#f8fbff;
+      --danger:#b42318;
+      --danger-bg:#fff1f0;
+      --green:#16875a;
+      --radius:22px;
+      --shadow:0 10px 30px rgba(15,23,42,.04);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .exec-header{
+      background:#fff;
+      border-bottom:1px solid #e1e7ef;
+    }
+
+    .exec-header-inner{
+      max-width:1440px;
+      height:92px;
+      margin:0 auto;
+      padding:0 36px;
+      display:grid;
+      grid-template-columns:260px 1fr 180px;
+      align-items:center;
+      gap:32px;
+    }
+
+    .exec-brand{
+      text-decoration:none;
+      color:var(--primary);
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+    }
+
+    .exec-brand span{
+      font-size:22px;
+      letter-spacing:.16em;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .exec-brand small{
+      font-size:11px;
+      letter-spacing:.34em;
+      font-weight:800;
+      color:#7b8797;
+    }
+
+    .exec-nav{
+      height:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:34px;
+    }
+
+    .exec-nav a{
+      height:100%;
+      display:flex;
+      align-items:center;
+      position:relative;
+      text-decoration:none;
+      color:#a4afbf;
+      font-size:13px;
+      letter-spacing:.22em;
+      font-weight:900;
+    }
+
+    .exec-nav a.active{color:var(--primary)}
+
+    .exec-nav a.active::after{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:3px;
+      background:var(--primary);
+    }
+
+    .exec-action{
+      justify-self:end;
+      text-decoration:none;
+      padding:14px 24px;
+      border:1px solid #d6deea;
+      border-radius:999px;
+      color:var(--primary);
+      font-size:14px;
+      font-weight:800;
+      letter-spacing:.08em;
+      background:#fff;
+    }
+
+    .page{
+      max-width:1440px;
+      margin:0 auto;
+      padding:52px 36px 64px;
+    }
+
+    .status-row{
+      height:46px;
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr 1fr;
+      align-items:center;
+      padding:0 18px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .status-row strong{
+      color:var(--primary);
+      margin-left:6px;
+      font-weight:900;
+      letter-spacing:.04em;
+    }
+
+    .step-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-bottom:28px;
+    }
+
+    .mini-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .mini-card small{
+      display:block;
+      color:#8493aa;
+      font-size:12px;
+      letter-spacing:.28em;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+
+    .mini-card h3{
+      margin:0 0 10px;
+      color:var(--primary);
+      font-size:17px;
+      letter-spacing:.16em;
+      font-weight:900;
+    }
+
+    .mini-card p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .main-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:20px;
+      margin-bottom:28px;
+    }
+
+    .panel{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      min-height:430px;
+    }
+
+    .panel h2{
+      margin:0 0 18px;
+      color:var(--primary);
+      font-size:14px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      font-weight:900;
+    }
+
+    pre{
+      margin:0;
+      padding:18px;
+      background:#f9fbfe;
+      border:1px solid var(--line);
+      border-radius:16px;
+      color:#111827;
+      font-size:13px;
+      line-height:1.65;
+      overflow:auto;
+    }
+
+    .button{
+      width:100%;
+      margin-top:18px;
+      border:0;
+      border-radius:16px;
+      padding:16px 18px;
+      background:var(--primary);
+      color:#fff;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.1em;
+      cursor:pointer;
+    }
+
+    .button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .timeline{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .step{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#f9fbfe;
+      opacity:.55;
+      transition:.2s ease;
+    }
+
+    .step.active{
+      opacity:1;
+      background:#eaf1fa;
+      border-color:#b8c9de;
+    }
+
+    .step.blocked{
+      opacity:1;
+      background:var(--danger-bg);
+      border-color:#f0b8b4;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#9aa8bb;
+      margin-top:5px;
+      flex:0 0 auto;
+    }
+
+    .step.active .dot{background:var(--primary)}
+    .step.blocked .dot{background:var(--danger)}
+
+    .step strong{
+      display:block;
+      font-size:13px;
+      letter-spacing:.08em;
+      color:#111827;
+    }
+
+    .step span{
+      display:block;
+      margin-top:4px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .decision-box{
+      padding:22px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#f9fbfe;
+      margin-bottom:18px;
+    }
+
+    .decision-box.blocked{
+      background:var(--danger-bg);
+      border-color:#f0b8b4;
+    }
+
+    .label{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.14em;
+      font-weight:900;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+
+    .decision-result{
+      color:var(--primary);
+      font-size:27px;
+      font-weight:900;
+      letter-spacing:.04em;
+    }
+
+    .decision-result.blocked{
+      color:var(--danger);
+    }
+
+    .decision-subtext{
+      margin-top:10px;
+      color:#374151;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .proof{
+      display:grid;
+      gap:10px;
+    }
+
+    .proof-row{
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+    }
+
+    .proof-row span{
+      display:block;
+      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:900;
+      margin-bottom:5px;
+    }
+
+    .proof-row strong{
+      display:block;
+      color:#111827;
+      font-size:13px;
+      word-break:break-word;
+    }
+
+    .wide-panel{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:24px;
+      align-items:center;
+    }
+
+    .wide-panel h2{
+      margin:0 0 10px;
+      color:var(--primary);
+      font-size:15px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .wide-panel p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:14px;
+    }
+
+    .callout{
+      background:#f3f7fd;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:18px;
+    }
+
+    .callout strong{
+      display:block;
+      color:var(--primary);
+      margin-bottom:8px;
+      letter-spacing:.08em;
+    }
+
+    footer{
+      max-width:1440px;
+      margin:26px auto 0;
+      padding:0 36px 32px;
+      color:var(--muted);
+      font-size:13px;
+      display:flex;
+      justify-content:space-between;
+    }
+
+    @media(max-width:1100px){
+      .exec-header-inner{
+        grid-template-columns:1fr;
+        height:auto;
+        padding:24px;
       }
-    });
 
-    const history = await historyRes.json();
+      .exec-nav{
+        justify-content:flex-start;
+        flex-wrap:wrap;
+        gap:18px;
+      }
 
-    const badge = document.getElementById('ledgerBadge');
-    if (badge) {
-      badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED'; const topLedger = document.getElementById('ledgerTopState'); if (topLedger) topLedger.textContent = ledger.verified ? 'VERIFIED' : 'PROTECTED';
-      badge.className = ledger.verified ? 'ex-pill ex-pill-green' : 'ex-pill';
+      .exec-action{
+        justify-self:start;
+      }
+
+      .status-row,
+      .step-grid,
+      .main-grid,
+      .wide-panel{
+        grid-template-columns:1fr;
+      }
     }
+  </style>
+</head>
 
-    const proofLedger = document.getElementById('proofLedger');
-    const proofExecution = document.getElementById('proofExecution');
-    const proofAudit = document.getElementById('proofAudit');
-    const proofAnchors = document.getElementById('proofAnchors');
+<body>
+  <header class="exec-header">
+    <div class="exec-header-inner">
+      <a class="exec-brand" href="/dashboard">
+        <span>EXECUTIA™</span>
+        <small>EXECUTION ENGINE</small>
+      </a>
 
-    if (proofLedger) proofLedger.textContent = ledger.ledger_chain?.verified ? 'VERIFIED' : 'Protected';
-    if (proofExecution) proofExecution.textContent = ledger.execution_chain?.verified ? 'VERIFIED' : 'Protected';
-    if (proofAudit) proofAudit.textContent = ledger.account_audit?.verified ? 'VERIFIED' : 'Protected';
-    if (proofAnchors) proofAnchors.textContent = ledger.truth_anchors?.verified ? 'VERIFIED' : 'Protected';
+      <nav class="exec-nav" aria-label="Execution engine navigation">
+        <a class="active" href="/dashboard">CONTROL</a>
+        <a href="/governance">GOVERNANCE</a>
+        <a href="/ledger">LEDGER</a>
+        <a href="/audit">AUDIT</a>
+        <a href="/proofs">PROOFS</a>
+        <a href="/health">HEALTH</a>
+      </nav>
 
-    const stats = document.getElementById('liveStats');
-    if (stats) {
-      stats.innerHTML = `
-        <div class="ex-stat-card">
-          <span>Approved executions</span>
-          <strong>${state.approved}</strong>
-        </div>
-        <div class="ex-stat-card">
-          <span>Total execution volume</span>
-          <strong>€${Number(state.total_volume || 0).toLocaleString()}</strong>
-        </div>
-        <div class="ex-stat-card">
-          <span>Integrity</span>
-          <strong>${state.integrity}</strong>
-        </div>
-        <div class="ex-stat-card">
-          <span>Pending review</span>
-          <strong>${state.pending_review}</strong>
-        </div>
-      `;
-    }
+      <a class="exec-action" href="https://executia.io">Entry ↗</a>
+    </div>
+  </header>
 
-    const stream = document.getElementById('executionStream');
-    if (stream && history.executions) {
-      stream.innerHTML = `
-        <div class="ex-stream-header">
-          <span>Status</span>
-          <span>Subject</span>
-          <span>Amount</span>
-          <span>Truth Hash</span>
-        </div>
-      ` + history.executions.map(e => `
-        <div class="ex-stream-row">
-          <span class="ex-stream-status">${e.status}</span>
-          <strong>${e.subject || 'Execution'}</strong>
-          <span>€${Number(e.amount || 0).toLocaleString()}</span>
-          <small>${(e.hash || e.execution_id || '').slice(0, 18)}...</small>
-        </div>
-      `).join('');
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-window.addEventListener('load', () => {
-  loadExecutiaLive();
-  setInterval(loadExecutiaLive, 5000);
-});
-</script>
-
-
-    <section class="ex-section-tight">
-      <p class="ex-kicker">Execution truth layer</p>
-      <h1 class="ex-title system-title">Execution Engine</h1>
-      <p class="ex-lead">Real-time validation, registry, ledger and audit state in one controlled execution flow.</p>
+  <main class="page">
+    <section class="status-row">
+      <div>UTC <strong id="utcTime">--:--:--</strong></div>
+      <div>Ledger <strong>PROTECTED</strong></div>
+      <div>Execution State <strong>LIVE</strong></div>
+      <div>Synchronization <strong>MATCHED</strong></div>
     </section>
 
-    <section class="ex-section">
-      <div class="ex-console-shell">
-        <aside class="ex-sidebar">
-          <div class="ex-sidebar-title">Engine console</div>
-          <a class="ex-side-link active" href="/dashboard">Live <span class="ex-side-badge">12</span></a>
-          <a class="ex-side-link" href="/control">Operator queue <span class="ex-side-badge">3</span></a>
-          <a class="ex-side-link" href="/history">Audit trail <span class="ex-side-badge">84</span></a>
-          <a class="ex-side-link" href="/operations">Operations <span class="ex-side-badge">6</span></a>
-          <a class="ex-side-link" href="/demo">Demo <span class="ex-side-badge">1</span></a>
-        </aside>
+    <section class="step-grid">
+      <article class="mini-card">
+        <small>01 SESSION</small>
+        <h3>ACTIVATE OPERATOR ACCESS</h3>
+        <p>Protected operator session</p>
+      </article>
 
-        <div class="ex-grid">
-          <div class="ex-grid ex-grid-4">
-            <article class="ex-card ex-metric"><span class="ex-metric-label">Validation integrity</span><span class="ex-metric-value">99.2%</span></article>
-            <article class="ex-card ex-metric"><span class="ex-metric-label">Live requests</span><span class="ex-metric-value">12</span></article>
-            <article class="ex-card ex-metric"><span class="ex-metric-label">Pending review</span><span class="ex-metric-value">3</span></article>
-            <article class="ex-card ex-metric"><span class="ex-metric-label">Ledger breaks</span><span class="ex-metric-value">0</span></article>
-          </div>
+      <article class="mini-card">
+        <small>02 EXECUTION</small>
+        <h3>COMMIT STRATEGIC EXECUTION</h3>
+        <p>Atomic execution commitment</p>
+      </article>
 
-          <section class="ex-card system">
-            <div class="ex-card-label"><span class="ex-dot"></span>Execution flow</div>
-            <div class="ex-flow">
-              <div class="ex-flow-step"><strong>Request</strong><span>Input received</span></div>
-              <div class="ex-flow-step"><strong>Validation</strong><span>Rules checked</span></div>
-              <div class="ex-flow-step"><strong>Decision</strong><span>Approve / block / review</span></div>
-              <div class="ex-flow-step"><strong>Registry</strong><span>Result committed</span></div>
-              <div class="ex-flow-step"><strong>Ledger</strong><span>Hash verified</span></div>
-              <div class="ex-flow-step"><strong>Audit</strong><span>Proof recorded</span></div>
-            </div>
-          </section>
+      <article class="mini-card">
+        <small>03 VERIFICATION</small>
+        <h3>VERIFY EXECUTION CHAIN</h3>
+        <p>Truth chain verification</p>
+      </article>
 
-          <section class="ex-card">
-            <div class="ex-panel-header">
-              <div><h2 class="ex-panel-title">Live API state</h2><p class="ex-panel-subtitle">Runtime health endpoint response.</p></div>
-              <span class="ex-pill ok">Online</span>
-            </div>
-            <pre id="healthJson" class="ex-json">Loading health state...</pre>
-            <div class="ex-actions">
-              <a class="ex-btn primary" href="/api/v1/health">Health JSON</a>
-              <a class="ex-btn" href="/api/v1/ledger-verify">Ledger verify</a>
-              <a class="ex-btn" href="/api/v1/execute">Execution list</a>
-            </div>
-          </section>
+      <article class="mini-card">
+        <small>04 LIVE STATE</small>
+        <h3>UPDATE OPERATIONAL STREAM</h3>
+        <p>Operational state synchronized</p>
+      </article>
+    </section>
+
+    <section class="main-grid">
+      <article class="panel">
+        <h2>Execution Request</h2>
+        <pre>{
+  "execution_type": "PROCUREMENT_PAYMENT",
+  "vendor": "External Contractor",
+  "amount": 250000,
+  "approval_status": "MISSING"
+}</pre>
+        <button class="button" id="validateBtn">VALIDATE EXECUTION</button>
+      </article>
+
+      <article class="panel">
+        <h2>Execution Timeline</h2>
+        <div class="timeline">
+          <div class="step" data-step="0"><span class="dot"></span><div><strong>REQUEST_RECEIVED</strong><span>Awaiting execution request.</span></div></div>
+          <div class="step" data-step="1"><span class="dot"></span><div><strong>VALIDATION_STARTED</strong><span>Pending</span></div></div>
+          <div class="step" data-step="2"><span class="dot"></span><div><strong>VALIDATING_GOVERNANCE_RULES</strong><span>Pending</span></div></div>
+          <div class="step" data-step="3"><span class="dot"></span><div><strong>RULE_VIOLATION_DETECTED</strong><span>Pending</span></div></div>
+          <div class="step" data-step="4"><span class="dot"></span><div><strong>EXECUTION_BLOCKED</strong><span>Pending</span></div></div>
+          <div class="step" data-step="5"><span class="dot"></span><div><strong>PROOF_GENERATED</strong><span>Pending</span></div></div>
         </div>
+      </article>
+
+      <article class="panel">
+        <h2>Governance Decision</h2>
+
+        <div class="decision-box" id="decisionBox">
+          <div class="label">Status</div>
+          <div class="decision-result" id="decisionResult">SYSTEM STANDBY</div>
+          <div class="decision-subtext" id="decisionSubtext">Awaiting execution request.</div>
+        </div>
+
+        <h2>Immutable Proof</h2>
+        <div class="proof">
+          <div class="proof-row"><span>execution_id</span><strong id="executionId">—</strong></div>
+          <div class="proof-row"><span>proof_hash</span><strong id="proofHash">—</strong></div>
+          <div class="proof-row"><span>timestamp</span><strong id="timestamp">—</strong></div>
+          <div class="proof-row"><span>governance_status</span><strong id="governanceStatus">—</strong></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="wide-panel">
+      <div>
+        <h2>Execution-Time Governance</h2>
+        <p>EXECUTIA validates and governs execution in real time. Human defines outcome. EXECUTIA governs execution. AI realizes and evolves the system.</p>
+      </div>
+
+      <div class="callout">
+        <strong>ABOUT EXECUTIA</strong>
+        <p>AI-based execution governance infrastructure with immutable proof, real-time validation, and policy-driven control.</p>
       </div>
     </section>
   </main>
-  <script>executiaFetchJson('/api/v1/health', 'healthJson');</script>
 
-<script>
-async function loadExecutiaLive() {
-  try {
-    const stateRes = await window.executiaApi('/api/v1/live-state');
-    const state = await stateRes.json();
+  <footer>
+    <span>© 2026 EXECUTIA™. All rights reserved.</span>
+    <span>Execution Governance Infrastructure</span>
+  </footer>
 
-    let ledger = { verified: false };
-    try {
-      const ledgerRes = await window.executiaApi('/api/v1/ledger-verify', {
-        headers: { 'x-api-key': localStorage.getItem('executia_api_key') || '' }
-      });
-      ledger = await ledgerRes.json();
-    } catch (_) {}
+  <script>
+    const validateBtn = document.getElementById("validateBtn");
+    const steps = Array.from(document.querySelectorAll(".step"));
+    const decisionBox = document.getElementById("decisionBox");
+    const decisionResult = document.getElementById("decisionResult");
+    const decisionSubtext = document.getElementById("decisionSubtext");
+    const executionId = document.getElementById("executionId");
+    const proofHash = document.getElementById("proofHash");
+    const timestamp = document.getElementById("timestamp");
+    const governanceStatus = document.getElementById("governanceStatus");
+    const utcTime = document.getElementById("utcTime");
 
-    const historyRes = await window.executiaApi('/api/v1/history', {
-      headers: {
-        'x-api-key': localStorage.getItem('executia_api_key') || ''
+    function updateClock(){
+      utcTime.textContent = new Date().toISOString().slice(11,19);
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function hex(length){
+      const chars = "abcdef0123456789";
+      let out = "";
+      for(let i=0;i<length;i++) out += chars[Math.floor(Math.random()*chars.length)];
+      return out;
+    }
+
+    function reset(){
+      steps.forEach(step => step.classList.remove("active","blocked"));
+      decisionBox.classList.remove("blocked");
+      decisionResult.classList.remove("blocked");
+      decisionResult.textContent = "VALIDATING";
+      decisionSubtext.textContent = "Execution governance validation in progress.";
+      executionId.textContent = "—";
+      proofHash.textContent = "—";
+      timestamp.textContent = "—";
+      governanceStatus.textContent = "VALIDATING";
+    }
+
+    async function runDemo(){
+      validateBtn.disabled = true;
+      reset();
+
+      const messages = [
+        "Execution request received.",
+        "Validation started.",
+        "Governance policy evaluation in progress.",
+        "Required approval missing.",
+        "Execution blocked before operational damage occurred.",
+        "Immutable governance proof generated."
+      ];
+
+      for(let i=0;i<steps.length;i++){
+        await new Promise(r => setTimeout(r, i === 0 ? 250 : 650));
+
+        const step = steps[i];
+        step.classList.add(i >= 3 ? "blocked" : "active");
+        step.querySelector("span + div span").textContent = messages[i];
+
+        if(i === 3){
+          decisionResult.textContent = "VIOLATION DETECTED";
+          decisionResult.classList.add("blocked");
+          decisionSubtext.textContent = "Required approval missing. Governance validation failed.";
+        }
+
+        if(i === 4){
+          decisionBox.classList.add("blocked");
+          decisionResult.textContent = "EXECUTION BLOCKED";
+          decisionSubtext.textContent = "Execution was blocked before operational damage occurred.";
+          governanceStatus.textContent = "BLOCKED";
+        }
+
+        if(i === 5){
+          const now = new Date();
+          executionId.textContent = "exec_" + hex(8) + "_" + now.getTime();
+          proofHash.textContent = "0x" + hex(64);
+          timestamp.textContent = now.toISOString();
+          governanceStatus.textContent = "BLOCKED";
+        }
       }
-    });
 
-    const history = await historyRes.json();
-
-    const badge = document.getElementById('ledgerBadge');
-    if (badge) {
-      badge.textContent = ledger.verified ? 'LEDGER VERIFIED' : 'LOGIN REQUIRED'; const topLedger = document.getElementById('ledgerTopState'); if (topLedger) topLedger.textContent = ledger.verified ? 'VERIFIED' : 'PROTECTED';
-      badge.className = ledger.verified ? 'ex-pill ex-pill-green' : 'ex-pill';
+      validateBtn.disabled = false;
     }
 
-    const proofLedger = document.getElementById('proofLedger');
-    const proofExecution = document.getElementById('proofExecution');
-    const proofAudit = document.getElementById('proofAudit');
-    const proofAnchors = document.getElementById('proofAnchors');
-
-    if (proofLedger) proofLedger.textContent = ledger.ledger_chain?.verified ? 'VERIFIED' : 'Protected';
-    if (proofExecution) proofExecution.textContent = ledger.execution_chain?.verified ? 'VERIFIED' : 'Protected';
-    if (proofAudit) proofAudit.textContent = ledger.account_audit?.verified ? 'VERIFIED' : 'Protected';
-    if (proofAnchors) proofAnchors.textContent = ledger.truth_anchors?.verified ? 'VERIFIED' : 'Protected';
-
-    const stats = document.getElementById('liveStats');
-    if (stats) {
-      stats.innerHTML = `
-        <div class="card">
-          <h3>Approved Executions</h3>
-          <div class="metric">${state.approved}</div>
-        </div>
-
-        <div class="card">
-          <h3>Total Volume</h3>
-          <div class="metric">€${Number(state.total_volume).toLocaleString()}</div>
-        </div>
-
-        <div class="card">
-          <h3>Integrity</h3>
-          <div class="metric">${state.integrity}</div>
-        </div>
-      `;
-    }
-
-    const stream = document.getElementById('executionStream');
-
-    if (stream && history.executions) {
-      stream.innerHTML = history.executions.map(e => `
-        <div class="stream-entry">
-          <strong>${e.subject}</strong><br/>
-          ${e.status} — €${Number(e.amount).toLocaleString()}<br/>
-          <small>${(e.hash || e.execution_id || '').slice(0, 18)}...</small>
-        </div>
-      `).join('');
-    }
-
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-window.addEventListener('load', loadExecutiaLive);
-</script>
-
-
-  <script src="/components/engine-shell.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-(function(){
-  function cleanText(el){
-    return (el.textContent || "").replace(/\s+/g," ").trim().toUpperCase();
-  }
-
-  function isInsideNewHeader(el){
-    return !!el.closest(".exec-header");
-  }
-
-  function removeLegacyChrome(){
-    const nodes = Array.from(document.querySelectorAll("div, nav, section"));
-
-    for (const el of nodes) {
-      if (isInsideNewHeader(el)) continue;
-
-      const t = cleanText(el);
-
-      const legacyNav =
-        t.includes("AUDIT LEDGER") &&
-        t.includes("OPERATIONS") &&
-        t.includes("CONTROL") &&
-        t.includes("GOVERNANCE") &&
-        t.includes("PROOFS") &&
-        t.includes("HEALTH");
-
-      const legacyStatus =
-        t.includes("RUNTIME: ACTIVE") &&
-        t.includes("LEDGER: VERIFIED") &&
-        t.includes("AUDIT: RECORDING") &&
-        t.includes("PROOF: ENABLED");
-
-      if (legacyNav || legacyStatus) {
-        el.remove();
-      }
-    }
-  }
-
-  window.addEventListener("DOMContentLoaded", function(){
-    removeLegacyChrome();
-    setTimeout(removeLegacyChrome, 100);
-    setTimeout(removeLegacyChrome, 500);
-    setTimeout(removeLegacyChrome, 1200);
-  });
-})();
-</script>
-
+    validateBtn.addEventListener("click", runDemo);
+  </script>
 </body>
+</html>
