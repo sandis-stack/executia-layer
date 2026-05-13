@@ -2795,6 +2795,32 @@
 </style>
 <!-- GOVERNANCE STABLE LAYOUT CSS END -->
 
+
+<script>
+window.__replayClass = function(event){
+  const value = String(
+    event?.status ||
+    event?.decision ||
+    event?.event_type ||
+    event?.type ||
+    event ||
+    ""
+  ).toUpperCase();
+
+  if(value.includes("BLOCK") || value.includes("FAIL") || value.includes("REJECT")) return "status-blocked";
+  if(value.includes("FREEZE") || value.includes("REVIEW") || value.includes("PENDING")) return "status-review";
+  if(value.includes("APPROVE") || value.includes("COMMIT") || value.includes("VERIFY") || value.includes("CLEAR")) return "status-approved";
+
+  return "";
+};
+
+window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
+  emergency:{active_freeze_count:0},
+  runtime:"STANDBY",
+  incidents:[]
+};
+</script>
+
 </head>
 <body>
 <nav class="engine-nav" aria-label="Engine navigation">
@@ -4246,29 +4272,7 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-<script>
-window.replayClass = window.replayClass || function(event){
-  const value = String(
-    event?.status ||
-    event?.decision ||
-    event?.type ||
-    event ||
-    ""
-  ).toUpperCase();
 
-  if(value.includes("BLOCK") || value.includes("FAIL")) return "status-blocked";
-  if(value.includes("FREEZE") || value.includes("REVIEW") || value.includes("PENDING")) return "status-review";
-  if(value.includes("APPROVE") || value.includes("COMMIT") || value.includes("VERIFY")) return "status-approved";
-
-  return "";
-};
-
-window.LAST_OPERATIONS_STATUS = window.LAST_OPERATIONS_STATUS || {
-  emergency:{active_freeze_count:0},
-  runtime:"STANDBY",
-  incidents:[]
-};
-</script>
 
 </script>
 
@@ -4506,7 +4510,7 @@ window.LAST_OPERATIONS_STATUS = window.LAST_OPERATIONS_STATUS || {
       }
     }
 
-    function replayClass(event){
+    function window.__replayClass(event){
       const t = String(event?.type || "").toUpperCase();
       if(t.includes("CONSTITUTION")) return "constitution";
       if(t.includes("FREEZE") || t.includes("BLOCKED")) return "freeze";
@@ -4583,7 +4587,7 @@ window.LAST_OPERATIONS_STATUS = window.LAST_OPERATIONS_STATUS || {
       el.innerHTML =
         buildCausalityGraph(FORENSIC_REPLAY_EVENTS) +
         FORENSIC_REPLAY_EVENTS.map((event) => `
-          <div class="replay-event ${replayClass(event)}">
+          <div class="replay-event ${window.__replayClass(event)}">
             <div class="replay-stage">${escapeHtml(event.source)}</div>
             <div>
               <div class="replay-title">${escapeHtml(event.type)}</div>
@@ -4741,7 +4745,7 @@ window.LAST_OPERATIONS_STATUS = window.LAST_OPERATIONS_STATUS || {
 
         ${
           (replay.events || []).slice(-8).reverse().map((event) => `
-            <div class="replay-event ${replayClass(event)}">
+            <div class="replay-event ${window.__replayClass(event)}">
               <div class="replay-stage">${escapeHtml(event.stage || event.source || "EVENT")}</div>
               <div>
                 <div class="replay-title">${escapeHtml(event.type || "UNKNOWN")}</div>
@@ -10620,7 +10624,7 @@ window.LAST_OPERATIONS_STATUS = window.LAST_OPERATIONS_STATUS || {
 
     function hasActiveFreezeSignal(){
       return String($("freezeState")?.textContent || "").includes("ACTIVE") ||
-        Number(LAST_OPERATIONS_STATUS?.emergency?.active_freeze_count || 0) > 0;
+        Number(window.__LAST_OPERATIONS_STATUS?.emergency?.active_freeze_count || 0) > 0;
     }
 
     function isForensicLocked(){
