@@ -28,7 +28,7 @@
       <div class="ex-engine-header-inner">
 
         <div class="ex-engine-brand">
-          <a class="ex-engine-brand-main" href="/">
+          <a class="ex-engine-brand-main" href="https://executia.io/">
             EXECUTIA™
           </a>
 
@@ -48,7 +48,7 @@
           `).join("")}
         </nav>
 
-        <a class="ex-engine-entry" href="/">
+        <a class="ex-engine-entry" href="https://executia.io/">
           Entry ↗
         </a>
 
