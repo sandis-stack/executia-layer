@@ -404,6 +404,134 @@ body > .exec-status-row{
   background:#fff;
 }
 
+
+/* EXECUTIA FINAL ENGINE HEADER */
+
+.exec-header{
+  width:100%;
+  background:#fff;
+  border-bottom:1px solid #e4ebf3;
+}
+
+.exec-header-inner{
+  max-width:1440px;
+  height:88px;
+  margin:0 auto;
+  padding:0 36px;
+  display:grid;
+  grid-template-columns:260px 1fr 180px;
+  align-items:center;
+  gap:32px;
+}
+
+.exec-brand{
+  text-decoration:none;
+  color:#1E3A5F;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.exec-brand span{
+  font-size:22px;
+  line-height:1;
+  letter-spacing:.16em;
+  font-weight:900;
+}
+
+.exec-brand small{
+  font-size:11px;
+  letter-spacing:.34em;
+  font-weight:800;
+  color:#7d8898;
+}
+
+.exec-nav{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:34px;
+}
+
+.exec-nav a{
+  height:100%;
+  display:flex;
+  align-items:center;
+  position:relative;
+  text-decoration:none;
+  color:#a4afbf !important;
+  font-size:13px;
+  letter-spacing:.22em;
+  font-weight:900;
+  background:transparent !important;
+  border:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  box-shadow:none !important;
+}
+
+.exec-nav a.active{
+  color:#1E3A5F !important;
+}
+
+.exec-nav a.active::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:3px;
+  background:#1E3A5F;
+}
+
+.exec-action{
+  justify-self:end;
+  text-decoration:none;
+  padding:14px 24px;
+  border:1px solid #d9e2ec;
+  border-radius:999px;
+  color:#1E3A5F;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.08em;
+  background:#fff;
+}
+
+/* REMOVE OLD PILLS */
+.exec-header .pill,
+.exec-header .tab,
+.exec-header button,
+.exec-header-inner button{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+}
+
+/* SINGLE STATUS ROW LOOK */
+.exec-status-row{
+  background:#f5f8fc;
+  border-top:1px solid #edf2f7;
+  border-bottom:1px solid #edf2f7;
+}
+
+/* CONTENT */
+main,
+.page,
+.dashboard,
+.container{
+  max-width:1440px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* CARDS */
+.card,
+.panel,
+section{
+  box-shadow:0 8px 24px rgba(15,23,42,.03);
+}
+
 </style>
   <link rel="stylesheet" href="/components/engine-shell.css">
 </head>
