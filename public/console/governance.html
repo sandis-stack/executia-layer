@@ -10793,7 +10793,7 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
       ];
 
       if(isForensicLocked() && !allowedDuringLock.includes(action)){
-        alert("Hard Runtime Lockdown active. Only trace, audit, proof export, refresh, and freeze release are permitted. Reason: " + forensicLockReason());
+        console.warn("Hard Runtime Lockdown active:", forensicLockReason());
         return false;
       }
 
