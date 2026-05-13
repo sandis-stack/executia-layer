@@ -48,11 +48,12 @@
 }
 
 .ex-engine-brand-sub{
-  color:#9aa5b5;
-  font-size:10px;
+  color:#b8c1cf;
+  font-size:8.5px;
   line-height:1;
-  letter-spacing:.22em;
-  font-weight:800;
+  letter-spacing:.20em;
+  font-weight:700;
+  opacity:.72;
   pointer-events:none;
 }
 
