@@ -19,17 +19,17 @@
 
 .ex-engine-header-inner{
   max-width:1440px;
-  height:72px;
+  height:68px;
   margin:0 auto;
   padding:0 34px;
   display:grid;
-  grid-template-columns:345px 1fr 205px;
-  align-items:center;
+  grid-template-columns:320px 1fr 170px;
+  align-items:flex-start;
   gap:34px;
 }
 
 .ex-engine-brand{
-  transform:translateY(-5px);
+  transform:translateY(-7px);
   text-decoration:none;
   color:var(--ex-blue);
   display:flex;
@@ -56,7 +56,7 @@
 
 .ex-engine-entry{
   justify-self:end;
-  transform:translateY(-4px);
+  transform:translateY(-7px);
   text-decoration:none;
   padding:12px 24px;
   border:1px solid #d9e2ec;
@@ -70,13 +70,13 @@
 
 .ex-engine-nav{
   max-width:1440px;
-  height:72px;
-  margin:-72px auto 0;
-  padding:0 34px 0 500px;
+  height:68px;
+  margin:-68px auto 0;
+  padding:0 170px 0 360px;
   display:flex;
   align-items:center;
   justify-content:flex-start;
-  gap:42px;
+  gap:38px;
   background:transparent;
 }
 
@@ -106,7 +106,7 @@
   position:absolute;
   left:0;
   right:0;
-  bottom:1px;
+  bottom:6px;
   height:2px;
   background:var(--ex-blue);
 }
