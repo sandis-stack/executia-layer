@@ -4510,7 +4510,16 @@ function renderOperatorAuthorityMatrix(){
       }
     }
 
-    async function loadOperationsStatus(){
+    
+window.selectReview = async function(id){
+  SELECTED = REVIEWS.find((review) => review.id === id) || null;
+  if($("selectedReview")) $("selectedReview").textContent = SELECTED?.id || "—";
+  if($("detailState")) $("detailState").textContent = SELECTED ? "SELECTED" : "NO SELECTION";
+  renderQueue();
+  await renderDetail();
+}
+
+async function loadOperationsStatus(){
       try{
         const data = await api("/api/v2/governance/operations/status");
 
