@@ -4910,7 +4910,71 @@ function renderOperatorAuthorityMatrix(){
       }, 5000);
     }
 
-    /* GLOBAL GOVERNANCE HELPER RESTORE */
+    
+/* GLOBAL GOVERNANCE RENDERER FALLBACKS — REQUIRED */
+function renderGovernanceMap(){
+  const el =
+    document.getElementById("governanceMap") ||
+    document.getElementById("globalGovernanceMap") ||
+    document.getElementById("governanceRuntimeMap");
+
+  if(!el) return;
+
+  const selected = window.SELECTED || null;
+
+  el.innerHTML = `
+    <div class="block">
+      <div class="k">GOVERNANCE MAP</div>
+      <div class="v">${escapeHtml(selected?.governance_state || selected?.review_status || "READY")}</div>
+      <div class="small">Runtime governance map fallback active.</div>
+    </div>
+  `;
+}
+
+function renderGlobalGovernanceStream(){
+  const el = document.getElementById("globalGovernanceStream");
+  if(!el) return;
+
+  const events =
+    Array.isArray(window.GOVERNANCE_EVENTS) ? window.GOVERNANCE_EVENTS :
+    Array.isArray(window.RECENT_EVENTS) ? window.RECENT_EVENTS :
+    Array.isArray(window.FORENSIC_REPLAY_EVENTS) ? window.FORENSIC_REPLAY_EVENTS :
+    [];
+
+  if(!events.length){
+    el.innerHTML = `
+      <div class="stream-event">
+        <div class="stream-event-head">
+          <span class="stream-event-type">STREAM READY</span>
+          <span class="stream-seq">0</span>
+        </div>
+        <div class="stream-meta">No governance events loaded yet.</div>
+      </div>
+    `;
+    return;
+  }
+
+  el.innerHTML = events.slice(0, 12).map((event, index) => `
+    <div class="stream-event">
+      <div class="stream-event-head">
+        <span class="stream-event-type">
+          ${escapeHtml(event.event_type || event.type || event.action || "GOVERNANCE_EVENT")}
+        </span>
+        <span class="stream-seq">${escapeHtml(event.sequence || event.seq || index + 1)}</span>
+      </div>
+      <div class="stream-meta">Actor: ${escapeHtml(event.actor || event.operator || event.created_by || "—")}</div>
+      <div class="stream-meta">Execution: ${escapeHtml(event.execution_id || "—")}</div>
+      <div class="stream-meta">${escapeHtml(event.created_at || event.timestamp || "—")}</div>
+    </div>
+  `).join("");
+}
+
+window.renderGovernanceMap = renderGovernanceMap;
+window.renderGlobalGovernanceStream = renderGlobalGovernanceStream;
+/* END GLOBAL GOVERNANCE RENDERER FALLBACKS */
+
+
+/* GLOBAL GOVERNANCE HELPER RESTORE */
 
     function hasConstitutionBlock(){
       return (FORENSIC_REPLAY_EVENTS || []).some(event =>
