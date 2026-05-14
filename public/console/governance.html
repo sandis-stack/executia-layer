@@ -503,7 +503,8 @@
       display:flex;
       justify-content:space-between;
       gap:12px;
-      align-items:center;
+      align-items:flex-start;
+      min-width:0;
     }
 
     .timeline-title{
@@ -511,12 +512,22 @@
       font-weight:900;
       letter-spacing:.12em;
       color:var(--blue);
+      min-width:0;
+      max-width:calc(100% - 64px);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      word-break:break-word;
     }
 
     .timeline-seq{
       font-size:10px;
       color:var(--muted);
       font-weight:800;
+      flex:0 0 auto;
+      white-space:nowrap;
+      max-width:56px;
+      overflow:hidden;
+      text-align:right;
     }
 
     .timeline-hash{
