@@ -80,9 +80,8 @@
       grid-template-columns:300px 1fr 420px;
       gap:16px;
       padding:16px;
-      min-height:calc(100vh - 68px);
-      height:auto;
-      overflow:visible;
+      height:calc(100vh - 68px);
+      overflow:hidden;
     }
 
     section, aside{
@@ -97,6 +96,16 @@
     main > aside{
       display:flex;
       flex-direction:column;
+    }
+
+    main > aside:first-child{
+      overflow:auto;
+      min-height:0;
+    }
+
+    main > aside:last-child{
+      overflow:hidden;
+      min-height:0;
     }
 
     .pad{padding:16px}
