@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     const { data: execution, error: fetchError } = await supabase
       .from("execution_results")
       .select("*")
-      .eq("id", execution_id)
+      .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
       .eq("organization_id", organization_id)
       .single();
 
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
         operator_role: operator.role,
         reviewed_at: new Date().toISOString()
       })
-      .eq("id", execution_id)
+      .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
       .eq("organization_id", organization_id)
       .select()
       .single();
