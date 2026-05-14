@@ -4520,10 +4520,17 @@ function renderOperatorAuthorityMatrix(){
     
 window.selectReview = async function(id){
   SELECTED = REVIEWS.find((review) => review.id === id) || null;
+
+  const detail = $("detail");
+  if(detail) detail.scrollTop = 0;
+
   if($("selectedReview")) $("selectedReview").textContent = SELECTED?.id || "—";
   if($("detailState")) $("detailState").textContent = SELECTED ? "SELECTED" : "NO SELECTION";
+
   renderQueue();
   await renderDetail();
+
+  if(detail) detail.scrollTop = 0;
 }
 
 async function loadOperationsStatus(){
