@@ -4350,6 +4350,72 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
       return data;
     }
 
+    
+/* GOVERNANCE GLOBAL FALLBACK HELPERS — REQUIRED */
+function hasConstitutionBlock(){
+  return (window.FORENSIC_REPLAY_EVENTS || FORENSIC_REPLAY_EVENTS || []).some(event =>
+    String(event?.event_type || event?.type || "").toUpperCase().includes("CONSTITUTION")
+  );
+}
+
+function isForensicLocked(){
+  try{
+    if(hasConstitutionBlock()) return true;
+    if(typeof hasActiveFreezeSignal === "function" && hasActiveFreezeSignal()) return true;
+    return false;
+  }catch(e){
+    return false;
+  }
+}
+
+function renderQueue(){
+  const el = document.getElementById("queue");
+  if(!el) return;
+
+  const list = window.REVIEWS || REVIEWS || [];
+  if(!list.length){
+    el.innerHTML = '<div class="pad"><div class="block"><div class="k">QUEUE EMPTY</div><div class="small">No governance reviews available.</div></div></div>';
+    return;
+  }
+
+  el.innerHTML = list.map(review => `
+    <button class="queue-item ${(window.SELECTED || SELECTED)?.id === review.id ? "active" : ""}" onclick="selectReview('${review.id}')">
+      <div class="queue-title">${escapeHtml(review.governance_state || review.review_status || "REVIEW")}</div>
+      <div class="queue-meta">${escapeHtml(review.id)}</div>
+      <div class="queue-meta">Execution: ${escapeHtml(review.execution_id || "—")}</div>
+    </button>
+  `).join("");
+}
+
+function renderOperatorAuthorityMatrix(){
+  const el = document.getElementById("operatorAuthorityMatrix");
+  if(!el) return;
+
+  const user = document.getElementById("operatorEmail")?.textContent || "—";
+  const org = document.getElementById("organizationId")?.textContent || "—";
+  const chain = document.getElementById("governanceChainStatus")?.textContent || "UNKNOWN";
+
+  el.innerHTML = `
+    <div class="block">
+      <div class="k">OPERATOR</div>
+      <div class="v">${escapeHtml(user)}</div>
+      <div class="small">Authorized governance actor.</div>
+    </div>
+    <div class="block">
+      <div class="k">ORGANIZATION</div>
+      <div class="v">${escapeHtml(org)}</div>
+      <div class="small">Governance execution scope.</div>
+    </div>
+    <div class="block">
+      <div class="k">CHAIN</div>
+      <div class="v">${escapeHtml(chain)}</div>
+      <div class="small">Authority derived from live event chain.</div>
+    </div>
+  `;
+}
+/* END GOVERNANCE GLOBAL FALLBACK HELPERS */
+
+
     window.login = async function(){
       try{
         const email = $("email").value.trim();
