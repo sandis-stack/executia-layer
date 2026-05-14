@@ -5082,7 +5082,53 @@ window.renderGlobalGovernanceStream = renderGlobalGovernanceStream;
       return "";
     }
 
-    function topologyClass(value){
+    
+/* EXECUTION TOPOLOGY RENDERER FALLBACK — REQUIRED */
+function renderExecutionTopology(){
+  const el = document.getElementById("executionTopology");
+  const pill = document.getElementById("executionTopologyState");
+
+  if(!el) return;
+
+  const selected = window.SELECTED || {};
+  const state = selected.governance_state || selected.review_status || "OPERATIONAL";
+  const executionId = selected.execution_id || "—";
+  const reviewId = selected.id || selected.review_id || "—";
+
+  const chain =
+    document.getElementById("governanceChainStatus")?.textContent ||
+    "VERIFIED";
+
+  const freezes =
+    document.getElementById("activeFreezeCount")?.textContent ||
+    "0";
+
+  const nodes = [
+    ["Runtime", state, "Selected governance runtime state."],
+    ["Execution", executionId, "Execution object linked to current review."],
+    ["Review", reviewId, "Governance review currently selected."],
+    ["Chain", chain, "Hash continuity and governance chain status."],
+    ["Freeze", freezes, "Active forensic or emergency governance controls."],
+    ["Authority", "OPERATOR", "Authorized operator scope active."]
+  ];
+
+  el.innerHTML = nodes.map(([label, value, meta]) => `
+    <div class="topology-node ${typeof topologyClass === "function" ? topologyClass(value) : "live"}">
+      <div class="topology-label">${escapeHtml(label)}</div>
+      <div class="topology-value">${escapeHtml(value)}</div>
+      <div class="topology-meta">${escapeHtml(meta)}</div>
+    </div>
+  `).join("");
+
+  if(pill){
+    pill.textContent = `TOPOLOGY: ${escapeHtml(state)}`;
+  }
+}
+
+window.renderExecutionTopology = renderExecutionTopology;
+/* END EXECUTION TOPOLOGY RENDERER FALLBACK */
+
+function topologyClass(value){
       const v = String(value || "").toUpperCase();
       if(v.includes("BROKEN") || v.includes("FAILED")) return "bad";
       if(v.includes("FREEZE") || v.includes("LOCK")) return "lock";
