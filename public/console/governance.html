@@ -2791,6 +2791,25 @@
 
 <!-- GOVERNANCE STABLE LAYOUT CSS START -->
 <style>
+/* EXECUTIA GOVERNANCE OVERFLOW FIX */
+.global-stream-panel,
+.global-stream-grid,
+.timeline-panel,
+.timeline-stream,
+.review-detail-panel,
+.governance-layout{
+  overflow:hidden !important;
+  max-width:100%;
+}
+
+.heatmap-grid,
+.global-stream-grid{
+  min-width:0;
+}
+/* END EXECUTIA GOVERNANCE OVERFLOW FIX */
+</style>
+
+<style>
   nav:has(a[data-engine-nav]){
     display:none !important;
   }
