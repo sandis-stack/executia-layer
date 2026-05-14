@@ -1,4 +1,5 @@
 import { db } from "../../services/db.js";
+import { commitCoreLedgerTransaction } from "../../services/core-ledger.js";
 import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 
 export default async function handler(req, res) {
@@ -126,13 +127,52 @@ export default async function handler(req, res) {
       created_at: new Date().toISOString()
     });
 
+    let coreLedgerEntry = null;
+
+    const { data: existingCoreLedger } = await supabase
+      .from("core_ledger")
+      .select("*")
+      .eq("execution_id", updated.execution_id || execution_id)
+      .limit(1)
+      .maybeSingle();
+
+    if (!existingCoreLedger) {
+      coreLedgerEntry = await commitCoreLedgerTransaction({
+        execution_id: updated.execution_id || execution_id,
+        organization_id,
+        transaction_type: updated.request_type || updated.payload?.type || "EXECUTION_TRANSACTION",
+        actor: updated.actor || operator.email,
+        counterparty: updated.payload?.counterparty || null,
+        subject: updated.subject || updated.payload?.request || "EXECUTION",
+        amount: Number(updated.amount || updated.payload?.amount || 0),
+        currency: updated.payload?.currency || "EUR",
+        debit_account: updated.payload?.debit_account || "EXECUTION_CONTROL",
+        credit_account: updated.payload?.credit_account || "EXECUTION_COUNTERPARTY",
+        tax_type: updated.payload?.tax_type || null,
+        tax_rate: Number(updated.payload?.tax_rate || 0),
+        status: "APPROVED",
+        decision: "APPROVE",
+        reconciliation_state: "VERIFIED",
+        settlement_status: "PENDING",
+        payload: {
+          source: "operator_approve_auto_core_ledger",
+          execution_hash: updated.hash || null,
+          settlement_state: "PENDING",
+          reconciliation_state: "VERIFIED"
+        }
+      });
+    } else {
+      coreLedgerEntry = existingCoreLedger;
+    }
+
     return res.status(200).json({
       ok: true,
       mode: "ENTERPRISE",
       organization_id,
       operator,
       decision: "APPROVED",
-      execution: updated
+      execution: updated,
+      core_ledger: coreLedgerEntry
     });
 
   } catch (error) {
