@@ -265,7 +265,49 @@
       gap:10px;
     }
 
-    .stream{
+    
+    .queue-item{
+      width:100%;
+      display:block;
+      text-align:left;
+      padding:14px 14px;
+      min-height:84px;
+      border-radius:14px;
+      border:1px solid rgba(30,58,95,.14);
+      background:#ffffff;
+      cursor:pointer;
+      margin-bottom:10px;
+      box-sizing:border-box;
+    }
+
+    .queue-item.active{
+      border-color:rgba(30,58,95,.42);
+      background:#f4f8fc;
+    }
+
+    .queue-item-title{
+      display:block;
+      font-size:12px;
+      line-height:1.35;
+      font-weight:800;
+      letter-spacing:.08em;
+      color:#1e3a5f;
+      margin-bottom:8px;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
+
+    .queue-item-meta{
+      display:block;
+      font-size:11px;
+      line-height:1.35;
+      font-weight:600;
+      color:#60748a;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
+
+.stream{
       display:flex;
       flex-direction:column;
       gap:10px;
