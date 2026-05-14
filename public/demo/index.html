@@ -100,17 +100,17 @@
             <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
               <div class="ex-field">
                 <label class="ex-label">Payload</label>
-                <textarea class="ex-textarea" id="demoPayload" rows="7">{
-  "request_type": "PROJECT_EXECUTION",
-  "actor": "EXECUTIA_OPERATOR_01",
-  "subject": "Commercial building construction",
-  "amount": 850000,
-  "rule_context": {
-    "approval_limit": 1000000
-  }
+                <textarea class="ex-textarea" id="demoPayload" rows="9">{
+  "process_name": "Public procurement payment approval",
+  "industry": "Public sector",
+  "workflow": "Request submitted, manager approval, finance review, payment, later audit.",
+  "payments": "Manual approval before payment, no atomic ledger verification.",
+  "approvals": "Email based approval with delayed confirmation.",
+  "compliance": "Procurement rules, budget control, audit trail.",
+  "problems": "Delayed truth, unclear accountability, payment may happen before full validation."
 }</textarea>
               </div>
-              <button class="ex-btn primary" type="button" id="runDemo">Run validation</button>
+              <button class="ex-btn primary" type="button" id="runDemo">Analyze execution integrity</button>
             </div>
             <div id="proofList" style="margin-top:16px;display:none">
               <div id="proofRows"></div>
@@ -155,14 +155,21 @@
       btn.disabled = true; btn.textContent = "Running…";
       try {
         var payload = JSON.parse(document.getElementById("demoPayload").value);
-        var res = await fetch("/api/v1/submit", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
+        var res = await fetch("/api/v1/execution/analyze", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
         var data = await res.json();
-        var rows = [["Execution ID",data.execution_id||"—"],["Status",data.status||"—"],["Decision",data.decision||"—"],["Reason",data.reason||"—"],["Mode",data.mode||"DRY_RUN"]];
+        var rows = [
+          ["Integrity Score", (data.integrity_score !== undefined ? data.integrity_score + " / 100" : "—")],
+          ["Risk Level", data.risk_level || "—"],
+          ["Decision", data.decision || "—"],
+          ["Status", data.execution_status || "—"],
+          ["Primary Risk", (data.risks && data.risks[0]) || "—"],
+          ["Recommended Control", (data.recommended_controls && data.recommended_controls[0]) || "—"]
+        ];
         document.getElementById("proofRows").innerHTML = rows.map(function(r){return'<div class="exec-row" style="padding:8px 12px"><div class="meta">'+r[0]+'</div><strong>'+r[1]+'</strong></div>';}).join("");
         document.getElementById("proofList").style.display = "block";
         out.style.display = "block"; out.textContent = JSON.stringify(data, null, 2);
       } catch(e) { out.style.display="block"; out.textContent="Error: "+e.message; }
-      btn.disabled = false; btn.textContent = "Run validation";
+      btn.disabled = false; btn.textContent = "Analyze execution integrity";
     });
 
     document.getElementById("pilotSubmit").addEventListener("click", async function() {
