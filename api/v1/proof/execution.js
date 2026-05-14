@@ -49,7 +49,7 @@ export default async function handler(req, res) {
       .from("audit_events")
       .select("*")
       .eq("execution_id", execution_id)
-      .eq("event_type", "OPERATOR_ACTION")
+      .in("event_type", ["OPERATOR_ACTION", "OPERATOR_APPROVED", "OPERATOR_BLOCKED"])
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -58,16 +58,21 @@ export default async function handler(req, res) {
       latestOperatorEvent?.next_state ||
       data.status;
 
+    const operatorAction =
+      latestOperatorEvent?.action ||
+      data.operator_action ||
+      null;
+
     const resolvedDecision =
-      latestOperatorEvent?.action === "APPROVE" ? "APPROVE" :
-      latestOperatorEvent?.action === "REJECT" ? "BLOCK" :
+      operatorAction === "APPROVE" || operatorAction === "APPROVED" ? "APPROVE" :
+      operatorAction === "REJECT" || operatorAction === "BLOCK" || operatorAction === "BLOCKED" ? "BLOCK" :
       data.decision || "REVIEW";
 
     const proof = buildExecutionProof({
       ...data,
       status: resolvedStatus,
       decision: resolvedDecision,
-      reason: latestOperatorEvent?.reason || data.reason,
+      reason: latestOperatorEvent?.reason || latestOperatorEvent?.details?.reason || data.result || data.reason,
       actor: latestOperatorEvent?.actor_email || data.actor,
       operator_email: latestOperatorEvent?.actor_email || data.operator_email,
       operator_role: latestOperatorEvent?.actor_role || data.operator_role,
