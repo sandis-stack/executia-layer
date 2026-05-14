@@ -4844,6 +4844,40 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
       }, 5000);
     }
 
+    /* GLOBAL GOVERNANCE HELPER RESTORE */
+
+    function hasConstitutionBlock(){
+      return (FORENSIC_REPLAY_EVENTS || []).some(event =>
+        String(event?.event_type || event?.type || "").toUpperCase().includes("CONSTITUTION")
+      );
+    }
+
+    function renderQueue(){
+      const el = $("queue");
+      if(!el) return;
+
+      if(!REVIEWS || !REVIEWS.length){
+        el.innerHTML = `
+          <div class="pad">
+            <div class="block">
+              <div class="k">QUEUE EMPTY</div>
+              <div class="small">No governance reviews available.</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      el.innerHTML = REVIEWS.map(review => `
+        <button class="queue-item ${SELECTED?.id === review.id ? "active" : ""}" onclick="selectReview('${review.id}')">
+          <div class="queue-title">${escapeHtml(review.governance_state || review.review_status || "REVIEW")}</div>
+          <div class="queue-meta">${escapeHtml(review.id)}</div>
+          <div class="queue-meta">Execution: ${escapeHtml(review.execution_id || "—")}</div>
+        </button>
+      `).join("");
+    }
+
+
     window.loadOpenReviews = async function(){
       try{
         if($("queueState")) $("queueState").textContent = "QUEUE: LOADING";
