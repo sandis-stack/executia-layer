@@ -5150,6 +5150,51 @@ window.renderGlobalGovernanceStream = renderGlobalGovernanceStream;
 
     
 /* EXECUTION TOPOLOGY RENDERER FALLBACK — REQUIRED */
+
+function renderCommitEngine(){
+  const el = $("commitEngineGrid");
+  if(!el) return;
+
+  const runtime = window.LAST_GOVERNANCE_RUNTIME_STATE || {};
+  const state = runtime?.runtime_state || {};
+  const replay = runtime?.runtime?.replay || {};
+  const events = replay?.events || [];
+
+  const executionAllowed = state.execution_allowed !== false;
+  const commitReady = executionAllowed && !state.quarantine_required && !state.entropy_detected;
+  const ledgerReady = commitReady && events.length > 0;
+  const auditReady = ledgerReady && state.synchronization_stable !== false;
+  const proofReady = auditReady && !state.delayed_causality_detected;
+  const truthAnchor = proofReady && !state.convergence_required;
+
+  const nodes = [
+    ["ACTION RECEIVED", events.length ? "RECEIVED" : "WAITING", "Execution-time action received by commit layer.", events.length ? "live" : "warn"],
+    ["COMMIT READINESS", commitReady ? "READY" : "HELD", "Commit authorization state.", commitReady ? "ok" : "warn"],
+    ["LEDGER MATERIALIZATION", ledgerReady ? "MATERIALIZED" : "PENDING", "Execution materialized into ledger layer.", ledgerReady ? "ok" : "warn"],
+    ["AUDIT TRACE", auditReady ? "TRACE ACTIVE" : "TRACE HELD", "Audit continuity generation state.", auditReady ? "ok" : "warn"],
+    ["PROOF GENERATION", proofReady ? "PROOF READY" : "BLOCKED", "Proof generation materialization.", proofReady ? "live" : "bad"],
+    ["TRUTH ANCHOR", truthAnchor ? "ANCHORED" : "UNSTABLE", "Execution-time truth anchoring state.", truthAnchor ? "ok" : "warn"]
+  ];
+
+  el.innerHTML = nodes.map(([title, value, meta, cls]) => `
+    <div class="commit-node ${cls}">
+      <div class="commit-node-title">${escapeHtml(title)}</div>
+      <div class="commit-node-value">${escapeHtml(value)}</div>
+      <div class="commit-node-meta">${escapeHtml(meta)}</div>
+    </div>
+  `).join("");
+
+  if($("commitEnginePill")){
+    $("commitEnginePill").textContent =
+      truthAnchor ? "COMMIT: ANCHORED" :
+      proofReady ? "COMMIT: PROOF READY" :
+      commitReady ? "COMMIT: READY" :
+      "COMMIT: HELD";
+  }
+}
+
+window.renderCommitEngine = renderCommitEngine;
+
 function renderExecutionTopology(){
   const el = document.getElementById("executionTopology");
   const pill = document.getElementById("executionTopologyState");
