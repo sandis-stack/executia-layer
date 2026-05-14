@@ -4297,7 +4297,26 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
     </div>
   </section>
 
-  <section class="global-stream-panel">
+  
+<section class="heatmap-panel" id="selfEvolutionLoopPanel" style="margin-top:24px;">
+  <div class="section-head">
+    <div>
+      <span>EXECUTIA SELF-EVOLUTION LOOP</span>
+      <h2>Self-Evolution Analysis</h2>
+    </div>
+    <span class="pill" id="selfEvolutionLoopPill">EVOLUTION: STANDBY</span>
+  </div>
+
+  <div class="heatmap-grid" id="selfEvolutionLoopGrid">
+    <div class="heat-cell">
+      <div class="heat-title">EVOLUTION ENGINE</div>
+      <div class="heat-value">WAITING</div>
+      <div class="heat-meta">Authorize console to load execution drift analysis.</div>
+    </div>
+  </div>
+</section>
+
+<section class="global-stream-panel">
     <div class="head">
       <h2>OPERATOR AUTHORITY MATRIX</h2>
       <span class="pill" id="authorityMatrixState">AUTHORITY: STANDBY</span>
@@ -4309,25 +4328,6 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
       </div>
     </div>
   </section>
-
-  
-  <section class="heatmap-panel" id="selfEvolutionLoopPanel">
-    <div class="section-head">
-      <div>
-        <span>EXECUTIA SELF-EVOLUTION LOOP</span>
-        <h2>Self-Evolution Analysis</h2>
-      </div>
-      <span class="pill" id="selfEvolutionLoopPill">EVOLUTION: STANDBY</span>
-    </div>
-    <div class="heatmap-grid" id="selfEvolutionLoopGrid">
-      <div class="heat-cell">
-        <div class="heat-title">EVOLUTION ENGINE</div>
-        <div class="heat-value">WAITING</div>
-        <div class="heat-meta">Authorize console to load execution drift analysis.</div>
-      </div>
-    </div>
-  </section>
-
 <section class="global-stream-panel">
     <div class="head">
       <h2>LIVE GOVERNANCE STREAM</h2>
