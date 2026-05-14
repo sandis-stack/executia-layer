@@ -9385,7 +9385,35 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
         return;
       }
       fallbackProofEngine();
-      return;catch(error){
+      return;
+    }
+
+    async function renderDetail(){
+      const detail = $("detail");
+      if(!detail) return;
+
+      if(!SELECTED){
+        detail.innerHTML = `
+          <div class="block">
+            <div class="k">STATE</div>
+            <div class="v">AWAITING REVIEW SELECTION</div>
+            <div class="small">Select an open governance review to inspect policy, risk and event history.</div>
+          </div>
+        `;
+        return;
+      }
+
+      let timeline = { events: [] };
+      let quorum = null;
+      let freeze = null;
+
+      try{
+        timeline = await api("/api/v2/governance/reviews/timeline?review_id=" + encodeURIComponent(SELECTED.id));
+      }catch(error){}
+
+      try{
+        quorum = await api("/api/v2/governance/quorum/state?review_id=" + encodeURIComponent(SELECTED.id));
+      }catch(error){
         quorum = { ok:false, error:error.message };
       }
 
