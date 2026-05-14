@@ -16,12 +16,25 @@ export const EXECUTION_TRACE_STANDARD = [
 
 function normalizeResult(result = {}) {
   const r = Array.isArray(result) ? result[0] : result;
+  const status = r?.status || r?.execution?.status || "PENDING_REVIEW";
+  const operatorAction = r?.operator_action || r?.execution?.operator_action || null;
+
+  let decision = r?.decision || r?.execution?.decision || "REVIEW";
+
+  if (status === "APPROVED" || operatorAction === "APPROVED") {
+    decision = "APPROVE";
+  }
+
+  if (status === "BLOCKED" || operatorAction === "BLOCKED") {
+    decision = "BLOCK";
+  }
+
   return {
     raw: r || {},
     execution_id: r?.execution_id || r?.id || r?.execution?.execution_id || null,
-    status: r?.status || r?.execution?.status || "PENDING_REVIEW",
-    decision: r?.decision || r?.execution?.decision || "REVIEW",
-    reason: r?.reason || r?.execution?.reason || null
+    status,
+    decision,
+    reason: r?.result || r?.reason || r?.execution?.reason || null
   };
 }
 
