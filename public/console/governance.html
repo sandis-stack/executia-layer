@@ -4368,6 +4368,17 @@ function isForensicLocked(){
   }
 }
 
+
+function forensicLockReason(){
+  if(SIMULATED_CHAIN_BREAK) return "SIMULATED_CHAIN_BREAK";
+  if(CHAIN_DIAGNOSTICS && CHAIN_DIAGNOSTICS.verified === false) return "CHAIN_INTEGRITY_BROKEN";
+  if(hasConstitutionBlock()) return "CONSTITUTION_BLOCK_DETECTED";
+  if(hasActiveFreezeSignal()) return "ACTIVE_FREEZE_DETECTED";
+  return "CLEAR";
+}
+
+window.forensicLockReason = forensicLockReason;
+
 function renderQueue(){
   const el = document.getElementById("queue");
   if(!el) return;
