@@ -4466,9 +4466,23 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
     
 /* GOVERNANCE GLOBAL FALLBACK HELPERS — REQUIRED */
 function hasConstitutionBlock(){
-  return (window.FORENSIC_REPLAY_EVENTS || FORENSIC_REPLAY_EVENTS || []).some(event =>
-    String(event?.event_type || event?.type || "").toUpperCase().includes("CONSTITUTION")
-  );
+  const selected = window.SELECTED || SELECTED || null;
+  const selectedReviewId = selected?.id || null;
+  const selectedExecutionId = selected?.execution_id || null;
+
+  return (window.FORENSIC_REPLAY_EVENTS || FORENSIC_REPLAY_EVENTS || []).some(event => {
+    const type = String(event?.event_type || event?.type || "").toUpperCase();
+
+    if(!type.includes("CONSTITUTION")) return false;
+
+    const eventReviewId = event?.review_id || event?.meta?.review_id || null;
+    const eventExecutionId = event?.execution_id || event?.meta?.execution_id || null;
+
+    if(selectedReviewId && eventReviewId === selectedReviewId) return true;
+    if(selectedExecutionId && eventExecutionId === selectedExecutionId) return true;
+
+    return false;
+  });
 }
 
 function isForensicLocked(){
