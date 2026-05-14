@@ -9370,7 +9370,46 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
         }
       }
 
-      function renderProofNodes(nodes){
+      
+
+    function hasConstitutionBlock(){
+      return (FORENSIC_REPLAY_EVENTS || []).some(event =>
+        String(
+          event?.event_type ||
+          event?.type ||
+          ""
+        ).toUpperCase().includes("CONSTITUTION")
+      );
+    }
+
+    function renderQueue(){
+      const el = $("queue");
+      if(!el) return;
+
+      if(!REVIEWS || !REVIEWS.length){
+        el.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-title">QUEUE EMPTY</div>
+            <div class="empty-subtitle">No governance reviews available.</div>
+          </div>
+        `;
+        return;
+      }
+
+      el.innerHTML = REVIEWS.map(review => `
+        <button class="queue-item ${SELECTED?.id === review.id ? "active" : ""}"
+          onclick="selectReview('${review.id}')">
+          <div class="queue-item-title">
+            ${escapeHtml(review.governance_state || review.review_status || "REVIEW")}
+          </div>
+          <div class="queue-item-meta">
+            ${escapeHtml(review.id)}
+          </div>
+        </button>
+      `).join("");
+    }
+
+function renderProofNodes(nodes){
         el.innerHTML = nodes.map(item => `
           <div class="proof-node ${item.cls}">
             <div class="proof-node-title">${escapeHtml(item.title)}</div>
