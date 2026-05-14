@@ -71,11 +71,10 @@ export default async function handler(req, res) {
       .from("execution_results")
       .update({
         status: "BLOCKED",
-        operator_decision: "BLOCKED",
-        operator_reason: reason,
-        operator_user_id: operator.id,
+        operator_action: "BLOCKED",
+        result: reason,
+        operator_id: operator.id,
         operator_email: operator.email,
-        operator_role: operator.role,
         reviewed_at: new Date().toISOString()
       })
       .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
