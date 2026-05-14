@@ -4310,7 +4310,25 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
     </div>
   </section>
 
-  <section class="global-stream-panel">
+  
+  <section class="heatmap-panel" id="selfEvolutionLoopPanel">
+    <div class="section-head">
+      <div>
+        <span>EXECUTIA SELF-EVOLUTION LOOP</span>
+        <h2>Self-Evolution Analysis</h2>
+      </div>
+      <span class="pill" id="selfEvolutionLoopPill">EVOLUTION: STANDBY</span>
+    </div>
+    <div class="heatmap-grid" id="selfEvolutionLoopGrid">
+      <div class="heat-cell">
+        <div class="heat-title">EVOLUTION ENGINE</div>
+        <div class="heat-value">WAITING</div>
+        <div class="heat-meta">Authorize console to load execution drift analysis.</div>
+      </div>
+    </div>
+  </section>
+
+<section class="global-stream-panel">
     <div class="head">
       <h2>LIVE GOVERNANCE STREAM</h2>
       <span class="pill" id="globalStreamState">STREAM: STANDBY</span>
@@ -10359,6 +10377,105 @@ function renderProofNodes(nodes){
       }
     }
 
+
+    async function loadSelfEvolutionLoop(){
+      try{
+        const response = await api("/api/v1/evolution/analyze");
+        window.LAST_SELF_EVOLUTION_ANALYSIS = response;
+        renderSelfEvolutionLoop();
+      }catch(error){
+        window.LAST_SELF_EVOLUTION_ANALYSIS = {
+          ok:false,
+          error:error.message
+        };
+        renderSelfEvolutionLoop();
+      }
+    }
+
+    function renderSelfEvolutionLoop(){
+      const el = $("selfEvolutionLoopGrid");
+      if(!el) return;
+
+      const response = window.LAST_SELF_EVOLUTION_ANALYSIS || null;
+
+      if(!response || response.ok === false){
+        el.innerHTML = `
+          <div class="heat-cell warn">
+            <div class="heat-title">SELF-EVOLUTION</div>
+            <div class="heat-value">UNAVAILABLE</div>
+            <div class="heat-meta">${escapeHtml(response?.error || "No evolution analysis loaded.")}</div>
+          </div>
+        `;
+
+        if($("selfEvolutionLoopPill")){
+          $("selfEvolutionLoopPill").textContent = "EVOLUTION: UNAVAILABLE";
+        }
+        return;
+      }
+
+      const stats = response.stats || {};
+      const recommendations = Array.isArray(response.recommendations)
+        ? response.recommendations
+        : [];
+
+      const primaryRecommendation = recommendations[0] || null;
+
+      const cells = [
+        {
+          title:"APPROVED",
+          value:String(stats.approved ?? 0),
+          meta:"Approved execution outcomes.",
+          cls:"ok"
+        },
+        {
+          title:"PENDING REVIEW",
+          value:String(stats.pending_review ?? 0),
+          meta:"Executions requiring operator review.",
+          cls:(stats.pending_review || 0) > 10 ? "warn" : "ok"
+        },
+        {
+          title:"OPERATOR INTERVENTIONS",
+          value:String(stats.operator_interventions ?? 0),
+          meta:"Human governance corrections detected.",
+          cls:(stats.operator_interventions || 0) > 0 ? "live" : "ok"
+        },
+        {
+          title:"RECONCILIATION",
+          value:String(stats.reconciliation_verified ?? 0),
+          meta:"Executions with verified truth state.",
+          cls:"ok"
+        },
+        {
+          title:"SETTLEMENT PENDING",
+          value:String(stats.settlement_pending ?? 0),
+          meta:"Execution records still requiring settlement completion.",
+          cls:(stats.settlement_pending || 0) > 0 ? "warn" : "ok"
+        },
+        {
+          title: primaryRecommendation ? primaryRecommendation.type : "NO CRITICAL RECOMMENDATION",
+          value: primaryRecommendation ? primaryRecommendation.severity : "STABLE",
+          meta: primaryRecommendation ? primaryRecommendation.recommendation : "No immediate governance improvement required.",
+          cls: primaryRecommendation?.severity === "HIGH" ? "bad" : "ok"
+        }
+      ];
+
+      el.innerHTML = cells.map(item => `
+        <div class="heat-cell ${item.cls}">
+          <div class="heat-title">${escapeHtml(item.title)}</div>
+          <div class="heat-value">${escapeHtml(item.value)}</div>
+          <div class="heat-meta">${escapeHtml(item.meta)}</div>
+        </div>
+      `).join("");
+
+      if($("selfEvolutionLoopPill")){
+        $("selfEvolutionLoopPill").textContent =
+          primaryRecommendation
+            ? "EVOLUTION: RECOMMENDATION GENERATED"
+            : "EVOLUTION: STABLE";
+      }
+    }
+
+
     async function authorize(){
       const data = await api("/api/v2/governance/reviews/open");
       $("authState").textContent = "AUTH: ACTIVE";
@@ -10367,6 +10484,7 @@ function renderProofNodes(nodes){
       await window.loadOpenReviews();
       await loadOperationsStatus();
       await loadRecentEvents();
+      await loadSelfEvolutionLoop();
       startLiveSync();
     }
 
@@ -10378,6 +10496,7 @@ function renderProofNodes(nodes){
           await window.loadOpenReviews();
           await loadOperationsStatus();
           await loadRecentEvents();
+          await loadSelfEvolutionLoop();
         await loadFreezeBlockProof();
         await loadForensicReplay();
         }catch(error){
