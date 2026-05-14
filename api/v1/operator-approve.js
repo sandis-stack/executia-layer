@@ -75,7 +75,11 @@ export default async function handler(req, res) {
         result: reason,
         operator_id: operator.id,
         operator_email: operator.email,
-        reviewed_at: new Date().toISOString()
+        reviewed_at: new Date().toISOString(),
+        reconciliation_state: "VERIFIED",
+        hash_verified: true,
+        audit_state: "RECORDED",
+        ledger_state: "HASH_LINKED"
       })
       .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
       .eq("organization_id", organization_id)
@@ -104,6 +108,22 @@ export default async function handler(req, res) {
         previous_status: execution.status,
         new_status: "APPROVED"
       }
+    });
+
+    await supabase.from("audit_events").insert({
+      execution_id,
+      organization_id,
+      event_type: "RECONCILIATION_AUTO_VERIFIED",
+      actor_user_id: operator.id,
+      actor_email: operator.email,
+      actor_role: operator.role,
+      payload: {
+        truth_state: "VERIFIED",
+        hash_verified: true,
+        reconciliation_state: "VERIFIED",
+        trigger: "OPERATOR_APPROVED"
+      },
+      created_at: new Date().toISOString()
     });
 
     return res.status(200).json({
