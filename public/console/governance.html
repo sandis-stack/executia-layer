@@ -9811,6 +9811,8 @@ function renderProofNodes(nodes){
           <div class="small">Required role: ${escapeHtml(quorum?.required_role || "—")}</div>
         </div>
 
+        ${renderGovernanceMap(SELECTED, quorum, freeze)}
+
         <div class="block">
           <div class="k">EMERGENCY GOVERNANCE</div>
           <div class="v">${freeze?.frozen ? "EXECUTION LOCKED" : "CLEAR"}</div>
@@ -9846,8 +9848,6 @@ function renderProofNodes(nodes){
 
           <button class="warn" onclick="runAutonomousGovernanceLoop()">RUN AUTONOMOUS LOOP</button>
         </div>
-
-        ${renderGovernanceMap(SELECTED, quorum, freeze)}
 
         <div class="block">
           <div class="k">CHAIN VISUALIZATION</div>
