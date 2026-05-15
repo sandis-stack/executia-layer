@@ -190,7 +190,7 @@
           outcome: "Contract value EUR: " + document.getElementById("pilotAmount").value
         };
 
-        var res = await fetch("https://executia.io/api/request", {
+        var res = await fetch("/api/v1/lead", {
           method:"POST",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify(payload)
