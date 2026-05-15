@@ -5,212 +5,243 @@
   <script src="/enterprise.js"></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Demo — EXECUTIA™</title>
+  <title>Execution Test — EXECUTIA™</title>
   <link rel="stylesheet" href="/enterprise.css" />
   <style>
-    .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-    @media(max-width:820px){.demo-grid{grid-template-columns:1fr}}
-    .recent-exec{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-    .exec-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--ex-surface,#F8FAFC);border-radius:6px;border:1px solid var(--ex-border,#E6ECF2)}
-    .exec-row .amount{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
-    .exec-row .meta{font-size:12px;color:var(--ex-muted,#6B7280);margin-top:2px}
-    .pilot-form{display:grid;gap:14px}
-    .pilot-form .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    @media(max-width:560px){.pilot-form .row2{grid-template-columns:1fr}}
-    .ex-input{width:100%;padding:9px 12px;border:1px solid var(--ex-border,#E6ECF2);border-radius:6px;font-size:14px;background:#fff;color:var(--ex-text,#1E3A5F);box-sizing:border-box}
-    .ex-input:focus{outline:none;border-color:var(--ex-accent,#1E3A5F);box-shadow:0 0 0 3px rgba(30,58,95,.1)}
-    .pilot-success{display:none;text-align:center;padding:28px 20px}
-    .pilot-success .ref{font-family:monospace;font-size:13px;background:var(--ex-surface,#F8FAFC);padding:6px 12px;border-radius:4px;display:inline-block;margin-top:8px}
-    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-    @media(max-width:720px){.stat-row{grid-template-columns:1fr 1fr}}
-    .stat-box{background:var(--ex-surface,#F8FAFC);border:1px solid var(--ex-border,#E6ECF2);border-radius:8px;padding:18px 16px}
-    .stat-box .val{font-size:22px;font-weight:800;color:var(--ex-text,#1E3A5F);font-variant-numeric:tabular-nums}
-    .stat-box .lbl{font-size:12px;color:var(--ex-muted,#6B7280);margin-top:3px}
-  
-.engine-nav{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
-  padding:12px 20px;
-  border-top:1px solid #d8e1ec;
-  border-bottom:1px solid #d8e1ec;
-  background:#fff;
-}
-
-.engine-nav a{
-  text-decoration:none;
-  color:#183a5b;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  border:1px solid #d8e1ec;
-  border-radius:999px;
-  padding:8px 12px;
-  background:#f7fbff;
-}
-
-.engine-nav a.active{
-  background:#183a5b;
-  color:#fff;
-  border-color:#183a5b;
-}
-
-</style>
-  <link rel="stylesheet" href="/components/engine-shell.css">
-  <link rel="stylesheet" href="/components/engine-system.css">
+    :root{--blue:#1E3A5F;--muted:#6B7280;--line:#DDE6F0;--bg:#F5F8FC;--soft:#F8FAFC;--green:#087A46;--red:#A73434;--amber:#9A6500}
+    body{margin:0;background:var(--bg);color:var(--blue)}
+    .top{height:78px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 7vw}
+    .brand{font-weight:900;letter-spacing:.18em;font-size:14px}.brand span{color:#9CA3AF;font-size:11px;margin-left:10px}
+    .nav{display:flex;gap:10px}.nav a{text-decoration:none;color:var(--blue);font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:10px 14px;background:#fff}
+    .wrap{max-width:1120px;margin:0 auto;padding:58px 22px 76px}
+    .flow{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:34px;flex-wrap:wrap}
+    .flow a,.flow span{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:10px 14px;color:var(--blue);background:#fff}
+    .flow .active{background:var(--blue);color:#fff}.flow .arrow{border:none;background:transparent;color:#9CA3AF;padding:0}
+    .hero{text-align:center;max-width:780px;margin:0 auto 36px}.kicker{font-size:12px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:#7A8CA3;margin-bottom:14px}
+    h1{font-size:44px;line-height:1.05;margin:0 0 14px;letter-spacing:-.035em} .hero p{font-size:18px;line-height:1.55;color:#52667F;margin:0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 18px 45px rgba(30,58,95,.05)}
+    h2{font-size:18px;margin:0 0 8px}.sub{color:#7A8CA3;font-size:14px;line-height:1.5;margin:0 0 18px}
+    label{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;margin:16px 0 7px}
+    input,textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;background:#fff;color:#142B48;padding:13px 14px;font-size:15px;font-family:inherit;outline:none}
+    textarea{min-height:230px;resize:vertical}
+    input:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,58,95,.09)}
+    .btn{width:100%;border:none;border-radius:999px;background:var(--blue);color:#fff;padding:15px 20px;margin-top:18px;font-weight:900;letter-spacing:.04em;cursor:pointer;font-size:14px}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .empty{border:1px dashed var(--line);background:var(--soft);border-radius:16px;padding:42px 28px;color:#7A8CA3;text-align:center;line-height:1.6}
+    .score{display:grid;grid-template-columns:130px 1fr;gap:18px;align-items:center;margin-bottom:18px}.scorebox{width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#F1F5F9;border:1px solid var(--line);font-size:28px;font-weight:900}
+    .pill{display:inline-flex;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--line);background:#fff;margin-right:8px}
+    .pill.red{color:var(--red);border-color:#F3C8C8;background:#FFF7F7}.pill.amber{color:var(--amber);border-color:#F2D9A8;background:#FFF9EA}.pill.green{color:var(--green);border-color:#B9E7CF;background:#F2FFF8}
+    .list{display:grid;gap:10px;margin-top:18px}.item{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:13px 14px;color:#203A5D;font-size:14px;line-height:1.45}.item strong{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#71839B;margin-bottom:5px}
+    .request{display:none;margin-top:22px;border-top:1px solid var(--line);padding-top:22px}.success{display:none;text-align:center;padding:36px 18px}.ref{display:inline-block;font-family:Menlo,Consolas,monospace;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:9px 14px;margin:12px 0}
+    .error{display:none;color:var(--red);font-size:14px;margin-top:12px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}h1{font-size:34px}.top{padding:0 22px}}
+  </style>
 </head>
 <body>
-<main class="ex-main">
-    <section class="ex-section-tight">
-      <p class="ex-kicker">Live execution engine</p>
-      <h1 class="ex-title system-title">Test EXECUTIA on a real project</h1>
-      <p class="ex-lead">Submit a project execution request. The engine validates, decides, and commits to ledger in one atomic transaction.</p>
+  <header class="top">
+    <div class="brand">EXECUTIA™ <span>EXECUTION TEST</span></div>
+    <nav class="nav"><a href="https://executia.io">Entry</a><a href="https://executia.io/request">Request</a></nav>
+  </header>
+
+  <main class="wrap">
+    <nav class="flow">
+      <a href="https://executia.io">Entry</a><span class="arrow">→</span><span class="active">Execution Test</span><span class="arrow">→</span><a href="https://executia.io/request">Request Pilot</a>
+    </nav>
+
+    <section class="hero">
+      <div class="kicker">Execution-time integrity check</div>
+      <h1>Test execution before action.</h1>
+      <p>Insert one real process. EXECUTIA identifies execution drift, risk level, decision state and required controls.</p>
     </section>
 
-    <section class="ex-section" style="padding-top:0">
-      <div class="stat-row">
-        <div class="stat-box"><div class="val">€2.4M</div><div class="lbl">Total execution volume</div></div>
-        <div class="stat-box"><div class="val">142</div><div class="lbl">Validated transactions</div></div>
-        <div class="stat-box"><div class="val">8</div><div class="lbl">Active projects</div></div>
-        <div class="stat-box"><div class="val">3</div><div class="lbl">Pending operator review</div></div>
-      </div>
+    <section class="grid">
+      <article class="card">
+        <h2>1. Define execution</h2>
+        <p class="sub">Describe the process as it works today.</p>
 
-      <div class="demo-grid">
-        <div style="display:flex;flex-direction:column;gap:24px">
-          <section class="ex-card system">
-            <div class="ex-panel-header">
-              <div><h2 class="ex-panel-title">Recent executions</h2><p class="ex-panel-subtitle">Last committed to ledger</p></div>
-              <span class="ex-pill ok">Live</span>
-            </div>
-            <div class="recent-exec">
-              <div class="exec-row"><div><div class="amount">€620,000</div><div class="meta">Logistics Center · Riga</div></div><span class="ex-pill ok">COMMITTED</span></div>
-              <div class="exec-row"><div><div class="amount">€1,200,000</div><div class="meta">Commercial Building · Tallinn</div></div><span class="ex-pill warn">PENDING</span></div>
-              <div class="exec-row"><div><div class="amount">€450,000</div><div class="meta">Infrastructure Phase 2 · Vilnius</div></div><span class="ex-pill ok">COMMITTED</span></div>
-              <div class="exec-row"><div><div class="amount">€340,000</div><div class="meta">Warehouse Fit-out · Helsinki</div></div><span class="ex-pill block">BLOCKED</span></div>
-            </div>
-          </section>
+        <label>Execution process</label>
+        <textarea id="processText">Public procurement payment approval.
 
-          <section class="ex-card">
-            <div class="ex-panel-header">
-              <div><h2 class="ex-panel-title">Quick validation test</h2><p class="ex-panel-subtitle">Public submit — no API key required</p></div>
-              <span class="ex-pill">Test</span>
+Request submitted, manager approval, finance review, payment, later audit.
+
+Manual approval before payment. Email based approval with delayed confirmation. Procurement rules, budget control and audit trail required.
+
+Problem: delayed truth, unclear accountability, payment may happen before full validation.</textarea>
+
+        <button class="btn" id="analyzeBtn" type="button">Analyze execution integrity</button>
+        <div id="analysisError" class="error"></div>
+      </article>
+
+      <article class="card">
+        <h2>2. EXECUTIA result</h2>
+        <p class="sub">System result appears after validation.</p>
+
+        <div id="empty" class="empty">Waiting for execution process.<br>Run test to receive score, risk and controls.</div>
+
+        <div id="result" style="display:none">
+          <div class="score">
+            <div class="scorebox" id="score">—</div>
+            <div>
+              <span id="risk" class="pill">Risk</span>
+              <span id="decision" class="pill">Decision</span>
+              <p id="rec" class="sub" style="margin-top:14px"></p>
             </div>
-            <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
-              <div class="ex-field">
-                <label class="ex-label">Payload</label>
-                <textarea class="ex-textarea" id="demoPayload" rows="9">{
-  "process_name": "Public procurement payment approval",
-  "industry": "Public sector",
-  "workflow": "Request submitted, manager approval, finance review, payment, later audit.",
-  "payments": "Manual approval before payment, no atomic ledger verification.",
-  "approvals": "Email based approval with delayed confirmation.",
-  "compliance": "Procurement rules, budget control, audit trail.",
-  "problems": "Delayed truth, unclear accountability, payment may happen before full validation."
-}</textarea>
-              </div>
-              <button class="ex-btn primary" type="button" id="runDemo">Analyze execution integrity</button>
-            </div>
-            <div id="proofList" style="margin-top:16px;display:none">
-              <div id="proofRows"></div>
-            </div>
-            <pre id="demoJson" class="ex-json" style="margin-top:12px;display:none"></pre>
-          </section>
+          </div>
+
+          <div class="list">
+            <div class="item"><strong>Primary risk</strong><span id="primaryRisk">—</span></div>
+            <div class="item"><strong>Governance gap</strong><span id="primaryGap">—</span></div>
+            <div class="item"><strong>Required control</strong><span id="primaryControl">—</span></div>
+          </div>
+
+          <button class="btn" id="requestBtn" type="button">Request controlled pilot →</button>
+
+          <div class="request" id="requestBox">
+            <h2>3. Request pilot</h2>
+            <p class="sub">Request is sent through EXECUTIA request system. Confirmation appears only if email delivery is confirmed.</p>
+
+            <label>Your name</label>
+            <input id="name" placeholder="Your name">
+
+            <label>Work email</label>
+            <input id="email" type="email" placeholder="name@organization.com">
+
+            <label>Organization / project</label>
+            <input id="project" placeholder="Organization or project">
+
+            <button class="btn" id="submitBtn" type="button">Submit request</button>
+            <div id="submitError" class="error"></div>
+          </div>
         </div>
 
-        <section class="ex-card system">
-          <div class="ex-panel-header">
-            <div><h2 class="ex-panel-title">Request pilot access</h2><p class="ex-panel-subtitle">Submit your project. Receive a validated execution proposal within 24h.</p></div>
-            <span class="ex-pill ok">Free</span>
+        <div id="success" class="success">
+          <div style="font-size:34px">✓</div>
+          <h2>Request registered</h2>
+          <p class="sub">Your request entered the EXECUTIA control flow.</p>
+          <div class="ref" id="ref">EXE-...</div>
+          <div class="list" style="text-align:left">
+            <div class="item"><strong>Email confirmed</strong>Applicant and EXECUTIA operator notification sent.</div>
+            <div class="item"><strong>Status</strong>Under review · 24–48h.</div>
           </div>
-          <div id="pilotForm">
-            <div class="pilot-form" style="margin-top:16px">
-              <div><label class="ex-label">Your name</label><input class="ex-input" id="pilotName" type="text" placeholder="Andris Bērziņš" /></div>
-              <div><label class="ex-label">Work email</label><input class="ex-input" id="pilotEmail" type="email" placeholder="a.berzins@company.lv" /></div>
-              <div><label class="ex-label">Project name</label><input class="ex-input" id="pilotProject" type="text" value="Warehouse construction" /></div>
-              <div class="row2">
-                <div><label class="ex-label">Contract value (EUR)</label><input class="ex-input" id="pilotAmount" type="number" value="750000" step="50000" min="100000" /></div>
-                <div><label class="ex-label">Location</label><input class="ex-input" id="pilotLocation" type="text" value="Latvia, Riga" /></div>
-              </div>
-              <div><label class="ex-label">Execution phases</label><input class="ex-input" id="pilotPhases" type="text" value="3 phases (Foundation, Structure, Finishing)" /></div>
-              <button class="ex-btn primary" type="button" id="pilotSubmit" style="margin-top:4px">Submit for execution validation →</button>
-              <p id="pilotError" style="color:#c0392b;font-size:13px;display:none"></p>
-            </div>
-          </div>
-          <div class="pilot-success" id="pilotSuccess">
-            <div style="font-size:32px;margin-bottom:12px">✓</div>
-            <h3 style="font-size:18px;font-weight:700;color:var(--ex-text,#1E3A5F)">Execution validated</h3>
-            <p style="color:var(--ex-muted,#6B7280);margin:8px 0 16px">A pilot proposal will be sent to your email within 24 hours.</p>
-            <div class="ref" id="pilotRef"></div>
-          </div>
-        </section>
-      </div>
+        </div>
+      </article>
     </section>
   </main>
 
   <script>
-    document.getElementById("runDemo").addEventListener("click", async function() {
-      var btn = this, out = document.getElementById("demoJson");
-      btn.disabled = true; btn.textContent = "Running…";
-      try {
-        var payload = JSON.parse(document.getElementById("demoPayload").value);
-        var res = await fetch("/api/v1/execution/analyze", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
-        var data = await res.json();
-        var rows = [
-          ["Integrity Score", (data.integrity_score !== undefined ? data.integrity_score + " / 100" : "—")],
-          ["Risk Level", data.risk_level || "—"],
-          ["Decision", data.decision || "—"],
-          ["Status", data.execution_status || "—"],
-          ["Primary Risk", (data.risks && data.risks[0]) || "—"],
-          ["Recommended Control", (data.recommended_controls && data.recommended_controls[0]) || "—"]
-        ];
-        document.getElementById("proofRows").innerHTML = rows.map(function(r){return'<div class="exec-row" style="padding:8px 12px"><div class="meta">'+r[0]+'</div><strong>'+r[1]+'</strong></div>';}).join("");
-        document.getElementById("proofList").style.display = "block";
-        out.style.display = "block"; out.textContent = JSON.stringify(data, null, 2);
-      } catch(e) { out.style.display="block"; out.textContent="Error: "+e.message; }
-      btn.disabled = false; btn.textContent = "Analyze execution integrity";
-    });
+    const $ = id => document.getElementById(id);
+    let lastAnalysis = null;
 
-    document.getElementById("pilotSubmit").addEventListener("click", async function() {
-      var btn = this, errEl = document.getElementById("pilotError");
-      errEl.style.display = "none";
-      var email = document.getElementById("pilotEmail").value.trim();
-      var project = document.getElementById("pilotProject").value.trim();
-      if (!email || !email.includes("@")) { errEl.textContent="Please enter a valid work email."; errEl.style.display="block"; return; }
-      if (!project) { errEl.textContent="Please enter a project name."; errEl.style.display="block"; return; }
-      btn.disabled = true; btn.textContent = "Submitting…";
-      try {
-        var payload = {
-          organization: project,
-          operator: document.getElementById("pilotName").value.trim(),
-          email: email,
-          sector: document.getElementById("pilotLocation").value.trim() || "Execution pilot",
-          context: "Project: " + project + "\nLocation: " + document.getElementById("pilotLocation").value.trim() + "\nExecution phases: " + document.getElementById("pilotPhases").value.trim(),
-          outcome: "Contract value EUR: " + document.getElementById("pilotAmount").value
+    function messageFromError(data, fallback){
+      if(!data) return fallback;
+      if(typeof data.error === "string") return data.error;
+      if(data.error && typeof data.error.message === "string") return data.error.message;
+      if(typeof data.message === "string") return data.message;
+      return fallback;
+    }
+
+    function pillClass(v){
+      if(v === "LOW" || v === "APPROVED") return "pill green";
+      if(v === "MODERATE" || v === "PENDING_REVIEW") return "pill amber";
+      return "pill red";
+    }
+
+    $("analyzeBtn").addEventListener("click", async () => {
+      $("analysisError").style.display = "none";
+      $("analyzeBtn").disabled = true;
+      $("analyzeBtn").textContent = "Analyzing…";
+
+      try{
+        const text = $("processText").value.trim();
+        const payload = {
+          process_name: text.split("\n")[0] || "Execution process",
+          industry: "Execution process",
+          workflow: text,
+          payments: text,
+          approvals: text,
+          compliance: text,
+          problems: text
         };
 
-        var res = await fetch("/api/v1/lead", {
+        const res = await fetch("/api/v1/execution/analyze", {
           method:"POST",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify(payload)
         });
 
-        var data = await res.json();
+        const data = await res.json().catch(() => ({}));
+        if(!res.ok || !data.ok) throw new Error(messageFromError(data, "Analysis failed."));
 
-        if (data.ok && data.status === "REQUEST_RECEIVED") {
-          document.getElementById("pilotForm").style.display = "none";
-          document.getElementById("pilotSuccess").style.display = "block";
-          document.getElementById("pilotRef").textContent = "Reference: " + (data.request_id || "—");
-        } else {
-          errEl.textContent = data.error || "Submission failed.";
-          errEl.style.display="block";
-          btn.disabled=false;
-          btn.textContent="Submit for execution validation →";
-        }
-      } catch(e) { errEl.textContent="Connection error."; errEl.style.display="block"; btn.disabled=false; btn.textContent="Submit for execution validation →"; }
+        lastAnalysis = data;
+        $("empty").style.display = "none";
+        $("result").style.display = "block";
+        $("success").style.display = "none";
+
+        $("score").textContent = `${data.integrity_score}/100`;
+        $("risk").className = pillClass(data.risk_level);
+        $("risk").textContent = `${data.risk_level} Risk`;
+        $("decision").className = pillClass(data.decision);
+        $("decision").textContent = data.decision || "DECISION";
+        $("rec").textContent = data.recommendation || "";
+
+        $("primaryRisk").textContent = data.risks?.[0] || "—";
+        $("primaryGap").textContent = data.governance_gaps?.[0] || "—";
+        $("primaryControl").textContent = data.recommended_controls?.[0] || "—";
+      }catch(e){
+        $("analysisError").textContent = e.message || "Analysis failed.";
+        $("analysisError").style.display = "block";
+      }
+
+      $("analyzeBtn").disabled = false;
+      $("analyzeBtn").textContent = "Analyze execution integrity";
+    });
+
+    $("requestBtn").addEventListener("click", () => {
+      $("requestBox").style.display = "block";
+      $("name").focus();
+    });
+
+    $("submitBtn").addEventListener("click", async () => {
+      $("submitError").style.display = "none";
+
+      const name = $("name").value.trim();
+      const email = $("email").value.trim();
+      const project = $("project").value.trim();
+
+      if(!name){ $("submitError").textContent = "Please enter your name."; $("submitError").style.display = "block"; return; }
+      if(!email || !email.includes("@")){ $("submitError").textContent = "Please enter a valid email."; $("submitError").style.display = "block"; return; }
+      if(!project){ $("submitError").textContent = "Please enter organization or project."; $("submitError").style.display = "block"; return; }
+
+      $("submitBtn").disabled = true;
+      $("submitBtn").textContent = "Submitting…";
+
+      try{
+        const res = await fetch("/api/v1/lead", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            name,
+            email,
+            project,
+            amount: lastAnalysis ? `Integrity score ${lastAnalysis.integrity_score}/100` : "-",
+            location: "Execution Test",
+            phases: "Validation, Decision, Control, Audit"
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if(!res.ok || !data.ok || !data.received) throw new Error(messageFromError(data, "Request failed."));
+
+        $("result").style.display = "none";
+        $("success").style.display = "block";
+        $("ref").textContent = data.reference || data.request_id || "—";
+      }catch(e){
+        $("submitError").textContent = e.message || "Request failed.";
+        $("submitError").style.display = "block";
+        $("submitBtn").disabled = false;
+        $("submitBtn").textContent = "Submit request";
+      }
     });
   </script>
-  <script src="/components/engine-shell.js"></script>
 </body>
 </html>
