@@ -21,6 +21,13 @@
     .ex-input:focus{outline:none;border-color:var(--ex-accent,#1E3A5F);box-shadow:0 0 0 3px rgba(30,58,95,.1)}
     .pilot-success{display:none;text-align:center;padding:28px 20px}
     .pilot-success .ref{font-family:monospace;font-size:13px;background:var(--ex-surface,#F8FAFC);padding:6px 12px;border-radius:4px;display:inline-block;margin-top:8px}
+    .public-flow{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin:0 auto 34px}
+    .public-flow a,.public-flow span{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border:1px solid var(--ex-border,#E6ECF2);border-radius:999px;padding:10px 14px;color:#1E3A5F;background:#fff}
+    .public-flow .active{background:#1E3A5F;color:#fff;border-color:#1E3A5F}
+    .public-flow .arrow{border:none;background:transparent;color:#9CA3AF;padding:0}
+    .success-steps{margin-top:18px;display:grid;gap:10px;text-align:left}
+    .success-step{padding:12px 14px;border:1px solid var(--ex-border,#E6ECF2);border-radius:8px;background:#F8FAFC;font-size:13px;color:#1E3A5F}
+    .success-step strong{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}
     .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
     @media(max-width:720px){.stat-row{grid-template-columns:1fr 1fr}}
     .stat-box{background:var(--ex-surface,#F8FAFC);border:1px solid var(--ex-border,#E6ECF2);border-radius:8px;padding:18px 16px}
@@ -66,10 +73,19 @@
     <section class="ex-section-tight">
       <p class="ex-kicker">Live execution engine</p>
       <h1 class="ex-title system-title">Test EXECUTIA on a real project</h1>
-      <p class="ex-lead">Submit a project execution request. The engine validates, decides, and commits to ledger in one atomic transaction.</p>
+      <p class="ex-lead">Insert an execution process, receive an integrity analysis, then request a controlled pilot through the EXECUTIA request system.</p>
     </section>
 
     <section class="ex-section" style="padding-top:0">
+      <nav class="public-flow" aria-label="EXECUTIA public execution flow">
+        <a href="https://executia.io">Entry</a>
+        <span class="arrow">→</span>
+        <span class="active">Execution Test</span>
+        <span class="arrow">→</span>
+        <a href="https://executia.io/request">Request Pilot</a>
+        <span class="arrow">→</span>
+        <a href="/dashboard">Engine</a>
+      </nav>
       <div class="stat-row">
         <div class="stat-box"><div class="val">€2.4M</div><div class="lbl">Total execution volume</div></div>
         <div class="stat-box"><div class="val">142</div><div class="lbl">Validated transactions</div></div>
@@ -140,9 +156,15 @@
           </div>
           <div class="pilot-success" id="pilotSuccess">
             <div style="font-size:32px;margin-bottom:12px">✓</div>
-            <h3 style="font-size:18px;font-weight:700;color:var(--ex-text,#1E3A5F)">Execution validated</h3>
-            <p style="color:var(--ex-muted,#6B7280);margin:8px 0 16px">A pilot proposal will be sent to your email within 24 hours.</p>
+            <h3 style="font-size:18px;font-weight:700;color:var(--ex-text,#1E3A5F)">Request registered</h3>
+            <p style="color:var(--ex-muted,#6B7280);margin:8px 0 16px">Your execution request entered the EXECUTIA control flow.</p>
             <div class="ref" id="pilotRef"></div>
+            <div class="success-steps">
+              <div class="success-step"><strong>Email confirmed</strong>Applicant and EXECUTIA operator notification sent.</div>
+              <div class="success-step"><strong>Status</strong>Under review · 24–48h response window.</div>
+              <div class="success-step"><strong>Next</strong>Define one execution point and measurable control result.</div>
+            </div>
+            <a class="ex-btn primary" href="/dashboard" style="margin-top:18px;text-decoration:none;display:inline-flex">Enter engine →</a>
           </div>
         </section>
       </div>
