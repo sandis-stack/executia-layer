@@ -181,13 +181,33 @@
       if (!project) { errEl.textContent="Please enter a project name."; errEl.style.display="block"; return; }
       btn.disabled = true; btn.textContent = "Submitting…";
       try {
-        var res = await fetch("/api/v1/lead", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name:document.getElementById("pilotName").value.trim(), email, project, amount:document.getElementById("pilotAmount").value, location:document.getElementById("pilotLocation").value.trim(), phases:document.getElementById("pilotPhases").value.trim() }) });
+        var payload = {
+          organization: project,
+          operator: document.getElementById("pilotName").value.trim(),
+          email: email,
+          sector: document.getElementById("pilotLocation").value.trim() || "Execution pilot",
+          context: "Project: " + project + "\nLocation: " + document.getElementById("pilotLocation").value.trim() + "\nExecution phases: " + document.getElementById("pilotPhases").value.trim(),
+          outcome: "Contract value EUR: " + document.getElementById("pilotAmount").value
+        };
+
+        var res = await fetch("https://executia.io/api/request", {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify(payload)
+        });
+
         var data = await res.json();
-        if (data.received) {
+
+        if (data.ok && data.status === "REQUEST_RECEIVED") {
           document.getElementById("pilotForm").style.display = "none";
           document.getElementById("pilotSuccess").style.display = "block";
-          document.getElementById("pilotRef").textContent = "Reference: " + (data.reference || "—");
-        } else { errEl.textContent = data.message || "Submission failed."; errEl.style.display="block"; btn.disabled=false; btn.textContent="Submit for execution validation →"; }
+          document.getElementById("pilotRef").textContent = "Reference: " + (data.request_id || "—");
+        } else {
+          errEl.textContent = data.error || "Submission failed.";
+          errEl.style.display="block";
+          btn.disabled=false;
+          btn.textContent="Submit for execution validation →";
+        }
       } catch(e) { errEl.textContent="Connection error."; errEl.style.display="block"; btn.disabled=false; btn.textContent="Submit for execution validation →"; }
     });
   </script>
