@@ -8,6 +8,11 @@
   <title>Demo — EXECUTIA™</title>
   <link rel="stylesheet" href="/enterprise.css" />
   <style>
+    .demo-public-header{height:78px;display:flex;align-items:center;justify-content:space-between;padding:0 7vw;background:#fff;border-bottom:1px solid var(--ex-border,#E6ECF2)}
+    .demo-public-brand{font-weight:900;letter-spacing:.18em;color:#1E3A5F;font-size:14px}
+    .demo-public-brand span{color:#9CA3AF;font-size:11px;margin-left:8px}
+    .demo-public-links{display:flex;gap:10px;align-items:center}
+    .demo-public-links a{text-decoration:none;color:#1E3A5F;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--ex-border,#E6ECF2);border-radius:999px;padding:10px 14px;background:#fff}
     .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
     @media(max-width:820px){.demo-grid{grid-template-columns:1fr}}
     .recent-exec{display:flex;flex-direction:column;gap:10px;margin-top:12px}
@@ -69,6 +74,13 @@
   <link rel="stylesheet" href="/components/engine-system.css">
 </head>
 <body>
+  <header class="demo-public-header">
+    <div class="demo-public-brand">EXECUTIA™ <span>EXECUTION TEST</span></div>
+    <nav class="demo-public-links">
+      <a href="https://executia.io">Entry</a>
+      <a href="https://executia.io/request">Request</a>
+    </nav>
+  </header>
 <main class="ex-main">
     <section class="ex-section-tight">
       <p class="ex-kicker">Live execution engine</p>
@@ -83,8 +95,6 @@
         <span class="active">Execution Test</span>
         <span class="arrow">→</span>
         <a href="https://executia.io/request">Request Pilot</a>
-        <span class="arrow">→</span>
-        <a href="/dashboard">Engine</a>
       </nav>
       <div class="stat-row">
         <div class="stat-box"><div class="val">€2.4M</div><div class="lbl">Total execution volume</div></div>
@@ -164,7 +174,7 @@
               <div class="success-step"><strong>Status</strong>Under review · 24–48h response window.</div>
               <div class="success-step"><strong>Next</strong>Define one execution point and measurable control result.</div>
             </div>
-            <a class="ex-btn primary" href="/dashboard" style="margin-top:18px;text-decoration:none;display:inline-flex">Enter engine →</a>
+            <a class="ex-btn primary" href="https://executia.io/request" style="margin-top:18px;text-decoration:none;display:inline-flex">Open request page →</a>
           </div>
         </section>
       </div>
@@ -233,6 +243,5 @@
       } catch(e) { errEl.textContent="Connection error."; errEl.style.display="block"; btn.disabled=false; btn.textContent="Submit for execution validation →"; }
     });
   </script>
-  <script src="/components/engine-shell.js"></script>
 </body>
 </html>
