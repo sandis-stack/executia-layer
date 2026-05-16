@@ -1,8 +1,6 @@
 import { db } from "../../services/db.js";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export default async function handler(req, res){
   res.setHeader("Content-Type", "application/json");
 
@@ -86,6 +84,12 @@ export default async function handler(req, res){
     }
 
     try{
+      if(!process.env.RESEND_API_KEY || !process.env.REQUEST_NOTIFY_EMAIL){
+        throw new Error("RESEND_ENV_MISSING");
+      }
+
+      const resend = new Resend(process.env.RESEND_API_KEY);
+
       await resend.emails.send({
         from:"EXECUTIA <onboarding@resend.dev>",
         to:process.env.REQUEST_NOTIFY_EMAIL,
