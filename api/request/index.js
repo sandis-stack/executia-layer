@@ -1,21 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
-
-function getSupabase(){
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if(!url || !key){
-    return {
-      ok:false,
-      error:"SUPABASE_ENV_MISSING"
-    };
-  }
-
-  return {
-    ok:true,
-    client:createClient(url, key)
-  };
-}
+import { db } from "../../services/db.js";
 
 export default async function handler(req, res){
   res.setHeader("Content-Type", "application/json");
@@ -24,15 +7,6 @@ export default async function handler(req, res){
     return res.status(405).json({
       ok:false,
       error:"METHOD_NOT_ALLOWED"
-    });
-  }
-
-  const db = getSupabase();
-
-  if(!db.ok){
-    return res.status(500).json({
-      ok:false,
-      error:db.error
     });
   }
 
@@ -52,7 +26,7 @@ export default async function handler(req, res){
       analysis_status: "QUEUED"
     };
 
-    const { data, error } = await db.client
+    const { data, error } = await db()
       .from("execution_requests")
       .insert(payload)
       .select("id, request_state, next_state, governance_status, analysis_status")
@@ -78,7 +52,7 @@ export default async function handler(req, res){
   }catch(error){
     return res.status(500).json({
       ok:false,
-      error:"REQUEST_PIPELINE_FAILED",
+      error:error.code || "REQUEST_PIPELINE_FAILED",
       details:error.message
     });
   }
