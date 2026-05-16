@@ -20,7 +20,88 @@
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
     .note{background:#f4f8fc;border:1px solid rgba(30,58,95,.12);border-radius:16px;padding:18px;color:#60748a}
     @media(max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:34px}}
-  </style>
+  
+
+.success-shell{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+  background:#f4f7fb;
+}
+
+.success-card{
+  width:min(720px,100%);
+  background:#fff;
+  border:1px solid rgba(30,58,95,.12);
+  border-radius:24px;
+  padding:48px;
+}
+
+.success-kicker{
+  font-size:12px;
+  letter-spacing:.16em;
+  font-weight:900;
+  color:#60748a;
+  margin-bottom:18px;
+}
+
+.success-card h1{
+  font-size:52px;
+  line-height:1;
+  color:#1e3a5f;
+  margin-bottom:20px;
+}
+
+.success-card p{
+  font-size:18px;
+  line-height:1.6;
+  color:#60748a;
+}
+
+.success-proof{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:36px;
+}
+
+.success-proof div{
+  border:1px solid rgba(30,58,95,.12);
+  border-radius:14px;
+  padding:18px;
+}
+
+.success-proof span{
+  display:block;
+  font-size:11px;
+  letter-spacing:.12em;
+  font-weight:900;
+  color:#60748a;
+  margin-bottom:10px;
+}
+
+.success-proof strong{
+  color:#1e3a5f;
+  font-size:14px;
+}
+
+.success-button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:58px;
+  margin-top:32px;
+  border-radius:14px;
+  background:#1e3a5f;
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+</style>
 </head>
 <body>
   <main>
@@ -106,8 +187,44 @@ form.addEventListener("submit", async (e) => {
   const data = await response.json();
 
   if(data.ok){
-    alert("EXECUTION REQUEST RECEIVED");
-    form.reset();
+
+    document.body.innerHTML = `
+      <main class="success-shell">
+        <div class="success-card">
+
+          <div class="success-kicker">
+            EXECUTIA ANALYSIS INITIALIZED
+          </div>
+
+          <h1>
+            Execution Request Received
+          </h1>
+
+          <p>
+            Governance intake initialized.
+            Execution analysis pipeline started.
+          </p>
+
+          <div class="success-proof">
+            <div>
+              <span>STATE</span>
+              <strong>${data.state}</strong>
+            </div>
+
+            <div>
+              <span>NEXT</span>
+              <strong>${data.next}</strong>
+            </div>
+          </div>
+
+          <a href="/dashboard" class="success-button">
+            OPEN EXECUTION ENGINE
+          </a>
+
+        </div>
+      </main>
+    `;
+
   }else{
     alert("REQUEST FAILED");
   }
