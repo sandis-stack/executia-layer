@@ -16,12 +16,12 @@ export default async function handler(req, res){
   try{
     const body = req.body || {};
 
-    const organization = organization;
-    const email = email;
-    const domain = domain;
-    const problem = problem;
-    const outcome = outcome;
-    const stack = stack;
+    const organization = body.organization || "";
+    const email = body.email || "";
+    const domain = body.domain || "";
+    const problem = body.problem || "";
+    const outcome = body.outcome || "";
+    const stack = body.stack || "";
 
     const text = [
       domain,
