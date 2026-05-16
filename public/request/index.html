@@ -207,13 +207,23 @@ form.addEventListener("submit", async (e) => {
 
           <div class="success-proof">
             <div>
+              <span>REQUEST ID</span>
+              <strong>${data.request_id}</strong>
+            </div>
+
+            <div>
               <span>STATE</span>
               <strong>${data.state}</strong>
             </div>
 
             <div>
               <span>NEXT</span>
-              <strong>${data.next}</strong>
+              <strong>${data.next_state}</strong>
+            </div>
+
+            <div>
+              <span>ANALYSIS</span>
+              <strong>${data.analysis_status}</strong>
             </div>
           </div>
 
