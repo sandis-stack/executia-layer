@@ -4858,6 +4858,14 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
 
         renderQueue();
 
+        const urlReviewId = new URLSearchParams(window.location.search).get("review_id");
+
+        if(urlReviewId && REVIEWS.some((review) => review.id === urlReviewId)){
+          await window.selectReview(urlReviewId);
+          if($("detailState")) $("detailState").textContent = "URL SELECTED";
+          return;
+        }
+
         if(!SELECTED && REVIEWS.length){
           SELECTED = REVIEWS[0];
           if($("selectedReview")) $("selectedReview").textContent = SELECTED?.id || "—";
