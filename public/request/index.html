@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EXECUTIA — Request Execution Analysis</title>
+  <link rel="stylesheet" href="/components/engine-shell.css">
+  <style>
+    body{margin:0;background:#f6f8fb;color:#1e3a5f;font-family:Inter,Arial,sans-serif}
+    main{max-width:980px;margin:0 auto;padding:56px 22px}
+    .card{background:#fff;border:1px solid rgba(30,58,95,.12);border-radius:22px;padding:34px;box-shadow:0 18px 50px rgba(30,58,95,.08)}
+    .eyebrow{font-size:12px;font-weight:900;letter-spacing:.16em;color:#60748a;text-transform:uppercase}
+    h1{font-size:42px;line-height:1.05;margin:14px 0 14px;color:#1e3a5f}
+    p{color:#60748a;line-height:1.6;max-width:720px}
+    form{display:grid;gap:18px;margin-top:28px}
+    label{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#1e3a5f}
+    input,select,textarea{width:100%;box-sizing:border-box;border:1px solid rgba(30,58,95,.16);border-radius:14px;padding:14px 16px;font:inherit;color:#1e3a5f;background:#fff}
+    textarea{min-height:120px;resize:vertical}
+    button{border:0;border-radius:14px;padding:16px 18px;background:#1e3a5f;color:#fff;font-weight:900;letter-spacing:.12em;cursor:pointer}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .note{background:#f4f8fc;border:1px solid rgba(30,58,95,.12);border-radius:16px;padding:18px;color:#60748a}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:34px}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="card">
+      <div class="eyebrow">EXECUTIA PILOT REQUEST</div>
+      <h1>Request Execution Analysis</h1>
+      <p>
+        Define the execution problem, desired outcome, constraints and current system stack.
+        EXECUTIA evaluates whether execution-time governance can reduce drift, delay, audit overhead and compliance risk.
+      </p>
+
+      <form action="mailto:contact@executia.io" method="post" enctype="text/plain">
+        <div class="grid">
+          <div>
+            <label>Organization / Company</label>
+            <input name="organization" placeholder="Organization name">
+          </div>
+          <div>
+            <label>Email</label>
+            <input name="email" type="email" placeholder="name@company.com">
+          </div>
+        </div>
+
+        <div>
+          <label>Execution domain</label>
+          <select name="domain">
+            <option>Procurement</option>
+            <option>Finance</option>
+            <option>Compliance</option>
+            <option>Infrastructure</option>
+            <option>Operations</option>
+            <option>Government</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Current execution problem</label>
+          <textarea name="problem" placeholder="Where does execution drift, delay, manual approval, audit uncertainty or compliance risk appear?"></textarea>
+        </div>
+
+        <div>
+          <label>Desired execution outcome</label>
+          <textarea name="outcome" placeholder="What result should be guaranteed, validated or blocked at execution time?"></textarea>
+        </div>
+
+        <div>
+          <label>Current system stack</label>
+          <textarea name="stack" placeholder="ERP, workflow tools, approval systems, audit process, payment systems, compliance rules..."></textarea>
+        </div>
+
+        <div class="note">
+          EXECUTIA is not a contact form. This request starts an execution analysis: outcome, constraints, validation logic and proof requirements.
+        </div>
+
+        <button type="submit">REQUEST PILOT REVIEW</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
