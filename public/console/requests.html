@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EXECUTIA — Execution Requests</title>
+  <style>
+    body{margin:0;background:#f4f7fb;color:#1e3a5f;font-family:Inter,Arial,sans-serif}
+    main{max-width:1180px;margin:0 auto;padding:42px 22px}
+    .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:26px}
+    .kicker{font-size:12px;font-weight:900;letter-spacing:.16em;color:#60748a}
+    h1{margin:10px 0 0;font-size:42px;line-height:1}
+    .pill{border:1px solid rgba(30,58,95,.16);border-radius:999px;padding:10px 14px;background:#fff;font-size:12px;font-weight:900}
+    .grid{display:grid;gap:16px}
+    .card{background:#fff;border:1px solid rgba(30,58,95,.12);border-radius:18px;padding:22px}
+    .top{display:flex;justify-content:space-between;gap:16px;margin-bottom:16px}
+    .title{font-size:16px;font-weight:900;color:#1e3a5f}
+    .meta{font-size:12px;color:#60748a;margin-top:6px;word-break:break-word}
+    .status{font-size:11px;font-weight:900;letter-spacing:.12em;background:#f4f8fc;border:1px solid rgba(30,58,95,.14);border-radius:999px;padding:8px 10px;height:max-content}
+    .cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px}
+    .box{border:1px solid rgba(30,58,95,.10);border-radius:14px;padding:14px;background:#fbfdff}
+    .label{font-size:10px;font-weight:900;letter-spacing:.12em;color:#60748a;margin-bottom:8px}
+    .text{font-size:13px;line-height:1.45;color:#1e3a5f}
+    .empty{background:#fff;border:1px solid rgba(30,58,95,.12);border-radius:18px;padding:28px;color:#60748a}
+    @media(max-width:860px){.head,.top{display:block}.cols{grid-template-columns:1fr}h1{font-size:34px}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="head">
+      <div>
+        <div class="kicker">EXECUTIA OPERATOR INTAKE</div>
+        <h1>Execution Requests</h1>
+      </div>
+      <div class="pill" id="count">LOADING</div>
+    </div>
+
+    <div class="grid" id="requests">
+      <div class="empty">Loading execution intake requests...</div>
+    </div>
+  </main>
+
+  <script>
+    const escapeHtml = (value) => String(value ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+
+    async function loadRequests(){
+      const root = document.getElementById("requests");
+      const count = document.getElementById("count");
+
+      try{
+        const res = await fetch("/api/request/list");
+        const data = await res.json();
+
+        if(!data.ok){
+          root.innerHTML = '<div class="empty">Request intake failed.</div>';
+          count.textContent = "ERROR";
+          return;
+        }
+
+        count.textContent = `${data.count} REQUESTS`;
+
+        if(!data.requests.length){
+          root.innerHTML = '<div class="empty">No execution requests received yet.</div>';
+          return;
+        }
+
+        root.innerHTML = data.requests.map(item => `
+          <article class="card">
+            <div class="top">
+              <div>
+                <div class="title">${escapeHtml(item.organization_name || "Unknown organization")}</div>
+                <div class="meta">${escapeHtml(item.email || "—")}</div>
+                <div class="meta">Request ID: ${escapeHtml(item.id)}</div>
+              </div>
+              <div class="status">${escapeHtml(item.analysis_status || "QUEUED")}</div>
+            </div>
+
+            <div class="cols">
+              <div class="box">
+                <div class="label">DOMAIN</div>
+                <div class="text">${escapeHtml(item.execution_domain || "—")}</div>
+              </div>
+
+              <div class="box">
+                <div class="label">STATE</div>
+                <div class="text">${escapeHtml(item.request_state || "—")}</div>
+              </div>
+
+              <div class="box">
+                <div class="label">GOVERNANCE</div>
+                <div class="text">${escapeHtml(item.governance_status || "—")}</div>
+              </div>
+            </div>
+
+            <div class="cols">
+              <div class="box">
+                <div class="label">CURRENT PROBLEM</div>
+                <div class="text">${escapeHtml(item.current_problem || "—")}</div>
+              </div>
+
+              <div class="box">
+                <div class="label">DESIRED OUTCOME</div>
+                <div class="text">${escapeHtml(item.desired_outcome || "—")}</div>
+              </div>
+
+              <div class="box">
+                <div class="label">CURRENT STACK</div>
+                <div class="text">${escapeHtml(item.current_stack || "—")}</div>
+              </div>
+            </div>
+          </article>
+        `).join("");
+
+      }catch(error){
+        root.innerHTML = '<div class="empty">Request intake unavailable.</div>';
+        count.textContent = "ERROR";
+      }
+    }
+
+    loadRequests();
+  </script>
+</body>
+</html>
