@@ -338,6 +338,44 @@
         grid-template-columns:1fr;
       }
     }
+  
+    .comparison-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .comparison-card{
+      border:1px solid rgba(30,58,95,.12);
+      border-radius:14px;
+      padding:16px;
+      background:#fff;
+    }
+
+    .comparison-card.with{
+      background:#f4f8fc;
+      border-color:rgba(30,58,95,.22);
+    }
+
+    .comparison-title{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.12em;
+      color:var(--navy);
+      margin-bottom:12px;
+    }
+
+    .comparison-card ul{
+      margin:0;
+      padding-left:18px;
+    }
+
+    .comparison-card li{
+      margin-bottom:9px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
   </style>
   <link rel="stylesheet" href="/components/engine-shell.css" />
   <link rel="stylesheet" href="/components/engine-system.css" />
@@ -401,6 +439,32 @@
           <div class="step" data-step="3"><span class="dot"></span><div><strong>EXECUTION_DECISION</strong><span>Waiting</span></div></div>
           <div class="step" data-step="4"><span class="dot"></span><div><strong>INVALID_EXECUTION_BLOCKED</strong><span>Waiting</span></div></div>
           <div class="step" data-step="5"><span class="dot"></span><div><strong>EXECUTION_PROOF_GENERATED</strong><span>Waiting</span></div></div>
+        </div>
+      </article>
+
+      <article class="panel comparison-panel">
+        <h2>Without EXECUTIA / With EXECUTIA</h2>
+
+        <div class="comparison-grid">
+          <div class="comparison-card">
+            <div class="comparison-title">WITHOUT EXECUTIA</div>
+            <ul>
+              <li>Manual approvals</li>
+              <li>Delayed truth</li>
+              <li>Audit after execution</li>
+              <li>Execution drift possible</li>
+            </ul>
+          </div>
+
+          <div class="comparison-card with">
+            <div class="comparison-title">WITH EXECUTIA</div>
+            <ul>
+              <li>Execution-time validation</li>
+              <li>Invalid execution blocked</li>
+              <li>Automatic proof generation</li>
+              <li>Deterministic governance</li>
+            </ul>
+          </div>
         </div>
       </article>
 
