@@ -376,6 +376,29 @@
       line-height:1.45;
     }
 
+  
+    .request-analysis-button{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      margin-top:18px;
+      padding:16px;
+      border-radius:14px;
+      background:#1e3a5f;
+      color:#fff;
+      text-decoration:none;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      transition:.2s ease;
+      box-sizing:border-box;
+    }
+
+    .request-analysis-button:hover{
+      background:#28496f;
+    }
+
   </style>
   <link rel="stylesheet" href="/components/engine-shell.css" />
   <link rel="stylesheet" href="/components/engine-system.css" />
@@ -484,6 +507,10 @@
           <div class="proof-row"><span>timestamp</span><strong id="timestamp">—</strong></div>
           <div class="proof-row"><span>governance_status</span><strong id="governanceStatus">—</strong></div>
         </div>
+
+        <a href="/request" class="request-analysis-button">
+          REQUEST EXECUTION ANALYSIS
+        </a>
       </article>
     </section>
 
