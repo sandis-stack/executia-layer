@@ -89,15 +89,35 @@ export default async function handler(req, res){
       const reviewPayload = {
         execution_id: data.id,
         review_status: "OPEN",
-        governance_state: "EXECUTION_ANALYSIS_PENDING",
+        governance_decision: "PENDING_REVIEW",
+        policy_decision: "PENDING_REVIEW",
+        risk_score:
+          payload.governance_risk === "HIGH" || payload.drift_risk === "HIGH"
+            ? 85
+            : 55,
+        requested_by: email || "system",
+        escalation_level:
+          payload.governance_risk === "HIGH"
+            ? 2
+            : 1,
         review_reason: "AUTO GENERATED FROM EXECUTION REQUEST",
-        metadata: {
+        governance_payload: {
           request_id: data.id,
           organization,
           domain,
+          problem,
+          outcome,
+          stack,
           governance_risk: payload.governance_risk,
           drift_risk: payload.drift_risk,
-          execution_complexity: payload.execution_complexity
+          execution_complexity: payload.execution_complexity,
+          estimated_savings: payload.estimated_savings
+        },
+        policy_payload: {
+          source: "execution_request",
+          analysis_status: payload.analysis_status,
+          compliance_intensity: payload.compliance_intensity,
+          execution_layer_count: payload.execution_layer_count
         }
       };
 
