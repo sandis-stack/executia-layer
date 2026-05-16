@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>EXECUTIA — REQUEST GOVERNANCE QUEUE</title>
+
+<style>
+:root{
+  --bg:#f4f7fb;
+  --panel:#ffffff;
+  --line:#d6dee8;
+  --text:#18324f;
+  --muted:#6b7c90;
+  --blue:#1e3a5f;
+  --green:#0f766e;
+  --orange:#b45309;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,sans-serif;
+}
+
+header{
+  padding:28px 36px;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+}
+
+.brand{
+  font-size:12px;
+  letter-spacing:.24em;
+  font-weight:800;
+  color:var(--blue);
+}
+
+h1{
+  margin:10px 0 0;
+  font-size:32px;
+  line-height:1;
+}
+
+.sub{
+  margin-top:10px;
+  color:var(--muted);
+  max-width:760px;
+  line-height:1.5;
+}
+
+main{
+  padding:28px 36px 60px;
+}
+
+.table{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:
+    220px
+    120px
+    120px
+    120px
+    140px
+    180px;
+  gap:16px;
+  padding:18px;
+  border-bottom:1px solid #edf2f7;
+  align-items:center;
+}
+
+.row.head{
+  background:#f8fbff;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+  color:var(--muted);
+}
+
+.cell{
+  font-size:14px;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+}
+
+.high{
+  background:#fff3f3;
+  color:#b91c1c;
+}
+
+.medium{
+  background:#fff7ed;
+  color:var(--orange);
+}
+
+.open{
+  background:#ecfeff;
+  color:var(--green);
+}
+
+button{
+  height:40px;
+  border:none;
+  border-radius:10px;
+  padding:0 16px;
+  background:var(--blue);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.empty{
+  padding:40px;
+  text-align:center;
+  color:var(--muted);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">EXECUTIA™ GOVERNANCE QUEUE</div>
+
+  <h1>Execution Request Reviews</h1>
+
+  <div class="sub">
+    Autonomous execution analysis requests automatically materialize governance reviews,
+    risk classification and execution oversight objects.
+  </div>
+</header>
+
+<main>
+
+<div class="table">
+
+  <div class="row head">
+    <div>ORGANIZATION</div>
+    <div>DOMAIN</div>
+    <div>RISK</div>
+    <div>STATUS</div>
+    <div>REVIEW SCORE</div>
+    <div>GOVERNANCE</div>
+  </div>
+
+  <div id="rows"></div>
+
+</div>
+
+</main>
+
+<script>
+async function load(){
+
+  const rows = document.getElementById("rows");
+
+  rows.innerHTML = `
+    <div class="empty">
+      Loading governance queue...
+    </div>
+  `;
+
+  try{
+
+    const res = await fetch("/api/request/list");
+    const json = await res.json();
+
+    if(!json.ok){
+      throw new Error(json.error || "REQUEST_QUEUE_FAILED");
+    }
+
+    if(!json.requests?.length){
+      rows.innerHTML = `
+        <div class="empty">
+          No execution requests found.
+        </div>
+      `;
+      return;
+    }
+
+    rows.innerHTML = json.requests.map(item => {
+
+      const risk =
+        (item.governance_risk || "UNKNOWN").toLowerCase();
+
+      const status =
+        (item.governance_review_status || "PENDING").toLowerCase();
+
+      return `
+        <div class="row">
+
+          <div class="cell">
+            <strong>${item.organization_name || "UNKNOWN"}</strong>
+          </div>
+
+          <div class="cell">
+            ${item.execution_domain || "—"}
+          </div>
+
+          <div class="cell">
+            <span class="badge ${risk}">
+              ${item.governance_risk || "UNKNOWN"}
+            </span>
+          </div>
+
+          <div class="cell">
+            <span class="badge ${status}">
+              ${item.governance_review_status || "PENDING"}
+            </span>
+          </div>
+
+          <div class="cell">
+            ${item.governance_risk_score || "—"}
+          </div>
+
+          <div class="cell">
+            ${
+              item.governance_review_id
+                ? `
+                  <button onclick="openReview('${item.governance_review_id}')">
+                    OPEN REVIEW
+                  </button>
+                `
+                : "—"
+            }
+          </div>
+
+        </div>
+      `;
+    }).join("");
+
+  }catch(error){
+
+    rows.innerHTML = `
+      <div class="empty">
+        ${error.message}
+      </div>
+    `;
+  }
+}
+
+function openReview(reviewId){
+  window.location.href =
+    "/console/governance.html?review_id=" +
+    encodeURIComponent(reviewId);
+}
+
+load();
+</script>
+
+</body>
+</html>
