@@ -16,11 +16,18 @@ export default async function handler(req, res){
   try{
     const body = req.body || {};
 
+    const organization = organization;
+    const email = email;
+    const domain = domain;
+    const problem = problem;
+    const outcome = outcome;
+    const stack = stack;
+
     const text = [
-      body.domain || "",
-      body.problem || "",
-      body.outcome || "",
-      body.stack || ""
+      domain,
+      problem,
+      outcome,
+      stack
     ].join(" ").toLowerCase();
 
     const highRisk =
@@ -38,19 +45,19 @@ export default async function handler(req, res){
       text.includes("uncertainty") ||
       text.includes("error");
 
-    const stackDepth = (body.stack || "")
+    const stackDepth = (stack)
       .split(",")
       .map(x => x.trim())
       .filter(Boolean)
       .length;
 
     const payload = {
-      organization_name: body.organization || "",
-      email: body.email || "",
-      execution_domain: body.domain || "",
-      current_problem: body.problem || "",
-      desired_outcome: body.outcome || "",
-      current_stack: body.stack || "",
+      organization_name: organization,
+      email: email,
+      execution_domain: domain,
+      current_problem: problem,
+      desired_outcome: outcome,
+      current_stack: stack,
       request_state: "REQUEST_RECEIVED",
       next_state: "EXECUTION_ANALYSIS_PENDING",
       governance_status: "PENDING",
