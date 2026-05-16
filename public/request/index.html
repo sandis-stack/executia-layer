@@ -32,7 +32,7 @@
         EXECUTIA evaluates whether execution-time governance can reduce drift, delay, audit overhead and compliance risk.
       </p>
 
-      <form action="mailto:contact@executia.io" method="post" enctype="text/plain">
+      <form id="requestForm">
         <div class="grid">
           <div>
             <label>Organization / Company</label>
@@ -79,5 +79,40 @@
       </form>
     </div>
   </main>
+
+<script>
+const form = document.getElementById("requestForm");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    organization: form.organization.value,
+    email: form.email.value,
+    domain: form.domain.value,
+    problem: form.problem.value,
+    outcome: form.outcome.value,
+    stack: form.stack.value
+  };
+
+  const response = await fetch("/api/request", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if(data.ok){
+    alert("EXECUTION REQUEST RECEIVED");
+    form.reset();
+  }else{
+    alert("REQUEST FAILED");
+  }
+});
+</script>
 </body>
+
 </html>
