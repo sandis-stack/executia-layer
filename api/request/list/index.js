@@ -11,7 +11,7 @@ export default async function handler(req, res){
   }
 
   try{
-    const { data, error } = await db()
+    const { data:requests, error } = await db()
       .from("execution_requests")
       .select("*")
       .order("created_at", { ascending:false })
@@ -25,10 +25,37 @@ export default async function handler(req, res){
       });
     }
 
+    const requestIds = (requests || []).map(item => item.id);
+
+    let reviewMap = new Map();
+
+    if(requestIds.length){
+      const { data:reviews } = await db()
+        .from("governance_reviews")
+        .select("id, execution_id, review_status, governance_decision, risk_score")
+        .in("execution_id", requestIds);
+
+      reviewMap = new Map(
+        (reviews || []).map(review => [review.execution_id, review])
+      );
+    }
+
+    const enriched = (requests || []).map(item => {
+      const review = reviewMap.get(item.id) || null;
+
+      return {
+        ...item,
+        governance_review_id: review?.id || null,
+        governance_review_status: review?.review_status || null,
+        governance_decision: review?.governance_decision || null,
+        governance_risk_score: review?.risk_score || null
+      };
+    });
+
     return res.status(200).json({
       ok:true,
-      count:data.length,
-      requests:data
+      count:enriched.length,
+      requests:enriched
     });
 
   }catch(error){
