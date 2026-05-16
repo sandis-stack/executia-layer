@@ -83,6 +83,38 @@ export default async function handler(req, res){
       });
     }
 
+    let governanceReviewId = null;
+
+    try{
+      const reviewPayload = {
+        execution_id: data.id,
+        review_status: "OPEN",
+        governance_state: "EXECUTION_ANALYSIS_PENDING",
+        review_reason: "AUTO GENERATED FROM EXECUTION REQUEST",
+        metadata: {
+          request_id: data.id,
+          organization,
+          domain,
+          governance_risk: payload.governance_risk,
+          drift_risk: payload.drift_risk,
+          execution_complexity: payload.execution_complexity
+        }
+      };
+
+      const reviewInsert = await db()
+        .from("governance_reviews")
+        .insert(reviewPayload)
+        .select("id")
+        .single();
+
+      if(!reviewInsert.error && reviewInsert.data){
+        governanceReviewId = reviewInsert.data.id;
+      }
+
+    }catch(governanceError){
+      console.error("AUTO_GOVERNANCE_REVIEW_FAILED", governanceError);
+    }
+
     try{
       if(!process.env.RESEND_API_KEY || !process.env.REQUEST_NOTIFY_EMAIL){
         throw new Error("RESEND_ENV_MISSING");
@@ -126,7 +158,8 @@ export default async function handler(req, res){
       drift_risk:data.drift_risk,
       compliance_intensity:data.compliance_intensity,
       execution_layer_count:data.execution_layer_count,
-      estimated_savings:data.estimated_savings
+      estimated_savings:data.estimated_savings,
+      governance_review_id:governanceReviewId
     });
 
   }catch(error){
