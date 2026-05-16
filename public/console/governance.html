@@ -2880,12 +2880,12 @@ window.__LAST_OPERATIONS_STATUS = window.__LAST_OPERATIONS_STATUS || {
         <label>PASSWORD</label>
         <input id="password" type="password" placeholder="Operator password" />
 
-        <button onclick="login()">AUTHORIZE</button>
+        <button onclick="window.login()">AUTHORIZE</button>
 
         <label>ACCESS TOKEN</label>
         <input id="tokenInput" placeholder="Paste JWT token" />
 
-        <button class="secondary" onclick="authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
+        <button class="secondary" onclick="window.authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
         <button class="secondary" onclick="loadOpenReviews()">REFRESH QUEUE</button>
 
         <div class="metrics">
