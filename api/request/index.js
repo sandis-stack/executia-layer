@@ -1,4 +1,7 @@
 import { db } from "../../services/db.js";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res){
   res.setHeader("Content-Type", "application/json");
@@ -38,6 +41,31 @@ export default async function handler(req, res){
         error:"REQUEST_INSERT_FAILED",
         details:error.message
       });
+    }
+
+    try{
+      await resend.emails.send({
+        from:"EXECUTIA <onboarding@resend.dev>",
+        to:process.env.REQUEST_NOTIFY_EMAIL,
+        subject:"New EXECUTIA Execution Request",
+        html:`
+          <h2>New Execution Intake Request</h2>
+
+          <p><strong>Organization:</strong> ${organization}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Domain:</strong> ${domain}</p>
+
+          <p><strong>Problem:</strong><br>${problem}</p>
+
+          <p><strong>Desired Outcome:</strong><br>${outcome}</p>
+
+          <p><strong>Current Stack:</strong><br>${stack}</p>
+
+          <p><strong>Request ID:</strong><br>${data.id}</p>
+        `
+      });
+    }catch(emailError){
+      console.error("REQUEST_EMAIL_FAILED", emailError);
     }
 
     return res.status(200).json({
