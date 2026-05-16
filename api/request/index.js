@@ -129,6 +129,59 @@ export default async function handler(req, res){
 
       if(!reviewInsert.error && reviewInsert.data){
         governanceReviewId = reviewInsert.data.id;
+
+        const events = [
+          {
+            review_id: governanceReviewId,
+            execution_id: data.id,
+            actor: "system",
+            event_type: "REQUEST_RECEIVED",
+            payload: {
+              request_id: data.id,
+              organization,
+              domain
+            }
+          },
+          {
+            review_id: governanceReviewId,
+            execution_id: data.id,
+            actor: "system",
+            event_type: "AUTO_ANALYSIS_COMPLETED",
+            payload: {
+              execution_complexity: payload.execution_complexity,
+              governance_risk: payload.governance_risk,
+              drift_risk: payload.drift_risk,
+              compliance_intensity: payload.compliance_intensity,
+              estimated_savings: payload.estimated_savings
+            }
+          },
+          {
+            review_id: governanceReviewId,
+            execution_id: data.id,
+            actor: "system",
+            event_type: payload.governance_risk === "HIGH" || payload.drift_risk === "HIGH"
+              ? "HIGH_RISK_DETECTED"
+              : "STANDARD_RISK_DETECTED",
+            payload: {
+              risk_score: reviewPayload.risk_score,
+              escalation_level: reviewPayload.escalation_level
+            }
+          },
+          {
+            review_id: governanceReviewId,
+            execution_id: data.id,
+            actor: "system",
+            event_type: "GOVERNANCE_REVIEW_OPENED",
+            payload: {
+              review_status: "OPEN",
+              governance_decision: "PENDING_REVIEW"
+            }
+          }
+        ];
+
+        await db()
+          .from("governance_review_events")
+          .insert(events);
       }
 
     }catch(governanceError){
