@@ -16,6 +16,34 @@ export default async function handler(req, res){
   try{
     const body = req.body || {};
 
+    const text = [
+      body.domain || "",
+      body.problem || "",
+      body.outcome || "",
+      body.stack || ""
+    ].join(" ").toLowerCase();
+
+    const highRisk =
+      text.includes("compliance") ||
+      text.includes("audit") ||
+      text.includes("payment") ||
+      text.includes("procurement") ||
+      text.includes("government") ||
+      text.includes("approval");
+
+    const driftRisk =
+      text.includes("delay") ||
+      text.includes("drift") ||
+      text.includes("manual") ||
+      text.includes("uncertainty") ||
+      text.includes("error");
+
+    const stackDepth = (body.stack || "")
+      .split(",")
+      .map(x => x.trim())
+      .filter(Boolean)
+      .length;
+
     const payload = {
       organization_name: body.organization || "",
       email: body.email || "",
@@ -26,13 +54,20 @@ export default async function handler(req, res){
       request_state: "REQUEST_RECEIVED",
       next_state: "EXECUTION_ANALYSIS_PENDING",
       governance_status: "PENDING",
-      analysis_status: "QUEUED"
+      analysis_status: "AUTO_CLASSIFIED",
+
+      execution_complexity: stackDepth >= 4 ? "HIGH" : stackDepth >= 2 ? "MEDIUM" : "LOW",
+      governance_risk: highRisk ? "HIGH" : "MEDIUM",
+      drift_risk: driftRisk ? "HIGH" : "MEDIUM",
+      compliance_intensity: text.includes("compliance") || text.includes("audit") ? "HIGH" : "STANDARD",
+      execution_layer_count: Math.max(stackDepth, 1),
+      estimated_savings: highRisk || driftRisk ? "MEASURABLE" : "REQUIRES_ANALYSIS"
     };
 
     const { data, error } = await db()
       .from("execution_requests")
       .insert(payload)
-      .select("id, request_state, next_state, governance_status, analysis_status")
+      .select("id, request_state, next_state, governance_status, analysis_status, execution_complexity, governance_risk, drift_risk, compliance_intensity, execution_layer_count, estimated_savings")
       .single();
 
     if(error){
@@ -74,7 +109,13 @@ export default async function handler(req, res){
       state:data.request_state,
       next_state:data.next_state,
       governance_status:data.governance_status,
-      analysis_status:data.analysis_status
+      analysis_status:data.analysis_status,
+      execution_complexity:data.execution_complexity,
+      governance_risk:data.governance_risk,
+      drift_risk:data.drift_risk,
+      compliance_intensity:data.compliance_intensity,
+      execution_layer_count:data.execution_layer_count,
+      estimated_savings:data.estimated_savings
     });
 
   }catch(error){
