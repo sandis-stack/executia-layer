@@ -260,14 +260,14 @@ export default async function handler(req, res){
       );
 
       await resend.emails.send({
-        from: process.env.FROM_EMAIL || "EXECUTIA™ <noreply@executia.io>",
+        from: process.env.FROM_EMAIL || "EXECUTIA <noreply@executia.io>",
         to: email,
         subject: `EXECUTIA — Request registered (${data.id})`,
         html: clientHtml
       });
 
       await resend.emails.send({
-        from: process.env.FROM_EMAIL || "EXECUTIA™ <noreply@executia.io>",
+        from: process.env.FROM_EMAIL || "EXECUTIA <noreply@executia.io>",
         to: process.env.OPERATOR_EMAIL,
         subject: `EXECUTIA — New pilot request (${data.id})`,
         html: operatorHtml
