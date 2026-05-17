@@ -207,11 +207,11 @@ export default async function handler(req, res){
               </div>
 
               <h1 style="font-size:28px;line-height:1.35;margin:0 0 18px 0;color:#0d2b4f;font-weight:700;">
-                Execution request received.
+                New EXECUTIA pilot request received.
               </h1>
 
               <p style="font-size:16px;line-height:1.7;margin:0 0 28px 0;color:#4b6280;">
-                Review the requested execution point and define the controlled governance scope.
+                Review the execution request and define the pilot scope.
               </p>
 
               <div style="background:#eef3f8;border-left:5px solid #143b63;padding:28px 32px;font-family:Menlo,Consolas,monospace;font-size:16px;line-height:1.9;color:#183657;">
@@ -221,10 +221,6 @@ export default async function handler(req, res){
                 <div><strong>DOMAIN:</strong> ${domain || "-"}</div>
                 <div><strong>PROBLEM:</strong> ${problem || "-"}</div>
                 <div><strong>DESIRED OUTCOME:</strong> ${outcome || "-"}</div>
-                <div><strong>CURRENT STACK:</strong> ${stack || "-"}</div>
-                <div><strong>GOVERNANCE RISK:</strong> ${payload.governance_risk}</div>
-                <div><strong>DRIFT RISK:</strong> ${payload.drift_risk}</div>
-                <div><strong>COMPLIANCE:</strong> ${payload.compliance_intensity}</div>
                 <div><strong>RECEIVED:</strong> ${new Date().toISOString()}</div>
               </div>
 
@@ -233,7 +229,7 @@ export default async function handler(req, res){
               <div style="font-size:16px;line-height:1.7;color:#4d6582;">
                 <strong>EXECUTIA™</strong><br>
                 Execution Governance Standard<br>
-                REQUEST → ANALYSIS → GOVERNANCE → ENGINE → PROOF
+                ENTRY → ENGINE → PROOF → REQUEST
               </div>
             </div>
           </div>
