@@ -259,7 +259,9 @@ execution_status: "COMMITTED",
 materialization,
 insertedEvent,
 executionCommitEvent,
-proofHashEvent
+proofHashEvent,
+settlementEvent,
+reconciliationEvent
 }
 
 }
