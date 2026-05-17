@@ -178,22 +178,51 @@ h1{
     </div>
   `;
 
+  function eventMeaning(type){
+    const map = {
+      REQUEST_RECEIVED: "Execution request was received and registered.",
+      AUTO_ANALYSIS_COMPLETED: "Initial execution analysis was completed automatically.",
+      STANDARD_RISK_DETECTED: "Standard governance risk was detected and classified.",
+      HIGH_RISK_DETECTED: "High governance risk was detected and escalated.",
+      GOVERNANCE_REVIEW_OPENED: "Governance review was opened for controlled assessment."
+    };
+
+    return map[type] || "Governance event recorded in the execution timeline.";
+  }
+
+  function eventStatus(type){
+    if(String(type || "").includes("HIGH_RISK")) return "ESCALATED";
+    if(String(type || "").includes("RISK")) return "CLASSIFIED";
+    if(String(type || "").includes("OPENED")) return "OPEN";
+    if(String(type || "").includes("COMPLETED")) return "COMPLETED";
+    return "RECORDED";
+  }
+
   document.getElementById("timeline").innerHTML =
-    (data.events || []).map(event => `
-      <div class="event">
-        <div class="event-title">
-          ${event.event_type || "EVENT"}
-        </div>
+    (data.events || []).map(event => {
+      const type = event.event_type || "EVENT";
+      const payload = event.payload || {};
 
-        <div class="event-time">
-          ${event.created_at || ""}
-        </div>
+      return `
+        <div class="event">
+          <div class="event-title">
+            ${type}
+          </div>
 
-        <div>
-          ${JSON.stringify(event.payload || {}, null, 2)}
+          <div class="event-time">
+            ${event.created_at || ""}
+          </div>
+
+          <div style="font-size:14px;line-height:1.6;color:#42556d;margin-bottom:10px;">
+            ${eventMeaning(type)}
+          </div>
+
+          <div style="display:inline-block;padding:6px 10px;border:1px solid #d9e1ea;background:#f4f7fa;font-size:11px;letter-spacing:1.5px;font-weight:700;">
+            ${eventStatus(type)}
+          </div>
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
 
 })();
 </script>
