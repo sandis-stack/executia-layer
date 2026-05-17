@@ -1,5 +1,6 @@
 import { db } from "../../services/db.js";
 import { Resend } from "resend";
+import { createReviewToken } from "../../services/review-token.js";
 
 
 function esc(v) {
@@ -206,12 +207,37 @@ export default async function handler(req, res){
       console.error("AUTO_GOVERNANCE_REVIEW_FAILED", governanceError);
     }
 
+    let clientReviewUrl = null;
+
+    if(governanceReviewId){
+      const base =
+        process.env.APP_URL ||
+        "https://execution.executia.io";
+
+      const token =
+        createReviewToken(governanceReviewId);
+
+      clientReviewUrl =
+        `${base}/review?token=${token}`;
+    }
+
     try{
       if(!process.env.RESEND_API_KEY || !process.env.OPERATOR_EMAIL){
         throw new Error("RESEND_ENV_MISSING");
       }
 
       const resend = new Resend(process.env.RESEND_API_KEY);
+
+      const clientHtml = mailTemplate(
+        "Execution request registered.",
+        [
+          ["EXECUTION ID", data.id],
+          ["STATUS", "UNDER REVIEW"],
+          ["RESPONSE WINDOW", "24–48H"],
+          ["GOVERNANCE REVIEW", clientReviewUrl || "Review link pending"]
+        ],
+        "Your EXECUTIA request has been registered. Use the governance review link to follow the controlled execution assessment."
+      );
 
       const operatorHtml = mailTemplate(
         "New EXECUTIA pilot request received.",
@@ -226,6 +252,13 @@ export default async function handler(req, res){
         ],
         "Review the requested execution point and define the controlled pilot scope."
       );
+
+      await resend.emails.send({
+        from: process.env.FROM_EMAIL || "EXECUTIA <noreply@executia.io>",
+        to: email,
+        subject: `EXECUTIA — Request registered (${data.id})`,
+        html: clientHtml
+      });
 
       await resend.emails.send({
         from: process.env.FROM_EMAIL || "EXECUTIA <noreply@executia.io>",
