@@ -201,20 +201,20 @@ export default async function handler(req, res){
         subject:"New EXECUTIA Execution Request",
         html:`
           <div style="margin:0;padding:48px 0;background:#f3f6fa;font-family:Arial,Helvetica,sans-serif;color:#132b4a;">
-            <div style="max-width:920px;margin:0 auto;background:#ffffff;border:1px solid #d7e1ec;padding:52px 56px;">
+            <div style="max-width:760px;margin:0 auto;background:#ffffff;border:1px solid #d7e1ec;padding:44px 44px;">
               <div style="font-size:13px;letter-spacing:7px;font-weight:700;color:#607894;text-transform:uppercase;margin-bottom:28px;">
                 EXECUTIA · EXECUTION CONTROL
               </div>
 
-              <h1 style="font-size:28px;line-height:1.35;margin:0 0 18px 0;color:#0d2b4f;font-weight:700;">
+              <h1 style="font-size:32px;line-height:1.18;margin:0 0 22px 0;color:#0d2b4f;font-weight:800;">
                 New EXECUTIA pilot request received.
               </h1>
 
-              <p style="font-size:16px;line-height:1.7;margin:0 0 28px 0;color:#4b6280;">
+              <p style="font-size:18px;line-height:1.55;margin:0 0 34px 0;color:#39516f;">
                 Review the execution request and define the pilot scope.
               </p>
 
-              <div style="background:#eef3f8;border-left:5px solid #143b63;padding:28px 32px;font-family:Menlo,Consolas,monospace;font-size:16px;line-height:1.9;color:#183657;">
+              <div style="background:#eef3f8;border-left:4px solid #143b63;padding:26px 28px;font-family:Menlo,Consolas,monospace;font-size:15px;line-height:1.85;color:#183657;">
                 <div><strong>REQUEST ID:</strong> ${data.id}</div>
                 <div><strong>ORGANIZATION:</strong> ${organization || "-"}</div>
                 <div><strong>EMAIL:</strong> ${email || "-"}</div>
