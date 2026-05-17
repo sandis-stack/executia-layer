@@ -191,13 +191,23 @@ h1{
       AUTO_ANALYSIS_COMPLETED: "Initial execution analysis was completed automatically.",
       STANDARD_RISK_DETECTED: "Standard governance risk was detected and classified.",
       HIGH_RISK_DETECTED: "High governance risk was detected and escalated.",
-      GOVERNANCE_REVIEW_OPENED: "Governance review was opened for controlled assessment."
+      GOVERNANCE_REVIEW_OPENED: "Governance review was opened for controlled assessment.",
+      GOVERNANCE_APPROVAL_RECORDED: "Operator approval was recorded for this governance review.",
+      GOVERNANCE_QUORUM_PENDING: "Governance approval is recorded, but quorum is not yet complete.",
+      GOVERNANCE_APPROVED: "Governance review was approved and execution may proceed.",
+      GOVERNANCE_REJECTED: "Governance review was rejected and execution is blocked.",
+      GOVERNANCE_OVERRIDDEN: "Governance review was overridden by authorized operator decision.",
+      REVIEW_LINK_OPENED: "Client opened the secure governance review link."
     };
 
     return map[type] || "Governance event recorded in the execution timeline.";
   }
 
   function eventStatus(type){
+    if(String(type || "").includes("REJECTED")) return "BLOCKED";
+    if(String(type || "").includes("APPROVED")) return "APPROVED";
+    if(String(type || "").includes("QUORUM")) return "QUORUM";
+    if(String(type || "").includes("APPROVAL_RECORDED")) return "RECORDED";
     if(String(type || "").includes("HIGH_RISK")) return "ESCALATED";
     if(String(type || "").includes("RISK")) return "CLASSIFIED";
     if(String(type || "").includes("OPENED")) return "OPEN";
