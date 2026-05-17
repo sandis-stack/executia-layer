@@ -1,6 +1,24 @@
 import { db } from "../../services/db.js";
 import { Resend } from "resend";
 
+
+function esc(v) {
+  return String(v || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function mailTemplate(title, lines, body) {
+  const rows = lines
+    .map(([k, v]) => `<strong>${esc(k)}:</strong> ${esc(v)}<br/>`)
+    .join("");
+
+  return `<!doctype html><html><body style="margin:0;padding:0;background:#f3f6fa;font-family:Arial,Helvetica,sans-serif;color:#0f2d4a"><table width="100%" cellpadding="0" cellspacing="0" style="padding:38px 14px;background:#f3f6fa"><tr><td align="center"><table width="100%" cellpadding="0" cellspacing="0" style="max-width:720px;background:#fff;border:1px solid #d9e1ea"><tr><td style="padding:40px"><div style="font-size:12px;letter-spacing:4px;color:#60758b;font-weight:700;margin-bottom:24px">EXECUTIA · EXECUTION CONTROL</div><h1 style="margin:0 0 18px;font-size:32px;line-height:1.12;color:#0f2d4a">${esc(title)}</h1><p style="margin:0 0 26px;font-size:16px;line-height:1.6;color:#415168">${esc(body)}</p><div style="background:#f1f5f9;border-left:4px solid #0f2d4a;padding:20px 24px;font-family:Courier New,monospace;font-size:14px;line-height:1.8;color:#2a4260">${rows}</div><div style="height:1px;background:#d9e1ea;margin:34px 0 22px"></div><p style="margin:0;font-size:14px;line-height:1.6;color:#60758b">EXECUTIA™<br/>Execution Control Standard<br/>ENTRY → ENGINE → PROOF → REQUEST</p></td></tr></table></td></tr></table></body></html>`;
+}
+
 export default async function handler(req, res){
   res.setHeader("Content-Type", "application/json");
 
@@ -195,45 +213,25 @@ export default async function handler(req, res){
 
       const resend = new Resend(process.env.RESEND_API_KEY);
 
+      const operatorHtml = mailTemplate(
+        "New EXECUTIA pilot request received.",
+        [
+          ["EXECUTION ID", data.id],
+          ["ORGANIZATION", organization],
+          ["EMAIL", email],
+          ["DOMAIN", domain],
+          ["CONTEXT", problem],
+          ["EXPECTED VALUE", outcome],
+          ["RECEIVED", new Date().toISOString()]
+        ],
+        "Review the requested execution point and define the controlled pilot scope."
+      );
+
       await resend.emails.send({
-        from:"EXECUTIA <noreply@executia.io>",
-        to:process.env.OPERATOR_EMAIL,
-        subject:"New EXECUTIA Execution Request",
-        html:`
-          <div style="margin:0;padding:48px 0;background:#f3f6fa;font-family:Arial,Helvetica,sans-serif;color:#132b4a;">
-            <div style="max-width:760px;margin:0 auto;background:#ffffff;border:1px solid #d7e1ec;padding:44px 44px;">
-              <div style="font-size:13px;letter-spacing:7px;font-weight:700;color:#607894;text-transform:uppercase;margin-bottom:28px;">
-                EXECUTIA · EXECUTION CONTROL
-              </div>
-
-              <h1 style="font-size:32px;line-height:1.18;margin:0 0 22px 0;color:#0d2b4f;font-weight:800;">
-                New EXECUTIA pilot request received.
-              </h1>
-
-              <p style="font-size:18px;line-height:1.55;margin:0 0 34px 0;color:#39516f;">
-                Review the execution request and define the pilot scope.
-              </p>
-
-              <div style="background:#eef3f8;border-left:4px solid #143b63;padding:26px 28px;font-family:Menlo,Consolas,monospace;font-size:15px;line-height:1.85;color:#183657;">
-                <div><strong>REQUEST ID:</strong> ${data.id}</div>
-                <div><strong>ORGANIZATION:</strong> ${organization || "-"}</div>
-                <div><strong>EMAIL:</strong> ${email || "-"}</div>
-                <div><strong>DOMAIN:</strong> ${domain || "-"}</div>
-                <div><strong>PROBLEM:</strong> ${problem || "-"}</div>
-                <div><strong>DESIRED OUTCOME:</strong> ${outcome || "-"}</div>
-                <div><strong>RECEIVED:</strong> ${new Date().toISOString()}</div>
-              </div>
-
-              <div style="height:1px;background:#d7e1ec;margin:42px 0 28px 0;"></div>
-
-              <div style="font-size:16px;line-height:1.7;color:#4d6582;">
-                <strong>EXECUTIA™</strong><br>
-                Execution Governance Standard<br>
-                ENTRY → ENGINE → PROOF → REQUEST
-              </div>
-            </div>
-          </div>
-        `
+        from: process.env.FROM_EMAIL || "EXECUTIA <noreply@executia.io>",
+        to: process.env.OPERATOR_EMAIL,
+        subject: `EXECUTIA — New pilot request (${data.id})`,
+        html: operatorHtml
       });
     }catch(emailError){
       console.error("REQUEST_EMAIL_FAILED", emailError);
