@@ -200,19 +200,43 @@ export default async function handler(req, res){
         to:process.env.OPERATOR_EMAIL,
         subject:"New EXECUTIA Execution Request",
         html:`
-          <h2>New Execution Intake Request</h2>
+          <div style="margin:0;padding:48px 0;background:#f3f6fa;font-family:Arial,Helvetica,sans-serif;color:#132b4a;">
+            <div style="max-width:920px;margin:0 auto;background:#ffffff;border:1px solid #d7e1ec;padding:52px 56px;">
+              <div style="font-size:13px;letter-spacing:7px;font-weight:700;color:#607894;text-transform:uppercase;margin-bottom:28px;">
+                EXECUTIA · EXECUTION CONTROL
+              </div>
 
-          <p><strong>Organization:</strong> ${organization}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Domain:</strong> ${domain}</p>
+              <h1 style="font-size:42px;line-height:1.12;margin:0 0 24px 0;color:#0d2b4f;font-weight:800;">
+                New EXECUTIA execution request received.
+              </h1>
 
-          <p><strong>Problem:</strong><br>${problem}</p>
+              <p style="font-size:20px;line-height:1.55;margin:0 0 36px 0;color:#39516f;">
+                Review the requested execution point and define the controlled governance scope.
+              </p>
 
-          <p><strong>Desired Outcome:</strong><br>${outcome}</p>
+              <div style="background:#eef3f8;border-left:5px solid #143b63;padding:28px 32px;font-family:Menlo,Consolas,monospace;font-size:16px;line-height:1.9;color:#183657;">
+                <div><strong>REQUEST ID:</strong> ${data.id}</div>
+                <div><strong>ORGANIZATION:</strong> ${organization || "-"}</div>
+                <div><strong>EMAIL:</strong> ${email || "-"}</div>
+                <div><strong>DOMAIN:</strong> ${domain || "-"}</div>
+                <div><strong>PROBLEM:</strong> ${problem || "-"}</div>
+                <div><strong>DESIRED OUTCOME:</strong> ${outcome || "-"}</div>
+                <div><strong>CURRENT STACK:</strong> ${stack || "-"}</div>
+                <div><strong>GOVERNANCE RISK:</strong> ${payload.governance_risk}</div>
+                <div><strong>DRIFT RISK:</strong> ${payload.drift_risk}</div>
+                <div><strong>COMPLIANCE:</strong> ${payload.compliance_intensity}</div>
+                <div><strong>RECEIVED:</strong> ${new Date().toISOString()}</div>
+              </div>
 
-          <p><strong>Current Stack:</strong><br>${stack}</p>
+              <div style="height:1px;background:#d7e1ec;margin:42px 0 28px 0;"></div>
 
-          <p><strong>Request ID:</strong><br>${data.id}</p>
+              <div style="font-size:16px;line-height:1.7;color:#4d6582;">
+                <strong>EXECUTIA™</strong><br>
+                Execution Governance Standard<br>
+                REQUEST → ANALYSIS → GOVERNANCE → ENGINE → PROOF
+              </div>
+            </div>
+          </div>
         `
       });
     }catch(emailError){
