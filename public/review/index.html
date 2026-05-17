@@ -122,6 +122,8 @@ h1{
     <div id="metrics" class="grid"></div>
     <div class="timeline" id="controlResult"></div>
 
+    <div class="timeline" id="proofVerification"></div>
+
     <div class="timeline" id="latestActivity"></div>
 
     <div class="timeline" id="timeline"></div>
@@ -293,6 +295,50 @@ h1{
       ${controlDescription}
     </div>
   `;
+
+  try{
+    const proofRes = await fetch(
+      `/api/v1/proof/verify?review_id=${encodeURIComponent(review.id)}`
+    );
+
+    const proof = await proofRes.json();
+
+    document.getElementById("proofVerification").innerHTML = `
+      <div class="event-title" style="margin-bottom:18px;">
+        Proof verification
+      </div>
+
+      <div class="grid">
+        <div class="metric">
+          <span>IMMUTABLE CHAIN</span>
+          <strong>${proof.immutable_chain_verified ? "VERIFIED" : "FAILED"}</strong>
+        </div>
+
+        <div class="metric">
+          <span>EVENTS CHECKED</span>
+          <strong>${proof.events_checked ?? "-"}</strong>
+        </div>
+
+        <div class="metric">
+          <span>HASHED EVENTS</span>
+          <strong>${proof.hashed_events_checked ?? "-"}</strong>
+        </div>
+
+        <div class="metric">
+          <span>BROKEN AT</span>
+          <strong>${proof.broken_at || "NONE"}</strong>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;font-size:13px;line-height:1.6;color:#60758b;word-break:break-all;">
+        Head hash: ${proof.head_hash || "-"}
+      </div>
+    `;
+  }catch(proofError){
+    document.getElementById("proofVerification").innerHTML = `
+      <div class="event-title">Proof verification unavailable</div>
+    `;
+  }
 
   document.getElementById("latestActivity").innerHTML = `
     <div class="event-title" style="margin-bottom:18px;">
