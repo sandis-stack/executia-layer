@@ -120,6 +120,7 @@ h1{
     </div>
 
     <div id="metrics" class="grid"></div>
+    <div class="timeline" id="controlResult"></div>
 
     <div class="timeline" id="latestActivity"></div>
 
@@ -220,6 +221,70 @@ h1{
 
   const latest =
     [...events].slice(-3).reverse();
+
+  const approved =
+    events.find(e => e.event_type === "GOVERNANCE_APPROVED");
+
+  const rejected =
+    events.find(e => e.event_type === "GOVERNANCE_REJECTED");
+
+  const quorum =
+    events.find(e => e.event_type === "GOVERNANCE_QUORUM_MET");
+
+  let controlState = "UNDER REVIEW";
+  let controlDecision = "PENDING";
+  let controlDescription =
+    "Governance review is currently under controlled assessment.";
+
+  if(quorum){
+    controlState = "QUORUM VERIFIED";
+  }
+
+  if(approved){
+    controlState = "EXECUTION APPROVED";
+    controlDecision = "ALLOW_COMMIT";
+    controlDescription =
+      "Governance quorum approved execution progression.";
+  }
+
+  if(rejected){
+    controlState = "EXECUTION BLOCKED";
+    controlDecision = "BLOCK_COMMIT";
+    controlDescription =
+      "Governance review rejected execution progression.";
+  }
+
+  document.getElementById("controlResult").innerHTML = `
+    <div class="event-title" style="margin-bottom:18px;">
+      Control result
+    </div>
+
+    <div class="grid">
+      <div class="metric">
+        <span>CONTROL STATE</span>
+        <strong>${controlState}</strong>
+      </div>
+
+      <div class="metric">
+        <span>DECISION</span>
+        <strong>${controlDecision}</strong>
+      </div>
+
+      <div class="metric">
+        <span>RISK</span>
+        <strong>${review.risk_score ?? "-"}</strong>
+      </div>
+
+      <div class="metric">
+        <span>QUORUM</span>
+        <strong>${quorum ? "VERIFIED" : "PENDING"}</strong>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;font-size:15px;line-height:1.7;color:#42556d;">
+      ${controlDescription}
+    </div>
+  `;
 
   document.getElementById("latestActivity").innerHTML = `
     <div class="event-title" style="margin-bottom:18px;">
