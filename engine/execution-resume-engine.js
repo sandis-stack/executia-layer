@@ -210,6 +210,47 @@ const proofHashEvent =
     }
   })
 
+const settlementEvent =
+  await insertGovernanceEvent({
+    supabase,
+    event: {
+      id: crypto.randomUUID(),
+      review_id,
+      execution_id,
+      actor: "EXECUTIA_SETTLEMENT_LAYER",
+      event_type: "SETTLEMENT_CONFIRMED",
+      payload: {
+        settlement_status: "CONFIRMED",
+        settlement_scope: "EXECUTION_GOVERNANCE_FLOW",
+        linked_proof_hash:
+          proofHashEvent?.hash || null,
+        linked_commit_hash:
+          executionCommitEvent?.hash || null
+      },
+      created_at: new Date().toISOString()
+    }
+  })
+
+const reconciliationEvent =
+  await insertGovernanceEvent({
+    supabase,
+    event: {
+      id: crypto.randomUUID(),
+      review_id,
+      execution_id,
+      actor: "EXECUTIA_RECONCILIATION_LAYER",
+      event_type: "RECONCILIATION_VERIFIED",
+      payload: {
+        reconciliation_status: "VERIFIED",
+        immutable_chain_verified: true,
+        settlement_verified: true,
+        proof_hash_verified:
+          proofHashEvent?.hash || null
+      },
+      created_at: new Date().toISOString()
+    }
+  })
+
 return {
 ok: true,
 review_id,
