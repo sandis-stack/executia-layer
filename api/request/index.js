@@ -206,11 +206,11 @@ export default async function handler(req, res){
                 EXECUTIA · EXECUTION CONTROL
               </div>
 
-              <h1 style="font-size:42px;line-height:1.12;margin:0 0 24px 0;color:#0d2b4f;font-weight:800;">
-                New EXECUTIA execution request received.
+              <h1 style="font-size:28px;line-height:1.35;margin:0 0 18px 0;color:#0d2b4f;font-weight:700;">
+                Execution request received.
               </h1>
 
-              <p style="font-size:20px;line-height:1.55;margin:0 0 36px 0;color:#39516f;">
+              <p style="font-size:16px;line-height:1.7;margin:0 0 28px 0;color:#4b6280;">
                 Review the requested execution point and define the controlled governance scope.
               </p>
 
