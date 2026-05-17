@@ -227,7 +227,7 @@ form.addEventListener("submit", async (e) => {
             </div>
           </div>
 
-          <a href="/dashboard" class="success-button">
+          <a href="${data.governance_review_id ? `/console/governance.html?review_id=${data.governance_review_id}` : "/dashboard"}" class="success-button">
             OPEN EXECUTION ENGINE
           </a>
 
