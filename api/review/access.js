@@ -38,6 +38,27 @@ export default async function handler(req, res){
       });
     }
 
+    try{
+      await db()
+        .from("governance_review_events")
+        .insert({
+          review_id: reviewResult.data.id,
+          execution_id: reviewResult.data.execution_id,
+          actor: "client",
+          event_type: "REVIEW_LINK_OPENED",
+          payload: {
+            opened_at: new Date().toISOString(),
+            user_agent: req.headers["user-agent"] || "UNKNOWN",
+            ip:
+              req.headers["x-forwarded-for"] ||
+              req.socket?.remoteAddress ||
+              "UNKNOWN"
+          }
+        });
+    }catch(eventError){
+      console.error("REVIEW_OPEN_EVENT_FAILED", eventError);
+    }
+
     const eventsResult = await db()
       .from("governance_review_events")
       .select("*")
