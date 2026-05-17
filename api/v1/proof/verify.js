@@ -44,25 +44,16 @@ export default async function handler(req, res){
     let verified = true;
     let broken_at = null;
 
-    for(let i = 1; i < events.length; i++){
+    const hashedEvents =
+      events.filter(e => e.hash);
+
+    for(let i = 1; i < hashedEvents.length; i++){
 
       const prev =
-        events[i - 1];
+        hashedEvents[i - 1];
 
       const current =
-        events[i];
-
-      const isGenesisTransition =
-        i === 1 &&
-        (
-          current.prev_hash === null ||
-          current.prev_hash === "" ||
-          !current.prev_hash
-        );
-
-      if(isGenesisTransition){
-        continue;
-      }
+        hashedEvents[i];
 
       if(current.prev_hash !== prev.hash){
         verified = false;
@@ -80,6 +71,8 @@ export default async function handler(req, res){
       broken_at,
       events_checked:
         events.length,
+      hashed_events_checked:
+        hashedEvents.length,
       head_hash:
         events.length
           ? events[events.length - 1].hash
