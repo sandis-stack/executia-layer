@@ -121,6 +121,8 @@ h1{
 
     <div id="metrics" class="grid"></div>
 
+    <div class="timeline" id="latestActivity"></div>
+
     <div class="timeline" id="timeline"></div>
 
     <div class="footer">
@@ -203,8 +205,29 @@ h1{
     return "RECORDED";
   }
 
+  const events =
+    data.events || [];
+
+  const latest =
+    [...events].slice(-3).reverse();
+
+  document.getElementById("latestActivity").innerHTML = `
+    <div class="event-title" style="margin-bottom:18px;">
+      Latest activity
+    </div>
+    ${latest.map(event => `
+      <div class="event">
+        <div class="event-title">${event.event_type || "EVENT"}</div>
+        <div class="event-time">${event.created_at || ""}</div>
+        <div style="font-size:14px;line-height:1.6;color:#42556d;">
+          ${eventMeaning(event.event_type || "EVENT")}
+        </div>
+      </div>
+    `).join("")}
+  `;
+
   document.getElementById("timeline").innerHTML =
-    (data.events || []).map(event => {
+    events.map(event => {
       const type = event.event_type || "EVENT";
       const payload = event.payload || {};
 
