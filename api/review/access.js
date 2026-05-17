@@ -39,22 +39,35 @@ export default async function handler(req, res){
     }
 
     try{
-      await db()
+      const tenMinutesAgo =
+        new Date(Date.now() - 10 * 60 * 1000).toISOString();
+
+      const recentOpen = await db()
         .from("governance_review_events")
-        .insert({
-          review_id: reviewResult.data.id,
-          execution_id: reviewResult.data.execution_id,
-          actor: "client",
-          event_type: "REVIEW_LINK_OPENED",
-          payload: {
-            opened_at: new Date().toISOString(),
-            user_agent: req.headers["user-agent"] || "UNKNOWN",
-            ip:
-              req.headers["x-forwarded-for"] ||
-              req.socket?.remoteAddress ||
-              "UNKNOWN"
-          }
-        });
+        .select("id")
+        .eq("review_id", reviewResult.data.id)
+        .eq("event_type", "REVIEW_LINK_OPENED")
+        .gte("created_at", tenMinutesAgo)
+        .limit(1);
+
+      if(!recentOpen.data?.length){
+        await db()
+          .from("governance_review_events")
+          .insert({
+            review_id: reviewResult.data.id,
+            execution_id: reviewResult.data.execution_id,
+            actor: "client",
+            event_type: "REVIEW_LINK_OPENED",
+            payload: {
+              opened_at: new Date().toISOString(),
+              user_agent: req.headers["user-agent"] || "UNKNOWN",
+              ip:
+                req.headers["x-forwarded-for"] ||
+                req.socket?.remoteAddress ||
+                "UNKNOWN"
+            }
+          });
+      }
     }catch(eventError){
       console.error("REVIEW_OPEN_EVENT_FAILED", eventError);
     }
