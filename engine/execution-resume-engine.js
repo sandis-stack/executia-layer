@@ -173,13 +173,52 @@ const insertedEvent =
     event: governanceEvent
   })
 
+const executionCommitEvent =
+  await insertGovernanceEvent({
+    supabase,
+    event: {
+      id: crypto.randomUUID(),
+      review_id,
+      execution_id,
+      actor: operator_email || operator_id || "SYSTEM",
+      event_type: "EXECUTION_COMMITTED",
+      payload: {
+        execution_status: "COMMITTED",
+        governance_state: GOVERNANCE_STATES.COMMITTED,
+        materialization
+      },
+      created_at: new Date().toISOString()
+    }
+  })
+
+const proofHashEvent =
+  await insertGovernanceEvent({
+    supabase,
+    event: {
+      id: crypto.randomUUID(),
+      review_id,
+      execution_id,
+      actor: "EXECUTIA_PROOF_LAYER",
+      event_type: "PROOF_HASH_REGISTERED",
+      payload: {
+        source_event_id: executionCommitEvent?.id || null,
+        source_event_hash: executionCommitEvent?.hash || null,
+        proof_scope: "GOVERNANCE_EXECUTION_COMMIT",
+        immutable: true
+      },
+      created_at: new Date().toISOString()
+    }
+  })
+
 return {
 ok: true,
 review_id,
 execution_id,
 execution_status: "COMMITTED",
 materialization,
-insertedEvent
+insertedEvent,
+executionCommitEvent,
+proofHashEvent
 }
 
 }
