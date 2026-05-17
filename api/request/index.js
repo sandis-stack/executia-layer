@@ -112,6 +112,9 @@ export default async function handler(req, res){
     try{
       const reviewPayload = {
         execution_id: data.id,
+        organization_id:
+          process.env.DEFAULT_ORGANIZATION_ID ||
+          "64b35bea-980a-4a37-a055-172e8b9154e2",
         review_status: "OPEN",
         governance_decision: "PENDING_REVIEW",
         policy_decision: "PENDING_REVIEW",
