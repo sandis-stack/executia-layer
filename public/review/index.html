@@ -163,18 +163,23 @@ h1{
     </div>
 
     <div class="metric">
-      <span>STATE</span>
-      <strong>${review.state || "-"}</strong>
+      <span>REVIEW STATUS</span>
+      <strong>${review.review_status || "-"}</strong>
     </div>
 
     <div class="metric">
-      <span>RISK</span>
-      <strong>${review.risk_level || "-"}</strong>
+      <span>RISK SCORE</span>
+      <strong>${review.risk_score ?? "-"}</strong>
     </div>
 
     <div class="metric">
-      <span>STATUS</span>
-      <strong>${review.status || "-"}</strong>
+      <span>DECISION</span>
+      <strong>${review.governance_decision || "-"}</strong>
+    </div>
+
+    <div class="metric">
+      <span>ESCALATION</span>
+      <strong>${review.escalation_level ?? "-"}</strong>
     </div>
   `;
 
