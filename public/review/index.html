@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EXECUTIA Review Access</title>
+
+<style>
+body{
+  margin:0;
+  background:#f3f6fa;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#0f2d4a;
+}
+
+.shell{
+  max-width:960px;
+  margin:0 auto;
+  padding:48px 20px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #d9e1ea;
+  padding:40px;
+}
+
+.kicker{
+  font-size:12px;
+  letter-spacing:4px;
+  font-weight:700;
+  color:#60758b;
+  margin-bottom:24px;
+}
+
+h1{
+  margin:0 0 18px;
+  font-size:36px;
+  line-height:1.1;
+}
+
+.lead{
+  font-size:16px;
+  line-height:1.7;
+  color:#42556d;
+  margin-bottom:34px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+  margin-bottom:36px;
+}
+
+.metric{
+  background:#f4f7fa;
+  border-left:4px solid #16385d;
+  padding:18px;
+}
+
+.metric span{
+  display:block;
+  font-size:11px;
+  letter-spacing:2px;
+  color:#60758b;
+  margin-bottom:10px;
+}
+
+.metric strong{
+  font-size:14px;
+}
+
+.timeline{
+  border-top:1px solid #d9e1ea;
+  padding-top:28px;
+}
+
+.event{
+  padding:18px 0;
+  border-bottom:1px solid #e4eaf1;
+}
+
+.event-title{
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.event-time{
+  color:#60758b;
+  font-size:13px;
+  margin-bottom:10px;
+}
+
+.footer{
+  margin-top:36px;
+  color:#60758b;
+  font-size:14px;
+  line-height:1.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="shell">
+  <div class="card">
+
+    <div class="kicker">
+      EXECUTIA · GOVERNANCE REVIEW
+    </div>
+
+    <h1>
+      Review Access
+    </h1>
+
+    <div class="lead">
+      Governance review initialized.
+      Execution analysis and proof timeline available below.
+    </div>
+
+    <div id="metrics" class="grid"></div>
+
+    <div class="timeline" id="timeline"></div>
+
+    <div class="footer">
+      EXECUTIA™<br/>
+      Execution Governance Standard
+    </div>
+
+  </div>
+</div>
+
+<script>
+(async () => {
+
+  const token =
+    new URLSearchParams(window.location.search)
+      .get("token");
+
+  if(!token){
+    alert("TOKEN_MISSING");
+    return;
+  }
+
+  const res = await fetch(
+    `/api/review/access?token=${encodeURIComponent(token)}`
+  );
+
+  const data = await res.json();
+
+  if(!data.ok){
+    alert(data.error || "ACCESS_DENIED");
+    return;
+  }
+
+  const review = data.review;
+
+  document.getElementById("metrics").innerHTML = `
+    <div class="metric">
+      <span>REVIEW ID</span>
+      <strong>${review.id}</strong>
+    </div>
+
+    <div class="metric">
+      <span>STATE</span>
+      <strong>${review.state || "-"}</strong>
+    </div>
+
+    <div class="metric">
+      <span>RISK</span>
+      <strong>${review.risk_level || "-"}</strong>
+    </div>
+
+    <div class="metric">
+      <span>STATUS</span>
+      <strong>${review.status || "-"}</strong>
+    </div>
+  `;
+
+  document.getElementById("timeline").innerHTML =
+    (data.events || []).map(event => `
+      <div class="event">
+        <div class="event-title">
+          ${event.event_type || "EVENT"}
+        </div>
+
+        <div class="event-time">
+          ${event.created_at || ""}
+        </div>
+
+        <div>
+          ${JSON.stringify(event.payload || {}, null, 2)}
+        </div>
+      </div>
+    `).join("");
+
+})();
+</script>
+
+</body>
+</html>
