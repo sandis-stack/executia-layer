@@ -60,6 +60,62 @@
       gap:34px;
       align-items:center;
     }
+    
+
+    .governance-ribbon{
+      margin-top:26px;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .governance-ribbon-card{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      background:#ffffff;
+      box-shadow:0 8px 22px rgba(16,32,51,.04);
+    }
+
+    .governance-ribbon-label{
+      display:block;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:#6b7b8d;
+      margin-bottom:8px;
+    }
+
+    .governance-ribbon-value{
+      display:block;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.04em;
+      color:#1E3A5F;
+      word-break:break-word;
+    }
+
+    .governance-ribbon-card.active .governance-ribbon-value{
+      color:#166534;
+    }
+
+    .governance-ribbon-card.blocked .governance-ribbon-value{
+      color:#b42318;
+    }
+
+    @media(max-width:900px){
+      .governance-ribbon{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    @media(max-width:560px){
+      .governance-ribbon{
+        grid-template-columns:1fr;
+      }
+    }
+
     .eyebrow{
       display:inline-flex;
       padding:8px 12px;
@@ -303,6 +359,30 @@
         <div class="hero-actions">
           <a class="btn btn-main" href="#test">Start Execution Test</a>
           <a class="btn btn-soft" href="/proof-explorer/">Verify Proof</a>
+        </div>
+
+        <div class="governance-ribbon">
+
+          <div class="governance-ribbon-card" id="ribbonExecutionStateCard">
+            <span class="governance-ribbon-label">Execution State</span>
+            <span class="governance-ribbon-value" id="ribbonExecutionState">STANDBY</span>
+          </div>
+
+          <div class="governance-ribbon-card" id="ribbonGovernanceModeCard">
+            <span class="governance-ribbon-label">Governance Mode</span>
+            <span class="governance-ribbon-value" id="ribbonGovernanceMode">READY</span>
+          </div>
+
+          <div class="governance-ribbon-card" id="ribbonProofChainCard">
+            <span class="governance-ribbon-label">Proof Chain</span>
+            <span class="governance-ribbon-value" id="ribbonProofChain">NOT MATERIALIZED</span>
+          </div>
+
+          <div class="governance-ribbon-card" id="ribbonRegistryCard">
+            <span class="governance-ribbon-label">Registry</span>
+            <span class="governance-ribbon-value" id="ribbonRegistry">CONNECTED</span>
+          </div>
+
         </div>
       </div>
 
@@ -930,6 +1010,42 @@
   </div>
 
   <script>
+
+
+    function setGovernanceRibbon(state = {}) {
+      const executionState = state.executionState || "STANDBY";
+      const governanceMode = state.governanceMode || "READY";
+      const proofChain = state.proofChain || "NOT MATERIALIZED";
+      const registry = state.registry || "CONNECTED";
+      const blocked = state.blocked || false;
+      const active = state.active || false;
+
+      const mappings = [
+        ["ribbonExecutionState", "ribbonExecutionStateCard", executionState],
+        ["ribbonGovernanceMode", "ribbonGovernanceModeCard", governanceMode],
+        ["ribbonProofChain", "ribbonProofChainCard", proofChain],
+        ["ribbonRegistry", "ribbonRegistryCard", registry]
+      ];
+
+      mappings.forEach(([valueId, cardId, value]) => {
+        const valueEl = document.getElementById(valueId);
+        const cardEl = document.getElementById(cardId);
+
+        if(valueEl) valueEl.textContent = value;
+
+        if(cardEl){
+          cardEl.classList.remove("active", "blocked");
+
+          if(blocked){
+            cardEl.classList.add("blocked");
+          } else if(active){
+            cardEl.classList.add("active");
+          }
+        }
+      });
+    }
+
+
     function value(id){
       return (document.getElementById(id).value || "").trim();
     }
@@ -980,6 +1096,15 @@
         const chain = Array.isArray(data.proof_chain)
           ? data.proof_chain
           : [];
+
+        setGovernanceRibbon({
+          executionState: submission.status || "MATERIALIZED",
+          governanceMode: analysis?.failure_prevention_active ? "BLOCK RECORDED" : "COMMITTED",
+          proofChain: "CONTINUOUS",
+          registry: data.registry?.persisted ? "PERSISTED" : "LOCAL",
+          active: !analysis?.failure_prevention_active,
+          blocked: !!analysis?.failure_prevention_active
+        });
 
         document.getElementById("materializationState").style.display = "block";
 
@@ -1229,6 +1354,14 @@
       document.getElementById("scoreValue").textContent = "…";
       document.getElementById("resultArea").classList.add("hidden");
 
+      setGovernanceRibbon({
+        executionState: "VALIDATING",
+        governanceMode: "ACTIVE",
+        proofChain: "PREPARING",
+        registry: "CONNECTED",
+        active: true
+      });
+
       try {
         const response = await fetch("/api/v1/execution/analyze", {
           method: "POST",
@@ -1252,6 +1385,15 @@
 
         const result = data.result || {};
         const proof = data.proof_preview || {};
+
+        setGovernanceRibbon({
+          executionState: result.governance_decision || "ANALYZED",
+          governanceMode: result.failure_prevention_active ? "BLOCKING" : "ACTIVE",
+          proofChain: "READY",
+          registry: "CONNECTED",
+          active: !result.failure_prevention_active,
+          blocked: !!result.failure_prevention_active
+        });
 
         document.getElementById("scoreValue").textContent = result.execution_score ?? "—";
         document.getElementById("summaryText").textContent = result.summary || "Execution analysis completed.";
