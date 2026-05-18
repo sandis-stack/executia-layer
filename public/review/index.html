@@ -202,6 +202,7 @@ h1{
       GOVERNANCE_OVERRIDDEN: "Governance review was overridden by authorized operator decision.",
       REVIEW_LINK_OPENED: "Client opened the secure governance review link.",
       EXECUTION_COMMITTED: "Execution commit was materialized into the immutable proof layer.",
+      OPERATOR_SIGNATURE_RECORDED: "Operator cryptographic signature was recorded for the governance decision.",
       EXECUTION_BLOCKED: "Execution commit was blocked by governance control.",
       PROOF_HASH_REGISTERED: "Execution proof hash was registered in the audit chain.",
       SETTLEMENT_CONFIRMED: "Execution settlement confirmation was recorded."
@@ -214,6 +215,7 @@ h1{
     if(String(type || "").includes("BLOCKED")) return "BLOCKED";
     if(String(type || "").includes("COMMITTED")) return "COMMITTED";
     if(String(type || "").includes("SETTLEMENT")) return "SETTLED";
+    if(String(type || "").includes("SIGNATURE")) return "SIGNED";
     if(String(type || "").includes("PROOF_HASH")) return "VERIFIED";
     if(String(type || "").includes("REJECTED")) return "BLOCKED";
     if(String(type || "").includes("APPROVED")) return "APPROVED";
