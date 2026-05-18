@@ -414,6 +414,60 @@
 
           </div>
 
+
+
+          <div class="scenario-state" id="scenarioState">
+
+            <div class="scenario-state-top">
+
+              <div>
+                <div class="scenario-state-kicker">
+                  ACTIVE EXECUTION SCENARIO
+                </div>
+
+                <h3 id="scenarioStateTitle">
+                  Scenario loaded
+                </h3>
+
+                <p id="scenarioStateText">
+                  EXECUTIA is ready to evaluate this institutional execution case.
+                </p>
+              </div>
+
+              <div class="scenario-state-pill" id="scenarioStatePill">
+                READY
+              </div>
+
+            </div>
+
+            <div class="scenario-state-grid">
+
+              <div class="scenario-state-box">
+                <span>Domain</span>
+                <strong id="scenarioStateDomain">—</strong>
+              </div>
+
+              <div class="scenario-state-box">
+                <span>Expected Governance</span>
+                <strong id="scenarioStateExpected">—</strong>
+              </div>
+
+              <div class="scenario-state-box">
+                <span>Failure Prevented</span>
+                <strong id="scenarioStatePrevention">—</strong>
+              </div>
+
+            </div>
+
+            <div class="scenario-state-action">
+              <button onclick="submitExecutionCase()">
+                Materialize Proof For This Scenario
+              </button>
+            </div>
+
+          </div>
+
+
           <div class="scenario-grid">
 
             <div class="scenario-card"
@@ -1105,6 +1159,50 @@
 
       if(!data) return;
 
+      const scenarioMeta = {
+        procurement: {
+          title: "Public Procurement",
+          expected: "APPROVED OR BLOCKED BEFORE PAYMENT",
+          prevention: "Non-compliant supplier/payment execution"
+        },
+        banking: {
+          title: "Banking Settlement",
+          expected: "BLOCK PAYMENT BEFORE APPROVAL",
+          prevention: "Unauthorized settlement or AML failure"
+        },
+        infrastructure: {
+          title: "Infrastructure Maintenance",
+          expected: "VALIDATE CONTRACTOR BEFORE EXECUTION",
+          prevention: "Unsafe or unapproved maintenance execution"
+        },
+        nato: {
+          title: "NATO Logistics Coordination",
+          expected: "CONTROL CROSS-NODE EXECUTION",
+          prevention: "Unauthorized operational execution path"
+        },
+        healthcare: {
+          title: "Healthcare Approval",
+          expected: "REQUIRE AUTHORIZATION BEFORE TREATMENT",
+          prevention: "Treatment execution without valid approval"
+        },
+        ai: {
+          title: "Autonomous AI Agent Governance",
+          expected: "BLOCK NON-COMPLIANT AI ACTION",
+          prevention: "Autonomous action outside governance boundary"
+        }
+      };
+
+      const meta = scenarioMeta[type] || {};
+
+      document.getElementById("scenarioState").classList.add("visible");
+      document.getElementById("scenarioStateTitle").textContent = meta.title || "Execution Scenario";
+      document.getElementById("scenarioStateText").textContent =
+        "Scenario loaded. EXECUTIA will evaluate execution integrity, governance readiness and proof materialization path.";
+      document.getElementById("scenarioStatePill").textContent = "SCENARIO LOADED";
+      document.getElementById("scenarioStateDomain").textContent = data.domain;
+      document.getElementById("scenarioStateExpected").textContent = meta.expected || "GOVERNANCE EVALUATION";
+      document.getElementById("scenarioStatePrevention").textContent = meta.prevention || "Execution divergence";
+
       document.getElementById("domain").value = data.domain;
       document.getElementById("outcome").value = data.outcome;
       document.getElementById("budget").value = data.budget;
@@ -1181,6 +1279,18 @@
         });
 
         document.getElementById("pilotLink").href = "/request/?" + params.toString();
+
+        const scenarioState = document.getElementById("scenarioState");
+        const scenarioPill = document.getElementById("scenarioStatePill");
+        const scenarioExpected = document.getElementById("scenarioStateExpected");
+
+        if (scenarioState && scenarioState.classList.contains("visible")) {
+          scenarioPill.textContent = result.governance_decision || "ANALYZED";
+          scenarioExpected.textContent =
+            (result.risk_level || "EXECUTION RISK") + " · " +
+            (result.pilot_readiness || "READINESS UNKNOWN");
+        }
+
         document.getElementById("resultArea").classList.remove("hidden");
 
         console.log("EXECUTIA_ANALYSIS_RESULT", {
