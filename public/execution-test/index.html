@@ -586,8 +586,17 @@
             ? proof.head_hash.slice(0, 24) + "..."
             : "—";
 
+        if (submission.review_id) {
+          localStorage.setItem(
+            "executia_proof_" + submission.review_id,
+            JSON.stringify(data)
+          );
+        }
+
         const verificationLink =
-          submission.verification_url || "#";
+          submission.review_id
+            ? "/public-proof/?review_id=" + encodeURIComponent(submission.review_id)
+            : "#";
 
         const linkEl = document.getElementById("verificationLink");
 

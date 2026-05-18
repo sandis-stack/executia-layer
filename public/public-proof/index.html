@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA — Public Proof Receipt</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --text:#102033;
+      --muted:#5f6f82;
+      --line:#dce5ef;
+      --blue:#1E3A5F;
+      --soft:#eef4fb;
+      --green:#157347;
+      --shadow:0 18px 50px rgba(16,32,51,.08);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;
+      background:linear-gradient(180deg,#f9fbfe 0%,#f3f6fa 100%);
+      color:var(--text);
+    }
+    .shell{max-width:1120px;margin:0 auto;padding:30px 22px 70px}
+    header{
+      height:84px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--line);
+    }
+    a{color:inherit;text-decoration:none}
+    .brand strong{display:block;font-size:22px;letter-spacing:.08em;color:var(--blue)}
+    .brand span{display:block;font-size:12px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+    .nav{display:flex;gap:12px}
+    .nav a{
+      font-size:13px;
+      color:var(--muted);
+      padding:10px 14px;
+      border-radius:999px;
+    }
+    .nav a.primary{background:var(--blue);color:#fff}
+    .hero{
+      padding:66px 0 30px;
+      display:grid;
+      grid-template-columns:1fr .72fr;
+      gap:28px;
+      align-items:end;
+    }
+    .eyebrow{
+      display:inline-flex;
+      padding:8px 12px;
+      border-radius:999px;
+      background:var(--soft);
+      color:var(--blue);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      margin-bottom:18px;
+    }
+    h1{
+      margin:0;
+      font-size:54px;
+      line-height:1.02;
+      letter-spacing:-.045em;
+      color:#0f2338;
+    }
+    .lead{
+      margin:20px 0 0;
+      font-size:19px;
+      line-height:1.55;
+      color:var(--muted);
+      max-width:720px;
+    }
+    .status{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+    .status h2{margin:0 0 12px;font-size:18px;color:var(--blue)}
+    .big{
+      font-size:34px;
+      line-height:1;
+      font-weight:900;
+      color:var(--green);
+      letter-spacing:-.03em;
+    }
+    .small{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+    main{
+      display:grid;
+      grid-template-columns:.9fr 1.1fr;
+      gap:24px;
+      align-items:start;
+      margin-top:24px;
+    }
+    .panel{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+    .panel h2{
+      margin:0 0 14px;
+      color:var(--blue);
+      font-size:20px;
+    }
+    .row{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      padding:13px 14px;
+      margin-top:10px;
+      background:#fbfdff;
+      font-size:13px;
+    }
+    .row span:first-child{color:var(--muted)}
+    .row span:last-child{
+      color:var(--blue);
+      font-weight:800;
+      text-align:right;
+      word-break:break-all;
+    }
+    .event{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:#fbfdff;
+      margin-top:10px;
+    }
+    .event-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+    .event strong{
+      color:#132a44;
+      font-size:13px;
+      letter-spacing:.08em;
+    }
+    .event code{
+      color:var(--muted);
+      font-size:12px;
+      word-break:break-all;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:22px;
+    }
+    .btn{
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      border-radius:999px;
+      padding:14px 18px;
+      font-weight:800;
+      font-size:14px;
+    }
+    .btn.primary{background:var(--blue);color:#fff}
+    .btn.soft{background:#fff;border:1px solid var(--line);color:var(--blue)}
+    .missing{
+      padding:30px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:#fff;
+      box-shadow:var(--shadow);
+      color:var(--muted);
+      line-height:1.6;
+      margin-top:30px;
+    }
+    footer{
+      margin-top:44px;
+      border-top:1px solid var(--line);
+      padding-top:22px;
+      color:var(--muted);
+      font-size:13px;
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+    }
+    @media(max-width:860px){
+      .hero,main{grid-template-columns:1fr}
+      h1{font-size:40px}
+      .nav{display:none}
+      footer{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="/">
+        <strong>EXECUTIA™</strong>
+        <span>Execution Integrity Standard</span>
+      </a>
+      <nav class="nav">
+        <a href="/execution-test/">Execution Test</a>
+        <a href="/proof-explorer/">Proof Explorer</a>
+        <a class="primary" href="/request/">Request Pilot</a>
+      </nav>
+    </header>
+
+    <div id="app"></div>
+
+    <footer>
+      <div>EXECUTIA™ — Execution-time truth infrastructure.</div>
+      <div>
+        <a href="/execution-test/">Execution Test</a> ·
+        <a href="/proof-explorer/">Proof Explorer</a> ·
+        <a href="/regulator/">Regulator</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    function esc(value){
+      return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function getReviewId(){
+      const params = new URLSearchParams(window.location.search);
+      return params.get("review_id") || "";
+    }
+
+    function shortHash(value){
+      const text = String(value || "");
+      return text ? text.slice(0, 28) + "..." : "—";
+    }
+
+    function loadProof(){
+      const reviewId = getReviewId();
+      const key = "executia_proof_" + reviewId;
+      const raw = reviewId ? localStorage.getItem(key) : null;
+
+      if(!raw){
+        document.getElementById("app").innerHTML = `
+          <div class="missing">
+            <strong style="color:#1E3A5F">Proof receipt not found in this browser.</strong><br>
+            This lightweight public receipt displays proof packages created from the Execution Test flow in the current browser session.
+            Run a new execution test and materialize proof to generate a receipt.
+            <div class="actions">
+              <a class="btn primary" href="/execution-test/">Run Execution Test</a>
+              <a class="btn soft" href="/proof-explorer/">Open Proof Explorer</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const data = JSON.parse(raw);
+      const submission = data.submission || {};
+      const analysis = data.analysis || {};
+      const proof = data.proof_preview || {};
+      const chain = Array.isArray(data.proof_chain) ? data.proof_chain : [];
+
+      document.getElementById("app").innerHTML = `
+        <section class="hero">
+          <div>
+            <div class="eyebrow">Public Proof Receipt</div>
+            <h1>Execution became immutable proof.</h1>
+            <p class="lead">
+              This receipt shows the execution submission, governance decision, proof-chain head hash and materialized event sequence.
+            </p>
+          </div>
+
+          <aside class="status">
+            <h2>Proof Status</h2>
+            <div class="big">VERIFIED</div>
+            <div class="small">Local receipt package prepared for regulator-readable proof inspection.</div>
+          </aside>
+        </section>
+
+        <main>
+          <section class="panel">
+            <h2>Execution Receipt</h2>
+            <div class="row"><span>Review ID</span><span>${esc(submission.review_id)}</span></div>
+            <div class="row"><span>Submission ID</span><span>${esc(submission.submission_id)}</span></div>
+            <div class="row"><span>Status</span><span>${esc(submission.status)}</span></div>
+            <div class="row"><span>Created</span><span>${esc(submission.created_at)}</span></div>
+            <div class="row"><span>Head Hash</span><span>${esc(proof.head_hash)}</span></div>
+            <div class="row"><span>QR Payload</span><span>${esc(submission.qr_verification_payload)}</span></div>
+
+            <div class="actions">
+              <a class="btn primary" href="/request/?review_id=${esc(submission.review_id)}&submission_id=${esc(submission.submission_id)}">Request Pilot</a>
+              <a class="btn soft" href="/regulator/">Open Regulator Mode</a>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Governance Result</h2>
+            <div class="row"><span>Execution Domain</span><span>${esc(analysis.execution_domain)}</span></div>
+            <div class="row"><span>Decision</span><span>${esc(analysis.governance_decision)}</span></div>
+            <div class="row"><span>Score</span><span>${esc(analysis.execution_score)}</span></div>
+            <div class="row"><span>Risk Level</span><span>${esc(analysis.risk_level)}</span></div>
+            <div class="row"><span>Pilot Readiness</span><span>${esc(analysis.pilot_readiness)}</span></div>
+          </section>
+        </main>
+
+        <section class="panel" style="margin-top:24px">
+          <h2>Immutable Event Chain</h2>
+          ${chain.map(event => `
+            <div class="event">
+              <div class="event-top">
+                <strong>${esc(event.index)} · ${esc(event.type)}</strong>
+                <code>${esc(shortHash(event.event_hash))}</code>
+              </div>
+            </div>
+          `).join("")}
+        </section>
+      `;
+    }
+
+    loadProof();
+  </script>
+</body>
+</html>
