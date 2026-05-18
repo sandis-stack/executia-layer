@@ -31,23 +31,78 @@
     a{color:inherit;text-decoration:none}
     .shell{max-width:1180px;margin:0 auto;padding:28px 22px 60px}
     header{
-      height:84px;
-      display:flex;
+      height:96px;
+      display:grid;
+      grid-template-columns:320px 1fr auto;
       align-items:center;
-      justify-content:space-between;
+      gap:22px;
       border-bottom:1px solid var(--line);
     }
-    .brand{display:flex;flex-direction:column;gap:4px}
-    .brand strong{font-size:22px;letter-spacing:.08em;color:var(--blue)}
-    .brand span{font-size:12px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
-    .nav{display:flex;gap:12px;align-items:center}
-    .nav a{
-      font-size:13px;
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .brand strong{
+      font-size:22px;
+      letter-spacing:.08em;
+      color:var(--blue);
+    }
+
+    .brand span{
+      font-size:11px;
+      letter-spacing:.18em;
       color:var(--muted);
-      padding:10px 14px;
+      text-transform:uppercase;
+    }
+
+    .system-layer{
+      justify-self:center;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.72);
+    }
+
+    .system-layer a{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      padding:10px 13px;
+      border-radius:999px;
+      text-decoration:none;
+    }
+
+    .system-layer a.active{
+      background:var(--blue);
+      color:#ffffff;
+    }
+
+    .nav{
+      justify-self:end;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .nav a{
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      padding:10px 13px;
       border:1px solid transparent;
       border-radius:999px;
     }
+
     .nav a.primary{
       color:#fff;
       background:var(--blue);
@@ -480,7 +535,24 @@
     @media(max-width:860px){
       .hero,main{grid-template-columns:1fr}
       h1{font-size:42px}
-      .nav{display:none}
+      header{
+        height:auto;
+        grid-template-columns:1fr;
+        padding:18px 0;
+      }
+
+      .system-layer{
+        justify-self:start;
+        width:100%;
+        overflow:auto;
+      }
+
+      .nav{
+        justify-self:start;
+        display:flex;
+        width:100%;
+        overflow:auto;
+      }
       .grid2{grid-template-columns:1fr}
       footer{flex-direction:column}
     }
@@ -635,13 +707,20 @@
 <body>
   <div class="shell">
     <header>
-      <a class="brand" href="/">
+      <a class="brand" href="https://executia.io">
         <strong>EXECUTIA™</strong>
-        <span>Execution Integrity Standard</span>
+        <span>Execution Control Standard</span>
       </a>
-      <nav class="nav">
-        <a href="/proof-explorer/">Proof Explorer</a>
-        <a href="/regulator/">Regulator Mode</a>
+
+      <nav class="system-layer" aria-label="System layers">
+        <a href="https://executia.io">Entry</a>
+        <a class="active" href="/execution-test/">Execution Test</a>
+        <a href="/dashboard">Engine</a>
+      </nav>
+
+      <nav class="nav" aria-label="Execution actions">
+        <a href="/public-proof/">Proof</a>
+        <a href="/regulator/">Regulator</a>
         <a class="primary" href="/request-pilot/">Request Pilot</a>
       </nav>
     </header>
