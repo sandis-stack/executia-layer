@@ -46,6 +46,51 @@ function uuid() {
   return crypto.randomUUID();
 }
 
+async function supabaseInsertPublicRegistry(record) {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    return {
+      persisted: false,
+      reason: "SUPABASE_ENV_MISSING"
+    };
+  }
+
+  const response = await fetch(`${url}/rest/v1/execution_public_registry`, {
+    method: "POST",
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify(record)
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    return {
+      persisted: false,
+      reason: text || "SUPABASE_INSERT_FAILED"
+    };
+  }
+
+  try {
+    return {
+      persisted: true,
+      row: text ? JSON.parse(text)?.[0] : null
+    };
+  } catch {
+    return {
+      persisted: true,
+      row: null
+    };
+  }
+}
+
+
 function buildAnalysis(input) {
   const domain = normalizeText(input.domain);
   const outcome = normalizeText(input.outcome);
@@ -233,35 +278,61 @@ export default async function handler(req, res) {
     const proofChain = buildProofChain({ submissionId, reviewId, input, analysis, createdAt });
     const headHash = proofChain[proofChain.length - 1]?.event_hash || null;
 
-    const verificationUrl = `https://execution.executia.io/proof-explorer/?review_id=${reviewId}`;
+    const verificationUrl = `https://execution.executia.io/public-proof/?review_id=${reviewId}`;
 
-    return res.status(200).json({
+    const submission = {
+      submission_id: submissionId,
+      review_id: reviewId,
+      created_at: createdAt,
+      status: analysis.governance_decision,
+      verification_url: verificationUrl,
+      qr_verification_payload: `EXECUTIA_VERIFY:${reviewId}`
+    };
+
+    const proofPreview = {
+      immutable_chain_prepared: true,
+      events_materialized: proofChain.length,
+      head_hash: headHash,
+      operator_signature_required: true,
+      timestamp_anchor_required: true,
+      regulator_verification_available: true,
+      external_notary_ready: false
+    };
+
+    const receipt = {
       ok: true,
       engine: "EXECUTIA_EXECUTION_SUBMISSION_ENGINE_V1",
       mode: "PUBLIC_SUBMISSION",
-      submission: {
-        submission_id: submissionId,
-        review_id: reviewId,
-        created_at: createdAt,
-        status: analysis.governance_decision,
-        verification_url: verificationUrl,
-        qr_verification_payload: `EXECUTIA_VERIFY:${reviewId}`
-      },
+      submission,
       analysis,
-      proof_preview: {
-        immutable_chain_prepared: true,
-        events_materialized: proofChain.length,
-        head_hash: headHash,
-        operator_signature_required: true,
-        timestamp_anchor_required: true,
-        regulator_verification_available: true,
-        external_notary_ready: false
-      },
+      proof_preview: proofPreview,
       proof_chain: proofChain,
       next_action: {
         type: analysis.recommended_next_action,
         request_pilot_url: `https://execution.executia.io/request/?review_id=${reviewId}&submission_id=${submissionId}`
       }
+    };
+
+    const registry = await supabaseInsertPublicRegistry({
+      review_id: reviewId,
+      submission_id: submissionId,
+      status: analysis.governance_decision,
+      execution_domain: analysis.execution_domain,
+      governance_decision: analysis.governance_decision,
+      execution_score: analysis.execution_score,
+      risk_level: analysis.risk_level,
+      pilot_readiness: analysis.pilot_readiness,
+      head_hash: headHash,
+      input,
+      analysis,
+      proof_preview: proofPreview,
+      proof_chain: proofChain,
+      receipt
+    });
+
+    return res.status(200).json({
+      ...receipt,
+      registry
     });
   } catch (error) {
     return res.status(500).json({
