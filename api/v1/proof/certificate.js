@@ -50,6 +50,11 @@ export default async function handler(req, res){
     const hashedEvents =
       events.filter(e => e.hash);
 
+    const signatureEvent =
+      events.find(
+        e => e.event_type === "OPERATOR_SIGNATURE_RECORDED"
+      );
+
     let verified = true;
 
     for(let i = 1; i < hashedEvents.length; i++){
@@ -85,6 +90,12 @@ export default async function handler(req, res){
 
         risk_score:
           reviewResult.data.risk_score,
+
+        signature_verified:
+          !!signatureEvent,
+
+        signature_event_hash:
+          signatureEvent?.hash || null,
 
         hashed_events_checked:
           hashedEvents.length,
