@@ -419,67 +419,78 @@
       runExecutionTest();
     }
 
-    function runExecutionTest(){
+    async function runExecutionTest(){
       const domain = value("domain");
       const outcome = value("outcome");
       const budget = value("budget");
       const timeline = value("timeline");
       const constraints = value("constraints");
 
-      const text = (domain + " " + outcome + " " + budget + " " + timeline + " " + constraints).toLowerCase();
+      document.getElementById("summaryText").textContent = "EXECUTIA is analyzing execution structure...";
+      document.getElementById("scoreValue").textContent = "…";
+      document.getElementById("resultArea").classList.add("hidden");
 
-      let score = 64;
-      if(text.includes("payment") || text.includes("supplier") || text.includes("contract")) score += 8;
-      if(text.includes("audit") || text.includes("immutable") || text.includes("proof")) score += 9;
-      if(text.includes("approval") || text.includes("verified") || text.includes("reconciled")) score += 8;
-      if(text.includes("budget") || text.includes("limit") || text.includes("compliance")) score += 6;
-      if(outcome.length < 30) score -= 18;
-      if(constraints.length < 30) score -= 12;
-      score = Math.max(24, Math.min(96, score));
+      try {
+        const response = await fetch("/api/v1/execution/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            domain,
+            outcome,
+            budget,
+            timeline,
+            constraints
+          })
+        });
 
-      const status =
-        score >= 82 ? "APPROVED_FOR_PILOT_REVIEW" :
-        score >= 62 ? "PENDING_GOVERNANCE_REVIEW" :
-        "INSUFFICIENT_EXECUTION_DEFINITION";
+        const data = await response.json();
 
-      document.getElementById("scoreValue").textContent = score;
-      document.getElementById("summaryText").textContent =
-        score >= 82
-          ? "This case is structurally suitable for an EXECUTIA pilot. Execution controls and proof chain can be defined."
-          : score >= 62
-            ? "This case has execution-control potential, but requires clearer rules, constraints and verification points."
-            : "The outcome is not yet specific enough. Define clearer result, constraints, approval logic and proof requirements.";
+        if (!response.ok || !data.ok) {
+          throw new Error(data?.error?.message || "Execution analysis failed.");
+        }
 
-      document.getElementById("governanceStatus").textContent = status;
+        const result = data.result || {};
+        const proof = data.proof_preview || {};
 
-      const classification = [
-        "Domain: " + domain.replaceAll("-", " ").toUpperCase(),
-        "Execution risk: " + (score >= 82 ? "CONTROLLED" : score >= 62 ? "MODERATE" : "UNCLEAR"),
-        "Pilot readiness: " + (score >= 82 ? "HIGH" : score >= 62 ? "MEDIUM" : "LOW"),
-        "Primary value: execution-time governance before commitment"
-      ];
+        document.getElementById("scoreValue").textContent = result.execution_score ?? "—";
+        document.getElementById("summaryText").textContent = result.summary || "Execution analysis completed.";
+        document.getElementById("governanceStatus").textContent = result.governance_decision || "PENDING_REVIEW";
 
-      const controls = [
-        "Outcome-to-rule mapping",
-        "Pre-commitment validation",
-        "Approval and operator decision path",
-        "Immutable proof chain",
-        "Settlement and reconciliation verification",
-        "Regulator-readable audit structure"
-      ];
+        const classification = [
+          "Domain: " + (result.execution_domain || "UNCLASSIFIED"),
+          "Execution risk: " + (result.risk_level || "UNKNOWN"),
+          "Pilot readiness: " + (result.pilot_readiness || "UNKNOWN"),
+          "Recommended action: " + (result.recommended_next_action || "REVIEW")
+        ];
 
-      renderList("classificationList", classification);
-      renderList("controlsList", controls);
+        const controls = Array.isArray(result.required_governance_controls)
+          ? result.required_governance_controls
+          : [];
 
-      const params = new URLSearchParams({
-        domain,
-        score: String(score),
-        status,
-        outcome: outcome.slice(0, 180)
-      });
+        renderList("classificationList", classification);
+        renderList("controlsList", controls);
 
-      document.getElementById("pilotLink").href = "/request/?" + params.toString();
-      document.getElementById("resultArea").classList.remove("hidden");
+        const params = new URLSearchParams({
+          domain,
+          score: String(result.execution_score || ""),
+          status: result.governance_decision || "",
+          outcome: outcome.slice(0, 180)
+        });
+
+        document.getElementById("pilotLink").href = "/request/?" + params.toString();
+        document.getElementById("resultArea").classList.remove("hidden");
+
+        console.log("EXECUTIA_ANALYSIS_RESULT", {
+          result,
+          proof
+        });
+      } catch (error) {
+        document.getElementById("scoreValue").textContent = "!";
+        document.getElementById("summaryText").textContent =
+          error.message || "Execution analysis could not be completed.";
+      }
     }
 
     function renderList(id, items){
