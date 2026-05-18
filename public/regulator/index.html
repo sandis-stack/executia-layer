@@ -82,6 +82,34 @@ p{
     font-size:34px;
   }
 }
+input{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid #cbd6e2;
+  padding:14px 16px;
+  font-size:15px;
+  margin-top:18px;
+}
+
+button{
+  margin-top:16px;
+  background:#0f2d4a;
+  color:#fff;
+  border:0;
+  padding:14px 20px;
+  font-size:12px;
+  letter-spacing:1.4px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.hash{
+  margin-top:20px;
+  font-size:13px;
+  line-height:1.6;
+  word-break:break-all;
+  color:#42556d;
+}
 </style>
 </head>
 
@@ -131,7 +159,85 @@ p{
   </div>
 </section>
 
+<section class="card">
+  <div class="kicker">
+    EXECUTIA · PROOF VERIFICATION
+  </div>
+
+  <h1>
+    Verify a governance proof chain.
+  </h1>
+
+  <p>
+    Enter a review ID to verify immutable proof continuity, hashed event segment,
+    head hash and broken-chain state.
+  </p>
+
+  <input id="reviewId" placeholder="Review ID" />
+  <button onclick="verifyProof()">VERIFY PROOF</button>
+
+  <div id="verificationResult"></div>
+</section>
+
 </main>
+
+<script>
+async function verifyProof(){
+  const reviewId =
+    document.getElementById("reviewId").value.trim();
+
+  const result =
+    document.getElementById("verificationResult");
+
+  if(!reviewId){
+    alert("Review ID required");
+    return;
+  }
+
+  result.innerHTML = "<p>Verifying immutable proof chain...</p>";
+
+  const res =
+    await fetch(`/api/v1/proof/verify?review_id=${encodeURIComponent(reviewId)}`);
+
+  const data =
+    await res.json();
+
+  if(!data.ok){
+    result.innerHTML =
+      `<p>Verification failed: ${data.error || "UNKNOWN"}</p>`;
+    return;
+  }
+
+  result.innerHTML = `
+    <div class="grid">
+      <div class="metric">
+        <span>CHAIN</span>
+        <strong>${data.immutable_chain_verified ? "VERIFIED" : "FAILED"}</strong>
+      </div>
+
+      <div class="metric">
+        <span>EVENTS</span>
+        <strong>${data.events_checked}</strong>
+      </div>
+
+      <div class="metric">
+        <span>HASHED</span>
+        <strong>${data.hashed_events_checked}</strong>
+      </div>
+
+      <div class="metric">
+        <span>BROKEN AT</span>
+        <strong>${data.broken_at || "NONE"}</strong>
+      </div>
+    </div>
+
+    <div class="hash">
+      <strong>HEAD HASH</strong><br>
+      ${data.head_hash || "-"}
+    </div>
+  `;
+}
+</script>
 
 </body>
 </html>
