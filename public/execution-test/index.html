@@ -1937,7 +1937,7 @@
 
         console.log("EXECUTIA_SUBMISSION_RESULT", data);
       } catch (error) {
-        alert(error.message || "Execution submission failed.");
+        document.getElementById("summaryText").textContent = error.message || "EXECUTION SUBMISSION FAILED."; document.getElementById("governanceStatus").textContent = "SUBMISSION_FAILED";
       }
     }
 
