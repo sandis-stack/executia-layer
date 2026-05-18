@@ -33,6 +33,18 @@ button{margin-top:16px;background:#0f2d4a;color:#fff;border:0;padding:14px 20px;
 
     <input id="reviewId" placeholder="Review ID" />
     <button onclick="verifyProof()">VERIFY PROOF</button>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const reviewIdParam = params.get("review_id");
+
+if(reviewIdParam){
+  window.addEventListener("load", ()=>{
+    document.getElementById("reviewId").value = reviewIdParam;
+    verifyProof();
+  });
+}
+</script>
   </section>
 
   <section class="card" id="result" style="display:none;"></section>

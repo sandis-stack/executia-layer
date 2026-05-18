@@ -79,6 +79,12 @@ export default async function handler(req, res){
 
         review_id,
 
+        verification_url:
+          `https://execution.executia.io/proof-explorer/?review_id=${review_id}`,
+
+        qr_verification_payload:
+          `EXECUTIA_VERIFY:${review_id}`,
+
         immutable_chain_verified:
           verified,
 
