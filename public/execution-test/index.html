@@ -100,6 +100,157 @@
       color:#166534;
     }
 
+    
+
+    .timeline-shell{
+      margin-top:34px;
+      border-radius:34px;
+      padding:34px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+    }
+
+    .timeline-header{
+      max-width:760px;
+    }
+
+    .timeline-eyebrow{
+      display:inline-flex;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#eef4fb;
+      color:#1E3A5F;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      margin-bottom:18px;
+    }
+
+    .timeline-header h2{
+      margin:0;
+      font-size:40px;
+      line-height:1;
+      letter-spacing:-.05em;
+      color:#102033;
+    }
+
+    .timeline-header p{
+      margin:18px 0 0;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:16px;
+    }
+
+    .timeline-track{
+      margin-top:36px;
+      display:grid;
+      gap:16px;
+      position:relative;
+    }
+
+    .timeline-track::before{
+      content:"";
+      position:absolute;
+      left:22px;
+      top:0;
+      bottom:0;
+      width:2px;
+      background:#d9e5f2;
+    }
+
+    .timeline-event{
+      position:relative;
+      padding-left:68px;
+    }
+
+    .timeline-dot{
+      position:absolute;
+      left:10px;
+      top:10px;
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      background:#d9e5f2;
+      border:4px solid #ffffff;
+      box-shadow:0 0 0 1px #cfdceb;
+      z-index:2;
+    }
+
+    .timeline-event.active .timeline-dot{
+      background:#1E3A5F;
+    }
+
+    .timeline-event.success .timeline-dot{
+      background:#166534;
+    }
+
+    .timeline-event.blocked .timeline-dot{
+      background:#b42318;
+    }
+
+    .timeline-card{
+      border-radius:22px;
+      padding:20px;
+      border:1px solid var(--line);
+      background:#ffffff;
+    }
+
+    .timeline-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .timeline-title{
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:-.03em;
+      color:#102033;
+    }
+
+    .timeline-time{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#6b7b8d;
+    }
+
+    .timeline-text{
+      margin-top:12px;
+      color:#5f6f82;
+      line-height:1.7;
+      font-size:14px;
+    }
+
+    .timeline-status{
+      margin-top:14px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#eef4fb;
+      color:#1E3A5F;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .timeline-event.success .timeline-status{
+      background:#eef7f1;
+      color:#166534;
+    }
+
+    .timeline-event.blocked .timeline-status{
+      background:#fff1f1;
+      color:#b42318;
+    }
+
     .governance-ribbon-card.blocked .governance-ribbon-value{
       color:#b42318;
     }
@@ -476,7 +627,57 @@
 
         
 
-        <section class="scenario-shell">
+        
+
+        <section class="timeline-shell">
+
+          <div class="timeline-header">
+
+            <div class="timeline-eyebrow">
+              LIVE GOVERNANCE TIMELINE
+            </div>
+
+            <h2>
+              Execution evolves through governance states.
+            </h2>
+
+            <p>
+              EXECUTIA continuously validates execution integrity and materializes governance state transitions before commitment becomes possible.
+            </p>
+
+          </div>
+
+          <div class="timeline-track" id="timelineTrack">
+
+            <div class="timeline-event active">
+              <div class="timeline-dot"></div>
+
+              <div class="timeline-card">
+                <div class="timeline-top">
+                  <div class="timeline-title">
+                    REQUEST_RECEIVED
+                  </div>
+
+                  <div class="timeline-time">
+                    LIVE
+                  </div>
+                </div>
+
+                <div class="timeline-text">
+                  Execution outcome submitted for governance validation.
+                </div>
+
+                <div class="timeline-status">
+                  ACTIVE
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+<section class="scenario-shell">
 
           <div class="scenario-header">
 
@@ -1012,6 +1213,49 @@
   <script>
 
 
+
+
+    function renderTimeline(events = []){
+
+      const track = document.getElementById("timelineTrack");
+
+      if(!track) return;
+
+      track.innerHTML = events.map(event => `
+        <div class="timeline-event ${event.state || ""}">
+
+          <div class="timeline-dot"></div>
+
+          <div class="timeline-card">
+
+            <div class="timeline-top">
+
+              <div class="timeline-title">
+                ${event.title}
+              </div>
+
+              <div class="timeline-time">
+                ${event.time}
+              </div>
+
+            </div>
+
+            <div class="timeline-text">
+              ${event.text}
+            </div>
+
+            <div class="timeline-status">
+              ${event.status}
+            </div>
+
+          </div>
+
+        </div>
+      `).join("");
+
+    }
+
+
     function setGovernanceRibbon(state = {}) {
       const executionState = state.executionState || "STANDBY";
       const governanceMode = state.governanceMode || "READY";
@@ -1362,6 +1606,23 @@
         active: true
       });
 
+      renderTimeline([
+        {
+          title:"REQUEST_RECEIVED",
+          time:"NOW",
+          text:"Execution request entered governance evaluation flow.",
+          status:"ACTIVE",
+          state:"active"
+        },
+        {
+          title:"VALIDATION_STARTED",
+          time:"LIVE",
+          text:"EXECUTIA validating execution integrity and constraints.",
+          status:"VALIDATING",
+          state:"active"
+        }
+      ]);
+
       try {
         const response = await fetch("/api/v1/execution/analyze", {
           method: "POST",
@@ -1394,6 +1655,77 @@
           active: !result.failure_prevention_active,
           blocked: !!result.failure_prevention_active
         });
+
+        renderTimeline(
+          result.failure_prevention_active
+            ? [
+                {
+                  title:"REQUEST_RECEIVED",
+                  time:"T+0",
+                  text:"Execution request entered governance flow.",
+                  status:"RECORDED",
+                  state:"success"
+                },
+                {
+                  title:"RISK_DETECTED",
+                  time:"T+1",
+                  text:"Structural governance violations detected.",
+                  status:"BLOCKING",
+                  state:"blocked"
+                },
+                {
+                  title:"EXECUTION_FAILURE_PREVENTED",
+                  time:"T+2",
+                  text:"Invalid execution blocked before commitment.",
+                  status:"PREVENTED",
+                  state:"blocked"
+                },
+                {
+                  title:"GOVERNANCE_BLOCK_RECORDED",
+                  time:"T+3",
+                  text:"Immutable governance evidence materialized.",
+                  status:"IMMUTABLE",
+                  state:"blocked"
+                }
+              ]
+            : [
+                {
+                  title:"REQUEST_RECEIVED",
+                  time:"T+0",
+                  text:"Execution request entered governance flow.",
+                  status:"RECORDED",
+                  state:"success"
+                },
+                {
+                  title:"VALIDATION_COMPLETED",
+                  time:"T+1",
+                  text:"Execution integrity validated successfully.",
+                  status:"VALIDATED",
+                  state:"success"
+                },
+                {
+                  title:"GOVERNANCE_APPROVED",
+                  time:"T+2",
+                  text:"Execution approved before commitment.",
+                  status:"APPROVED",
+                  state:"success"
+                },
+                {
+                  title:"PROOF_MATERIALIZED",
+                  time:"T+3",
+                  text:"Immutable proof-chain generated.",
+                  status:"IMMUTABLE",
+                  state:"success"
+                },
+                {
+                  title:"REGISTRY_COMMITTED",
+                  time:"T+4",
+                  text:"Persistent registry updated successfully.",
+                  status:"PERSISTED",
+                  state:"success"
+                }
+              ]
+        );
 
         document.getElementById("scoreValue").textContent = result.execution_score ?? "—";
         document.getElementById("summaryText").textContent = result.summary || "Execution analysis completed.";
