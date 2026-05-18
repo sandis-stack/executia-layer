@@ -426,6 +426,65 @@
       runExecutionTest();
     }
 
+
+
+    async function submitExecutionCase(){
+      const domain = value("domain");
+      const outcome = value("outcome");
+      const budget = value("budget");
+      const timeline = value("timeline");
+      const constraints = value("constraints");
+
+      try {
+        const response = await fetch("/api/v1/execution/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            domain,
+            outcome,
+            budget,
+            timeline,
+            constraints
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data?.error?.message || "Execution submission failed.");
+        }
+
+        const submission = data.submission || {};
+        const proof = data.proof_preview || {};
+
+        document.getElementById("submissionResult").style.display = "block";
+
+        document.getElementById("reviewIdValue").textContent =
+          submission.review_id || "—";
+
+        document.getElementById("submissionIdValue").textContent =
+          submission.submission_id || "—";
+
+        document.getElementById("headHashValue").textContent =
+          proof.head_hash
+            ? proof.head_hash.slice(0, 24) + "..."
+            : "—";
+
+        const verificationLink =
+          submission.verification_url || "#";
+
+        const linkEl = document.getElementById("verificationLink");
+
+        linkEl.href = verificationLink;
+
+        console.log("EXECUTIA_SUBMISSION_RESULT", data);
+      } catch (error) {
+        alert(error.message || "Execution submission failed.");
+      }
+    }
+
     async function runExecutionTest(){
       const domain = value("domain");
       const outcome = value("outcome");
