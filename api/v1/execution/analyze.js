@@ -63,19 +63,46 @@ function buildAnalysis(input) {
   if (outcome.length < 25) score -= 16;
   if (constraints.length < 25) score -= 12;
 
+  const blockingReasons = [];
+
+  if (includesAny(combined, ["payment before approval", "pay before approval", "release payment before approval"])) {
+    blockingReasons.push("PAYMENT_BEFORE_APPROVAL");
+    score -= 30;
+  }
+
+  if (includesAny(combined, ["supplier not verified", "unverified supplier", "unknown supplier"])) {
+    blockingReasons.push("SUPPLIER_NOT_VERIFIED");
+    score -= 24;
+  }
+
+  if (includesAny(combined, ["budget exceeded", "exceed budget", "over budget"])) {
+    blockingReasons.push("BUDGET_LIMIT_EXCEEDED");
+    score -= 22;
+  }
+
+  if (includesAny(combined, ["no audit", "without audit", "no proof", "without proof"])) {
+    blockingReasons.push("MISSING_PROOF_REQUIREMENT");
+    score -= 20;
+  }
+
   score = clamp(score, 20, 96);
 
+  const isBlocked = blockingReasons.length > 0;
+
   const riskLevel =
+    isBlocked ? "BLOCKED_EXECUTION_RISK" :
     score >= 82 ? "CONTROLLED_EXECUTION_RISK" :
     score >= 65 ? "MODERATE_EXECUTION_RISK" :
     "UNDEFINED_EXECUTION_RISK";
 
   const pilotReadiness =
+    isBlocked ? "BLOCKED" :
     score >= 82 ? "HIGH" :
     score >= 65 ? "MEDIUM" :
     "LOW";
 
   const governanceDecision =
+    isBlocked ? "BLOCKED_EXECUTION" :
     score >= 82 ? "APPROVED_FOR_PILOT_REVIEW" :
     score >= 65 ? "PENDING_GOVERNANCE_REVIEW" :
     "INSUFFICIENT_EXECUTION_DEFINITION";
@@ -142,14 +169,18 @@ function buildAnalysis(input) {
           : score >= 65
             ? "This execution case has execution-control potential but requires clearer rules, constraints and verification points."
             : "This execution case is not yet specific enough. Define clearer outcome, constraints, approval logic and proof requirements.",
+      blocking_reasons: blockingReasons,
+      failure_prevention_active: blockingReasons.length > 0,
       required_governance_controls: requiredControls,
       required_proof_layers: proofLayers,
       recommended_next_action:
-        score >= 82
-          ? "REQUEST_PILOT"
-          : score >= 65
-            ? "CLARIFY_EXECUTION_RULES"
-            : "DEFINE_OUTCOME_AND_CONSTRAINTS"
+        blockingReasons.length > 0
+          ? "FIX_BLOCKED_EXECUTION"
+          : score >= 82
+            ? "REQUEST_PILOT"
+            : score >= 65
+              ? "CLARIFY_EXECUTION_RULES"
+              : "DEFINE_OUTCOME_AND_CONSTRAINTS"
     },
     proof_preview: {
       immutable_chain_required: true,

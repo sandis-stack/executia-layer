@@ -118,19 +118,46 @@ function buildAnalysis(input) {
   if (outcome.length < 25) score -= 16;
   if (constraints.length < 25) score -= 12;
 
+  const blockingReasons = [];
+
+  if (includesAny(combined, ["payment before approval", "pay before approval", "release payment before approval"])) {
+    blockingReasons.push("PAYMENT_BEFORE_APPROVAL");
+    score -= 30;
+  }
+
+  if (includesAny(combined, ["supplier not verified", "unverified supplier", "unknown supplier"])) {
+    blockingReasons.push("SUPPLIER_NOT_VERIFIED");
+    score -= 24;
+  }
+
+  if (includesAny(combined, ["budget exceeded", "exceed budget", "over budget"])) {
+    blockingReasons.push("BUDGET_LIMIT_EXCEEDED");
+    score -= 22;
+  }
+
+  if (includesAny(combined, ["no audit", "without audit", "no proof", "without proof"])) {
+    blockingReasons.push("MISSING_PROOF_REQUIREMENT");
+    score -= 20;
+  }
+
   score = clamp(score, 20, 96);
 
+  const isBlocked = blockingReasons.length > 0;
+
   const riskLevel =
+    isBlocked ? "BLOCKED_EXECUTION_RISK" :
     score >= 82 ? "CONTROLLED_EXECUTION_RISK" :
     score >= 65 ? "MODERATE_EXECUTION_RISK" :
     "UNDEFINED_EXECUTION_RISK";
 
   const pilotReadiness =
+    isBlocked ? "BLOCKED" :
     score >= 82 ? "HIGH" :
     score >= 65 ? "MEDIUM" :
     "LOW";
 
   const governanceDecision =
+    isBlocked ? "BLOCKED_EXECUTION" :
     score >= 82 ? "APPROVED_FOR_PILOT_REVIEW" :
     score >= 65 ? "PENDING_GOVERNANCE_REVIEW" :
     "INSUFFICIENT_EXECUTION_DEFINITION";
@@ -180,29 +207,45 @@ function buildAnalysis(input) {
     execution_score: score,
     risk_level: riskLevel,
     pilot_readiness: pilotReadiness,
+    blocking_reasons: blockingReasons,
+    failure_prevention_active: blockingReasons.length > 0,
     required_governance_controls: requiredControls,
     required_proof_layers: proofLayers,
     recommended_next_action:
-      score >= 82
-        ? "REQUEST_PILOT"
-        : score >= 65
-          ? "CLARIFY_EXECUTION_RULES"
-          : "DEFINE_OUTCOME_AND_CONSTRAINTS"
+      blockingReasons.length > 0
+        ? "FIX_BLOCKED_EXECUTION"
+        : score >= 82
+          ? "REQUEST_PILOT"
+          : score >= 65
+            ? "CLARIFY_EXECUTION_RULES"
+            : "DEFINE_OUTCOME_AND_CONSTRAINTS"
   };
 }
 
 function buildProofChain({ submissionId, reviewId, input, analysis, createdAt }) {
-  const events = [
-    "REQUEST_RECEIVED",
-    "OUTCOME_DEFINED",
-    "AUTO_ANALYSIS_COMPLETED",
-    "STANDARD_RISK_DETECTED",
-    "GOVERNANCE_REVIEW_OPENED",
-    "GOVERNANCE_DECISION_READY",
-    "PROOF_CHAIN_PREPARED",
-    "TIMESTAMP_ANCHOR_READY",
-    "REGULATOR_VERIFICATION_AVAILABLE"
-  ];
+  const events = analysis.governance_decision === "BLOCKED_EXECUTION"
+    ? [
+        "REQUEST_RECEIVED",
+        "OUTCOME_DEFINED",
+        "AUTO_ANALYSIS_COMPLETED",
+        "STANDARD_RISK_DETECTED",
+        "EXECUTION_FAILURE_PREVENTED",
+        "GOVERNANCE_BLOCK_RECORDED",
+        "PROOF_CHAIN_PREPARED",
+        "TIMESTAMP_ANCHOR_READY",
+        "REGULATOR_VERIFICATION_AVAILABLE"
+      ]
+    : [
+        "REQUEST_RECEIVED",
+        "OUTCOME_DEFINED",
+        "AUTO_ANALYSIS_COMPLETED",
+        "STANDARD_RISK_DETECTED",
+        "GOVERNANCE_REVIEW_OPENED",
+        "GOVERNANCE_DECISION_READY",
+        "PROOF_CHAIN_PREPARED",
+        "TIMESTAMP_ANCHOR_READY",
+        "REGULATOR_VERIFICATION_AVAILABLE"
+      ];
 
   let previousHash = null;
 
