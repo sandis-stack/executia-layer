@@ -1432,7 +1432,43 @@
         <a href="/regulator/">Regulator</a> ·
         <a href="/request-pilot/">Request</a>
       </div>
-    </footer>
+    </footer>\n\n
+<section id="materializationState">
+  <div class="materialization-card">
+
+    <div class="materialization-kicker">
+      EXECUTION MATERIALIZATION
+    </div>
+
+    <h1>
+      Execution became immutable proof.
+    </h1>
+
+    <p>
+      EXECUTIA materialized governance validation, proof-chain continuity and regulator-readable execution evidence.
+    </p>
+
+    <div class="materialization-status">
+      <strong>IMMUTABLE PROOF READY</strong>
+      Execution proof-chain continuity has been prepared for public verification and regulator inspection.
+    </div>
+
+    <div class="materialization-actions">
+      <a class="btn primary" id="materializedProofLink" href="/public-proof/">
+        Open Proof
+      </a>
+
+      <button
+        class="btn soft"
+        type="button"
+        onclick="document.getElementById('materializationState').style.display='none'">
+        Close
+      </button>
+    </div>
+
+  </div>
+</section>
+
   </div>
 
   <script>
@@ -1576,7 +1612,12 @@
           blocked: !!analysis?.failure_prevention_active
         });
 
-        document.getElementById("materializationState").style.display = "block";
+        document.getElementById("materializationState").style.display = "flex";
+
+        const materializedProofLink = document.getElementById("materializedProofLink");
+        if (materializedProofLink && submission.review_id) {
+          materializedProofLink.href = "/public-proof/?review_id=" + encodeURIComponent(submission.review_id);
+        }
 
 
         const overlay = document.getElementById("materializationOverlay");
