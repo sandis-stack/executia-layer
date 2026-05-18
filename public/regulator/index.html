@@ -161,6 +161,25 @@ button{
 
 <section class="card">
   <div class="kicker">
+    EXECUTIA · MERKLE ANCHOR
+  </div>
+
+  <h1>
+    Aggregated proof root.
+  </h1>
+
+  <p>
+    Latest immutable event hashes are aggregated into a Merkle root for external timestamping,
+    notarization, or multi-node replication.
+  </p>
+
+  <button onclick="loadMerkleAnchor()">LOAD MERKLE ANCHOR</button>
+
+  <div id="merkleResult"></div>
+</section>
+
+<section class="card">
+  <div class="kicker">
     EXECUTIA · PROOF VERIFICATION
   </div>
 
@@ -182,6 +201,54 @@ button{
 </main>
 
 <script>
+async function loadMerkleAnchor(){
+  const result =
+    document.getElementById("merkleResult");
+
+  result.innerHTML = "<p>Loading Merkle anchor...</p>";
+
+  const res =
+    await fetch("/api/v1/proof/merkle-root?limit=100");
+
+  const data =
+    await res.json();
+
+  if(!data.ok){
+    result.innerHTML =
+      `<p>Merkle anchor unavailable: ${data.error || "UNKNOWN"}</p>`;
+    return;
+  }
+
+  result.innerHTML = `
+    <div class="grid">
+      <div class="metric">
+        <span>ANCHOR</span>
+        <strong>${data.anchor_status}</strong>
+      </div>
+
+      <div class="metric">
+        <span>EVENTS</span>
+        <strong>${data.events_included}</strong>
+      </div>
+
+      <div class="metric">
+        <span>HASHES</span>
+        <strong>${data.hashes_included}</strong>
+      </div>
+
+      <div class="metric">
+        <span>MODE</span>
+        <strong>MERKLE</strong>
+      </div>
+    </div>
+
+    <div class="hash">
+      <strong>MERKLE ROOT</strong><br>
+      ${data.merkle_root || "-"}
+    </div>
+  `;
+}
+
 async function verifyProof(){
   const reviewId =
     document.getElementById("reviewId").value.trim();
