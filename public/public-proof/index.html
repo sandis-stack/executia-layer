@@ -157,6 +157,73 @@
       font-size:12px;
       word-break:break-all;
     }
+
+    .explain-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+      margin-top:24px;
+    }
+
+    .explain-card{
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:20px;
+      background:#fbfdff;
+    }
+
+    .explain-card h3{
+      margin:0 0 14px;
+      font-size:16px;
+      color:var(--blue);
+      letter-spacing:-.02em;
+    }
+
+    .explain-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .explain-item{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      background:#ffffff;
+      color:#294055;
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .explain-summary{
+      margin-top:24px;
+      border-radius:24px;
+      padding:26px;
+      background:linear-gradient(135deg,#1E3A5F,#294c78);
+      color:#ffffff;
+    }
+
+    .explain-summary h2{
+      margin:0;
+      font-size:32px;
+      line-height:1.04;
+      letter-spacing:-.04em;
+      color:#ffffff;
+    }
+
+    .explain-summary p{
+      margin:14px 0 0;
+      max-width:760px;
+      color:rgba(255,255,255,.84);
+      font-size:17px;
+      line-height:1.7;
+    }
+
+    @media(max-width:860px){
+      .explain-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
     .actions{
       display:flex;
       gap:10px;
@@ -357,6 +424,89 @@
             <div class="row"><span>Pilot Readiness</span><span>${esc(analysis.pilot_readiness)}</span></div>
           </section>
         </main>
+
+        <section class="panel" style="margin-top:24px">
+          <h2>Governance Decision Explainer</h2>
+
+          <div class="explain-summary">
+            <h2>
+              EXECUTIA evaluated execution integrity before commitment.
+            </h2>
+
+            <p>
+              Governance validation was materialized before execution approval. The system evaluated execution continuity, approval order, immutable proof requirements and reconciliation readiness before allowing execution materialization.
+            </p>
+          </div>
+
+          <div class="explain-grid">
+
+            <div class="explain-card">
+              <h3>Detected Execution Risks</h3>
+
+              <div class="explain-list">
+                ${[
+                  "Unverified supplier or execution participant.",
+                  "Payment before approval validation.",
+                  "Budget overflow or uncontrolled settlement.",
+                  "Execution without immutable audit continuity.",
+                  "Regulator-unreadable execution evidence."
+                ].map(item => `
+                  <div class="explain-item">${item}</div>
+                `).join("")}
+              </div>
+            </div>
+
+            <div class="explain-card">
+              <h3>Required Governance Controls</h3>
+
+              <div class="explain-list">
+                ${(Array.isArray(analysis.required_governance_controls)
+                  ? analysis.required_governance_controls
+                  : []
+                ).map(item => `
+                  <div class="explain-item">${esc(item)}</div>
+                `).join("")}
+              </div>
+            </div>
+
+            <div class="explain-card">
+              <h3>Execution Integrity Controls</h3>
+
+              <div class="explain-list">
+                ${[
+                  "Approval path validated before commitment.",
+                  "Proof-chain continuity materialized.",
+                  "Timestamp-anchor readiness verified.",
+                  "Governance decision recorded immutably.",
+                  "Settlement reconciliation prepared."
+                ].map(item => `
+                  <div class="explain-item">${item}</div>
+                `).join("")}
+              </div>
+            </div>
+
+            <div class="explain-card">
+              <h3>Why Execution Was Approved</h3>
+
+              <div class="explain-list">
+                ${[
+                  analysis.execution_score >= 80
+                    ? "Execution definition quality exceeded institutional governance threshold."
+                    : "Execution definition partially satisfied governance threshold.",
+
+                  "Required execution constraints were structurally defined.",
+
+                  "Immutable proof-chain generation was possible before execution commitment.",
+
+                  "Governance verification and regulator-readable audit structure were available."
+                ].map(item => `
+                  <div class="explain-item">${esc(item)}</div>
+                `).join("")}
+              </div>
+            </div>
+
+          </div>
+        </section>
 
         <section class="panel" style="margin-top:24px">
           <h2>Immutable Event Chain</h2>
