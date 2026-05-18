@@ -243,6 +243,9 @@ h1{
   const quorum =
     events.find(e => e.event_type === "GOVERNANCE_QUORUM_MET");
 
+  const signature =
+    events.find(e => e.event_type === "OPERATOR_SIGNATURE_RECORDED");
+
   let controlState = "UNDER REVIEW";
   let controlDecision = "PENDING";
   let controlDescription =
@@ -329,6 +332,11 @@ h1{
         <div class="metric">
           <span>BROKEN AT</span>
           <strong>${proof.broken_at || "NONE"}</strong>
+        </div>
+
+        <div class="metric">
+          <span>SIGNATURE</span>
+          <strong>${signature ? "VERIFIED" : "MISSING"}</strong>
         </div>
       </div>
 
