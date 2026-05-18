@@ -691,6 +691,39 @@
     validateBtn.addEventListener("click", runDemo);
 
 
+
+async function updatePilotRequest(reviewId, action){
+  try{
+    const response = await fetch("/api/v1/pilot/update",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        review_id:reviewId,
+        action
+      })
+    });
+
+    const data = await response.json();
+
+    if(!response.ok || !data.ok){
+      throw new Error(data?.error?.message || "Pilot update failed.");
+    }
+
+    const status = document.getElementById("pilotIntakeStatus");
+    const summary = document.getElementById("pilotIntakeSummary");
+
+    if(status) status.textContent = data.state || "UPDATED";
+    if(summary) summary.textContent = `Pilot request ${reviewId} updated to ${data.state}.`;
+
+    await loadPilotIntake();
+  }catch(error){
+    alert(error.message || "Pilot update failed.");
+  }
+}
+
+
 async function loadPilotIntake(){
   const list = document.getElementById("pilotIntakeList");
   const status = document.getElementById("pilotIntakeStatus");
@@ -742,6 +775,12 @@ async function loadPilotIntake(){
         <div>
           <strong>${row.organization || "UNKNOWN_ORGANIZATION"}</strong>
           <span>${row.domain || "UNKNOWN_DOMAIN"} · ${row.state || "PILOT_REVIEW_RECEIVED"} · ${row.review_id || ""}</span>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="button" style="padding:9px 12px;font-size:11px" onclick="updatePilotRequest('${row.review_id}','APPROVE')">APPROVE</button>
+            <button class="button" style="padding:9px 12px;font-size:11px" onclick="updatePilotRequest('${row.review_id}','ESCALATE')">ESCALATE</button>
+            <button class="button" style="padding:9px 12px;font-size:11px" onclick="updatePilotRequest('${row.review_id}','REJECT')">REJECT</button>
+          </div>
         </div>
       </div>
     `).join("");
