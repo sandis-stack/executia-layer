@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA — Execution Test</title>
+  <meta name="description" content="Define an outcome. Let EXECUTIA test execution risk, governance readiness, and proof structure." />
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --panel:#ffffff;
+      --text:#102033;
+      --muted:#5f6f82;
+      --line:#dce5ef;
+      --blue:#1E3A5F;
+      --blue2:#294c78;
+      --soft:#eef4fb;
+      --green:#157347;
+      --amber:#9a6500;
+      --red:#b42318;
+      --shadow:0 18px 50px rgba(16,32,51,.08);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;
+      background:linear-gradient(180deg,#f9fbfe 0%,#f3f6fa 100%);
+      color:var(--text);
+    }
+    a{color:inherit;text-decoration:none}
+    .shell{max-width:1180px;margin:0 auto;padding:28px 22px 60px}
+    header{
+      height:84px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--line);
+    }
+    .brand{display:flex;flex-direction:column;gap:4px}
+    .brand strong{font-size:22px;letter-spacing:.08em;color:var(--blue)}
+    .brand span{font-size:12px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+    .nav{display:flex;gap:12px;align-items:center}
+    .nav a{
+      font-size:13px;
+      color:var(--muted);
+      padding:10px 14px;
+      border:1px solid transparent;
+      border-radius:999px;
+    }
+    .nav a.primary{
+      color:#fff;
+      background:var(--blue);
+      border-color:var(--blue);
+    }
+    .hero{
+      padding:70px 0 38px;
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:34px;
+      align-items:center;
+    }
+    .eyebrow{
+      display:inline-flex;
+      padding:8px 12px;
+      border-radius:999px;
+      background:var(--soft);
+      color:var(--blue);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:18px;
+    }
+    h1{
+      font-size:58px;
+      line-height:1.02;
+      margin:0 0 20px;
+      letter-spacing:-.045em;
+      color:#0f2338;
+    }
+    .lead{
+      font-size:20px;
+      line-height:1.55;
+      color:var(--muted);
+      max-width:650px;
+      margin:0 0 28px;
+    }
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+    button,.btn{
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      border-radius:999px;
+      padding:14px 18px;
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .btn-main{background:var(--blue);color:#fff}
+    .btn-soft{background:#fff;color:var(--blue);border:1px solid var(--line)}
+    .status-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+    .status-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-bottom:18px;
+    }
+    .status-title h2{margin:0;font-size:18px;color:var(--blue)}
+    .pill{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      border-radius:999px;
+      padding:7px 10px;
+      background:#edf6ff;
+      color:var(--blue);
+      white-space:nowrap;
+    }
+    .stack{display:grid;gap:10px}
+    .step{
+      display:grid;
+      grid-template-columns:34px 1fr auto;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fbfdff;
+    }
+    .num{
+      width:34px;height:34px;
+      border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--soft);
+      color:var(--blue);
+      font-weight:800;
+      font-size:13px;
+    }
+    .step strong{display:block;font-size:14px}
+    .step span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+    main{
+      display:grid;
+      grid-template-columns:.92fr 1.08fr;
+      gap:24px;
+      align-items:start;
+    }
+    .panel{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+    .panel h2{margin:0 0 8px;font-size:22px;color:#132a44}
+    .panel p{margin:0 0 18px;color:var(--muted);line-height:1.55}
+    label{
+      display:block;
+      font-size:12px;
+      font-weight:800;
+      color:var(--blue);
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      margin:16px 0 8px;
+    }
+    input,textarea,select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 14px;
+      font:inherit;
+      color:var(--text);
+      background:#fbfdff;
+      outline:none;
+    }
+    textarea{min-height:112px;resize:vertical}
+    input:focus,textarea:focus,select:focus{
+      border-color:#9bb8d8;
+      box-shadow:0 0 0 4px rgba(30,58,95,.08);
+    }
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .result-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .score{
+      width:108px;height:108px;
+      border-radius:28px;
+      background:var(--soft);
+      color:var(--blue);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--line);
+    }
+    .score strong{font-size:34px;line-height:1}
+    .score span{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-top:6px}
+    .result-box{
+      border:1px solid var(--line);
+      background:#fbfdff;
+      border-radius:18px;
+      padding:16px;
+      margin-top:12px;
+    }
+    .result-box h3{
+      margin:0 0 8px;
+      color:var(--blue);
+      font-size:14px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .result-box ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.65}
+    .proof{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .proof-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:#fff;
+      font-size:13px;
+    }
+    .proof-row span:first-child{color:var(--muted)}
+    .proof-row span:last-child{font-weight:800;color:var(--blue);text-align:right}
+    .cta{
+      margin-top:24px;
+      padding:24px;
+      border-radius:var(--radius);
+      background:linear-gradient(135deg,#1E3A5F,#294c78);
+      color:#fff;
+    }
+    .cta h2{margin:0 0 8px;font-size:24px}
+    .cta p{margin:0 0 18px;color:rgba(255,255,255,.78)}
+    .cta .btn{background:#fff;color:var(--blue)}
+    footer{
+      margin-top:44px;
+      border-top:1px solid var(--line);
+      padding-top:22px;
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .hidden{display:none}
+    @media(max-width:860px){
+      .hero,main{grid-template-columns:1fr}
+      h1{font-size:42px}
+      .nav{display:none}
+      .grid2{grid-template-columns:1fr}
+      footer{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="/">
+        <strong>EXECUTIA™</strong>
+        <span>Execution Integrity Standard</span>
+      </a>
+      <nav class="nav">
+        <a href="/proof-explorer/">Proof Explorer</a>
+        <a href="/regulator/">Regulator Mode</a>
+        <a class="primary" href="/request/">Request Pilot</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Public Execution Test</div>
+        <h1>Define the result. EXECUTIA controls the execution.</h1>
+        <p class="lead">
+          Test how an outcome is transformed into governance checks, execution risk, proof structure and pilot readiness.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-main" href="#test">Start Execution Test</a>
+          <a class="btn btn-soft" href="/proof-explorer/">Verify Proof</a>
+        </div>
+      </div>
+
+      <aside class="status-card">
+        <div class="status-title">
+          <h2>Execution Flow</h2>
+          <span class="pill">LIVE STANDARD</span>
+        </div>
+        <div class="stack">
+          <div class="step"><div class="num">1</div><div><strong>Outcome Defined</strong><span>Human sets the intended result.</span></div><span class="pill">INPUT</span></div>
+          <div class="step"><div class="num">2</div><div><strong>Governance Checked</strong><span>Rules, constraints and risk are evaluated.</span></div><span class="pill">CONTROL</span></div>
+          <div class="step"><div class="num">3</div><div><strong>Execution Proof Created</strong><span>Decision becomes verifiable evidence.</span></div><span class="pill">PROOF</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <main id="test">
+      <section class="panel">
+        <h2>Run Execution Test</h2>
+        <p>Enter a project, process or public/private execution case. EXECUTIA will classify execution risk and generate a proof-ready governance structure.</p>
+
+        <label for="domain">Execution Domain</label>
+        <select id="domain">
+          <option value="public-procurement">Public procurement</option>
+          <option value="finance">Finance / payment / accounting</option>
+          <option value="infrastructure">Infrastructure project</option>
+          <option value="compliance">Compliance control</option>
+          <option value="operations">Business operations</option>
+        </select>
+
+        <label for="outcome">Defined Outcome</label>
+        <textarea id="outcome" placeholder="Example: Build a compliant supplier selection and payment process where incorrect execution is blocked before commitment."></textarea>
+
+        <div class="grid2">
+          <div>
+            <label for="budget">Budget / Value</label>
+            <input id="budget" placeholder="Example: €250,000" />
+          </div>
+          <div>
+            <label for="timeline">Timeline</label>
+            <input id="timeline" placeholder="Example: 90 days" />
+          </div>
+        </div>
+
+        <label for="constraints">Rules / Constraints</label>
+        <textarea id="constraints" placeholder="Example: supplier must be verified, approval must happen before payment, audit trail must be immutable, settlement must be reconciled."></textarea>
+
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-main" onclick="runExecutionTest()">Run EXECUTIA Analysis</button>
+          <button class="btn-soft" onclick="loadExample()">Load Example</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="result-head">
+          <div>
+            <h2>Governance Result</h2>
+            <p id="summaryText">No execution test has been run yet.</p>
+          </div>
+          <div class="score">
+            <strong id="scoreValue">—</strong>
+            <span>Score</span>
+          </div>
+        </div>
+
+        <div id="resultArea" class="hidden">
+          <div class="result-box">
+            <h3>Execution Classification</h3>
+            <ul id="classificationList"></ul>
+          </div>
+
+          <div class="result-box">
+            <h3>Required Governance Controls</h3>
+            <ul id="controlsList"></ul>
+          </div>
+
+          <div class="result-box">
+            <h3>Proof Structure</h3>
+            <div class="proof">
+              <div class="proof-row"><span>Governance Status</span><span id="governanceStatus">PENDING_REVIEW</span></div>
+              <div class="proof-row"><span>Proof Chain</span><span>READY</span></div>
+              <div class="proof-row"><span>Operator Signature</span><span>REQUIRED</span></div>
+              <div class="proof-row"><span>Timestamp Anchor</span><span>INTERNAL READY</span></div>
+              <div class="proof-row"><span>Regulator Verification</span><span>AVAILABLE</span></div>
+            </div>
+          </div>
+
+          <div class="cta">
+            <h2>Turn this test into a pilot.</h2>
+            <p>Submit the execution case and request a structured EXECUTIA pilot proposal.</p>
+            <a class="btn" id="pilotLink" href="/request/">Request Pilot</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>EXECUTIA™ — Execution-time truth infrastructure.</div>
+      <div>
+        <a href="/">Entry</a> ·
+        <a href="/proof-explorer/">Proof</a> ·
+        <a href="/regulator/">Regulator</a> ·
+        <a href="/request/">Request</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    function value(id){
+      return (document.getElementById(id).value || "").trim();
+    }
+
+    function loadExample(){
+      document.getElementById("domain").value = "public-procurement";
+      document.getElementById("outcome").value =
+        "Select a supplier, approve the contract, release payment and create audit evidence without allowing non-compliant execution.";
+      document.getElementById("budget").value = "€250,000";
+      document.getElementById("timeline").value = "90 days";
+      document.getElementById("constraints").value =
+        "Supplier identity must be verified. Approval must happen before payment. Budget limit cannot be exceeded. Every decision must create immutable proof. Settlement must be reconciled.";
+      runExecutionTest();
+    }
+
+    function runExecutionTest(){
+      const domain = value("domain");
+      const outcome = value("outcome");
+      const budget = value("budget");
+      const timeline = value("timeline");
+      const constraints = value("constraints");
+
+      const text = (domain + " " + outcome + " " + budget + " " + timeline + " " + constraints).toLowerCase();
+
+      let score = 64;
+      if(text.includes("payment") || text.includes("supplier") || text.includes("contract")) score += 8;
+      if(text.includes("audit") || text.includes("immutable") || text.includes("proof")) score += 9;
+      if(text.includes("approval") || text.includes("verified") || text.includes("reconciled")) score += 8;
+      if(text.includes("budget") || text.includes("limit") || text.includes("compliance")) score += 6;
+      if(outcome.length < 30) score -= 18;
+      if(constraints.length < 30) score -= 12;
+      score = Math.max(24, Math.min(96, score));
+
+      const status =
+        score >= 82 ? "APPROVED_FOR_PILOT_REVIEW" :
+        score >= 62 ? "PENDING_GOVERNANCE_REVIEW" :
+        "INSUFFICIENT_EXECUTION_DEFINITION";
+
+      document.getElementById("scoreValue").textContent = score;
+      document.getElementById("summaryText").textContent =
+        score >= 82
+          ? "This case is structurally suitable for an EXECUTIA pilot. Execution controls and proof chain can be defined."
+          : score >= 62
+            ? "This case has execution-control potential, but requires clearer rules, constraints and verification points."
+            : "The outcome is not yet specific enough. Define clearer result, constraints, approval logic and proof requirements.";
+
+      document.getElementById("governanceStatus").textContent = status;
+
+      const classification = [
+        "Domain: " + domain.replaceAll("-", " ").toUpperCase(),
+        "Execution risk: " + (score >= 82 ? "CONTROLLED" : score >= 62 ? "MODERATE" : "UNCLEAR"),
+        "Pilot readiness: " + (score >= 82 ? "HIGH" : score >= 62 ? "MEDIUM" : "LOW"),
+        "Primary value: execution-time governance before commitment"
+      ];
+
+      const controls = [
+        "Outcome-to-rule mapping",
+        "Pre-commitment validation",
+        "Approval and operator decision path",
+        "Immutable proof chain",
+        "Settlement and reconciliation verification",
+        "Regulator-readable audit structure"
+      ];
+
+      renderList("classificationList", classification);
+      renderList("controlsList", controls);
+
+      const params = new URLSearchParams({
+        domain,
+        score: String(score),
+        status,
+        outcome: outcome.slice(0, 180)
+      });
+
+      document.getElementById("pilotLink").href = "/request/?" + params.toString();
+      document.getElementById("resultArea").classList.remove("hidden");
+    }
+
+    function renderList(id, items){
+      const el = document.getElementById(id);
+      el.innerHTML = "";
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        el.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
