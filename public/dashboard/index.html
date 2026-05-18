@@ -402,6 +402,48 @@
   </style>
   <link rel="stylesheet" href="/components/engine-shell.css" />
   <link rel="stylesheet" href="/components/engine-system.css" />
+<style>
+
+.engine-layerbar{
+  width:max-content;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 auto 18px auto;
+  padding:8px;
+  border:1px solid #D6DFEA;
+  border-radius:999px;
+  background:rgba(255,255,255,.88);
+}
+
+.engine-layerbar a{
+  text-decoration:none;
+  padding:10px 14px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:#7D8CA3;
+}
+
+.engine-layerbar a.active{
+  background:#1E3A5F;
+  color:#ffffff;
+}
+
+@media(max-width:900px){
+
+  .engine-layerbar{
+    width:100%;
+    overflow:auto;
+    margin-bottom:14px;
+  }
+
+}
+
+</style>
+
 </head>
 
 <body>
