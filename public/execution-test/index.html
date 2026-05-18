@@ -458,6 +458,59 @@
 
         const submission = data.submission || {};
         const proof = data.proof_preview || {};
+        const chain = Array.isArray(data.proof_chain)
+          ? data.proof_chain
+          : [];
+
+        document.getElementById("materializationState").style.display = "block";
+
+        const eventsEl = document.getElementById("materializationEvents");
+        const statusEl = document.getElementById("materializationStatus");
+
+        eventsEl.innerHTML = "";
+        statusEl.textContent = "MATERIALIZING";
+
+        for (const event of chain) {
+          const row = document.createElement("div");
+
+          row.style.border = "1px solid rgba(255,255,255,.12)";
+          row.style.borderRadius = "14px";
+          row.style.padding = "12px";
+          row.style.background = "rgba(255,255,255,.05)";
+          row.style.color = "#ffffff";
+          row.style.fontSize = "12px";
+          row.style.letterSpacing = ".04em";
+          row.style.opacity = "0";
+          row.style.transform = "translateY(6px)";
+          row.style.transition = "all .28s ease";
+
+          row.innerHTML = `
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              gap:10px;
+              align-items:center;
+            ">
+              <strong>${event.type}</strong>
+
+              <span style="
+                color:rgba(255,255,255,.72);
+                font-size:11px;
+              ">
+                ${String(event.event_hash || "").slice(0, 12)}...
+              </span>
+            </div>
+          `;
+
+          eventsEl.appendChild(row);
+
+          await new Promise(resolve => setTimeout(resolve, 180));
+
+          row.style.opacity = "1";
+          row.style.transform = "translateY(0)";
+        }
+
+        statusEl.textContent = "IMMUTABLE PROOF READY";
 
         document.getElementById("submissionResult").style.display = "block";
 
