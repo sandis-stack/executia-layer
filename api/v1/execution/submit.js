@@ -352,7 +352,7 @@ export default async function handler(req, res) {
       proof_chain: proofChain,
       next_action: {
         type: analysis.recommended_next_action,
-        request_pilot_url: `https://execution.executia.io/request/?review_id=${reviewId}&submission_id=${submissionId}`
+        request_pilot_url: `https://execution.executia.io/request-pilot/?review_id=${reviewId}&submission_id=${submissionId}`
       }
     };
 

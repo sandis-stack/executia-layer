@@ -642,7 +642,7 @@
       <nav class="nav">
         <a href="/proof-explorer/">Proof Explorer</a>
         <a href="/regulator/">Regulator Mode</a>
-        <a class="primary" href="/request/">Request Pilot</a>
+        <a class="primary" href="/request-pilot/">Request Pilot</a>
       </nav>
     </header>
 
@@ -1339,7 +1339,7 @@
           <div class="cta">
             <h2>Turn this test into a pilot.</h2>
             <p>Submit the execution case and request a structured EXECUTIA pilot proposal.</p>
-            <a class="btn" id="pilotLink" href="/request/">Request Pilot</a>
+            <a class="btn" id="pilotLink" href="/request-pilot/">Request Pilot</a>
           </div>
         </div>
       </section>
@@ -1351,7 +1351,7 @@
         <a href="/">Entry</a> ·
         <a href="/proof-explorer/">Proof</a> ·
         <a href="/regulator/">Regulator</a> ·
-        <a href="/request/">Request</a>
+        <a href="/request-pilot/">Request</a>
       </div>
     </footer>
   </div>
@@ -1898,7 +1898,7 @@
           outcome: outcome.slice(0, 180)
         });
 
-        document.getElementById("pilotLink").href = "/request/?" + params.toString();
+        document.getElementById("pilotLink").href = "/request-pilot/?" + params.toString();
 
         const scenarioState = document.getElementById("scenarioState");
         const scenarioPill = document.getElementById("scenarioStatePill");
