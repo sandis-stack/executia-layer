@@ -248,27 +248,68 @@
       return text ? text.slice(0, 28) + "..." : "—";
     }
 
-    function loadProof(){
+    async function loadProof(){
       const reviewId = getReviewId();
-      const key = "executia_proof_" + reviewId;
-      const raw = reviewId ? localStorage.getItem(key) : null;
 
-      if(!raw){
+      if(!reviewId){
         document.getElementById("app").innerHTML = `
           <div class="missing">
-            <strong style="color:#1E3A5F">Proof receipt not found in this browser.</strong><br>
-            This lightweight public receipt displays proof packages created from the Execution Test flow in the current browser session.
-            Run a new execution test and materialize proof to generate a receipt.
+            <strong style="color:#1E3A5F">Review ID is missing.</strong><br>
+            Add a review_id to the URL or generate a new execution proof from the Execution Test flow.
             <div class="actions">
               <a class="btn primary" href="/execution-test/">Run Execution Test</a>
-              <a class="btn soft" href="/proof-explorer/">Open Proof Explorer</a>
             </div>
           </div>
         `;
         return;
       }
 
-      const data = JSON.parse(raw);
+      document.getElementById("app").innerHTML = `
+        <div class="missing">
+          <strong style="color:#1E3A5F">Loading persistent proof receipt...</strong><br>
+          EXECUTIA is reading the server-side execution registry.
+        </div>
+      `;
+
+      let data = null;
+
+      try {
+        const response = await fetch(
+          "/api/v1/execution/registry?review_id=" + encodeURIComponent(reviewId)
+        );
+
+        const registryData = await response.json();
+
+        if (!response.ok || !registryData.ok) {
+          throw new Error(registryData?.error?.message || "Registry proof receipt not found.");
+        }
+
+        data = registryData.receipt || registryData.record?.receipt || null;
+
+        if (!data) {
+          throw new Error("Registry record exists, but receipt payload is missing.");
+        }
+      } catch (error) {
+        const key = "executia_proof_" + reviewId;
+        const raw = localStorage.getItem(key);
+
+        if(raw){
+          data = JSON.parse(raw);
+        } else {
+          document.getElementById("app").innerHTML = `
+            <div class="missing">
+              <strong style="color:#1E3A5F">Proof receipt not found.</strong><br>
+              ${esc(error.message || "No persistent registry record found for this review_id.")}
+              <div class="actions">
+                <a class="btn primary" href="/execution-test/">Run Execution Test</a>
+                <a class="btn soft" href="/proof-explorer/">Open Proof Explorer</a>
+              </div>
+            </div>
+          `;
+          return;
+        }
+      }
+
       const submission = data.submission || {};
       const analysis = data.analysis || {};
       const proof = data.proof_preview || {};
@@ -287,7 +328,7 @@
           <aside class="status">
             <h2>Proof Status</h2>
             <div class="big">VERIFIED</div>
-            <div class="small">Local receipt package prepared for regulator-readable proof inspection.</div>
+            <div class="small">Persistent registry receipt prepared for regulator-readable proof inspection.</div>
           </aside>
         </section>
 
