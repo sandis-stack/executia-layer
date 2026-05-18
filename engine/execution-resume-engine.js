@@ -191,6 +191,39 @@ const executionCommitEvent =
     }
   })
 
+const cryptoSignature =
+  crypto
+    .createHash("sha256")
+    .update(JSON.stringify({
+      review_id,
+      execution_id,
+      operator_id,
+      operator_email,
+      approved_at:new Date().toISOString(),
+      governance_state:GOVERNANCE_STATES.COMMITTED
+    }))
+    .digest("hex");
+
+const operatorSignatureEvent =
+  await insertGovernanceEvent({
+    supabase,
+    event:{
+      id:crypto.randomUUID(),
+      review_id,
+      execution_id,
+      actor:operator_email || operator_id || "SYSTEM",
+      event_type:"OPERATOR_SIGNATURE_RECORDED",
+      payload:{
+        operator_id,
+        operator_email,
+        signature_algorithm:"SHA256",
+        signature:cryptoSignature,
+        governance_state:GOVERNANCE_STATES.COMMITTED
+      },
+      created_at:new Date().toISOString()
+    }
+  })
+
 const proofHashEvent =
   await insertGovernanceEvent({
     supabase,
@@ -259,6 +292,7 @@ execution_status: "COMMITTED",
 materialization,
 insertedEvent,
 executionCommitEvent,
+operatorSignatureEvent,
 proofHashEvent,
 settlementEvent,
 reconciliationEvent
