@@ -157,6 +157,97 @@
 
     
 
+
+    .execution-object{
+      margin-top:28px;
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:#ffffff;
+      padding:28px;
+      box-shadow:0 18px 46px rgba(16,32,51,.055);
+    }
+
+    .execution-object.hidden{display:none}
+
+    .execution-object-top{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .execution-object h2{
+      margin:0;
+      font-size:30px;
+      letter-spacing:-.05em;
+      color:var(--text);
+    }
+
+    .execution-object p{
+      margin:12px 0 0;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .execution-object-pill{
+      display:inline-flex;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#eef4fb;
+      color:var(--blue);
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    .execution-object-pill.blocked{
+      background:#fff1f1;
+      color:#b42318;
+    }
+
+    .execution-object-grid{
+      margin-top:24px;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .execution-object-box{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      background:#f8fbff;
+    }
+
+    .execution-object-box span{
+      display:block;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .execution-object-box strong{
+      display:block;
+      font-size:14px;
+      color:var(--text);
+      line-height:1.45;
+      word-break:break-word;
+    }
+
+    @media(max-width:900px){
+      .execution-object-grid{grid-template-columns:1fr 1fr}
+    }
+
+    @media(max-width:560px){
+      .execution-object-grid{grid-template-columns:1fr}
+    }
+
     .timeline-shell{
       margin-top:34px;
       border-radius:34px;
@@ -854,6 +945,51 @@
 
         
 
+
+        <section class="execution-object hidden" id="executionObject">
+
+          <div class="execution-object-top">
+            <div>
+              <h2>
+                Execution Governance Object
+              </h2>
+
+              <p id="executionObjectSummary">
+                Run analysis to materialize the governance object.
+              </p>
+            </div>
+
+            <div class="execution-object-pill" id="executionObjectPill">
+              STANDBY
+            </div>
+          </div>
+
+          <div class="execution-object-grid">
+
+            <div class="execution-object-box">
+              <span>Decision</span>
+              <strong id="executionObjectDecision">—</strong>
+            </div>
+
+            <div class="execution-object-box">
+              <span>Risk</span>
+              <strong id="executionObjectRisk">—</strong>
+            </div>
+
+            <div class="execution-object-box">
+              <span>Readiness</span>
+              <strong id="executionObjectReadiness">—</strong>
+            </div>
+
+            <div class="execution-object-box">
+              <span>Proof State</span>
+              <strong id="executionObjectProof">—</strong>
+            </div>
+
+          </div>
+
+        </section>
+
         <section class="timeline-shell">
 
           <div class="timeline-header">
@@ -1442,6 +1578,39 @@
 
 
 
+
+    function setExecutionObject(result = {}, proof = {}) {
+      const object = document.getElementById("executionObject");
+      const pill = document.getElementById("executionObjectPill");
+
+      if (!object) return;
+
+      object.classList.remove("hidden");
+
+      const blocked = !!result.failure_prevention_active;
+
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value || "—";
+      };
+
+      setText("executionObjectSummary", result.summary || "Execution governance object materialized.");
+      setText("executionObjectDecision", result.governance_decision || "PENDING");
+      setText("executionObjectRisk", result.risk_level || "UNKNOWN");
+      setText("executionObjectReadiness", result.pilot_readiness || "UNKNOWN");
+      setText(
+        "executionObjectProof",
+        proof.immutable_chain_required
+          ? "IMMUTABLE_CHAIN_REQUIRED"
+          : "PROOF_NOT_REQUIRED"
+      );
+
+      if (pill) {
+        pill.textContent = blocked ? "FAILURE PREVENTION ACTIVE" : "GOVERNANCE APPROVED";
+        pill.classList.toggle("blocked", blocked);
+      }
+    }
+
     function renderTimeline(events = []){
 
       const track = document.getElementById("timelineTrack");
@@ -1879,6 +2048,8 @@
 
         const result = data.result || {};
         const proof = data.proof_preview || {};
+
+        setExecutionObject(result, proof);
 
         setGovernanceRibbon({
           executionState: result.governance_decision || "ANALYZED",
