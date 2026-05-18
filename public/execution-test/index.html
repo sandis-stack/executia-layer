@@ -525,7 +525,17 @@
 
         document.getElementById("materializationState").style.display = "block";
 
+
+        const overlay = document.getElementById("materializationOverlay");
+        const overlayChain = document.getElementById("overlayChain");
+        const overlayFinal = document.getElementById("overlayFinal");
+
+        overlay.style.display = "flex";
+        overlayChain.innerHTML = "";
+        overlayFinal.classList.remove("visible");
+
         const eventsEl = document.getElementById("materializationEvents");
+
         const statusEl = document.getElementById("materializationStatus");
 
         eventsEl.innerHTML = "";
@@ -565,13 +575,36 @@
 
           eventsEl.appendChild(row);
 
-          await new Promise(resolve => setTimeout(resolve, 180));
+          const overlayRow = document.createElement("div");
+
+          overlayRow.className = "overlay-event";
+
+          overlayRow.innerHTML = `
+            <div class="overlay-event-top">
+              <strong>${event.type}</strong>
+              <div class="overlay-hash">
+                ${String(event.event_hash || "").slice(0,18)}...
+              </div>
+            </div>
+          `;
+
+          overlayChain.appendChild(overlayRow);
+
+          await new Promise(resolve => setTimeout(resolve, 240));
 
           row.style.opacity = "1";
           row.style.transform = "translateY(0)";
+
+          overlayRow.classList.add("visible");
         }
 
         statusEl.textContent = "IMMUTABLE PROOF READY";
+
+        overlayFinal.classList.add("visible");
+
+        await new Promise(resolve => setTimeout(resolve, 1400));
+
+        overlay.style.display = "none";
 
         document.getElementById("submissionResult").style.display = "block";
 
@@ -692,5 +725,35 @@
       });
     }
   </script>
+
+
+<div class="overlay" id="materializationOverlay">
+  <div class="overlay-panel">
+
+    <div class="overlay-eyebrow">
+      EXECUTION MATERIALIZATION
+    </div>
+
+    <h1 class="overlay-title">
+      Execution becomes immutable proof.
+    </h1>
+
+    <div class="overlay-text">
+      EXECUTIA is materializing governance validation, proof-chain continuity and regulator-readable execution evidence.
+    </div>
+
+    <div class="overlay-chain" id="overlayChain"></div>
+
+    <div class="overlay-final" id="overlayFinal">
+      <h3>IMMUTABLE PROOF READY</h3>
+      <p>
+        Execution proof-chain continuity has been materialized and prepared for verification.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+
 </body>
 </html>
