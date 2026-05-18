@@ -457,6 +457,37 @@
       <div>Synchronization <strong>MATCHED</strong></div>
     </section>
 
+
+    <section class="main-grid" style="margin-top:24px">
+      <article class="panel">
+        <h2>Live Pilot Intake</h2>
+        <p class="muted">Latest institutional pilot requests received through EXECUTIA onboarding.</p>
+
+        <div id="pilotIntakeList" class="timeline" style="margin-top:18px">
+          <div class="step active">
+            <span class="dot"></span>
+            <div>
+              <strong>WAITING_FOR_PILOT_REQUESTS</strong>
+              <span>Registry connection ready.</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>Pilot Review State</h2>
+
+        <div class="decision-box">
+          <div class="label">Intake Status</div>
+          <div class="decision" id="pilotIntakeStatus">CONNECTED</div>
+          <p id="pilotIntakeSummary">Pilot request registry is ready for review.</p>
+        </div>
+
+        <button class="button" onclick="loadPilotIntake()">REFRESH PILOT INTAKE</button>
+      </article>
+    </section>
+
+
     <section class="step-grid">
       <article class="mini-card">
         <small>01 SESSION</small>
@@ -658,6 +689,82 @@
     }
 
     validateBtn.addEventListener("click", runDemo);
+
+
+async function loadPilotIntake(){
+  const list = document.getElementById("pilotIntakeList");
+  const status = document.getElementById("pilotIntakeStatus");
+  const summary = document.getElementById("pilotIntakeSummary");
+
+  if(!list) return;
+
+  list.innerHTML = `
+    <div class="step active">
+      <span class="dot"></span>
+      <div>
+        <strong>LOADING_PILOT_REQUESTS</strong>
+        <span>Reading pilot request registry.</span>
+      </div>
+    </div>
+  `;
+
+  try{
+    const response = await fetch("/api/v1/pilot/list");
+    const data = await response.json();
+
+    if(!response.ok || !data.ok){
+      throw new Error(data?.error?.message || "Pilot intake lookup failed.");
+    }
+
+    const rows = Array.isArray(data.requests) ? data.requests : [];
+
+    status.textContent = rows.length ? "REQUESTS_RECEIVED" : "NO_REQUESTS";
+    summary.textContent = rows.length
+      ? `${rows.length} pilot request(s) available for governance review.`
+      : "No pilot requests found yet.";
+
+    if(!rows.length){
+      list.innerHTML = `
+        <div class="step active">
+          <span class="dot"></span>
+          <div>
+            <strong>NO_PILOT_REQUESTS</strong>
+            <span>Onboarding registry is ready.</span>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = rows.map(row => `
+      <div class="step active">
+        <span class="dot"></span>
+        <div>
+          <strong>${row.organization || "UNKNOWN_ORGANIZATION"}</strong>
+          <span>${row.domain || "UNKNOWN_DOMAIN"} · ${row.state || "PILOT_REVIEW_RECEIVED"} · ${row.review_id || ""}</span>
+        </div>
+      </div>
+    `).join("");
+
+  }catch(error){
+    status.textContent = "INTAKE_ERROR";
+    summary.textContent = error.message || "Pilot intake failed.";
+
+    list.innerHTML = `
+      <div class="step active">
+        <span class="dot"></span>
+        <div>
+          <strong>PILOT_INTAKE_ERROR</strong>
+          <span>${error.message || "Unknown error"}</span>
+        </div>
+      </div>
+    `;
+  }
+}
+
+loadPilotIntake();
+
+
   </script>
   <script src="/components/engine-shell.js"></script>
 
