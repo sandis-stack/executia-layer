@@ -91,6 +91,85 @@
       color:var(--green);
       letter-spacing:-.03em;
     }
+
+    .big.blocked{
+      color:#b42318;
+    }
+
+    .blocked-proof-banner{
+      margin-top:26px;
+      border-radius:28px;
+      padding:32px;
+      background:linear-gradient(135deg,#7f1d1d,#b42318);
+      color:#ffffff;
+    }
+
+    .blocked-proof-kicker{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.72);
+      margin-bottom:14px;
+    }
+
+    .blocked-proof-banner h2{
+      margin:0;
+      font-size:46px;
+      line-height:1;
+      letter-spacing:-.05em;
+      color:#ffffff;
+    }
+
+    .blocked-proof-banner p{
+      margin:18px 0 0;
+      max-width:820px;
+      color:rgba(255,255,255,.88);
+      line-height:1.8;
+      font-size:17px;
+    }
+
+    .blocked-proof-grid{
+      margin-top:26px;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+    }
+
+    .blocked-proof-box{
+      border-radius:18px;
+      padding:18px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .blocked-proof-box span{
+      display:block;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.68);
+      margin-bottom:10px;
+    }
+
+    .blocked-proof-box strong{
+      display:block;
+      font-size:15px;
+      line-height:1.5;
+      color:#ffffff;
+    }
+
+    @media(max-width:900px){
+      .blocked-proof-grid{
+        grid-template-columns:1fr;
+      }
+
+      .blocked-proof-banner h2{
+        font-size:36px;
+      }
+    }
+
     .small{
       margin-top:8px;
       color:var(--muted);
@@ -382,22 +461,69 @@
       const proof = data.proof_preview || {};
       const chain = Array.isArray(data.proof_chain) ? data.proof_chain : [];
 
+      const isBlocked =
+        analysis.governance_decision === "BLOCKED_EXECUTION" ||
+        analysis.risk_level === "BLOCKED_EXECUTION_RISK";
+
+      const heroTitle = isBlocked
+        ? "Execution was prevented before commitment."
+        : "Execution became immutable proof.";
+
+      const heroText = isBlocked
+        ? "This receipt proves EXECUTIA prevented invalid execution materialization before commitment and recorded immutable governance evidence."
+        : "This receipt shows the execution submission, governance decision, proof-chain head hash and materialized event sequence.";
+
+      const statusLabel = isBlocked ? "BLOCKED" : "VERIFIED";
+
       document.getElementById("app").innerHTML = `
         <section class="hero">
           <div>
             <div class="eyebrow">Public Proof Receipt</div>
-            <h1>Execution became immutable proof.</h1>
+            <h1>${esc(heroTitle)}</h1>
             <p class="lead">
-              This receipt shows the execution submission, governance decision, proof-chain head hash and materialized event sequence.
+              ${esc(heroText)}
             </p>
           </div>
 
           <aside class="status">
             <h2>Proof Status</h2>
-            <div class="big">VERIFIED</div>
+            <div class="big ${isBlocked ? 'blocked' : ''}">${esc(statusLabel)}</div>
             <div class="small">Persistent registry receipt prepared for regulator-readable proof inspection.</div>
           </aside>
+        ${isBlocked ? `
+        <section class="blocked-proof-banner">
+          <div class="blocked-proof-kicker">
+            EXECUTION FAILURE PREVENTED
+          </div>
+
+          <h2>
+            EXECUTIA blocked invalid execution before reality changed.
+          </h2>
+
+          <p>
+            Governance validation detected structural execution violations before commitment. Invalid execution was prevented before settlement, approval bypass or uncontrolled materialization became possible.
+          </p>
+
+          <div class="blocked-proof-grid">
+
+            <div class="blocked-proof-box">
+              <span>Governance Decision</span>
+              <strong>BLOCKED_EXECUTION</strong>
+            </div>
+
+            <div class="blocked-proof-box">
+              <span>Failure Prevention</span>
+              <strong>Execution divergence prevented before commitment.</strong>
+            </div>
+
+            <div class="blocked-proof-box">
+              <span>Immutable Evidence</span>
+              <strong>Governance block recorded inside immutable proof chain.</strong>
+            </div>
+
+          </div>
         </section>
+        ` : ``}
 
         <main>
           <section class="panel">
