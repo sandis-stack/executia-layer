@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EXECUTIA Proof Explorer</title>
+<style>
+body{margin:0;background:#f3f6fa;color:#0f2d4a;font-family:Arial,Helvetica,sans-serif}
+main{max-width:1040px;margin:0 auto;padding:64px 22px}
+.card{background:#fff;border:1px solid #d9e1ea;padding:36px;margin-bottom:22px}
+.kicker{font-size:12px;letter-spacing:4px;font-weight:700;color:#60758b;margin-bottom:18px}
+h1{font-size:42px;line-height:1.05;margin:0 0 18px}
+p{font-size:16px;line-height:1.7;color:#42556d}
+input{width:100%;box-sizing:border-box;border:1px solid #cbd6e2;padding:14px 16px;font-size:15px}
+button{margin-top:16px;background:#0f2d4a;color:#fff;border:0;padding:14px 20px;font-size:12px;letter-spacing:1.4px;font-weight:700;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+.metric{border:1px solid #d9e1ea;background:#f7f9fb;padding:18px}
+.metric span{display:block;font-size:11px;letter-spacing:2px;color:#60758b;font-weight:700}
+.metric strong{display:block;margin-top:8px;font-size:18px;word-break:break-all}
+.event{border-left:3px solid #0f2d4a;background:#f7f9fb;padding:16px;margin-top:12px}
+.event-title{font-size:13px;letter-spacing:1.6px;font-weight:700}
+.event-time{font-size:12px;color:#60758b;margin-top:6px}
+.hash{font-size:12px;color:#42556d;word-break:break-all;margin-top:8px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}h1{font-size:32px}}
+</style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <div class="kicker">EXECUTIA · PUBLIC PROOF EXPLORER</div>
+    <h1>Verify execution proof integrity.</h1>
+    <p>Enter a governance review ID to verify immutable chain continuity, head hash, and event sequence.</p>
+
+    <input id="reviewId" placeholder="Review ID" />
+    <button onclick="verifyProof()">VERIFY PROOF</button>
+  </section>
+
+  <section class="card" id="result" style="display:none;"></section>
+</main>
+
+<script>
+async function verifyProof(){
+  const reviewId = document.getElementById("reviewId").value.trim();
+  const result = document.getElementById("result");
+
+  if(!reviewId){
+    alert("Review ID required");
+    return;
+  }
+
+  result.style.display = "block";
+  result.innerHTML = "Verifying proof chain...";
+
+  const res = await fetch(`/api/v1/proof/verify?review_id=${encodeURIComponent(reviewId)}`);
+  const data = await res.json();
+
+  if(!data.ok){
+    result.innerHTML = `<div class="event-title">Verification failed</div><p>${data.error || "Unknown error"}</p>`;
+    return;
+  }
+
+  result.innerHTML = `
+    <div class="event-title" style="margin-bottom:18px;">Verification result</div>
+
+    <div class="grid">
+      <div class="metric"><span>CHAIN</span><strong>${data.immutable_chain_verified ? "VERIFIED" : "FAILED"}</strong></div>
+      <div class="metric"><span>EVENTS</span><strong>${data.events_checked}</strong></div>
+      <div class="metric"><span>HASHED</span><strong>${data.hashed_events_checked}</strong></div>
+      <div class="metric"><span>BROKEN AT</span><strong>${data.broken_at || "NONE"}</strong></div>
+    </div>
+
+    <div class="hash" style="margin-top:24px;"><strong>HEAD HASH</strong><br>${data.head_hash || "-"}</div>
+
+    <div style="margin-top:28px;">
+      ${(data.event_types || []).map((t,i)=>`
+        <div class="event">
+          <div class="event-title">${i+1}. ${t}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
