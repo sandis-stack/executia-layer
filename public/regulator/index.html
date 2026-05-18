@@ -174,8 +174,10 @@ button{
   </p>
 
   <button onclick="loadMerkleAnchor()">LOAD MERKLE ANCHOR</button>
+  <button onclick="createTimestampAnchor()">CREATE TIMESTAMP ANCHOR</button>
 
   <div id="merkleResult"></div>
+  <div id="timestampResult" style="margin-top:18px;"></div>
 </section>
 
 <section class="card">
@@ -245,6 +247,74 @@ async function loadMerkleAnchor(){
     <div class="hash">
       <strong>MERKLE ROOT</strong><br>
       ${data.merkle_root || "-"}
+    </div>
+  `;
+}
+
+async function createTimestampAnchor(){
+
+  const result =
+    document.getElementById("timestampResult");
+
+  result.innerHTML =
+    "<p>Creating timestamp anchor...</p>";
+
+  const res =
+    await fetch("/api/v1/proof/timestamp-anchor",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        limit:100
+      })
+    });
+
+  const data =
+    await res.json();
+
+  if(!data.ok){
+    result.innerHTML =
+      `<p>Timestamp anchor failed: ${data.error || "UNKNOWN"}</p>`;
+    return;
+  }
+
+  result.innerHTML = `
+    <div class="grid">
+      <div class="metric">
+        <span>ANCHOR STATUS</span>
+        <strong>${data.anchor_status}</strong>
+      </div>
+
+      <div class="metric">
+        <span>EVENTS</span>
+        <strong>${data.events_included}</strong>
+      </div>
+
+      <div class="metric">
+        <span>HASHES</span>
+        <strong>${data.hashes_included}</strong>
+      </div>
+
+      <div class="metric">
+        <span>NOTARY</span>
+        <strong>${data.external_notary_status}</strong>
+      </div>
+    </div>
+
+    <div class="hash">
+      <strong>ANCHOR ID</strong><br>
+      ${data.anchor_id}
+    </div>
+
+    <div class="hash">
+      <strong>TIMESTAMP</strong><br>
+      ${data.timestamped_at}
+    </div>
+
+    <div class="hash">
+      <strong>MERKLE ROOT</strong><br>
+      ${data.merkle_root}
     </div>
   `;
 }
