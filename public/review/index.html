@@ -333,6 +333,15 @@ h1{
       <div style="margin-top:20px;font-size:13px;line-height:1.6;color:#60758b;word-break:break-all;">
         Head hash: ${proof.head_hash || "-"}
       </div>
+
+      <div style="margin-top:24px;">
+        <a
+          href="/api/v1/proof/certificate-pdf?review_id=${encodeURIComponent(review.id)}"
+          style="display:inline-block;background:#0f2d4a;color:#ffffff;text-decoration:none;padding:13px 18px;font-size:12px;letter-spacing:1.4px;font-weight:700;"
+        >
+          DOWNLOAD PROOF CERTIFICATE
+        </a>
+      </div>
     `;
   }catch(proofError){
     document.getElementById("proofVerification").innerHTML = `
