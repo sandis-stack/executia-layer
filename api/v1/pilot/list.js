@@ -33,7 +33,7 @@ export default async function handler(req,res){
     }
 
     const rows = await supabaseRequest(
-      "pilot_requests?select=review_id,organization,domain,risk,current_system,state,created_at&order=created_at.desc&limit=5"
+      "pilot_requests?select=review_id,organization,domain,risk,current_system,problem,contact,email,state,payload,created_at&order=created_at.desc&limit=10"
     );
 
     return res.status(200).json({

@@ -474,6 +474,48 @@
         </div>
       </article>
 
+
+      <article class="panel">
+        <h2>Active Governance Object</h2>
+
+        <div class="decision-box">
+          <div class="label">Review ID</div>
+          <div class="decision" id="activePilotReviewId">NO_OBJECT_SELECTED</div>
+          <p id="activePilotSummary">Select a pilot request from Live Pilot Intake to open it as a governance object.</p>
+        </div>
+
+        <div class="state-grid" style="margin-top:18px">
+          <div class="state">
+            <span>Organization</span>
+            <strong id="activePilotOrganization">—</strong>
+          </div>
+
+          <div class="state">
+            <span>Domain</span>
+            <strong id="activePilotDomain">—</strong>
+          </div>
+
+          <div class="state">
+            <span>Risk</span>
+            <strong id="activePilotRisk">—</strong>
+          </div>
+
+          <div class="state">
+            <span>Current System</span>
+            <strong id="activePilotSystem">—</strong>
+          </div>
+        </div>
+
+        <pre id="activePilotProblem" style="margin-top:18px">No governance problem selected.</pre>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
+          <button class="button" onclick="updateActivePilot('APPROVE')">APPROVE REVIEW</button>
+          <button class="button" onclick="updateActivePilot('ESCALATE')">ESCALATE</button>
+          <button class="button" onclick="updateActivePilot('REJECT')">REJECT</button>
+        </div>
+      </article>
+
+
       <article class="panel">
         <h2>Pilot Review State</h2>
 
@@ -692,6 +734,46 @@
 
 
 
+
+let activePilotObject = null;
+
+function openPilotObject(row){
+  activePilotObject = row;
+
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = value || "—";
+  };
+
+  set("activePilotReviewId", row.review_id || "NO_REVIEW_ID");
+  set("activePilotOrganization", row.organization || "UNKNOWN");
+  set("activePilotDomain", row.domain || "UNKNOWN");
+  set("activePilotRisk", row.risk || "UNKNOWN");
+  set("activePilotSystem", row.current_system || "UNKNOWN");
+
+  const summary = document.getElementById("activePilotSummary");
+  if(summary){
+    summary.textContent = `${row.state || "PILOT_REVIEW_RECEIVED"} · ${row.contact || "No contact"} · ${row.email || "No email"}`;
+  }
+
+  const problem = document.getElementById("activePilotProblem");
+  if(problem){
+    problem.textContent = JSON.stringify({
+      problem:row.problem || "No problem description provided.",
+      payload:row.payload || {}
+    }, null, 2);
+  }
+}
+
+async function updateActivePilot(action){
+  if(!activePilotObject?.review_id){
+    alert("Select a pilot request first.");
+    return;
+  }
+
+  await updatePilotRequest(activePilotObject.review_id, action);
+}
+
 async function updatePilotRequest(reviewId, action){
   try{
     const response = await fetch("/api/v1/pilot/update",{
@@ -769,7 +851,9 @@ async function loadPilotIntake(){
       return;
     }
 
-    list.innerHTML = rows.map(row => `
+    window.__pilotRows = rows;
+
+    list.innerHTML = rows.map((row, index) => `
       <div class="step active">
         <span class="dot"></span>
         <div>
@@ -777,6 +861,7 @@ async function loadPilotIntake(){
           <span>${row.domain || "UNKNOWN_DOMAIN"} · ${row.state || "PILOT_REVIEW_RECEIVED"} · ${row.review_id || ""}</span>
 
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="button" style="padding:9px 12px;font-size:11px" onclick="openPilotObject(window.__pilotRows[${index}])">OPEN OBJECT</button>
             <button class="button" style="padding:9px 12px;font-size:11px" onclick="updatePilotRequest('${row.review_id}','APPROVE')">APPROVE</button>
             <button class="button" style="padding:9px 12px;font-size:11px" onclick="updatePilotRequest('${row.review_id}','ESCALATE')">ESCALATE</button>
             <button class="button" style="padding:9px 12px;font-size:11px" onclick="updatePilotRequest('${row.review_id}','REJECT')">REJECT</button>
@@ -784,6 +869,10 @@ async function loadPilotIntake(){
         </div>
       </div>
     `).join("");
+
+    if(rows[0] && !activePilotObject){
+      openPilotObject(rows[0]);
+    }
 
   }catch(error){
     status.textContent = "INTAKE_ERROR";

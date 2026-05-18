@@ -62,17 +62,40 @@ export default async function handler(req,res){
       });
     }
 
+    const existingRows = await supabaseRequest(
+      `pilot_requests?review_id=eq.${encodeURIComponent(reviewId)}&select=payload&limit=1`
+    );
+
+    const existingPayload = Array.isArray(existingRows)
+      ? existingRows[0]?.payload || {}
+      : {};
+
+    const history = Array.isArray(existingPayload.history)
+      ? existingPayload.history
+      : [];
+
+    const nextPayload = {
+      ...existingPayload,
+      last_action:action,
+      last_state:state,
+      updated_at:new Date().toISOString(),
+      history:[
+        ...history,
+        {
+          action,
+          state,
+          at:new Date().toISOString()
+        }
+      ]
+    };
+
     const rows = await supabaseRequest(
       `pilot_requests?review_id=eq.${encodeURIComponent(reviewId)}`,
       {
         method:"PATCH",
         body:JSON.stringify({
           state,
-          payload:{
-            action,
-            state,
-            updated_at:new Date().toISOString()
-          }
+          payload:nextPayload
         })
       }
     );
