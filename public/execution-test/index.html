@@ -394,7 +394,159 @@
 
         
 
-        <section class="flow-shell">
+        
+
+        <section class="scenario-shell">
+
+          <div class="scenario-header">
+
+            <div class="scenario-eyebrow">
+              EXECUTION SCENARIOS
+            </div>
+
+            <h2>
+              Institutional execution simulation environment.
+            </h2>
+
+            <p>
+              Load predefined governance scenarios and observe how EXECUTIA validates execution integrity, prevents failure and materializes immutable proof.
+            </p>
+
+          </div>
+
+          <div class="scenario-grid">
+
+            <div class="scenario-card"
+                 onclick="loadScenario('procurement')">
+
+              <div class="scenario-tag">
+                Public Sector
+              </div>
+
+              <h3>
+                Public Procurement
+              </h3>
+
+              <p>
+                Supplier approval, contract validation, payment governance and immutable audit continuity.
+              </p>
+
+              <div class="scenario-action">
+                Load Scenario
+              </div>
+
+            </div>
+
+            <div class="scenario-card"
+                 onclick="loadScenario('banking')">
+
+              <div class="scenario-tag">
+                Banking
+              </div>
+
+              <h3>
+                Banking Settlement
+              </h3>
+
+              <p>
+                Payment authorization, AML governance, reconciliation integrity and settlement validation.
+              </p>
+
+              <div class="scenario-action">
+                Load Scenario
+              </div>
+
+            </div>
+
+            <div class="scenario-card"
+                 onclick="loadScenario('infrastructure')">
+
+              <div class="scenario-tag">
+                Infrastructure
+              </div>
+
+              <h3>
+                Infrastructure Maintenance
+              </h3>
+
+              <p>
+                Contractor execution control, maintenance approval paths and safety compliance governance.
+              </p>
+
+              <div class="scenario-action">
+                Load Scenario
+              </div>
+
+            </div>
+
+            <div class="scenario-card"
+                 onclick="loadScenario('nato')">
+
+              <div class="scenario-tag">
+                NATO / Defense
+              </div>
+
+              <h3>
+                Logistics Coordination
+              </h3>
+
+              <p>
+                Cross-node operational execution, logistics integrity and execution-time decision validation.
+              </p>
+
+              <div class="scenario-action">
+                Load Scenario
+              </div>
+
+            </div>
+
+            <div class="scenario-card"
+                 onclick="loadScenario('healthcare')">
+
+              <div class="scenario-tag">
+                Healthcare
+              </div>
+
+              <h3>
+                Healthcare Approval
+              </h3>
+
+              <p>
+                Treatment approval chains, patient authorization flow and regulator-readable audit continuity.
+              </p>
+
+              <div class="scenario-action">
+                Load Scenario
+              </div>
+
+            </div>
+
+            <div class="scenario-card"
+                 onclick="loadScenario('ai')">
+
+              <div class="scenario-tag">
+                AI Governance
+              </div>
+
+              <h3>
+                Autonomous AI Agent
+              </h3>
+
+              <p>
+                AI execution permissions, governance boundaries and prevention of non-compliant autonomous actions.
+              </p>
+
+              <div class="scenario-action">
+                Load Scenario
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+<section class="flow-shell">
 
           <div class="flow-header">
 
@@ -892,6 +1044,81 @@
         alert(error.message || "Execution submission failed.");
       }
     }
+
+
+
+    function loadScenario(type){
+
+      const scenarios = {
+
+        procurement: {
+          domain: "public-procurement",
+          outcome: "Select a supplier, approve the contract, release payment and create immutable audit evidence without allowing non-compliant execution.",
+          budget: "€250,000",
+          timeline: "90 days",
+          constraints: "Supplier identity must be verified. Approval must happen before payment. Budget limit cannot be exceeded. Settlement must be reconciled."
+        },
+
+        banking: {
+          domain: "banking-settlement",
+          outcome: "Authorize cross-border settlement only after AML validation and governance approval.",
+          budget: "$4,500,000",
+          timeline: "24 hours",
+          constraints: "Payment before approval must be blocked. AML verification required. Reconciliation continuity mandatory."
+        },
+
+        infrastructure: {
+          domain: "infrastructure-maintenance",
+          outcome: "Approve contractor maintenance work only after safety compliance and execution verification.",
+          budget: "€1,200,000",
+          timeline: "180 days",
+          constraints: "Safety approval required before contractor execution. Unverified maintenance execution must be blocked."
+        },
+
+        nato: {
+          domain: "nato-logistics",
+          outcome: "Coordinate operational logistics execution across multiple nodes with execution-time governance validation.",
+          budget: "CLASSIFIED",
+          timeline: "48 hours",
+          constraints: "Unauthorized execution paths blocked. Cross-node approval continuity mandatory. Immutable operational proof required."
+        },
+
+        healthcare: {
+          domain: "healthcare-approval",
+          outcome: "Approve treatment execution only after patient authorization and medical governance review.",
+          budget: "€80,000",
+          timeline: "14 days",
+          constraints: "Patient authorization required before treatment execution. Regulator-readable audit continuity mandatory."
+        },
+
+        ai: {
+          domain: "ai-governance",
+          outcome: "Allow autonomous AI execution only within governance-approved execution boundaries.",
+          budget: "Dynamic",
+          timeline: "Real-time",
+          constraints: "Non-compliant AI execution must be blocked before action commitment. Immutable proof required."
+        }
+
+      };
+
+      const data = scenarios[type];
+
+      if(!data) return;
+
+      document.getElementById("domain").value = data.domain;
+      document.getElementById("outcome").value = data.outcome;
+      document.getElementById("budget").value = data.budget;
+      document.getElementById("timeline").value = data.timeline;
+      document.getElementById("constraints").value = data.constraints;
+
+      window.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+      runExecutionTest();
+    }
+
 
     async function runExecutionTest(){
       const domain = value("domain");
