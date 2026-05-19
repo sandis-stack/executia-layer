@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import { Resend } from "resend";
 import { mailTemplate } from "../../../services/mail-template.js";
+import { sendExecutiaMail } from "../../../services/executia-mail.js";
 
 function uuid(){
   return crypto.randomUUID();
@@ -17,12 +17,6 @@ async function sendPilotEmails(record){
   }
 
   try{
-
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
-    const from =
-      process.env.FROM_EMAIL ||
-      "EXECUTIA <noreply@executia.io>";
 
     const base =
       process.env.APP_URL ||
@@ -62,16 +56,14 @@ async function sendPilotEmails(record){
     );
 
     if(record.email){
-      await resend.emails.send({
-        from,
+      await sendExecutiaMail({
         to:record.email,
         subject:`EXECUTIA - Pilot review received (${record.review_id})`,
         html:clientHtml
       });
     }
 
-    await resend.emails.send({
-      from,
+    await sendExecutiaMail({
       to:process.env.OPERATOR_EMAIL,
       subject:`EXECUTIA - New pilot request (${record.review_id})`,
       html:operatorHtml
