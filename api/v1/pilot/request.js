@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { Resend } from "resend";
 
 function uuid(){
   return crypto.randomUUID();
@@ -81,6 +82,7 @@ export default async function handler(req,res){
   };
 
   const persistence = await insertPilotRequest(record);
+  const emailDelivery = await sendPilotEmails(record);
 
   return res.status(200).json({
     ok:true,
@@ -88,6 +90,7 @@ export default async function handler(req,res){
     state:"PILOT_REVIEW_RECEIVED",
     domain:body.domain || "UNKNOWN",
     received_at:createdAt,
-    persistence
+    persistence,
+    email_delivery:emailDelivery
   });
 }
