@@ -236,11 +236,30 @@
       line-height:1.5;
     }
     main{
+      margin-top:24px;
+    }
+
+    .proof-grid{
+      display:grid;
+      grid-template-columns:.92fr 1.08fr;
+      gap:28px;
+      align-items:start;
+    }
+
+    .proof-left{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:24px;
+      gap:18px;
       align-items:start;
-      margin-top:24px;
+    }
+
+    .proof-right{
+      min-width:0;
+    }
+
+    .event-chain-panel{
+      margin-top:28px;
+      max-width:720px;
     }
     .panel{
       background:#fff;
@@ -334,8 +353,8 @@
     .explain-grid{
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:18px;
-      margin-top:24px;
+      gap:14px;
+      margin-top:18px;
     }
 
     .explain-card{
@@ -435,7 +454,7 @@
       gap:18px;
     }
     @media(max-width:860px){
-      .hero,main{grid-template-columns:1fr}
+      .hero,.proof-grid,.proof-left{grid-template-columns:1fr}
       h1{font-size:40px}
       header{
         height:auto;
@@ -638,125 +657,130 @@
         ` : ``}
 
         <main>
-          <section class="panel">
-            <h2>Execution Receipt</h2>
-            <div class="row"><span>Review ID</span><span>${esc(submission.review_id)}</span></div>
-            <div class="row"><span>Submission ID</span><span>${esc(submission.submission_id)}</span></div>
-            <div class="row"><span>Status</span><span>${esc(submission.status)}</span></div>
-            <div class="row"><span>Created</span><span>${esc(submission.created_at)}</span></div>
-            <div class="row"><span>Head Hash</span><span>${esc(proof.head_hash)}</span></div>
-            <div class="row"><span>QR Payload</span><span>${esc(submission.qr_verification_payload)}</span></div>
+          <section class="proof-grid">
 
-            <div class="actions">
-              <a class="btn primary" href="/request-pilot/?review_id=${esc(submission.review_id)}&submission_id=${esc(submission.submission_id)}">Request Pilot</a>
-              <a class="btn soft" href="/regulator/">Open Regulator Mode</a>
+            <div class="proof-left">
+
+              <section class="panel">
+                <h2>Execution Receipt</h2>
+                <div class="row"><span>Review ID</span><span>${esc(submission.review_id)}</span></div>
+                <div class="row"><span>Submission ID</span><span>${esc(submission.submission_id)}</span></div>
+                <div class="row"><span>Status</span><span>${esc(submission.status)}</span></div>
+                <div class="row"><span>Created</span><span>${esc(submission.created_at)}</span></div>
+                <div class="row"><span>Head Hash</span><span>${esc(proof.head_hash)}</span></div>
+                <div class="row"><span>QR Payload</span><span>${esc(submission.qr_verification_payload)}</span></div>
+
+                <div class="actions">
+                  <a class="btn primary" href="/request-pilot/?review_id=${esc(submission.review_id)}&submission_id=${esc(submission.submission_id)}">Request Pilot</a>
+                  <a class="btn soft" href="/regulator/">Open Regulator Mode</a>
+                </div>
+              </section>
+
+              <section class="panel">
+                <h2>Governance Result</h2>
+                <div class="row"><span>Execution Domain</span><span>${esc(analysis.execution_domain)}</span></div>
+                <div class="row"><span>Decision</span><span>${esc(analysis.governance_decision)}</span></div>
+                <div class="row"><span>Score</span><span>${esc(analysis.execution_score)}</span></div>
+                <div class="row"><span>Risk Level</span><span>${esc(analysis.risk_level)}</span></div>
+                <div class="row"><span>Pilot Readiness</span><span>${esc(analysis.pilot_readiness)}</span></div>
+              </section>
+
             </div>
+
+            <div class="proof-right">
+
+              <section class="panel">
+                <h2>Governance Decision Explainer</h2>
+
+                <div class="explain-summary">
+                  <h2>
+                    EXECUTIA evaluated execution integrity before commitment.
+                  </h2>
+
+                  <p>
+                    Governance validation was materialized before execution approval. The system evaluated execution continuity, approval order, immutable proof requirements and reconciliation readiness before allowing execution materialization.
+                  </p>
+                </div>
+
+                <div class="explain-grid">
+
+                  <div class="explain-card">
+                    <h3>Detected Execution Risks</h3>
+                    <div class="explain-list">
+                      ${[
+                        "Unverified supplier or execution participant.",
+                        "Payment before approval validation.",
+                        "Budget overflow or uncontrolled settlement.",
+                        "Execution without immutable audit continuity.",
+                        "Regulator-unreadable execution evidence."
+                      ].map(item => `
+                        <div class="explain-item">${item}</div>
+                      `).join("")}
+                    </div>
+                  </div>
+
+                  <div class="explain-card">
+                    <h3>Required Governance Controls</h3>
+                    <div class="explain-list">
+                      ${(Array.isArray(analysis.required_governance_controls)
+                        ? analysis.required_governance_controls
+                        : []
+                      ).map(item => `
+                        <div class="explain-item">${esc(item)}</div>
+                      `).join("")}
+                    </div>
+                  </div>
+
+                  <div class="explain-card">
+                    <h3>Execution Integrity Controls</h3>
+                    <div class="explain-list">
+                      ${[
+                        "Approval path validated before commitment.",
+                        "Proof-chain continuity materialized.",
+                        "Timestamp-anchor readiness verified.",
+                        "Governance decision recorded immutably.",
+                        "Settlement reconciliation prepared."
+                      ].map(item => `
+                        <div class="explain-item">${item}</div>
+                      `).join("")}
+                    </div>
+                  </div>
+
+                  <div class="explain-card">
+                    <h3>Why Execution Was Approved</h3>
+                    <div class="explain-list">
+                      ${[
+                        analysis.execution_score >= 80
+                          ? "Execution definition quality exceeded institutional governance threshold."
+                          : "Execution definition partially satisfied governance threshold.",
+                        "Required execution constraints were structurally defined.",
+                        "Immutable proof-chain generation was possible before execution commitment.",
+                        "Governance verification and regulator-readable audit structure were available."
+                      ].map(item => `
+                        <div class="explain-item">${esc(item)}</div>
+                      `).join("")}
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+
+            </div>
+
           </section>
 
-          <section class="panel">
-            <h2>Governance Result</h2>
-            <div class="row"><span>Execution Domain</span><span>${esc(analysis.execution_domain)}</span></div>
-            <div class="row"><span>Decision</span><span>${esc(analysis.governance_decision)}</span></div>
-            <div class="row"><span>Score</span><span>${esc(analysis.execution_score)}</span></div>
-            <div class="row"><span>Risk Level</span><span>${esc(analysis.risk_level)}</span></div>
-            <div class="row"><span>Pilot Readiness</span><span>${esc(analysis.pilot_readiness)}</span></div>
+          <section class="panel event-chain-panel">
+            <h2>Immutable Event Chain</h2>
+            ${chain.map(event => `
+              <div class="event">
+                <div class="event-top">
+                  <strong>${esc(event.index)} · ${esc(event.type)}</strong>
+                  <code>${esc(shortHash(event.event_hash))}</code>
+                </div>
+              </div>
+            `).join("")}
           </section>
         </main>
-
-        <section class="panel" style="margin-top:24px">
-          <h2>Governance Decision Explainer</h2>
-
-          <div class="explain-summary">
-            <h2>
-              EXECUTIA evaluated execution integrity before commitment.
-            </h2>
-
-            <p>
-              Governance validation was materialized before execution approval. The system evaluated execution continuity, approval order, immutable proof requirements and reconciliation readiness before allowing execution materialization.
-            </p>
-          </div>
-
-          <div class="explain-grid">
-
-            <div class="explain-card">
-              <h3>Detected Execution Risks</h3>
-
-              <div class="explain-list">
-                ${[
-                  "Unverified supplier or execution participant.",
-                  "Payment before approval validation.",
-                  "Budget overflow or uncontrolled settlement.",
-                  "Execution without immutable audit continuity.",
-                  "Regulator-unreadable execution evidence."
-                ].map(item => `
-                  <div class="explain-item">${item}</div>
-                `).join("")}
-              </div>
-            </div>
-
-            <div class="explain-card">
-              <h3>Required Governance Controls</h3>
-
-              <div class="explain-list">
-                ${(Array.isArray(analysis.required_governance_controls)
-                  ? analysis.required_governance_controls
-                  : []
-                ).map(item => `
-                  <div class="explain-item">${esc(item)}</div>
-                `).join("")}
-              </div>
-            </div>
-
-            <div class="explain-card">
-              <h3>Execution Integrity Controls</h3>
-
-              <div class="explain-list">
-                ${[
-                  "Approval path validated before commitment.",
-                  "Proof-chain continuity materialized.",
-                  "Timestamp-anchor readiness verified.",
-                  "Governance decision recorded immutably.",
-                  "Settlement reconciliation prepared."
-                ].map(item => `
-                  <div class="explain-item">${item}</div>
-                `).join("")}
-              </div>
-            </div>
-
-            <div class="explain-card">
-              <h3>Why Execution Was Approved</h3>
-
-              <div class="explain-list">
-                ${[
-                  analysis.execution_score >= 80
-                    ? "Execution definition quality exceeded institutional governance threshold."
-                    : "Execution definition partially satisfied governance threshold.",
-
-                  "Required execution constraints were structurally defined.",
-
-                  "Immutable proof-chain generation was possible before execution commitment.",
-
-                  "Governance verification and regulator-readable audit structure were available."
-                ].map(item => `
-                  <div class="explain-item">${esc(item)}</div>
-                `).join("")}
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        <section class="panel" style="margin-top:24px">
-          <h2>Immutable Event Chain</h2>
-          ${chain.map(event => `
-            <div class="event">
-              <div class="event-top">
-                <strong>${esc(event.index)} · ${esc(event.type)}</strong>
-                <code>${esc(shortHash(event.event_hash))}</code>
-              </div>
-            </div>
-          `).join("")}
-        </section>
       `;
     }
 
