@@ -1,18 +1,11 @@
 import crypto from "crypto";
 import { Resend } from "resend";
+import { mailTemplate } from "../../../services/mail-template.js";
 
 function uuid(){
   return crypto.randomUUID();
 }
 
-function esc(v){
-  return String(v || "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
 
 async function sendPilotEmails(record){
 
@@ -31,38 +24,56 @@ async function sendPilotEmails(record){
       process.env.FROM_EMAIL ||
       "EXECUTIA <noreply@executia.io>";
 
-    const clientHtml = `
-      <h1>EXECUTIA Pilot Review Received</h1>
-      <p>Your request has been registered.</p>
-      <p><strong>Review ID:</strong> ${esc(record.review_id)}</p>
-      <p><strong>Domain:</strong> ${esc(record.domain)}</p>
-    `;
+    const base =
+      process.env.APP_URL ||
+      "https://execution.executia.io";
 
-    const operatorHtml = `
-      <h1>New EXECUTIA Pilot Request</h1>
-      <p><strong>Review ID:</strong> ${esc(record.review_id)}</p>
-      <p><strong>Organization:</strong> ${esc(record.organization)}</p>
-      <p><strong>Contact:</strong> ${esc(record.contact)}</p>
-      <p><strong>Email:</strong> ${esc(record.email)}</p>
-      <p><strong>Domain:</strong> ${esc(record.domain)}</p>
-      <p><strong>Problem:</strong> ${esc(record.problem)}</p>
-    `;
+    const pilotUrl =
+      `${base}/request-pilot/`;
+
+    const clientHtml = mailTemplate(
+      "Pilot review request received.",
+      [
+        ["REVIEW ID", record.review_id],
+        ["ORGANIZATION", record.organization || "-"],
+        ["DOMAIN", record.domain || "-"],
+        ["STATE", record.state],
+        ["RESPONSE WINDOW", "24-48H"]
+      ],
+      "Your EXECUTIA pilot review request has been registered for institutional governance evaluation.",
+      { url: pilotUrl, label: "OPEN REQUEST PILOT" }
+    );
+
+    const operatorHtml = mailTemplate(
+      "New EXECUTIA pilot request received.",
+      [
+        ["REVIEW ID", record.review_id],
+        ["ORGANIZATION", record.organization || "-"],
+        ["CONTACT", record.contact || "-"],
+        ["EMAIL", record.email || "-"],
+        ["DOMAIN", record.domain || "-"],
+        ["RISK", record.risk || "-"],
+        ["CURRENT SYSTEM", record.current_system || "-"],
+        ["CONTEXT", record.problem || "-"],
+        ["RECEIVED", record.payload?.created_at || "-"]
+      ],
+      "Review the requested execution point and define the controlled pilot scope.",
+      { url: pilotUrl, label: "OPEN REQUEST PILOT" }
+    );
 
     if(record.email){
-
       await resend.emails.send({
         from,
         to:record.email,
-        subject:"EXECUTIA Pilot Review Received",
+        subject:`EXECUTIA - Pilot review received (${record.review_id})`,
         html:clientHtml
       });
-
     }
 
     await resend.emails.send({
       from,
       to:process.env.OPERATOR_EMAIL,
-      subject:"New EXECUTIA Pilot Request",
+      subject:`EXECUTIA - New pilot request (${record.review_id})`,
       html:operatorHtml
     });
 
@@ -76,7 +87,7 @@ async function sendPilotEmails(record){
 
     return {
       sent:false,
-      reason:error.message
+      reason:error.message || "PILOT_EMAIL_FAILED"
     };
 
   }
