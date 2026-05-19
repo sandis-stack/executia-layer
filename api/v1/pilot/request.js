@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { mailTemplate } from "../../../services/mail-template.js";
+import { sendPilotReceivedNotification } from "../../../services/executia-notifications.js";
 import { sendExecutiaMail } from "../../../services/executia-mail.js";
 
 function uuid(){
@@ -164,7 +164,7 @@ export default async function handler(req,res){
   };
 
   const persistence = await insertPilotRequest(record);
-  const emailDelivery = await sendPilotEmails(record);
+  const emailDelivery = await sendPilotReceivedNotification(record);
 
   return res.status(200).json({
     ok:true,
