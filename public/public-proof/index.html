@@ -251,6 +251,7 @@
       grid-template-columns:repeat(2,minmax(300px,1fr));
       gap:18px;
       align-items:start;
+      min-width:0;
     }
 
     .proof-right{
@@ -258,8 +259,9 @@
     }
 
     .event-chain-panel{
-      margin-top:28px;
-      max-width:720px;
+      margin-top:0;
+      grid-column:1 / -1;
+      max-width:none;
     }
     .panel{
       background:#fff;
@@ -691,6 +693,18 @@
                 <div class="row"><span>Pilot Readiness</span><span>${esc(analysis.pilot_readiness)}</span></div>
               </section>
 
+              <section class="panel event-chain-panel">
+                <h2>Immutable Event Chain</h2>
+                ${chain.map(event => `
+                  <div class="event">
+                    <div class="event-top">
+                      <strong>${esc(event.index)} · ${esc(event.type)}</strong>
+                      <code>${esc(shortHash(event.event_hash))}</code>
+                    </div>
+                  </div>
+                `).join("")}
+              </section>
+
             </div>
 
             <div class="proof-right">
@@ -773,18 +787,6 @@
 
             </div>
 
-          </section>
-
-          <section class="panel event-chain-panel">
-            <h2>Immutable Event Chain</h2>
-            ${chain.map(event => `
-              <div class="event">
-                <div class="event-top">
-                  <strong>${esc(event.index)} · ${esc(event.type)}</strong>
-                  <code>${esc(shortHash(event.event_hash))}</code>
-                </div>
-              </div>
-            `).join("")}
           </section>
         </main>
       `;
