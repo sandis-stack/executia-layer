@@ -1,92 +1,113 @@
-import { db } from "../../../services/db.js";
+export default async function handler(req, res) {
+  res.setHeader("Content-Type", "application/json");
 
-export default async function handler(req, res){
-
-  res.setHeader(
-    "Content-Type",
-    "application/json"
-  );
-
-  if(req.method !== "GET"){
+  if (req.method !== "GET") {
     return res.status(405).json({
       ok:false,
-      error:"METHOD_NOT_ALLOWED"
+      error:{
+        code:"METHOD_NOT_ALLOWED",
+        message:"Only GET is allowed."
+      }
     });
   }
 
-  try{
+  const reviewId =
+    req.query?.review_id ||
+    req.query?.id ||
+    "";
 
-    const review_id =
-      req.query.review_id || "";
-
-    if(!review_id){
-      return res.status(400).json({
-        ok:false,
-        error:"REVIEW_ID_REQUIRED"
-      });
-    }
-
-    const result = await db()
-      .from("governance_review_events")
-      .select("*")
-      .eq("review_id", review_id)
-      .order("sequence_no", {
-        ascending:true
-      });
-
-    if(result.error){
-      throw result.error;
-    }
-
-    const events =
-      result.data || [];
-
-    let verified = true;
-    let broken_at = null;
-
-    const hashedEvents =
-      events.filter(e => e.hash);
-
-    for(let i = 1; i < hashedEvents.length; i++){
-
-      const prev =
-        hashedEvents[i - 1];
-
-      const current =
-        hashedEvents[i];
-
-      if(current.prev_hash !== prev.hash){
-        verified = false;
-        broken_at = current.id;
-        break;
+  if (!reviewId) {
+    return res.status(400).json({
+      ok:false,
+      error:{
+        code:"REVIEW_ID_REQUIRED",
+        message:"review_id is required."
       }
+    });
+  }
+
+  const base =
+    process.env.APP_URL ||
+    "https://execution.executia.io";
+
+  try {
+    const response = await fetch(
+      `${base}/api/v1/execution/registry?review_id=${encodeURIComponent(reviewId)}`
+    );
+
+    const registryData = await response.json();
+
+    if (!response.ok || !registryData.ok) {
+      return res.status(404).json({
+        ok:false,
+        verified:false,
+        review_id:reviewId,
+        error:{
+          code:"PROOF_NOT_FOUND",
+          message:"No registry proof receipt found for this review_id."
+        }
+      });
     }
+
+    const receipt =
+      registryData.receipt ||
+      registryData.record?.receipt ||
+      null;
+
+    if (!receipt) {
+      return res.status(409).json({
+        ok:false,
+        verified:false,
+        review_id:reviewId,
+        error:{
+          code:"RECEIPT_PAYLOAD_MISSING",
+          message:"Registry record exists, but receipt payload is missing."
+        }
+      });
+    }
+
+    const proof = receipt.proof_preview || {};
+    const analysis = receipt.analysis || {};
+    const submission = receipt.submission || {};
+    const chain = Array.isArray(receipt.proof_chain)
+      ? receipt.proof_chain
+      : [];
+
+    const hasHeadHash = Boolean(proof.head_hash);
+    const hasChain = chain.length > 0;
+    const hasDecision = Boolean(analysis.governance_decision);
+
+    const verified =
+      hasHeadHash &&
+      hasChain &&
+      hasDecision;
 
     return res.status(200).json({
       ok:true,
-      review_id,
-      immutable_chain_verified:
-        verified,
       verified,
-      broken_at,
-      events_checked:
-        events.length,
-      hashed_events_checked:
-        hashedEvents.length,
-      head_hash:
-        events.length
-          ? events[events.length - 1].hash
-          : null,
-      event_types:
-        events.map(e => e.event_type)
+      review_id:reviewId,
+      state:submission.status || null,
+      governance_decision:analysis.governance_decision || null,
+      risk_level:analysis.risk_level || null,
+      proof:{
+        head_hash:proof.head_hash || null,
+        chain_length:chain.length,
+        has_head_hash:hasHeadHash,
+        has_chain:hasChain,
+        has_governance_decision:hasDecision
+      },
+      public_receipt_url:`${base}/public-proof/?review_id=${encodeURIComponent(reviewId)}`
     });
 
-  }catch(error){
-
+  } catch (error) {
     return res.status(500).json({
       ok:false,
-      error:"PROOF_VERIFICATION_FAILED",
-      details:error.message
+      verified:false,
+      review_id:reviewId,
+      error:{
+        code:"VERIFY_FAILED",
+        message:error.message || "Proof verification failed."
+      }
     });
   }
 }
