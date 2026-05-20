@@ -21,19 +21,75 @@ export function decisionToStatus(d) {
   return EXECUTIA_STATUSES.PENDING_REVIEW;
 }
 
+export function isCanonicalDecisionEnabled() {
+  return process.env.EXECUTIA_CANONICAL_DECISION !== "false";
+}
+
+function normalizeExecutionBody(body = {}) {
+  return {
+    ...body,
+    rule_context: body.rule_context ?? {}
+  };
+}
+
+export function buildCanonicalEvaluation(body = {}) {
+  const normalizedBody = normalizeExecutionBody(body);
+  const evaluation = evaluateRules(normalizedBody);
+
+  return {
+    version: "1",
+    decision: evaluation.decision,
+    reason: evaluation.reason,
+    status: decisionToStatus(evaluation.decision),
+    risk: evaluation.risk || null,
+    evaluated_at: new Date().toISOString(),
+    source: "engine/rule-evaluator"
+  };
+}
+
+function buildRpcPayload(body = {}) {
+  const normalizedBody = normalizeExecutionBody(body);
+  const payload = { ...normalizedBody };
+
+  if (isCanonicalDecisionEnabled()) {
+    payload.canonical_evaluation = buildCanonicalEvaluation(normalizedBody);
+  }
+
+  return payload;
+}
+
 // ── createExecution ─────────────────────────────────────────────────────────
 // Calls DB RPC: one transaction, pg_advisory_xact_lock, decision + 3 inserts.
 export async function createExecution(body = {}) {
+  const normalizedBody = normalizeExecutionBody(body);
+  const evaluation = evaluateRules(normalizedBody);
+
   if (!hasSupabaseEnv()) {
-    const rule = evaluateRules(body);
-    return { execution_id: createExecutionId(), status: decisionToStatus(rule.decision), decision: rule.decision, reason: rule.reason, mode: "DRY_RUN" };
+    const result = {
+      ok: true,
+      execution_id: createExecutionId(),
+      status: decisionToStatus(evaluation.decision),
+      decision: evaluation.decision,
+      reason: evaluation.reason,
+      mode: "DRY_RUN"
+    };
+
+    if (isCanonicalDecisionEnabled()) {
+      result.canonical_evaluation = buildCanonicalEvaluation(normalizedBody);
+    }
+
+    return result;
   }
 
-  const { data, error } = await db().rpc("commit_execution", { payload: body });
+  const payload = buildRpcPayload(body);
+  const { data, error } = await db().rpc("commit_execution", { payload });
 
   if (error) {
     if (error.message?.includes("commit_execution")) {
-      throw Object.assign(new Error("Run sql/009_atomic_execution_rpc.sql in Supabase first."), { code: "RPC_NOT_DEPLOYED" });
+      throw Object.assign(
+        new Error("Run sql/009_atomic_execution_rpc.sql and sql/009b_canonical_evaluation_bridge.sql in Supabase first."),
+        { code: "RPC_NOT_DEPLOYED" }
+      );
     }
     throw error;
   }
