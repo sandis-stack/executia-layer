@@ -32,3 +32,7 @@ export function requireInternalKey(req) {
 
   return { ok: false, error: "UNAUTHORIZED" };
 }
+
+export function unauthorizedResponse() {
+  return { ok: false, error: { code: "UNAUTHORIZED" } };
+}

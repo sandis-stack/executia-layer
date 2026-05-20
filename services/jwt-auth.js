@@ -13,6 +13,7 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
+import { requireInternalKey, unauthorizedResponse } from "./auth.js";
 
 const ROLE_PERMISSIONS = {
   ADMIN: [
@@ -25,6 +26,7 @@ const ROLE_PERMISSIONS = {
     "view",
     "governance.review.read",
     "governance.review.approve",
+    "governance.review.block",
     "governance.review.reject",
     "governance.review.override"
   ],
@@ -36,6 +38,7 @@ const ROLE_PERMISSIONS = {
     "view",
     "governance.review.read",
     "governance.review.approve",
+    "governance.review.block",
     "governance.review.reject",
     "governance.review.override"
   ],
@@ -48,6 +51,7 @@ const ROLE_PERMISSIONS = {
     "view",
     "governance.review.read",
     "governance.review.approve",
+    "governance.review.block",
     "governance.review.reject",
     "governance.review.override",
     "governance.review.freeze",
@@ -137,4 +141,34 @@ export function requireJwtPermission(context, action) {
     };
   }
   return { ok: true };
+}
+
+export async function authorizeOperatorReview(req, { decision } = {}) {
+  const keyAuth = requireInternalKey(req);
+  if (keyAuth.ok) {
+    return { ok: true, mode: keyAuth.mode };
+  }
+
+  const context = await resolveJwtContext(req);
+  if (!context.ok) {
+    return { ok: false, status: context.status || 401, ...unauthorizedResponse() };
+  }
+
+  const normalized = String(decision || "").trim().toUpperCase();
+  let permissionAction = null;
+
+  if (normalized === "APPROVED") {
+    permissionAction = "governance.review.approve";
+  } else if (normalized === "BLOCKED") {
+    permissionAction = "governance.review.block";
+  } else {
+    return { ok: false, status: 401, ...unauthorizedResponse() };
+  }
+
+  const permission = requireJwtPermission(context, permissionAction);
+  if (!permission.ok) {
+    return { ok: false, status: 401, ...unauthorizedResponse() };
+  }
+
+  return { ok: true, mode: context.mode, context };
 }

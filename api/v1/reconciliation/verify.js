@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
 import { verifyExecutionTruth } from "../../../services/reconciliation/verify.js";
+import { requireInternalKey, unauthorizedResponse } from "../../services/auth.js";
 
 function db() {
   return createClient(
@@ -12,6 +13,11 @@ function db() {
 
 export default async function handler(req, res) {
   try {
+    const auth = requireInternalKey(req);
+    if (!auth.ok) {
+      return res.status(401).json(unauthorizedResponse());
+    }
+
     const execution_id =
       req.query.execution_id ||
       req.body?.execution_id;

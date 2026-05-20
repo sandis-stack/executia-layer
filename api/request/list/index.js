@@ -1,4 +1,5 @@
 import { db } from "../../../services/db.js";
+import { requireInternalKey, unauthorizedResponse } from "../../../services/auth.js";
 
 export default async function handler(req, res){
   res.setHeader("Content-Type", "application/json");
@@ -8,6 +9,11 @@ export default async function handler(req, res){
       ok:false,
       error:"METHOD_NOT_ALLOWED"
     });
+  }
+
+  const auth = requireInternalKey(req);
+  if (!auth.ok) {
+    return res.status(401).json(unauthorizedResponse());
   }
 
   try{
