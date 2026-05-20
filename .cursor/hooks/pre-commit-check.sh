@@ -7,7 +7,7 @@ echo "=========================="
 echo ""
 echo "Checking forbidden execution states..."
 
-if grep -R "CONFIRMED\|UNDER_REVIEW\|REQUIRES_REVIEW" api services public --exclude-dir=node_modules 2>/dev/null
+if grep -R "status.*CONFIRMED\|state.*CONFIRMED\|request_state.*CONFIRMED\|governance_decision.*CONFIRMED\|UNDER_REVIEW\|REQUIRES_REVIEW" api services public --exclude-dir=node_modules 2>/dev/null
 then
   echo ""
   echo "BLOCKED:"

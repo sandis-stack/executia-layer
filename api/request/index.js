@@ -1,7 +1,7 @@
 import { db } from "../../services/db.js";
-import { Resend } from "resend";
 import { createReviewToken } from "../../services/review-token.js";
 import { mailTemplate } from "../../services/mail-template.js";
+import { sendExecutiaMail } from "../../services/executia-mail.js";
 
 
 
@@ -214,8 +214,6 @@ export default async function handler(req, res){
         throw new Error("RESEND_ENV_MISSING");
       }
 
-      const resend = new Resend(process.env.RESEND_API_KEY);
-
       const clientHtml = mailTemplate(
         "Execution request registered.",
         [
@@ -242,18 +240,16 @@ export default async function handler(req, res){
         "Review the requested execution point and define the controlled pilot scope."
       );
 
-      await resend.emails.send({
-        from: process.env.FROM_EMAIL || "EXECUTIA <noreply@executia.io>",
-        to: email,
-        subject: `EXECUTIA — Request registered (${data.id})`,
-        html: clientHtml
+      await sendExecutiaMail({
+        to:email,
+        subject:`EXECUTIA - Request registered (${data.id})`,
+        html:clientHtml
       });
 
-      await resend.emails.send({
-        from: process.env.FROM_EMAIL || "EXECUTIA <noreply@executia.io>",
-        to: process.env.OPERATOR_EMAIL,
-        subject: `EXECUTIA — New pilot request (${data.id})`,
-        html: operatorHtml
+      await sendExecutiaMail({
+        to:process.env.OPERATOR_EMAIL,
+        subject:`EXECUTIA - New pilot request (${data.id})`,
+        html:operatorHtml
       });
     }catch(emailError){
       console.error("REQUEST_EMAIL_FAILED", emailError);
