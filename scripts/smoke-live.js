@@ -93,7 +93,8 @@ const post = (path, body, useKey = true) => request("POST", path, body, useKey);
       });
       assert(status === 200, "expected 200, got " + status + " — " + JSON.stringify(body));
       assert(body.ok, "expected ok:true");
-      assert(body.status === "APPROVED", "expected APPROVED, got " + body.status);
+      const approvedStatus = body.status || body.execution?.status;
+      assert(approvedStatus === "APPROVED", "expected APPROVED, got " + approvedStatus);
     });
 
     await test("GET /ledger-verify — hash chain matches SQL formula", async () => {

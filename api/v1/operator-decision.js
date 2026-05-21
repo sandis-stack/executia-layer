@@ -1,4 +1,10 @@
-import { applyOperatorDecision } from "../../services/execution.js";
+import {
+  applyOperatorDecision,
+  canonicalExecutionId,
+  fetchOperatorExecution,
+  OperatorDecisionError
+} from "../../services/execution.js";
+import { db } from "../../services/db.js";
 import { ok, fail, methodGuard } from "../../shared/response.js";
 import { requireInternalKey } from "../../services/auth.js";
 
@@ -13,9 +19,18 @@ export default async function handler(req, res) {
     if (!execution_id) return fail(res, "EXECUTION_ID_REQUIRED", "execution_id is required.");
     if (!decision) return fail(res, "DECISION_REQUIRED", "decision is required.");
 
-    const result = await applyOperatorDecision({ execution_id, decision, actor, reason });
+    const execution = await fetchOperatorExecution(db(), { execution_id });
+    const result = await applyOperatorDecision({
+      execution_id: canonicalExecutionId(execution),
+      decision,
+      actor,
+      reason
+    });
     return ok(res, result);
   } catch (error) {
+    if (error instanceof OperatorDecisionError) {
+      return fail(res, error.code, error.message, error.status);
+    }
     return fail(res, error.code || "OPERATOR_DECISION_FAILED", error.message || "Operator decision failed.", 500);
   }
 }

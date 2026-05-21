@@ -1,4 +1,8 @@
 import { db } from "../../services/db.js";
+import {
+  commitOperatorTerminalDecision,
+  OperatorDecisionError
+} from "../../services/execution.js";
 import { resolveJwtContext, requireJwtPermission } from "../../services/jwt-auth.js";
 
 export default async function handler(req, res) {
@@ -20,8 +24,6 @@ export default async function handler(req, res) {
       return res.status(permission.status || 401).json(permission);
     }
 
-    const supabase = db();
-
     const {
       execution_id,
       reason = "Blocked by operator"
@@ -40,86 +42,40 @@ export default async function handler(req, res) {
     const organization_id = context.organization_id;
     const operator = context.user;
 
-    const { data: execution, error: fetchError } = await supabase
-      .from("execution_results")
-      .select("*")
-      .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
-      .eq("organization_id", organization_id)
-      .single();
-
-    if (fetchError || !execution) {
-      return res.status(404).json({
-        ok: false,
-        error: {
-          code: "EXECUTION_NOT_FOUND",
-          message: "Execution not found for this organization."
-        }
-      });
-    }
-
-    if (execution.status !== "PENDING_REVIEW") {
-      return res.status(409).json({
-        ok: false,
-        error: {
-          code: "INVALID_EXECUTION_STATUS",
-          message: `Execution cannot be blocked from status ${execution.status}.`
-        }
-      });
-    }
-
-    const { data: updated, error: updateError } = await supabase
-      .from("execution_results")
-      .update({
-        status: "BLOCKED",
-        operator_action: "BLOCKED",
-        result: reason,
-        operator_id: operator.id,
-        operator_email: operator.email,
-        reviewed_at: new Date().toISOString()
-      })
-      .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
-      .eq("organization_id", organization_id)
-      .select()
-      .single();
-
-    if (updateError) {
-      return res.status(500).json({
-        ok: false,
-        error: {
-          code: "OPERATOR_BLOCK_FAILED",
-          message: updateError.message
-        }
-      });
-    }
-
-    await supabase.from("audit_events").insert({
+    const { execution, status } = await commitOperatorTerminalDecision({
+      supabase: db(),
       execution_id,
+      decision: "BLOCK",
+      actor: operator.email,
+      reason,
       organization_id,
-      event_type: "OPERATOR_BLOCKED",
-      actor_user_id: operator.id,
-      actor_email: operator.email,
-      actor_role: operator.role,
-      details: {
-        reason,
-        previous_status: execution.status,
-        new_status: "BLOCKED"
-      }
+      operator
     });
 
     return res.status(200).json({
       ok: true,
+      status,
       mode: "ENTERPRISE",
       organization_id,
       operator,
       decision: "BLOCKED",
-      execution: updated
+      execution
     });
-
   } catch (error) {
+    if (error instanceof OperatorDecisionError) {
+      return res.status(error.status).json({
+        ok: false,
+        error: {
+          code: error.code,
+          message: error.message
+        }
+      });
+    }
+
     return res.status(500).json({
       ok: false,
       error: {
-        code: "INTERNAL_ERROR",
+        code: error.code || "INTERNAL_ERROR",
         message: error.message
       }
     });

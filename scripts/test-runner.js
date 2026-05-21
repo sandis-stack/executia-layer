@@ -1,9 +1,13 @@
 import { evaluateRules } from "../engine/rule-evaluator.js";
 import { buildLedgerHash } from "../services/ledger.js";
 import {
+  applyOperatorDecision,
   buildCanonicalEvaluation,
   decisionToStatus,
-  isCanonicalDecisionEnabled
+  isCanonicalDecisionEnabled,
+  isRpcOnlyOperatorEnabled,
+  normalizeOperatorDecision,
+  operatorDecisionToStatus
 } from "../services/execution.js";
 import { DECISIONS } from "../shared/statuses.js";
 
@@ -55,6 +59,20 @@ if (canonical.status !== decisionToStatus(DECISIONS.REVIEW)) throw new Error("Ex
 if (canonical.source !== "engine/rule-evaluator") throw new Error("Expected engine/rule-evaluator source");
 
 if (!isCanonicalDecisionEnabled()) throw new Error("Expected canonical decision enabled by default");
+
+if (!isRpcOnlyOperatorEnabled()) throw new Error("Expected RPC-only operator enabled by default");
+if (normalizeOperatorDecision("APPROVE") !== "APPROVE") throw new Error("Expected APPROVE normalization");
+if (normalizeOperatorDecision("REJECT") !== "BLOCK") throw new Error("Expected REJECT → BLOCK normalization");
+if (operatorDecisionToStatus("REJECT") !== "BLOCKED") throw new Error("Expected REJECT → BLOCKED status");
+
+const dryApprove = await applyOperatorDecision({
+  execution_id: "00000000-0000-0000-0000-000000000099",
+  decision: "APPROVE",
+  reason: "TEST"
+});
+if (dryApprove.status !== "APPROVED" || dryApprove.mode !== "DRY_RUN") {
+  throw new Error("Expected DRY_RUN APPROVED operator decision");
+}
 
 const hash = buildLedgerHash({
   previous_hash: "GENESIS",
