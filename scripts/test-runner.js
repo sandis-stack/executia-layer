@@ -7,6 +7,7 @@ import {
   isCanonicalDecisionEnabled,
   isRpcOnlyOperatorEnabled,
   normalizeOperatorDecision,
+  OperatorDecisionError,
   operatorDecisionToStatus
 } from "../services/execution.js";
 import { DECISIONS } from "../shared/statuses.js";
@@ -62,8 +63,31 @@ if (!isCanonicalDecisionEnabled()) throw new Error("Expected canonical decision 
 
 if (!isRpcOnlyOperatorEnabled()) throw new Error("Expected RPC-only operator enabled by default");
 if (normalizeOperatorDecision("APPROVE") !== "APPROVE") throw new Error("Expected APPROVE normalization");
-if (normalizeOperatorDecision("REJECT") !== "BLOCK") throw new Error("Expected REJECT → BLOCK normalization");
-if (operatorDecisionToStatus("REJECT") !== "BLOCKED") throw new Error("Expected REJECT → BLOCKED status");
+if (normalizeOperatorDecision("APPROVED") !== "APPROVE") throw new Error("Expected APPROVED → APPROVE normalization");
+if (normalizeOperatorDecision("BLOCK") !== "BLOCK") throw new Error("Expected BLOCK normalization");
+if (normalizeOperatorDecision("BLOCKED") !== "BLOCK") throw new Error("Expected BLOCKED → BLOCK normalization");
+if (operatorDecisionToStatus("APPROVED") !== "APPROVED") throw new Error("Expected APPROVED → APPROVED status");
+if (operatorDecisionToStatus("BLOCKED") !== "BLOCKED") throw new Error("Expected BLOCKED → BLOCKED status");
+
+let invalidDecisionThrew = false;
+try {
+  normalizeOperatorDecision("REJECT");
+} catch (error) {
+  if (error instanceof OperatorDecisionError && error.code === "INVALID_OPERATOR_DECISION") {
+    invalidDecisionThrew = true;
+  }
+}
+if (!invalidDecisionThrew) throw new Error("Expected REJECT to throw INVALID_OPERATOR_DECISION");
+
+let emptyDecisionThrew = false;
+try {
+  normalizeOperatorDecision("");
+} catch (error) {
+  if (error instanceof OperatorDecisionError && error.code === "INVALID_OPERATOR_DECISION") {
+    emptyDecisionThrew = true;
+  }
+}
+if (!emptyDecisionThrew) throw new Error("Expected empty decision to throw INVALID_OPERATOR_DECISION");
 
 const dryApprove = await applyOperatorDecision({
   execution_id: "00000000-0000-0000-0000-000000000099",

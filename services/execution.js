@@ -102,9 +102,20 @@ export function isRpcOnlyOperatorEnabled() {
   return process.env.EXECUTIA_RPC_ONLY_OPERATOR !== "false";
 }
 
+const OPERATOR_DECISION_APPROVE = new Set(["APPROVE", "APPROVED"]);
+const OPERATOR_DECISION_BLOCK = new Set(["BLOCK", "BLOCKED"]);
+
 export function normalizeOperatorDecision(decision) {
-  const d = String(decision || "").toUpperCase();
-  return d === "APPROVE" ? "APPROVE" : "BLOCK";
+  const d = String(decision ?? "").trim().toUpperCase();
+
+  if (OPERATOR_DECISION_APPROVE.has(d)) return "APPROVE";
+  if (OPERATOR_DECISION_BLOCK.has(d)) return "BLOCK";
+
+  throw new OperatorDecisionError(
+    "INVALID_OPERATOR_DECISION",
+    `Invalid operator decision: ${decision === undefined || decision === null ? "(empty)" : String(decision)}.`,
+    400
+  );
 }
 
 export function operatorDecisionToStatus(decision) {
