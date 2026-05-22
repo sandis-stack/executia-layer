@@ -1,7 +1,8 @@
 -- EXECUTIA™ Canonical Evaluation Bridge for commit_execution
--- Run AFTER sql/009_atomic_execution_rpc.sql
+-- Run AFTER sql/009_atomic_execution_rpc.sql AND sql/011_ledger_hash_authority.sql
 -- Additive CREATE OR REPLACE: trusts canonical_evaluation v1 when present,
 -- with SQL safety asserts; otherwise legacy SQL decision tree.
+-- Phase 3A: ledger hash via executia_ledger_append (canonical execution truth).
 
 CREATE OR REPLACE FUNCTION commit_execution(payload jsonb)
 RETURNS jsonb
@@ -17,6 +18,7 @@ DECLARE
   v_reason    text;
   v_prev_hash text;
   v_hash      text;
+  v_ledger    jsonb;
   v_canonical_decision text;
 BEGIN
   -- 1. DECISION ENGINE
@@ -61,18 +63,12 @@ BEGIN
   -- 2. ADVISORY LOCK — prevents parallel requests corrupting hash chain
   PERFORM pg_advisory_xact_lock(hashtext('executia_ledger'));
 
-  -- 3. PREVIOUS HASH — safe inside lock
-  SELECT COALESCE(entry_hash, 'GENESIS')
-    INTO v_prev_hash
-    FROM ledger_entries
-   ORDER BY created_at DESC
-   LIMIT 1;
-  v_prev_hash := COALESCE(v_prev_hash, 'GENESIS');
+  -- 3–4. LEDGER TRUTH — canonical append (sql/011_ledger_hash_authority.sql)
+  v_ledger := executia_ledger_append(v_id, v_status, v_decision, payload);
+  v_prev_hash := v_ledger->>'previous_hash';
+  v_hash := v_ledger->>'entry_hash';
 
-  -- 4. HASH — execution truth fingerprint
-  v_hash := encode(sha256((v_id::text || v_status || v_decision || v_prev_hash)::bytea), 'hex');
-
-  -- 5. ATOMIC INSERT — all three or none (transaction rollback on any error)
+  -- 5. ATOMIC INSERT — projection + supplemental audit (audit chain unchanged in 3A)
   INSERT INTO execution_results
     (execution_id, request_type, actor, subject, status, decision, reason,
      amount, organization_id, payload, hash, prev_hash, created_at, updated_at)
@@ -89,9 +85,6 @@ BEGIN
   INSERT INTO audit_events (event_type, execution_id, actor, payload, created_at)
   VALUES ('EXECUTION_CREATED', v_id, COALESCE(payload->>'actor','system'),
           jsonb_build_object('status', v_status, 'decision', v_decision, 'reason', v_reason), now());
-
-  INSERT INTO ledger_entries (execution_id, status, previous_hash, entry_hash, payload, created_at)
-  VALUES (v_id, v_status, v_prev_hash, v_hash, payload, now());
 
   -- 6. RETURN TRUTH
   RETURN jsonb_build_object(

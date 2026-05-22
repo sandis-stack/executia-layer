@@ -1,5 +1,22 @@
+/**
+ * EXECUTIA Ledger Service — Phase 3A canonical execution truth authority
+ *
+ * Materialized execution truth: ledger_entries (global append-only chain).
+ * execution_results.hash / prev_hash are projections of the latest ledger head.
+ *
+ * SQL authority (must match this module):
+ *   sql/011_ledger_hash_authority.sql
+ *     executia_ledger_entry_hash
+ *     executia_get_last_ledger_hash
+ *     executia_ledger_append
+ *
+ * Formula:
+ *   entry_hash = sha256(execution_id + status + decision + previous_hash)
+ */
 import { db, hasSupabaseEnv } from "./db.js";
 import { sha256, nowIso } from "../shared/crypto.js";
+
+export const LEDGER_HASH_FORMULA_ID = "executia/ledger/v1";
 
 export function decisionFromStatus(status = "", payload = {}) {
   if (payload && typeof payload.decision === "string" && payload.decision) return payload.decision;
@@ -9,8 +26,7 @@ export function decisionFromStatus(status = "", payload = {}) {
   return payload?.decision || "REVIEW";
 }
 
-// IMPORTANT: must match sql/009_atomic_execution_rpc.sql and sql/010_atomic_operator_decision_rpc.sql
-// SQL formula: sha256(execution_id::text || status || decision || previous_hash)
+/** Canonical execution entry hash — sole JS authority for ledger_entries / execution_results projection. */
 export function buildLedgerHash({ previous_hash = "GENESIS", execution_id, status, payload = {}, decision }) {
   const normalizedDecision = decision || decisionFromStatus(status, payload || {});
   return sha256(`${execution_id}${status}${normalizedDecision}${previous_hash}`);

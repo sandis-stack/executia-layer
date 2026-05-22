@@ -1,5 +1,6 @@
 import { evaluateRules } from "../engine/rule-evaluator.js";
-import { buildLedgerHash } from "../services/ledger.js";
+import { buildLedgerHash, LEDGER_HASH_FORMULA_ID } from "../services/ledger.js";
+import { buildExecutionHash } from "../services/audit.js";
 import {
   applyOperatorDecision,
   buildCanonicalEvaluation,
@@ -98,13 +99,64 @@ if (dryApprove.status !== "APPROVED" || dryApprove.mode !== "DRY_RUN") {
   throw new Error("Expected DRY_RUN APPROVED operator decision");
 }
 
-const hash = buildLedgerHash({
+const vectorExecutionId = "550e8400-e29b-41d4-a716-446655440000";
+
+const approvedGenesis = buildLedgerHash({
   previous_hash: "GENESIS",
-  execution_id: "test",
+  execution_id: vectorExecutionId,
   status: "APPROVED",
-  payload: { ok: true }
+  decision: "APPROVE"
 });
 
-if (!hash || hash.length !== 64) throw new Error("Invalid hash");
+const blockedGenesis = buildLedgerHash({
+  previous_hash: "GENESIS",
+  execution_id: vectorExecutionId,
+  status: "BLOCKED",
+  decision: "BLOCK"
+});
+
+const reviewGenesis = buildLedgerHash({
+  previous_hash: "GENESIS",
+  execution_id: vectorExecutionId,
+  status: "PENDING_REVIEW",
+  decision: "REVIEW"
+});
+
+const chainedBlocked = buildLedgerHash({
+  previous_hash: approvedGenesis,
+  execution_id: vectorExecutionId,
+  status: "BLOCKED",
+  decision: "BLOCK"
+});
+
+for (const h of [approvedGenesis, blockedGenesis, reviewGenesis, chainedBlocked]) {
+  if (!h || h.length !== 64) throw new Error("Invalid ledger hash vector length");
+}
+
+if (approvedGenesis === blockedGenesis || approvedGenesis === reviewGenesis) {
+  throw new Error("Ledger hash vectors must be distinct for different states");
+}
+
+if (chainedBlocked === blockedGenesis) {
+  throw new Error("Chained ledger hash must differ from GENESIS-chained BLOCKED");
+}
+
+const projectionHash = buildExecutionHash(
+  {
+    execution_id: vectorExecutionId,
+    status: "APPROVED",
+    decision: "APPROVE",
+    payload: {}
+  },
+  "GENESIS"
+);
+
+if (projectionHash !== approvedGenesis) {
+  throw new Error("buildExecutionHash must delegate to ledger.js canonical formula");
+}
+
+if (LEDGER_HASH_FORMULA_ID !== "executia/ledger/v1") {
+  throw new Error("Unexpected ledger hash formula id");
+}
 
 console.log("EXECUTIA final full layer tests OK");

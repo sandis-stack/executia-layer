@@ -1,11 +1,16 @@
 import { sha256, stableStringify, nowIso } from "../shared/crypto.js";
 import { db, hasSupabaseEnv } from "./db.js";
+import { buildLedgerHash } from "./ledger.js";
 
+/** Execution projection hash — delegates to ledger.js canonical formula (Phase 3A). */
 export function buildExecutionHash(entry, prevHash = "GENESIS") {
-  const executionId = entry.execution_id;
-  const status = entry.status;
-  const decision = entry.decision || "REVIEW";
-  return sha256(`${executionId}${status}${decision}${prevHash}`);
+  return buildLedgerHash({
+    previous_hash: prevHash,
+    execution_id: entry.execution_id,
+    status: entry.status,
+    decision: entry.decision || "REVIEW",
+    payload: entry.payload || {}
+  });
 }
 
 export function buildAuditHash(event, previousEventHash = "GENESIS") {
