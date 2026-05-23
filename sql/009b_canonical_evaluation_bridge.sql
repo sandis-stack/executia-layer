@@ -3,6 +3,7 @@
 -- Additive CREATE OR REPLACE: trusts canonical_evaluation v1 when present,
 -- with SQL safety asserts; otherwise legacy SQL decision tree.
 -- Phase 3A: ledger hash via executia_ledger_append (canonical execution truth).
+-- Phase 3B.1: supplemental audit via executia_append_global_audit_event (sql/012).
 
 CREATE OR REPLACE FUNCTION commit_execution(payload jsonb)
 RETURNS jsonb
@@ -82,9 +83,19 @@ BEGIN
      NULLIF(payload->>'organization_id', '')::uuid,
      payload, v_hash, v_prev_hash, now(), now());
 
-  INSERT INTO audit_events (event_type, execution_id, actor, payload, created_at)
-  VALUES ('EXECUTION_CREATED', v_id, COALESCE(payload->>'actor','system'),
-          jsonb_build_object('status', v_status, 'decision', v_decision, 'reason', v_reason), now());
+  PERFORM executia_append_global_audit_event(
+    'EXECUTION_SUBMITTED',
+    v_id,
+    COALESCE(payload->>'actor', 'system'),
+    jsonb_build_object(
+      'chain_era', '3B1',
+      'reference_only', true,
+      'ledger_head_hash', v_hash,
+      'status', v_status,
+      'decision', v_decision,
+      'reason', v_reason
+    )
+  );
 
   -- 6. RETURN TRUTH
   RETURN jsonb_build_object(

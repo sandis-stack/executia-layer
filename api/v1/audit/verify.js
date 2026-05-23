@@ -1,5 +1,9 @@
 import { resolveJwtContext, requireJwtPermission } from "../../../services/jwt-auth.js";
-import { verifyAuditChain } from "../../../services/audit.js";
+import {
+  verifyAuditChain,
+  AUDIT_VERIFY_AUTHORITY_MODE,
+  AUDIT_HASH_FORMULA_ID
+} from "../../../services/audit.js";
 import { ok, fail, methodGuard } from "../../../shared/response.js";
 
 export default async function handler(req, res) {
@@ -28,6 +32,8 @@ export default async function handler(req, res) {
       mode: context.mode,
       organization_id: context.organization_id,
       user: context.user,
+      authority_mode: AUDIT_VERIFY_AUTHORITY_MODE,
+      formula: AUDIT_HASH_FORMULA_ID,
       ...result
     });
   } catch (err) {

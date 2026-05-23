@@ -1,6 +1,15 @@
 import { evaluateRules } from "../engine/rule-evaluator.js";
 import { buildLedgerHash, LEDGER_HASH_FORMULA_ID } from "../services/ledger.js";
-import { buildExecutionHash } from "../services/audit.js";
+import {
+  buildExecutionHash,
+  buildAuditHash,
+  verifyAuditChain,
+  getLastAuditHash,
+  AUDIT_HASH_FORMULA_ID,
+  AUDIT_VERIFY_AUTHORITY_MODE,
+  isLegacyAuditRow,
+  isStrictAuditChainEnabled
+} from "../services/audit.js";
 import {
   applyOperatorDecision,
   buildCanonicalEvaluation,
@@ -157,6 +166,74 @@ if (projectionHash !== approvedGenesis) {
 
 if (LEDGER_HASH_FORMULA_ID !== "executia/ledger/v1") {
   throw new Error("Unexpected ledger hash formula id");
+}
+
+const auditGenesis = buildAuditHash(
+  {
+    execution_id: vectorExecutionId,
+    event_type: "EXECUTION_SUBMITTED",
+    actor: "system",
+    payload: {
+      chain_era: "3B1",
+      reference_only: true,
+      status: "PENDING_REVIEW",
+      decision: "REVIEW",
+      reason: "TEST"
+    }
+  },
+  "GENESIS"
+);
+
+const auditChained = buildAuditHash(
+  {
+    execution_id: vectorExecutionId,
+    event_type: "OPERATOR_DECISION_RECORDED",
+    actor: "operator",
+    payload: {
+      chain_era: "3B1",
+      reference_only: true,
+      status: "APPROVED",
+      decision: "APPROVE",
+      reason: "TEST"
+    }
+  },
+  auditGenesis
+);
+
+if (!auditGenesis || auditGenesis.length !== 64) {
+  throw new Error("Invalid audit hash vector length");
+}
+if (auditGenesis === auditChained) {
+  throw new Error("Chained audit hash must differ from GENESIS supplemental event");
+}
+if (AUDIT_HASH_FORMULA_ID !== "executia/audit/v1") {
+  throw new Error("Unexpected audit hash formula id");
+}
+if (AUDIT_VERIFY_AUTHORITY_MODE !== "SUPPLEMENTAL_AUDIT_GLOBAL") {
+  throw new Error("Unexpected audit verify authority mode");
+}
+
+const dryAudit = await verifyAuditChain();
+if (!dryAudit.verified || dryAudit.mode !== "DRY_RUN") {
+  throw new Error("Expected DRY_RUN global audit verify");
+}
+if (dryAudit.chain_scope !== "GLOBAL") {
+  throw new Error("Expected GLOBAL audit chain scope");
+}
+
+const dryHead = await getLastAuditHash();
+if (dryHead !== "GENESIS") {
+  throw new Error("Expected GENESIS audit head in DRY_RUN");
+}
+
+if (!isLegacyAuditRow({ event_type: "EXECUTION_CREATED", payload: {} })) {
+  throw new Error("Expected legacy row without event_hash");
+}
+if (isLegacyAuditRow({ event_hash: auditGenesis, payload: { chain_era: "3B1" } })) {
+  throw new Error("Expected non-legacy row with event_hash");
+}
+if (isStrictAuditChainEnabled() && !process.env.EXECUTIA_STRICT_AUDIT_CHAIN) {
+  throw new Error("Strict audit flag should be false by default in test runner");
 }
 
 const {

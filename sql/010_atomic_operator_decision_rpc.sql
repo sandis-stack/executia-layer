@@ -2,6 +2,7 @@
 -- Run AFTER sql/001_schema.sql, sql/009_atomic_execution_rpc.sql, sql/011_ledger_hash_authority.sql
 -- Operator review resolution must be atomic: execution update + ledger entry + audit event in one DB transaction.
 -- Phase 3A: ledger hash via executia_ledger_append (canonical execution truth).
+-- Phase 3B.1: supplemental audit via executia_append_global_audit_event (sql/012).
 
 CREATE OR REPLACE FUNCTION commit_operator_decision(
   p_execution_id uuid,
@@ -63,19 +64,18 @@ BEGIN
          updated_at = now()
    WHERE execution_id = p_execution_id;
 
-  INSERT INTO audit_events (event_type, execution_id, actor, payload, created_at)
-  VALUES (
-    'OPERATOR_DECISION_COMMITTED',
+  PERFORM executia_append_global_audit_event(
+    'OPERATOR_DECISION_RECORDED',
     p_execution_id,
     COALESCE(p_actor, 'operator'),
     jsonb_build_object(
+      'chain_era', '3B1',
+      'reference_only', true,
+      'ledger_head_hash', v_hash,
       'status', v_status,
       'decision', v_normalized,
-      'reason', COALESCE(p_reason, 'OPERATOR_' || v_normalized),
-      'hash', v_hash,
-      'prev_hash', v_prev_hash
-    ),
-    now()
+      'reason', COALESCE(p_reason, 'OPERATOR_' || v_normalized)
+    )
   );
 
   RETURN jsonb_build_object(
