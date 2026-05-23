@@ -1,4 +1,0 @@
- source | execution_id | status | decision | reason | stored_hash | stored_prev_hash | created_at | updated_at | organization_id | payload 
---------+--------------+--------+----------+--------+-------------+------------------+------------+------------+-----------------+---------
-(0 rows)
-
