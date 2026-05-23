@@ -159,4 +159,73 @@ if (LEDGER_HASH_FORMULA_ID !== "executia/ledger/v1") {
   throw new Error("Unexpected ledger hash formula id");
 }
 
+const {
+  resolveLedgerVerifyAuthority,
+  LEDGER_VERIFY_AUTHORITY_MODE
+} = await import("../api/v1/ledger-verify.js");
+
+const ledgerOk = { verified: true, entries: 10 };
+const execFail = {
+  verified: false,
+  entries: 10,
+  tampered_execution_id: "93d10bcc-518b-4353-8e0b-852e04d34aa4"
+};
+const coreFail = {
+  verified: false,
+  entries: 5,
+  tampered_id: "ed9f4e9c-2c9b-4eb1-a117-391bb135e718"
+};
+const auditOk = { verified: true, accounts_checked: 3, mismatches: [] };
+
+const phase31 = resolveLedgerVerifyAuthority({
+  ledger: ledgerOk,
+  executions: execFail,
+  coreLedger: coreFail,
+  accountAudit: auditOk
+});
+
+if (phase31.verified !== true) {
+  throw new Error("Phase 3A.1: verified must follow ledger_chain when ledger verified");
+}
+if (phase31.authority_mode !== LEDGER_VERIFY_AUTHORITY_MODE) {
+  throw new Error("Phase 3A.1: expected LEDGER_ENTRIES_PRIMARY authority_mode");
+}
+if (!phase31.legacy_projection_warning?.tampered_execution_id) {
+  throw new Error("Phase 3A.1: legacy_projection_warning must retain tampered_execution_id");
+}
+if (!phase31.legacy_core_ledger_warning?.tampered_id) {
+  throw new Error("Phase 3A.1: legacy_core_ledger_warning must retain tampered_id");
+}
+if (phase31.legacy_verified.composite_all_chains !== false) {
+  throw new Error("Phase 3A.1: composite_all_chains must reflect legacy components");
+}
+if (phase31.legacy_verified.execution_projection !== false) {
+  throw new Error("Phase 3A.1: legacy_verified.execution_projection mismatch");
+}
+
+const allLegacyOk = resolveLedgerVerifyAuthority({
+  ledger: ledgerOk,
+  executions: { verified: true, entries: 1 },
+  coreLedger: { verified: true, entries: 1 },
+  accountAudit: auditOk
+});
+
+if (allLegacyOk.verified !== true || allLegacyOk.legacy_projection_warning !== null) {
+  throw new Error("Phase 3A.1: no warnings when all legacy chains verify");
+}
+
+const ledgerFail = resolveLedgerVerifyAuthority({
+  ledger: { verified: false, entries: 1, reason: "ENTRY_HASH_MISMATCH" },
+  executions: execFail,
+  coreLedger: coreFail,
+  accountAudit: auditOk
+});
+
+if (ledgerFail.verified !== false) {
+  throw new Error("Phase 3A.1: verified must be false when ledger_chain fails");
+}
+if (ledgerFail.legacy_projection_warning !== null) {
+  throw new Error("Phase 3A.1: no projection warning when ledger_chain not verified");
+}
+
 console.log("EXECUTIA final full layer tests OK");
