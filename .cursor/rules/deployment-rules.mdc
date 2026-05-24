@@ -1,0 +1,12 @@
+# EXECUTIA Deployment Rules
+
+Before production deploy:
+1. node --check changed JS files
+2. npm test
+3. git diff --stat
+4. git status --short
+5. vercel --prod
+6. curl production endpoint
+7. inspect production response
+
+Never deploy unverified code.

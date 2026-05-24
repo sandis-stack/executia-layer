@@ -1,0 +1,14 @@
+# EXECUTIA Supabase Rules
+
+Production Supabase project:
+dnyaancdvdsibbkdjdor
+
+Never apply migrations to the wrong project.
+
+Production DB authority:
+- ledger_entries
+- audit_events supplemental chain
+- executia_audit_event_hash SQL authority
+
+Never UPDATE or DELETE chained audit rows.
+Use append-only logic.

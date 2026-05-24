@@ -1,0 +1,10 @@
+# EXECUTIA Security Rules
+
+- Internal endpoints support x-api-key only server-side.
+- Public verification endpoints must expose only public-safe proof.
+- Never expose:
+  - service role key
+  - database password
+  - private env values
+  - sensitive payloads
+- Public verify endpoints must be read-only.

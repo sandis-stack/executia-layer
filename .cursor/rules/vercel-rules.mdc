@@ -1,0 +1,6 @@
+# EXECUTIA Vercel Rules
+
+- Prefer explicit endpoints over dynamic routes when routing is unc- Prefer explicit endpoints over dynamic rhttps://execution.executia.io
+- Public endpoints must return JSON, not HTML.
+- If JSON parse fails, check curl -i first.
+- Never assume Vercel dynamic route works without production curl verification.
