@@ -176,7 +176,13 @@
         }
 
         // 2. Load entries
-        const rows = await executiaFetchJson("/api/v1/history");
+        const historyResponse = await fetch("/api/v1/history", {
+          headers: {
+            "x-api-key": window.__EXECUTIA_KEY__ || ""
+          }
+        });
+
+        const rows = await historyResponse.json();
 
         ledgerJson.textContent = JSON.stringify({ verify, history: rows }, null, 2);
 
