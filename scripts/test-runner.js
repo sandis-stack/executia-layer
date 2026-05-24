@@ -305,4 +305,42 @@ if (ledgerFail.legacy_projection_warning !== null) {
   throw new Error("Phase 3A.1: no projection warning when ledger_chain not verified");
 }
 
+const {
+  buildDeterministicReplay,
+  REPLAY_MODE,
+  REPLAY_CANONICAL_NOTE
+} = await import("../api/v1/execution/replay.js");
+
+const replaySafe = buildDeterministicReplay({
+  execution_id: vectorExecutionId,
+  execution: {
+    status: "APPROVED",
+    decision: "APPROVE",
+    actor: "operator",
+    subject: "invoice-001",
+    hash: approvedGenesis,
+    prev_hash: "GENESIS"
+  },
+  audit_events_count: 2,
+  ledger_entries_count: 1
+});
+
+if (replaySafe.replay_mode !== REPLAY_MODE) {
+  throw new Error("Unexpected replay mode");
+}
+if (!replaySafe.execution_found || !replaySafe.deterministic_checks.canonical_replay_safe) {
+  throw new Error("Expected canonical replay safe for complete execution");
+}
+if (replaySafe.canonical_note !== REPLAY_CANONICAL_NOTE) {
+  throw new Error("Unexpected replay canonical note");
+}
+
+const replayMissing = buildDeterministicReplay({
+  execution_id: vectorExecutionId
+});
+
+if (replayMissing.execution_found || replayMissing.deterministic_checks.canonical_replay_safe) {
+  throw new Error("Expected replay unsafe when execution missing");
+}
+
 console.log("EXECUTIA final full layer tests OK");

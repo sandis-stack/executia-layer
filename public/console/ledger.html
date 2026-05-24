@@ -215,6 +215,56 @@
       return value ? String(value).slice(0, 12) + "…" : "GENESIS";
     }
 
+    async function runReplayVerify(executionId) {
+      const panel = document.getElementById("proofReplayPanel");
+      const result = document.getElementById("proofReplayResult");
+      const pill = document.getElementById("replayPill");
+
+      if (!executionId || !panel || !result || !pill) return;
+
+      panel.style.display = "block";
+      result.textContent = "Loading replay…";
+      pill.textContent = "…";
+      pill.className = "ex-pill warn";
+
+      try {
+        const response = await fetch(
+          `/api/v1/execution/replay?execution_id=${encodeURIComponent(executionId)}`,
+          { headers: { "x-api-key": window.__EXECUTIA_KEY__ || "" } }
+        );
+        const data = await response.json();
+
+        if (!data.ok) {
+          result.textContent = data.error?.message || data.error?.code || "Replay failed.";
+          pill.textContent = "REPLAY CHECK";
+          pill.className = "ex-pill block";
+          return;
+        }
+
+        const safe = data.deterministic_checks?.canonical_replay_safe === true;
+        pill.textContent = safe ? "REPLAY SAFE" : "REPLAY CHECK";
+        pill.className = safe ? "ex-pill ok" : "ex-pill warn";
+
+        const checks = data.deterministic_checks || {};
+        result.innerHTML = `
+          ${proofRow("REPLAY MODE", data.replay_mode)}
+          ${proofRow("EXECUTION FOUND", String(data.execution_found))}
+          ${proofRow("STATUS", data.status)}
+          ${proofRow("DECISION", data.decision)}
+          ${proofRow("AUDIT EVENTS", String(data.audit_events_count))}
+          ${proofRow("LEDGER ENTRIES", String(data.ledger_entries_count))}
+          ${proofRow("HASH PRESENT", String(checks.execution_hash_present))}
+          ${proofRow("PREV HASH PRESENT", String(checks.previous_hash_present))}
+          ${proofRow("CANONICAL REPLAY SAFE", String(checks.canonical_replay_safe))}
+          ${proofRow("NOTE", data.canonical_note)}
+        `;
+      } catch (err) {
+        result.textContent = err.message || "Replay request failed.";
+        pill.textContent = "REPLAY CHECK";
+        pill.className = "ex-pill block";
+      }
+    }
+
     function openProof(item) {
       const proof = {
         execution_id: item.execution_id || null,
@@ -255,9 +305,18 @@
           ${proofRow("HASH", proof.hash)}
           ${proofRow("PREVIOUS HASH", proof.previous_hash)}
           <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-            <button class="ex-pill ok" onclick="navigator.clipboard.writeText('${proof.hash || ""}')">COPY HASH</button>
-            <button class="ex-pill ok" onclick="navigator.clipboard.writeText('${proof.previous_hash || ""}')">COPY PREVIOUS</button>
+            <button type="button" class="ex-pill ok" onclick="navigator.clipboard.writeText('${proof.hash || ""}')">COPY HASH</button>
+            <button type="button" class="ex-pill ok" onclick="navigator.clipboard.writeText('${proof.previous_hash || ""}')">COPY PREVIOUS</button>
+            <button type="button" class="ex-pill ok" id="replayVerifyBtn">REPLAY VERIFY</button>
           </div>
+        </section>
+
+        <section class="ex-card" id="proofReplayPanel" style="box-shadow:none;display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+            <h3 class="ex-card-title">Deterministic Replay</h3>
+            <span class="ex-pill warn" id="replayPill">—</span>
+          </div>
+          <div id="proofReplayResult" class="ex-stack">Run replay verify to inspect read-only revalidation.</div>
         </section>
 
         <section class="ex-card" style="box-shadow:none">
@@ -269,6 +328,14 @@
       `;
 
       proofJson.textContent = JSON.stringify(proof, null, 2);
+
+      const replayPanel = document.getElementById("proofReplayPanel");
+      if (replayPanel) replayPanel.style.display = "none";
+
+      const replayBtn = document.getElementById("replayVerifyBtn");
+      if (replayBtn) {
+        replayBtn.addEventListener("click", () => runReplayVerify(proof.execution_id));
+      }
 
       proofModal.style.display = "flex";
     }
