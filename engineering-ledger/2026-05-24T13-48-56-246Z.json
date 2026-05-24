@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-05-24T13:48:56.246Z",
+  "branch": "phase-3b3-ledger-polish",
+  "commit": "65d2969521ea7eb1e9c3211b0e8dce99de8ddd3f",
+  "protected_files_touched": [
+    {
+      "file": "scripts/test-runner.js",
+      "patterns": [
+        "scripts/test-runner.js"
+      ]
+    }
+  ],
+  "change_classification_hint": "PROTECTED_FILES_TOUCHED",
+  "risk_level": "HIGH",
+  "files_changed": [
+    ".cursor/hooks/pre-deploy-check.sh",
+    "scripts/test-runner.js",
+    ".cursor/context/architecture-graph.md",
+    "architecture-graph/.gitkeep",
+    "architecture-graph/2026-05-24T13-47-46-415Z.json",
+    "architecture-graph/2026-05-24T13-47-47-754Z.json",
+    "architecture-graph/2026-05-24T13-48-54-731Z.json",
+    "architecture-graph/2026-05-24T13-48-56-077Z.json",
+    "architecture-graph/latest.json",
+    "docs/governance/architecture-graph.md",
+    "scripts/phase-3b8-architecture-graph.js"
+  ],
+  "governance": {
+    "replayable": true,
+    "deterministic_checks_required": true,
+    "protected_files_present": true
+  }
+}

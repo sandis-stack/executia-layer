@@ -487,4 +487,36 @@ try {
   } catch (_) {}
 }
 
+const phase38GraphFiles = [
+  "scripts/phase-3b8-architecture-graph.js",
+  ".cursor/context/architecture-graph.md",
+  "docs/governance/architecture-graph.md",
+  "architecture-graph/.gitkeep"
+];
+
+for (const file of phase38GraphFiles) {
+  if (!existsSync(join(__test_dir, "..", file))) {
+    throw new Error(`Missing Phase 3B8 architecture graph file: ${file}`);
+  }
+}
+
+const { buildArchitectureGraph } = await import("../scripts/phase-3b8-architecture-graph.js");
+
+const graph = buildArchitectureGraph();
+if (!graph.findings.canonical_authority.includes("endpoint:audit/verify")) {
+  throw new Error("Architecture graph must include canonical audit verify");
+}
+if (!graph.findings.replay_layer.includes("endpoint:execution/replay")) {
+  throw new Error("Architecture graph must include execution replay layer");
+}
+if (!graph.findings.public_verification.includes("endpoint:verify/execution_id")) {
+  throw new Error("Architecture graph must include public verification endpoint");
+}
+if (graph.findings.governance_layer.length < 4) {
+  throw new Error("Architecture graph must include Phase 3B5–3B8 governance scripts");
+}
+if (!graph.nodes.length || !graph.edges.length) {
+  throw new Error("Architecture graph must contain nodes and edges");
+}
+
 console.log("EXECUTIA final full layer tests OK");
