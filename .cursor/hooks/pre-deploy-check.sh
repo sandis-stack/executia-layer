@@ -4,4 +4,8 @@ set -e
 echo "EXECUTIA pre-deploy check"
 
 npm test
-git status --git status --git status --git status --git oygit status --git statu is intentional."
+
+git status --short
+git diff --stat
+
+echo "Ready for deploy if working tree state is intentional."
