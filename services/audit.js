@@ -184,6 +184,7 @@ export async function verifyAuditChain(execution_id = null) {
   let chained = 0;
   let legacy_skipped = 0;
   let pre_cutover_skipped = 0;
+  let legacy_boundary_accepted = 0;
 
   for (const event of rows) {
     if (isLegacyAuditRow(event)) {
@@ -198,6 +199,17 @@ export async function verifyAuditChain(execution_id = null) {
 
     const { event_hash, prev_hash: storedPreviousRaw } = resolveStoredAuditHashes(event);
     const storedPrevious = storedPreviousRaw || "GENESIS";
+
+    if (
+      storedPrevious !== previous &&
+      previous === "GENESIS" &&
+      chained === 0 &&
+      legacy_skipped > 0 &&
+      storedPrevious !== "GENESIS"
+    ) {
+      previous = storedPrevious;
+      legacy_boundary_accepted += 1;
+    }
 
     if (storedPrevious !== previous) {
       return {
@@ -240,6 +252,7 @@ export async function verifyAuditChain(execution_id = null) {
     entries: chained,
     legacy_skipped,
     pre_cutover_skipped,
+    legacy_boundary_accepted,
     strict,
     authority_mode: AUDIT_VERIFY_AUTHORITY_MODE,
     formula: AUDIT_HASH_FORMULA_ID,
