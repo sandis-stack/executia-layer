@@ -1,4 +1,7 @@
 import { evaluateRules } from "../engine/rule-evaluator.js";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { buildLedgerHash, LEDGER_HASH_FORMULA_ID } from "../services/ledger.js";
 import {
   buildExecutionHash,
@@ -319,7 +322,8 @@ const replaySafe = buildDeterministicReplay({
     actor: "operator",
     subject: "invoice-001",
     hash: approvedGenesis,
-    prev_hash: "GENESIS"
+    prev_hash: "GENESIS",
+    created_at: "2026-01-01T00:00:00.000Z"
   },
   audit_events_count: 2,
   ledger_entries_count: 1
@@ -328,8 +332,17 @@ const replaySafe = buildDeterministicReplay({
 if (replaySafe.replay_mode !== REPLAY_MODE) {
   throw new Error("Unexpected replay mode");
 }
-if (!replaySafe.execution_found || !replaySafe.deterministic_checks.canonical_replay_safe) {
+if (!replaySafe.execution_found || !replaySafe.deterministic_checks?.canonical_replay_safe) {
   throw new Error("Expected canonical replay safe for complete execution");
+}
+if (replaySafe.canonical_replay_result !== "REPLAY_SAFE") {
+  throw new Error("Expected canonical_replay_result REPLAY_SAFE");
+}
+if (!Array.isArray(replaySafe.timeline) || replaySafe.timeline.length !== 4) {
+  throw new Error("Expected replay timeline with 4 steps");
+}
+if (replaySafe.timeline[3]?.layer !== "REPLAY_DECISION" || replaySafe.timeline[3]?.result !== "REPLAY_SAFE") {
+  throw new Error("Expected final replay timeline decision REPLAY_SAFE");
 }
 if (replaySafe.canonical_note !== REPLAY_CANONICAL_NOTE) {
   throw new Error("Unexpected replay canonical note");
@@ -339,8 +352,27 @@ const replayMissing = buildDeterministicReplay({
   execution_id: vectorExecutionId
 });
 
-if (replayMissing.execution_found || replayMissing.deterministic_checks.canonical_replay_safe) {
+if (replayMissing.execution_found || replayMissing.deterministic_checks?.canonical_replay_safe) {
   throw new Error("Expected replay unsafe when execution missing");
+}
+if (replayMissing.canonical_replay_result !== "REPLAY_CHECK") {
+  throw new Error("Expected canonical_replay_result REPLAY_CHECK when execution missing");
+}
+
+const __test_dir = dirname(fileURLToPath(import.meta.url));
+const publicVerifySource = readFileSync(
+  join(__test_dir, "../api/v1/verify/[execution_id].js"),
+  "utf8"
+);
+
+if (publicVerifySource.includes("requireInternalKey")) {
+  throw new Error("Public verify must not require internal key");
+}
+
+for (const forbidden of ["insert", "update", "delete", "upsert"]) {
+  if (new RegExp(`\\.${forbidden}\\(`, "i").test(publicVerifySource)) {
+    throw new Error(`Public verify must not contain database mutation: ${forbidden}`);
+  }
 }
 
 console.log("EXECUTIA final full layer tests OK");

@@ -215,6 +215,51 @@
       return value ? String(value).slice(0, 12) + "…" : "GENESIS";
     }
 
+    function replayTimelineCard(step) {
+      if (step.layer === "EXECUTION_RESULT") {
+        return `
+          <article class="ex-card" style="box-shadow:none;border-left:3px solid #1e3a5f">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+              <div>
+                <p class="ex-kicker">STEP ${step.step} · ${step.layer}</p>
+                <p class="ex-muted" style="font-size:12px;margin-top:6px">${step.status || "—"} · ${step.decision || "—"}</p>
+              </div>
+              <span class="ex-pill ${step.hash ? "ok" : "warn"}">${step.hash ? "HASH LINKED" : "NO HASH"}</span>
+            </div>
+            <p class="ex-muted" style="font-size:11px;font-family:monospace;margin-top:8px">prev: ${step.previous_hash || "GENESIS"}</p>
+            <p class="ex-muted" style="font-size:11px;margin-top:4px">${step.created_at || "—"}</p>
+          </article>
+        `;
+      }
+
+      if (step.layer === "REPLAY_DECISION") {
+        const safe = step.result === "REPLAY_SAFE";
+        return `
+          <article class="ex-card" style="box-shadow:none;border-left:3px solid ${safe ? "#166534" : "#b45309"}">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+              <div>
+                <p class="ex-kicker">STEP ${step.step} · ${step.layer}</p>
+                <p class="ex-muted" style="font-size:12px;margin-top:6px">Deterministic replay outcome</p>
+              </div>
+              <span class="ex-pill ${safe ? "ok" : "warn"}">${step.result}</span>
+            </div>
+          </article>
+        `;
+      }
+
+      return `
+        <article class="ex-card" style="box-shadow:none;border-left:3px solid #475569">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div>
+              <p class="ex-kicker">STEP ${step.step} · ${step.layer}</p>
+              <p class="ex-muted" style="font-size:12px;margin-top:6px">count: ${step.count ?? 0}</p>
+            </div>
+            <span class="ex-pill ${step.verified_presence ? "ok" : "warn"}">${step.verified_presence ? "PRESENT" : "MISSING"}</span>
+          </div>
+        </article>
+      `;
+    }
+
     async function runReplayVerify(executionId) {
       const panel = document.getElementById("proofReplayPanel");
       const result = document.getElementById("proofReplayResult");
@@ -241,12 +286,24 @@
           return;
         }
 
-        const safe = data.deterministic_checks?.canonical_replay_safe === true;
-        pill.textContent = safe ? "REPLAY SAFE" : "REPLAY CHECK";
+        const safe =
+          data.deterministic_checks?.canonical_replay_safe === true ||
+          data.canonical_replay_result === "REPLAY_SAFE";
+        const replayResult = data.canonical_replay_result || (safe ? "REPLAY_SAFE" : "REPLAY_CHECK");
+        pill.textContent = replayResult.replace(/_/g, " ");
         pill.className = safe ? "ex-pill ok" : "ex-pill warn";
 
         const checks = data.deterministic_checks || {};
+        const timelineHtml = Array.isArray(data.timeline)
+          ? data.timeline.map(replayTimelineCard).join("")
+          : "";
+
         result.innerHTML = `
+          <section class="ex-stack" style="margin-bottom:14px">
+            <p class="ex-kicker">Replay Timeline</p>
+            ${timelineHtml || proofRow("TIMELINE", "No timeline returned.")}
+          </section>
+          ${proofRow("CANONICAL REPLAY RESULT", replayResult)}
           ${proofRow("REPLAY MODE", data.replay_mode)}
           ${proofRow("EXECUTION FOUND", String(data.execution_found))}
           ${proofRow("STATUS", data.status)}

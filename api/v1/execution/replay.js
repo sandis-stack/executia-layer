@@ -8,6 +8,52 @@ export const REPLAY_MODE = "READ_ONLY_DETERMINISTIC_REVALIDATION";
 export const REPLAY_CANONICAL_NOTE =
   "Replay is read-only. Canonical truth remains Phase 3B3 audit verification + ledger_entries.";
 
+export const PUBLIC_VERIFY_CANONICAL_NOTE =
+  "Public verification is read-only. Canonical truth remains Phase 3B3 audit verification + ledger_entries.";
+
+export function resolveCanonicalReplayResult(canonical_replay_safe) {
+  return canonical_replay_safe ? "REPLAY_SAFE" : "REPLAY_CHECK";
+}
+
+export function buildReplayTimeline({
+  execution = null,
+  audit_events_count = 0,
+  ledger_entries_count = 0,
+  canonical_replay_result = "REPLAY_CHECK"
+}) {
+  const hash = execution?.hash || null;
+  const previous_hash = execution?.prev_hash || execution?.previous_hash || null;
+
+  return [
+    {
+      step: 1,
+      layer: "EXECUTION_RESULT",
+      status: execution?.status ?? null,
+      decision: execution?.decision ?? null,
+      hash,
+      previous_hash,
+      created_at: execution?.created_at ?? null
+    },
+    {
+      step: 2,
+      layer: "AUDIT_EVENTS",
+      count: audit_events_count,
+      verified_presence: audit_events_count > 0
+    },
+    {
+      step: 3,
+      layer: "LEDGER_ENTRIES",
+      count: ledger_entries_count,
+      verified_presence: ledger_entries_count > 0
+    },
+    {
+      step: 4,
+      layer: "REPLAY_DECISION",
+      result: canonical_replay_result
+    }
+  ];
+}
+
 export function buildDeterministicReplay({
   execution_id,
   execution = null,
@@ -33,6 +79,17 @@ export function buildDeterministicReplay({
     deterministic_checks.audit_events_present &&
     deterministic_checks.ledger_entries_present;
 
+  const canonical_replay_result = resolveCanonicalReplayResult(
+    deterministic_checks.canonical_replay_safe
+  );
+
+  const timeline = buildReplayTimeline({
+    execution,
+    audit_events_count,
+    ledger_entries_count,
+    canonical_replay_result
+  });
+
   return {
     replay_mode: REPLAY_MODE,
     execution_id,
@@ -46,7 +103,25 @@ export function buildDeterministicReplay({
     audit_events_count,
     ledger_entries_count,
     deterministic_checks,
+    canonical_replay_result,
+    timeline,
     canonical_note: REPLAY_CANONICAL_NOTE
+  };
+}
+
+export function buildPublicVerifyPayload(replay) {
+  return {
+    public_verify: true,
+    execution_id: replay.execution_id,
+    execution_found: replay.execution_found,
+    status: replay.status,
+    decision: replay.decision,
+    hash: replay.hash,
+    previous_hash: replay.previous_hash,
+    audit_events_count: replay.audit_events_count,
+    ledger_entries_count: replay.ledger_entries_count,
+    canonical_replay_result: replay.canonical_replay_result,
+    canonical_note: PUBLIC_VERIFY_CANONICAL_NOTE
   };
 }
 
@@ -62,6 +137,55 @@ async function loadLedgerEntryCount(execution_id) {
   } catch (_) {
     return 0;
   }
+}
+
+export async function loadExecutionReplayReadOnly({
+  execution_id,
+  organization_id = null
+}) {
+  if (!hasSupabaseEnv()) {
+    return {
+      mode: "DRY_RUN",
+      execution: null,
+      audit_events_count: 0,
+      ledger_entries_count: 0
+    };
+  }
+
+  let executionQuery = db()
+    .from("execution_results")
+    .select("*")
+    .eq("execution_id", execution_id);
+
+  if (organization_id) {
+    executionQuery = executionQuery.eq("organization_id", organization_id);
+  }
+
+  const { data: execution, error: executionError } = await executionQuery.maybeSingle();
+  if (executionError) throw executionError;
+
+  if (!execution) {
+    return {
+      execution: null,
+      audit_events_count: 0,
+      ledger_entries_count: 0
+    };
+  }
+
+  const { data: auditEvents, error: auditError } = await db()
+    .from("audit_events")
+    .select("id")
+    .eq("execution_id", execution_id);
+
+  if (auditError) throw auditError;
+
+  const ledger_entries_count = await loadLedgerEntryCount(execution_id);
+
+  return {
+    execution,
+    audit_events_count: (auditEvents || []).length,
+    ledger_entries_count
+  };
 }
 
 export default async function handler(req, res) {
@@ -106,54 +230,23 @@ export default async function handler(req, res) {
       }
     }
 
-    if (!hasSupabaseEnv()) {
-      return ok(res, {
-        mode: "DRY_RUN",
-        ...buildDeterministicReplay({ execution_id })
-      });
-    }
+    const loaded = await loadExecutionReplayReadOnly({
+      execution_id,
+      organization_id: auth.organization_id
+    });
 
-    let executionQuery = db()
-      .from("execution_results")
-      .select("*")
-      .eq("execution_id", execution_id);
-
-    if (auth.organization_id) {
-      executionQuery = executionQuery.eq("organization_id", auth.organization_id);
-    }
-
-    const { data: execution, error: executionError } = await executionQuery.maybeSingle();
-
-    if (executionError) throw executionError;
-
-    if (!execution) {
-      return ok(res, {
-        mode: auth.mode,
-        organization_id: auth.organization_id,
-        user: auth.user,
-        ...buildDeterministicReplay({ execution_id })
-      });
-    }
-
-    const { data: auditEvents, error: auditError } = await db()
-      .from("audit_events")
-      .select("id")
-      .eq("execution_id", execution_id);
-
-    if (auditError) throw auditError;
-
-    const ledger_entries_count = await loadLedgerEntryCount(execution_id);
+    const replay = buildDeterministicReplay({
+      execution_id,
+      execution: loaded.execution,
+      audit_events_count: loaded.audit_events_count,
+      ledger_entries_count: loaded.ledger_entries_count
+    });
 
     return ok(res, {
-      mode: auth.mode,
+      mode: loaded.mode || auth.mode,
       organization_id: auth.organization_id,
       user: auth.user,
-      ...buildDeterministicReplay({
-        execution_id,
-        execution,
-        audit_events_count: (auditEvents || []).length,
-        ledger_entries_count
-      })
+      ...replay
     });
   } catch (err) {
     return fail(
