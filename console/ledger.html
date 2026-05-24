@@ -92,19 +92,37 @@
       <!-- Integrity status banner -->
       <div class="ex-grid ex-grid-3" style="margin-bottom:22px">
         <article class="ex-card" id="verifyCard">
-          <h2 class="ex-card-title">Chain Integrity</h2>
+          <h2 class="ex-card-title">Canonical Status</h2>
           <p class="ex-card-subtitle" id="verifyStatus">Checking...</p>
           <span class="ex-pill" id="verifyPill">—</span>
         </article>
         <article class="ex-card">
-          <h2 class="ex-card-title">Total Entries</h2>
-          <p class="ex-card-subtitle">Committed transactions in chain</p>
+          <h2 class="ex-card-title">Ledger Entries</h2>
+          <p class="ex-card-subtitle">Material truth records in ledger_entries</p>
           <span class="ex-pill ok" id="entryCount">—</span>
         </article>
         <article class="ex-card">
-          <h2 class="ex-card-title">Hash Algorithm</h2>
-          <p class="ex-card-subtitle">SHA-256 · deterministic · sorted keys</p>
-          <span class="ex-pill ok">Active</span>
+          <h2 class="ex-card-title">Audit Height</h2>
+          <p class="ex-card-subtitle">Supplemental global audit chain</p>
+          <span class="ex-pill ok" id="auditHeight">—</span>
+        </article>
+      </div>
+
+      <div class="ex-grid ex-grid-3" style="margin-bottom:22px">
+        <article class="ex-card">
+          <h2 class="ex-card-title">Chain Era</h2>
+          <p class="ex-card-subtitle">Phase 3B3 · canonical verification</p>
+          <span class="ex-pill ok" id="chainEra">3B3</span>
+        </article>
+        <article class="ex-card">
+          <h2 class="ex-card-title">Authority</h2>
+          <p class="ex-card-subtitle">Audit chain + ledger_entries</p>
+          <span class="ex-pill ok" id="authorityPill">CANONICAL</span>
+        </article>
+        <article class="ex-card">
+          <h2 class="ex-card-title">Hash Authority</h2>
+          <p class="ex-card-subtitle">SQL audit hash authority · SHA-256</p>
+          <span class="ex-pill ok">ACTIVE</span>
         </article>
       </div>
 
@@ -115,10 +133,10 @@
       </section>
 
       <!-- Raw JSON debug -->
-      <section class="ex-card" style="margin-top:22px">
-        <h2 class="ex-card-title" style="margin-bottom:10px">Raw Chain Data</h2>
-        <pre id="ledgerJson" class="ex-json">Loading...</pre>
-      </section>
+      <details class="ex-card" style="margin-top:22px">
+        <summary class="ex-card-title" style="cursor:pointer">Raw Chain Data</summary>
+        <pre id="ledgerJson" class="ex-json" style="margin-top:14px">Loading...</pre>
+      </details>
     </section>
   </main>
 
@@ -126,6 +144,7 @@
     const verifyStatus = document.getElementById("verifyStatus");
     const verifyPill   = document.getElementById("verifyPill");
     const entryCount   = document.getElementById("entryCount");
+    const auditHeight  = document.getElementById("auditHeight");
     const ledgerList   = document.getElementById("ledgerList");
     const ledgerJson   = document.getElementById("ledgerJson");
 
@@ -150,7 +169,8 @@
 
         const verify = await verifyResponse.json();
 
-        entryCount.textContent = verify.ledger?.entries ?? verify.audit?.entries ?? "—";
+        entryCount.textContent = verify.ledger?.entries ?? "—";
+        auditHeight.textContent = verify.audit?.entries ?? "—";
 
         if (verify.verified) {
 
