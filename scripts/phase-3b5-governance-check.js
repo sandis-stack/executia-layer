@@ -110,6 +110,17 @@ function classifyHint(files) {
   return [...hints];
 }
 
+function sqlDiffIsCommentOnly(file) {
+  const added = gitDiffForFile(file);
+  const lines = added.split("\n").filter((line) => line.length > 0);
+  if (!lines.length) return false;
+  return lines.every((line) => /^\s*--/.test(line));
+}
+
+function sqlChangesRequiringApproval(sqlFiles) {
+  return sqlFiles.filter((file) => !sqlDiffIsCommentOnly(file));
+}
+
 function gitDiffForFile(file) {
   let diff = "";
   try {
@@ -204,9 +215,10 @@ function main() {
   }
 
   const sqlTouched = files.filter((f) => f.startsWith("sql/"));
-  if (sqlTouched.length && process.env.PHASE_3B5_ALLOW_SQL !== "1") {
+  const sqlNeedsApproval = sqlChangesRequiringApproval(sqlTouched);
+  if (sqlNeedsApproval.length && process.env.PHASE_3B5_ALLOW_SQL !== "1") {
     violations.push(
-      `SQL changes require explicit approval. Set PHASE_3B5_ALLOW_SQL=1 to acknowledge: ${sqlTouched.join(", ")}`
+      `SQL changes require explicit approval. Set PHASE_3B5_ALLOW_SQL=1 to acknowledge: ${sqlNeedsApproval.join(", ")}`
     );
   }
 

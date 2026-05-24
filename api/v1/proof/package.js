@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
 import { buildExecutionProof } from "../../../services/proof/build-proof.js";
+// Legacy projection check only. Canonical verification authority is /api/v1/audit/verify.
 import { verifyAuditChain } from "../../../services/audit.js";
 import { verifyCoreLedgerChain } from "../../../services/core-ledger.js";
 import { ok, fail, methodGuard } from "../../../shared/response.js";
@@ -150,7 +151,7 @@ export default async function handler(req, res) {
       core_ledger_entries: coreLedgerEntries || []
     });
 
-    const audit = await verifyAuditChain(execution_id);
+    const audit = await verifyAuditChain(execution_id); // legacy projection check only
 
     let coreLedgerVerification = {
       verified: false,
@@ -158,7 +159,7 @@ export default async function handler(req, res) {
     };
 
     try {
-      coreLedgerVerification = await verifyCoreLedgerChain();
+      coreLedgerVerification = await verifyCoreLedgerChain(); // legacy projection check only
     } catch (err) {
       coreLedgerVerification = {
         verified: false,

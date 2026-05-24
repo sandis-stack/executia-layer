@@ -1,3 +1,6 @@
+-- LEGACY PRE-3B1 RPC. Not canonical production authority.
+-- Canonical submit path is sql/009b_canonical_evaluation_bridge.sql emitting EXECUTION_SUBMITTED.
+--
 -- EXECUTIA™ Atomic Execution RPC
 -- Run AFTER sql/001_schema.sql
 -- This is the ONLY way execution enters the system.

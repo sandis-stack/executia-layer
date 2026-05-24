@@ -87,7 +87,21 @@
       </div>
     </section>
   </main>
-  <script>executiaFetchJson('/api/v1/ledger-verify','ledgerJson');</script>
+  <script>
+    (function () {
+      var el = document.getElementById("ledgerJson");
+      if (!el) return;
+      var headers = { "Content-Type": "application/json" };
+      var key = window.__EXECUTIA_KEY__ || "";
+      var session = window.__EXECUTIA_SESSION__ || sessionStorage.getItem("executia_session_token") || "";
+      if (key) headers["x-api-key"] = key;
+      else if (session) headers["x-session-token"] = session;
+      fetch("/api/v1/audit/verify", { headers: headers })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { el.textContent = JSON.stringify(d, null, 2); })
+        .catch(function (e) { el.textContent = e.message || "Verification request failed."; });
+    })();
+  </script>
   <script src="/components/engine-shell.js"></script>
 </body>
 </html>

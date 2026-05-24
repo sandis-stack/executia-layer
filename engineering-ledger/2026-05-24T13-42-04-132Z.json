@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-05-24T13:42:04.132Z",
+  "branch": "phase-3b3-ledger-polish",
+  "commit": "b22979d819021a5f239541eac12dab63b7acddb7",
+  "protected_files_touched": [
+    {
+      "file": "sql/009_atomic_execution_rpc.sql",
+      "patterns": [
+        "sql/**"
+      ]
+    }
+  ],
+  "change_classification_hint": "CANONICAL_TRUTH_CHANGE; AUDIT_OR_LEDGER_IMPACTING",
+  "risk_level": "CANONICAL",
+  "files_changed": [
+    "api/v1/proof/export.js",
+    "api/v1/proof/package.js",
+    "api/v1/proof/summary.js",
+    "console/operations.html",
+    "dashboard/index.html",
+    "public/console/operations.html",
+    "scripts/phase-3b5-governance-check.js",
+    "scripts/phase-3b7-architecture-drift.js",
+    "sql/009_atomic_execution_rpc.sql"
+  ],
+  "governance": {
+    "replayable": true,
+    "deterministic_checks_required": true,
+    "protected_files_present": true
+  }
+}

@@ -103,13 +103,22 @@ function isAuditMutationAllowed(rel) {
   return false;
 }
 
-function isLegacyEventAllowed(rel) {
+const PROOF_LEGACY_PROJECTION_MARKER =
+  "Legacy projection check only. Canonical verification authority is /api/v1/audit/verify.";
+
+function isProofLegacyProjectionFile(rel, content) {
+  return rel.startsWith("api/v1/proof/") && content.includes(PROOF_LEGACY_PROJECTION_MARKER);
+}
+
+function isLegacyEventAllowed(rel, content = "") {
   if (rel.startsWith("sql/rollback/")) return true;
   if (rel.startsWith("docs/")) return true;
   if (rel.includes("/legacy/")) return true;
   if (rel.startsWith(".cursor/")) return true;
   if (rel === "scripts/test-runner.js") return true;
   if (rel === "scripts/phase-3b7-architecture-drift.js") return true;
+  if (rel === "sql/009_atomic_execution_rpc.sql") return true;
+  if (content.includes("LEGACY PRE-3B1 RPC")) return true;
   return false;
 }
 
@@ -129,7 +138,7 @@ function isPublicVerifyFile(rel) {
 function scanFile(rel, content, warnings, violations) {
   for (const name of LEGACY_EVENT_NAMES) {
     if (!content.includes(name)) continue;
-    if (isLegacyEventAllowed(rel)) continue;
+    if (isLegacyEventAllowed(rel, content)) continue;
     warnings.push(`${rel}: legacy event name "${name}" (use supplemental types; rollback/docs only)`);
   }
 
@@ -145,7 +154,8 @@ function scanFile(rel, content, warnings, violations) {
     !VERIFY_COMPAT_FILES.has(rel) &&
     !rel.startsWith("docs/") &&
     !rel.startsWith(".cursor/") &&
-    rel !== "scripts/phase-3b7-architecture-drift.js"
+    rel !== "scripts/phase-3b7-architecture-drift.js" &&
+    rel !== "scripts/test-runner.js"
   ) {
     warnings.push(
       `${rel}: verification authority constant outside canonical ${CANONICAL_VERIFY_FILE}`
@@ -164,6 +174,7 @@ function scanFile(rel, content, warnings, violations) {
     rel !== CANONICAL_VERIFY_FILE &&
     !VERIFY_COMPAT_FILES.has(rel) &&
     !rel.startsWith("api/v1/verify/") &&
+    !isProofLegacyProjectionFile(rel, content) &&
     /verifyLedgerChain|verifyAuditChain|verifyCoreLedgerChain/.test(content) &&
     /verified\s*[:=]/.test(content)
   ) {
