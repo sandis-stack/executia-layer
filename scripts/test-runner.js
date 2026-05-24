@@ -1,5 +1,5 @@
 import { evaluateRules } from "../engine/rule-evaluator.js";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, writeFileSync, unlinkSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { buildLedgerHash, LEDGER_HASH_FORMULA_ID } from "../services/ledger.js";
@@ -432,6 +432,59 @@ if (!snapshot.generated_at || !snapshot.branch || !snapshot.commit) {
 }
 if (snapshot.governance.deterministic_checks_required !== false) {
   throw new Error("Docs-only snapshot should not require deterministic checks");
+}
+
+const phase37DriftFiles = [
+  "scripts/phase-3b7-architecture-drift.js",
+  ".cursor/context/architecture-drift.md",
+  "docs/governance/architecture-drift.md"
+];
+
+for (const file of phase37DriftFiles) {
+  if (!existsSync(join(__test_dir, "..", file))) {
+    throw new Error(`Missing Phase 3B7 architecture drift file: ${file}`);
+  }
+}
+
+const { runArchitectureDriftScan } = await import(
+  "../scripts/phase-3b7-architecture-drift.js"
+);
+
+const driftSample = runArchitectureDriftScan({
+  files: ["api/v1/verify/[execution_id].js", "docs/governance/architecture-drift.md"],
+  envTouched: []
+});
+
+if (driftSample.violations.length) {
+  throw new Error("Public verify sample should not produce hard violations");
+}
+
+const driftViolation = runArchitectureDriftScan({
+  files: ["api/v1/verify/fake-test-violation.js"],
+  envTouched: []
+});
+
+const fakePublicVerify =
+  'import { requireInternalKey } from "../../services/auth.js";\nexport default function handler() { requireInternalKey({}); }\n';
+
+writeFileSync(
+  join(__test_dir, "../api/v1/verify/fake-test-violation.js"),
+  fakePublicVerify,
+  "utf8"
+);
+
+try {
+  const withKey = runArchitectureDriftScan({
+    files: ["api/v1/verify/fake-test-violation.js"],
+    envTouched: []
+  });
+  if (!withKey.violations.some((v) => v.includes("requireInternalKey"))) {
+    throw new Error("Expected hard violation when public verify uses requireInternalKey");
+  }
+} finally {
+  try {
+    unlinkSync(join(__test_dir, "../api/v1/verify/fake-test-violation.js"));
+  } catch (_) {}
 }
 
 console.log("EXECUTIA final full layer tests OK");

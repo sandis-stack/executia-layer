@@ -7,6 +7,8 @@ npm test
 
 node scripts/phase-3b5-governance-check.js
 
+node scripts/phase-3b7-architecture-drift.js
+
 node scripts/phase-3b6-engineering-ledger.js
 
 git status --short
