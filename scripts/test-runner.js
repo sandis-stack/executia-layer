@@ -388,4 +388,50 @@ for (const file of phase35GovernanceFiles) {
   }
 }
 
+const phase36EngineeringFiles = [
+  "docs/governance/engineering-ledger.md",
+  ".cursor/context/engineering-ledger.md",
+  "scripts/phase-3b6-engineering-ledger.js",
+  "engineering-ledger/.gitkeep"
+];
+
+for (const file of phase36EngineeringFiles) {
+  if (!existsSync(join(__test_dir, "..", file))) {
+    throw new Error(`Missing Phase 3B6 engineering ledger file: ${file}`);
+  }
+}
+
+const { buildEngineeringSnapshot, classifyEngineeringChange } = await import(
+  "../scripts/phase-3b6-engineering-ledger.js"
+);
+
+const canonicalSample = classifyEngineeringChange(["sql/012_example.sql", "services/audit.js"]);
+if (canonicalSample.risk_level !== "CANONICAL") {
+  throw new Error("Expected CANONICAL risk for protected audit/sql touch");
+}
+if (!canonicalSample.protected_files_touched.length) {
+  throw new Error("Expected protected_files_touched for sql/audit");
+}
+
+const docsSample = classifyEngineeringChange(["docs/governance/engineering-ledger.md"]);
+if (docsSample.risk_level !== "LOW") {
+  throw new Error("Expected LOW risk for docs-only change");
+}
+
+const uiSample = classifyEngineeringChange(["console/ledger.html"]);
+if (uiSample.risk_level !== "MEDIUM") {
+  throw new Error("Expected MEDIUM risk for UI-only change");
+}
+
+const snapshot = buildEngineeringSnapshot(["docs/governance/engineering-ledger.md"]);
+if (!snapshot.governance?.replayable) {
+  throw new Error("Engineering snapshot must be replayable");
+}
+if (!snapshot.generated_at || !snapshot.branch || !snapshot.commit) {
+  throw new Error("Engineering snapshot missing core fields");
+}
+if (snapshot.governance.deterministic_checks_required !== false) {
+  throw new Error("Docs-only snapshot should not require deterministic checks");
+}
+
 console.log("EXECUTIA final full layer tests OK");
