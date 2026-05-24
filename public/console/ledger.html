@@ -142,7 +142,11 @@
     async function loadLedger() {
       try {
         // 1. Verify chain integrity
-        const verify = await executiaFetchJson("/api/v1/audit/verify");
+        const verify = await executiaFetchJson("/api/v1/audit/verify", {
+          headers: {
+            "x-api-key": window.__EXECUTIA_KEY__ || ""
+          }
+        });
 
         entryCount.textContent = verify.ledger?.entries ?? verify.audit?.entries ?? "—";
 
