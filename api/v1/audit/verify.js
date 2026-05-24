@@ -8,6 +8,7 @@ import { verifyLedgerChain } from "../../../services/ledger.js";
 import { verifyCoreLedgerChain } from "../../../services/core-ledger.js";
 import { auditLedgerIntegrity } from "../../../services/audit-ledger.js";
 import { ok, fail, methodGuard } from "../../../shared/response.js";
+import { requireInternalKey } from "../../../services/auth.js";
 
 export const PHASE_3B2_VERIFY_CONTRACT = "executia/verification/v3b2";
 
@@ -88,19 +89,30 @@ export default async function handler(req, res) {
   try {
     if (!methodGuard(req, res, ["GET"])) return;
 
-    const context = await resolveJwtContext(req);
-    const permission =
-      requireJwtPermission(context, "audit").ok
-        ? requireJwtPermission(context, "audit")
-        : requireJwtPermission(context, "execute");
+    const internalAuth = requireInternalKey(req);
 
-    if (!permission.ok) {
-      return fail(
-        res,
-        permission.error || "UNAUTHORIZED",
-        permission.reason || "JWT authentication or audit permission required.",
-        permission.status || 401
-      );
+    let context = {
+      mode: "INTERNAL_KEY",
+      organization_id: null,
+      user: "system"
+    };
+
+    if (!internalAuth.ok) {
+      context = await resolveJwtContext(req);
+
+      const permission =
+        requireJwtPermission(context, "audit").ok
+          ? requireJwtPermission(context, "audit")
+          : requireJwtPermission(context, "execute");
+
+      if (!permission.ok) {
+        return fail(
+          res,
+          permission.error || "UNAUTHORIZED",
+          permission.reason || "JWT authentication or audit permission required.",
+          permission.status || 401
+        );
+      }
     }
 
     const execution_id = req.query.execution_id || null;
