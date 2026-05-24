@@ -59,8 +59,10 @@ export function resolveStoredAuditHashes(row = {}) {
 }
 
 export function isLegacyAuditRow(row = {}) {
-  const { event_hash } = resolveStoredAuditHashes(row);
-  return !event_hash;
+  // Phase 3B2: canonical supplemental audit rows must have event_hash.
+  // Legacy projection rows may only have hash populated and must not be
+  // verified with executia/audit/v1 formula.
+  return !row.event_hash;
 }
 
 export function isStrictAuditChainEnabled() {
