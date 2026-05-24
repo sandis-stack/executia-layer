@@ -48,6 +48,24 @@ export function buildAuditHash(event, previousEventHash = "GENESIS") {
   );
 }
 
+
+async function buildAuditHashSql(event, previousEventHash = "GENESIS") {
+  if (!hasSupabaseEnv()) {
+    return buildAuditHash(event, previousEventHash);
+  }
+
+  const { data, error } = await db().rpc("executia_audit_event_hash", {
+    p_execution_id: event.execution_id || null,
+    p_event_type: event.event_type || event.action || "UNKNOWN",
+    p_actor: event.actor || event.actor_email || "system",
+    p_payload: event.payload || {},
+    p_prev_hash: previousEventHash || "GENESIS"
+  });
+
+  if (error) throw error;
+  return data;
+}
+
 export function resolveStoredAuditHashes(row = {}) {
   const event_hash = row.event_hash || row.hash || null;
   const prev_hash =
@@ -224,7 +242,7 @@ export async function verifyAuditChain(execution_id = null) {
       };
     }
 
-    const expected = buildAuditHash(event, storedPrevious);
+    const expected = await buildAuditHashSql(event, storedPrevious);
 
     if (event_hash !== expected) {
       return {
