@@ -56,10 +56,32 @@
 }
 </style>
   <link rel="stylesheet" href="/components/engine-shell.css">
-  <link rel="stylesheet" href="/components/engine-system.css">
 </head>
 <body>
-<main class="ex-main">
+  <div class="ex-header-shell" data-ex-header>
+    <header class="ex-header">
+      <a class="ex-brand" href="https://executia.io" aria-label="EXECUTIA entry">
+        <span class="ex-brand-name">EXECUTIA™</span>
+        <span class="ex-brand-context">CORE LEDGER</span>
+      </a>
+      <nav class="ex-nav" aria-label="Engine navigation">
+        <a href="/dashboard">LIVE</a>
+        <a href="/control">CONTROL</a>
+        <a href="/history">HISTORY</a>
+        <a href="/operations">OPS</a>
+        <a href="/demo">DEMO</a>
+        <a class="active" aria-current="page" href="/console/ledger.html">LEDGER</a>
+      </nav>
+    </header>
+    <div class="ex-statusbar" aria-label="Engine status">
+      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
+      <span class="ex-status-item">Registry Locked</span>
+      <span class="ex-status-item">Ledger Verified</span>
+      <span class="ex-status-item">Audit Recording</span>
+    </div>
+  </div>
+
+  <main class="ex-main">
     <section class="ex-section-tight">
       <p class="ex-kicker">Immutable truth layer</p>
       <h1 class="ex-title">Core Ledger</h1>
@@ -120,20 +142,31 @@
     async function loadLedger() {
       try {
         // 1. Verify chain integrity
-        const verify = await executiaFetchJson("/api/v1/core-ledger-verify");
+        const verify = await executiaFetchJson("/api/v1/audit/verify");
 
-        entryCount.textContent = verify.entries ?? "—";
+        entryCount.textContent = verify.ledger?.entries ?? verify.audit?.entries ?? "—";
 
         if (verify.verified) {
-          verifyStatus.textContent = "All entries verified — chain intact";
-          verifyPill.textContent   = "VERIFIED";
-          verifyPill.className     = "ex-pill ok";
+
+          if (verify.status === "VALID_WITH_LEGACY_DRIFT") {
+            verifyStatus.textContent =
+              "Canonical chain verified — legacy projection drift detected";
+            verifyPill.textContent = "CANONICAL VERIFIED";
+            verifyPill.className = "ex-pill ok";
+          } else {
+            verifyStatus.textContent =
+              "Canonical audit + ledger chain verified";
+            verifyPill.textContent = "VERIFIED";
+            verifyPill.className = "ex-pill ok";
+          }
+
         } else {
-          verifyStatus.textContent = verify.tampered_id
-            ? `Tampered entry detected: ${verify.tampered_id}`
-            : "Chain integrity FAILED";
-          verifyPill.textContent = "INVALID";
-          verifyPill.className   = "ex-pill block";
+
+          verifyStatus.textContent =
+            verify.audit?.reason || "Canonical verification failed";
+
+          verifyPill.textContent = "BROKEN";
+          verifyPill.className = "ex-pill block";
         }
 
         // 2. Load entries

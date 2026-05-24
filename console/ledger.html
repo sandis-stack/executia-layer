@@ -142,20 +142,31 @@
     async function loadLedger() {
       try {
         // 1. Verify chain integrity
-        const verify = await executiaFetchJson("/api/v1/core-ledger-verify");
+        const verify = await executiaFetchJson("/api/v1/audit/verify");
 
-        entryCount.textContent = verify.entries ?? "—";
+        entryCount.textContent = verify.ledger?.entries ?? verify.audit?.entries ?? "—";
 
         if (verify.verified) {
-          verifyStatus.textContent = "All entries verified — chain intact";
-          verifyPill.textContent   = "VERIFIED";
-          verifyPill.className     = "ex-pill ok";
+
+          if (verify.status === "VALID_WITH_LEGACY_DRIFT") {
+            verifyStatus.textContent =
+              "Canonical chain verified — legacy projection drift detected";
+            verifyPill.textContent = "CANONICAL VERIFIED";
+            verifyPill.className = "ex-pill ok";
+          } else {
+            verifyStatus.textContent =
+              "Canonical audit + ledger chain verified";
+            verifyPill.textContent = "VERIFIED";
+            verifyPill.className = "ex-pill ok";
+          }
+
         } else {
-          verifyStatus.textContent = verify.tampered_id
-            ? `Tampered entry detected: ${verify.tampered_id}`
-            : "Chain integrity FAILED";
-          verifyPill.textContent = "INVALID";
-          verifyPill.className   = "ex-pill block";
+
+          verifyStatus.textContent =
+            verify.audit?.reason || "Canonical verification failed";
+
+          verifyPill.textContent = "BROKEN";
+          verifyPill.className = "ex-pill block";
         }
 
         // 2. Load entries
