@@ -1,4 +1,4 @@
-# EXECUTIA Architecture Graph Context (Phase 3B8)
+# EXECUTIA Architecture Graph Context (Phase 3B8 / 3B8-A)
 
 ## Purpose
 
@@ -13,15 +13,37 @@ node scripts/phase-3b8-architecture-graph.js
 Outputs:
 
 - `architecture-graph/latest.json`
+- `architecture-graph/report.md` — **read this before large refactors**
 - `architecture-graph/<timestamp>.json`
+
+## Cursor rules (3B8-A)
+
+1. **Use the graph report before large refactors** — open `architecture-graph/report.md` for layer counts, orphans, and shadow flows.
+2. **Do not treat unknown endpoints as canonical** — only `canonical_authority` nodes (audit verify, ledger/audit services, authority SQL) define verification truth.
+3. **Orphans require classification before deletion** — `findings.orphan_candidates` lists unclassified APIs only; classify or document before removing routes.
 
 ## What the graph contains
 
 | Section | Meaning |
 |---------|---------|
-| `nodes` | Endpoints, services, SQL authority files, governance scripts, Cursor context |
+| `nodes` | Endpoints, services, SQL, governance — each with `classification` |
 | `edges` | Declared relationships (`uses`, `reads`, `defers_to`, `protects`, …) |
-| `findings` | Institutional summary for review |
+| `findings` | Institutional summary + `summary_counts` + cleanup hints |
+
+## Node classifications
+
+| Label | Use |
+|-------|-----|
+| `canonical_authority` | Material verification truth |
+| `replay_layer` | Execution replay |
+| `public_verification` | Public verify |
+| `governance_layer` | 3B5–3B7, Cursor rules |
+| `architecture_memory` | Docs, context |
+| `proof_projection` | Proof APIs (legacy-aware) |
+| `legacy_projection` | Compat wrappers, rollback SQL |
+| `ui_console` | Console / dashboard UI |
+| `local_tooling` | Graph generator |
+| `unknown` | Needs human classification |
 
 ## Canonical authority mapping
 
@@ -33,35 +55,13 @@ Outputs:
 
 Material truth remains `ledger_entries` + supplemental audit chain (not redefined by the graph).
 
-## Shadow flow detection
+## Shadow flow detection (reduced)
 
-`findings.shadow_flow_candidates` lists files referencing:
+`findings.shadow_flow_candidates` — line-level, with suppression for scanner files, governance docs, rollback SQL, and LEGACY comments.
 
-- `/api/v1/ledger-verify`
-- `/api/v1/core-ledger-verify`
-- Legacy event names `EXECUTION_CREATED`, `OPERATOR_DECISION_COMMITTED`
+## Orphan detection (reduced)
 
-Exemptions: rollback SQL, docs, governance scripts, compat wrapper files.
-
-## Orphan endpoint detection
-
-`findings.orphan_candidates` lists API handlers **not connected** (via graph edges) to:
-
-- Canonical audit verify
-- Execution replay
-- Public verify
-- Governance layer (3B5–3B8)
-
-Orphans are not automatically wrong — they may be operator, pilot, or entry routes — but they require conscious classification.
-
-## Architecture intelligence
-
-Use the graph to:
-
-1. Review deploy scope before production
-2. Compare `latest.json` across commits (drift in orphans/shadows)
-3. Onboard engineers without reading every route file
-4. Feed Cursor context for bounded refactors
+Only `unknown` API endpoints disconnected from anchors. Proof, UI, docs, and tooling paths are excluded.
 
 ## Pre-deploy chain
 
@@ -72,5 +72,6 @@ npm test → 3B5 governance → 3B7 drift → 3B8 graph → 3B6 engineering ledg
 ## Rules
 
 - Graph is append-only by timestamp; do not edit historical JSON
+- `report.md` is regenerated each run — safe to commit for review
 - No secrets in graph output
 - Local tooling only — not a public API

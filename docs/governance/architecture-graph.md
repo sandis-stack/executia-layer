@@ -28,6 +28,7 @@ node scripts/phase-3b8-architecture-graph.js
 | File | Role |
 |------|------|
 | `architecture-graph/latest.json` | Current graph |
+| `architecture-graph/report.md` | Human-readable reduction report (3B8-A) |
 | `architecture-graph/<timestamp>.json` | Historical snapshot |
 
 **Console:**
@@ -48,7 +49,14 @@ architecture-graph/latest.json
   "branch": "git branch",
   "commit": "git SHA",
   "nodes": [
-    { "id": "endpoint:audit/verify", "type": "endpoint", "file": "...", "label": "...", "canonical": true }
+    {
+      "id": "endpoint:audit/verify",
+      "type": "endpoint",
+      "file": "...",
+      "label": "...",
+      "canonical": true,
+      "classification": "canonical_authority"
+    }
   ],
   "edges": [
     { "from": "endpoint:audit/verify", "to": "service:audit", "relation": "uses" }
@@ -60,7 +68,9 @@ architecture-graph/latest.json
     "governance_layer": ["governance:phase-3b5", "..."],
     "legacy_projection": ["endpoint:ledger-verify", "..."],
     "orphan_candidates": [],
-    "shadow_flow_candidates": []
+    "shadow_flow_candidates": [],
+    "summary_counts": { "total_nodes": 0, "orphan_candidates": 0, "by_layer": {} },
+    "next_recommended_cleanup": []
   }
 }
 ```
@@ -117,17 +127,60 @@ Must include 3B5, 3B6, 3B7, 3B8 script nodes.
 
 Lists `ledger-verify` and `core-ledger-verify` compatibility endpoints when present.
 
-### orphan_candidates
+### orphan_candidates (3B8-A reduced)
 
-API routes not reachable from canonical/governance seeds via declared edges. Review for shadow or entry-only flows.
+Only **unclassified** API routes (`classification: unknown`) not reachable from canonical/governance seeds. Excluded from orphan noise:
 
-### shadow_flow_candidates
+- `docs/**`, `.cursor/**`, `engineering-ledger/**`, `architecture-graph/**`
+- `scripts/phase-3b*`, `sql/rollback/**`, legacy-documented `sql/009_atomic_execution_rpc.sql`
+- Proof projection routes (`api/v1/proof/*`) and static UI (`console/**`, `public/**`, `dashboard/**`)
 
-Project files (excluding rollback/docs/governance exemptions) referencing legacy verify URLs or legacy RPC event names.
+Orphans require **classification before deletion** — they are not automatically wrong.
+
+### shadow_flow_candidates (3B8-A suppressed)
+
+Line-level scan with false-positive suppression:
+
+- Entire scanner files (`phase-3b8-architecture-graph.js`, `phase-3b7-architecture-drift.js`)
+- `docs/governance/**`, `.cursor/context/**`, `sql/rollback/**`
+- Comment lines containing `LEGACY` / `legacy`
+- Proof files marked `Legacy projection check only`
+
+### Node classification (3B8-A)
+
+Each node carries `classification`:
+
+| Label | Meaning |
+|-------|---------|
+| `canonical_authority` | Audit verify, ledger/audit services, authority SQL |
+| `replay_layer` | Execution replay |
+| `public_verification` | Public verify route |
+| `governance_layer` | 3B5–3B7 scripts, Cursor rules |
+| `architecture_memory` | Docs, `.cursor/context` |
+| `proof_projection` | Proof API (legacy-aware projection) |
+| `legacy_projection` | Compat verify wrappers, rollback SQL |
+| `ui_console` | Console / dashboard HTML |
+| `local_tooling` | Graph generator itself |
+| `unknown` | Unclassified API — review before refactor |
 
 ---
 
-## 7. Pre-deploy integration
+## 7. Phase 3B8-A — Graph reduction
+
+**Additive only** — no runtime API, SQL, or DB changes.
+
+| Capability | Description |
+|------------|-------------|
+| **Graph reduction** | Fewer orphan/shadow false positives via path and layer filters |
+| **Human report** | `architecture-graph/report.md` with layers, counts, next cleanup |
+| **False positive suppression** | Scanner self-reference, governance docs, LEGACY comments |
+| **Endpoint classification** | Every node labeled for institutional review |
+
+Use `report.md` before large refactors; do not treat `unknown` endpoints as canonical authority.
+
+---
+
+## 8. Pre-deploy integration
 
 After Phase 3B7 drift check, before Phase 3B6 engineering ledger:
 
@@ -137,7 +190,7 @@ node scripts/phase-3b8-architecture-graph.js
 
 ---
 
-## 8. Non-goals
+## 9. Non-goals
 
 - Not a live dependency tracer (static map only)
 - Not a replacement for `audit/verify` or execution replay APIs
@@ -146,4 +199,4 @@ node scripts/phase-3b8-architecture-graph.js
 
 ---
 
-*Phase 3B8 — canonical architecture graph for governed, replayable software evolution.*
+*Phase 3B8 / 3B8-A — canonical architecture graph and human report for governed, replayable software evolution.*

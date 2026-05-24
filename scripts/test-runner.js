@@ -500,7 +500,27 @@ for (const file of phase38GraphFiles) {
   }
 }
 
-const { buildArchitectureGraph } = await import("../scripts/phase-3b8-architecture-graph.js");
+const phase38ScriptPath = join(__test_dir, "..", "scripts/phase-3b8-architecture-graph.js");
+const phase38Source = readFileSync(phase38ScriptPath, "utf8");
+const classificationLabels = [
+  "canonical_authority",
+  "public_verification",
+  "replay_layer",
+  "governance_layer",
+  "architecture_memory",
+  "proof_projection",
+  "legacy_projection",
+  "local_tooling"
+];
+for (const label of classificationLabels) {
+  if (!phase38Source.includes(label)) {
+    throw new Error(`Architecture graph script must include classification label: ${label}`);
+  }
+}
+
+const { buildArchitectureGraph, writeGraphOutputs } = await import(
+  "../scripts/phase-3b8-architecture-graph.js"
+);
 
 const graph = buildArchitectureGraph();
 if (!graph.findings.canonical_authority.includes("endpoint:audit/verify")) {
@@ -517,6 +537,30 @@ if (graph.findings.governance_layer.length < 4) {
 }
 if (!graph.nodes.length || !graph.edges.length) {
   throw new Error("Architecture graph must contain nodes and edges");
+}
+if (!graph.findings.summary_counts) {
+  throw new Error("Architecture graph must include summary_counts");
+}
+const classifiedNodes = graph.nodes.filter((n) => n.classification);
+if (classifiedNodes.length < graph.nodes.length * 0.9) {
+  throw new Error("Architecture graph nodes must include classification labels");
+}
+
+writeGraphOutputs(graph, join(__test_dir, ".."));
+const reportPath = join(__test_dir, "..", "architecture-graph/report.md");
+if (!existsSync(reportPath)) {
+  throw new Error("Architecture graph must write architecture-graph/report.md");
+}
+const reportBody = readFileSync(reportPath, "utf8");
+if (!reportBody.includes("Canonical authority") || !reportBody.includes("Summary counts")) {
+  throw new Error("Architecture graph report.md must include required sections");
+}
+if (
+  !graph.findings.canonical_authority.length &&
+  !graph.findings.replay_layer.length &&
+  !graph.findings.governance_layer.length
+) {
+  throw new Error("Architecture graph latest must have institutional findings");
 }
 
 console.log("EXECUTIA final full layer tests OK");

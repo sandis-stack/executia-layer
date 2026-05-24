@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-05-24T14:00:06.103Z",
+  "branch": "phase-3b3-ledger-polish",
+  "commit": "c334dd17eb4c0c57f4ffac3a0d1fb44526981ab7",
+  "protected_files_touched": [
+    {
+      "file": "scripts/test-runner.js",
+      "patterns": [
+        "scripts/test-runner.js"
+      ]
+    }
+  ],
+  "change_classification_hint": "PROTECTED_FILES_TOUCHED",
+  "risk_level": "HIGH",
+  "files_changed": [
+    ".cursor/context/architecture-graph.md",
+    "architecture-graph/latest.json",
+    "docs/governance/architecture-graph.md",
+    "scripts/phase-3b8-architecture-graph.js",
+    "scripts/test-runner.js",
+    "architecture-graph/2026-05-24T13-58-51-674Z.json",
+    "architecture-graph/2026-05-24T13-58-58-218Z.json",
+    "architecture-graph/2026-05-24T13-59-08-522Z.json",
+    "architecture-graph/2026-05-24T13-59-09-099Z.json",
+    "architecture-graph/2026-05-24T13-59-23-737Z.json",
+    "architecture-graph/2026-05-24T13-59-24-189Z.json",
+    "architecture-graph/2026-05-24T14-00-04-741Z.json",
+    "architecture-graph/2026-05-24T14-00-05-148Z.json",
+    "architecture-graph/2026-05-24T14-00-05-488Z.json",
+    "architecture-graph/2026-05-24T14-00-05-885Z.json",
+    "architecture-graph/report.md"
+  ],
+  "governance": {
+    "replayable": true,
+    "deterministic_checks_required": true,
+    "protected_files_present": true
+  }
+}
