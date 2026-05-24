@@ -138,6 +138,18 @@
         <pre id="ledgerJson" class="ex-json" style="margin-top:14px">Loading...</pre>
       </details>
     </section>
+    <div id="proofModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.32);z-index:9998;align-items:center;justify-content:center;padding:24px">
+      <section class="ex-card" style="width:min(920px,100%);max-height:86vh;overflow:auto">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px">
+          <div>
+            <p class="ex-kicker">Execution proof</p>
+            <h2 class="ex-card-title">Ledger Proof</h2>
+          </div>
+          <button id="proofClose" class="ex-pill" style="border:1px solid #d8e1ec;cursor:pointer">CLOSE</button>
+        </div>
+        <pre id="proofJson" class="ex-json">No proof selected.</pre>
+      </section>
+    </div>
   </main>
 
   <script>
@@ -147,6 +159,9 @@
     const auditHeight  = document.getElementById("auditHeight");
     const ledgerList   = document.getElementById("ledgerList");
     const ledgerJson   = document.getElementById("ledgerJson");
+    const proofModal   = document.getElementById("proofModal");
+    const proofJson    = document.getElementById("proofJson");
+    const proofClose   = document.getElementById("proofClose");
 
     function formatAmount(net, tax, gross, currency = "EUR") {
       const fmt = (n) => Number(n || 0).toLocaleString("en-EU", { minimumFractionDigits: 2 });
@@ -157,6 +172,33 @@
       const map = { COMMITTED: "ok", APPROVED: "ok", BLOCKED: "block", PENDING_REVIEW: "warn" };
       return map[status] || "warn";
     }
+
+    function openProof(item) {
+      proofJson.textContent = JSON.stringify({
+        execution_id: item.execution_id || null,
+        status: item.status || null,
+        decision: item.decision || null,
+        actor: item.actor || null,
+        subject: item.subject || null,
+        hash: item.hash || null,
+        previous_hash: item.prev_hash || null,
+        created_at: item.created_at || null,
+        payload: item.payload || {},
+        canonical_note: "Displayed record is a ledger projection. Canonical authority is Phase 3B3 audit verification + ledger_entries."
+      }, null, 2);
+
+      proofModal.style.display = "flex";
+    }
+
+    proofClose.addEventListener("click", () => {
+      proofModal.style.display = "none";
+    });
+
+    proofModal.addEventListener("click", (event) => {
+      if (event.target === proofModal) {
+        proofModal.style.display = "none";
+      }
+    });
 
     async function loadLedger() {
       try {
@@ -218,6 +260,8 @@
           const card = document.createElement("div");
           card.className = "ex-card";
           card.style.marginTop = "10px";
+          card.style.cursor = "pointer";
+          card.title = "Open ledger proof";
 
           const ts = item.created_at
             ? new Date(item.created_at).toLocaleString("en-GB")
@@ -243,6 +287,7 @@
             </div>
           `;
 
+          card.addEventListener("click", () => openProof(item));
           ledgerList.appendChild(card);
         });
 
