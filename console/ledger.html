@@ -126,6 +126,15 @@
         </article>
       </div>
 
+      <!-- Proof graph -->
+      <section class="ex-card" style="margin-bottom:22px">
+        <h2 class="ex-card-title" style="margin-bottom:8px">Proof Graph</h2>
+        <p class="ex-card-subtitle" style="margin-bottom:14px">
+          Canonical lineage view · previous hash → execution hash
+        </p>
+        <div id="proofGraph" class="ex-stack">Loading proof graph...</div>
+      </section>
+
       <!-- Ledger entries -->
       <section class="ex-card">
         <h2 class="ex-card-title" style="margin-bottom:14px">Ledger Entries</h2>
@@ -161,6 +170,7 @@
     const verifyPill   = document.getElementById("verifyPill");
     const entryCount   = document.getElementById("entryCount");
     const auditHeight  = document.getElementById("auditHeight");
+    const proofGraph   = document.getElementById("proofGraph");
     const ledgerList   = document.getElementById("ledgerList");
     const ledgerJson   = document.getElementById("ledgerJson");
     const proofModal   = document.getElementById("proofModal");
@@ -185,6 +195,10 @@
           <div style="font-family:monospace;font-size:12px;word-break:break-all;color:#183a5b">${value || "—"}</div>
         </div>
       `;
+    }
+
+    function shortHash(value) {
+      return value ? String(value).slice(0, 12) + "…" : "GENESIS";
     }
 
     function openProof(item) {
@@ -310,6 +324,23 @@
         }
 
         ledgerList.innerHTML = "";
+
+        proofGraph.innerHTML = rows.items.slice(0, 8).map((item, index) => `
+          <div class="ex-card" style="box-shadow:none;border-left:3px solid #1e3a5f">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+              <div>
+                <p class="ex-kicker">CHAIN STEP ${index + 1}</p>
+                <p style="font-family:monospace;font-size:12px;color:#183a5b;margin:6px 0">
+                  ${shortHash(item.prev_hash)} → ${shortHash(item.hash)}
+                </p>
+                <p class="ex-muted" style="font-size:12px">
+                  ${item.execution_id || "—"}
+                </p>
+              </div>
+              <span class="ex-pill ${statusPill(item.status)}">${item.status || "UNKNOWN"}</span>
+            </div>
+          </div>
+        `).join("");
 
         rows.items.forEach((item) => {
           const card = document.createElement("div");
