@@ -126,6 +126,18 @@
         </article>
       </div>
 
+      <!-- Live execution stream -->
+      <section class="ex-card" style="margin-bottom:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>
+            <h2 class="ex-card-title" style="margin-bottom:8px">Live Execution Stream</h2>
+            <p class="ex-card-subtitle">Newest execution records · auto-refreshing authority feed</p>
+          </div>
+          <span class="ex-pill ok" id="liveRefreshPill">LIVE</span>
+        </div>
+        <p class="ex-muted" id="lastRefresh" style="margin-top:12px;font-size:12px">Last refresh: —</p>
+      </section>
+
       <!-- Proof graph -->
       <section class="ex-card" style="margin-bottom:22px">
         <h2 class="ex-card-title" style="margin-bottom:8px">Proof Graph</h2>
@@ -170,6 +182,8 @@
     const verifyPill   = document.getElementById("verifyPill");
     const entryCount   = document.getElementById("entryCount");
     const auditHeight  = document.getElementById("auditHeight");
+    const liveRefreshPill = document.getElementById("liveRefreshPill");
+    const lastRefresh  = document.getElementById("lastRefresh");
     const proofGraph   = document.getElementById("proofGraph");
     const ledgerList   = document.getElementById("ledgerList");
     const ledgerJson   = document.getElementById("ledgerJson");
@@ -317,6 +331,10 @@
 
         ledgerJson.textContent = JSON.stringify({ verify, history: rows }, null, 2);
 
+        lastRefresh.textContent = "Last refresh: " + new Date().toLocaleTimeString("en-GB");
+        liveRefreshPill.textContent = "LIVE";
+        liveRefreshPill.className = "ex-pill ok";
+
         // 3. Render entry cards from history (execution_results)
         if (!rows.ok || !Array.isArray(rows.items) || rows.items.length === 0) {
           ledgerList.textContent = "No committed entries yet.";
@@ -379,6 +397,8 @@
 
       } catch (err) {
         verifyStatus.textContent = "Connection error";
+        liveRefreshPill.textContent = "OFFLINE";
+        liveRefreshPill.className = "ex-pill block";
         verifyPill.textContent   = "ERROR";
         verifyPill.className     = "ex-pill block";
         ledgerList.textContent   = err.message || "Failed to load.";
@@ -387,6 +407,10 @@
     }
 
     loadLedger();
+
+    setInterval(() => {
+      loadLedger();
+    }, 30000);
   </script>
 
   <script src="/components/engine-shell.js"></script>
