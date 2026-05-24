@@ -147,7 +147,11 @@
           </div>
           <button id="proofClose" class="ex-pill" style="border:1px solid #d8e1ec;cursor:pointer">CLOSE</button>
         </div>
-        <pre id="proofJson" class="ex-json">No proof selected.</pre>
+        <div id="proofStructured" class="ex-stack">No proof selected.</div>
+        <details style="margin-top:16px">
+          <summary class="ex-kicker" style="cursor:pointer">RAW PROOF JSON</summary>
+          <pre id="proofJson" class="ex-json" style="margin-top:12px">No proof selected.</pre>
+        </details>
       </section>
     </div>
   </main>
@@ -161,6 +165,7 @@
     const ledgerJson   = document.getElementById("ledgerJson");
     const proofModal   = document.getElementById("proofModal");
     const proofJson    = document.getElementById("proofJson");
+    const proofStructured = document.getElementById("proofStructured");
     const proofClose   = document.getElementById("proofClose");
 
     function formatAmount(net, tax, gross, currency = "EUR") {
@@ -173,8 +178,17 @@
       return map[status] || "warn";
     }
 
+    function proofRow(label, value) {
+      return `
+        <div style="display:grid;grid-template-columns:160px 1fr;gap:14px;border-bottom:1px solid #e6ecf2;padding:10px 0">
+          <div class="ex-kicker">${label}</div>
+          <div style="font-family:monospace;font-size:12px;word-break:break-all;color:#183a5b">${value || "—"}</div>
+        </div>
+      `;
+    }
+
     function openProof(item) {
-      proofJson.textContent = JSON.stringify({
+      const proof = {
         execution_id: item.execution_id || null,
         status: item.status || null,
         decision: item.decision || null,
@@ -185,7 +199,48 @@
         created_at: item.created_at || null,
         payload: item.payload || {},
         canonical_note: "Displayed record is a ledger projection. Canonical authority is Phase 3B3 audit verification + ledger_entries."
-      }, null, 2);
+      };
+
+      proofStructured.innerHTML = `
+        <section class="ex-card" style="box-shadow:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div>
+              <p class="ex-kicker">CANONICAL PROOF STATUS</p>
+              <h3 class="ex-card-title" style="margin-top:4px">${proof.status || "UNKNOWN"}</h3>
+              <p class="ex-card-subtitle">Phase 3B3 proof view · ledger projection under canonical audit authority</p>
+            </div>
+            <span class="ex-pill ${statusPill(proof.status)}">${proof.status || "UNKNOWN"}</span>
+          </div>
+        </section>
+
+        <section class="ex-card" style="box-shadow:none">
+          <h3 class="ex-card-title" style="margin-bottom:8px">Execution Identity</h3>
+          ${proofRow("EXECUTION ID", proof.execution_id)}
+          ${proofRow("ACTOR", proof.actor)}
+          ${proofRow("SUBJECT", proof.subject)}
+          ${proofRow("DECISION", proof.decision)}
+          ${proofRow("CREATED", proof.created_at)}
+        </section>
+
+        <section class="ex-card" style="box-shadow:none">
+          <h3 class="ex-card-title" style="margin-bottom:8px">Hash Continuity</h3>
+          ${proofRow("HASH", proof.hash)}
+          ${proofRow("PREVIOUS HASH", proof.previous_hash)}
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="ex-pill ok" onclick="navigator.clipboard.writeText('${proof.hash || ""}')">COPY HASH</button>
+            <button class="ex-pill ok" onclick="navigator.clipboard.writeText('${proof.previous_hash || ""}')">COPY PREVIOUS</button>
+          </div>
+        </section>
+
+        <section class="ex-card" style="box-shadow:none">
+          <h3 class="ex-card-title" style="margin-bottom:8px">Canonical Authority</h3>
+          ${proofRow("AUTHORITY", "SUPPLEMENTAL_AUDIT_GLOBAL_CHAIN + LEDGER_ENTRIES")}
+          ${proofRow("CHAIN ERA", "3B3")}
+          ${proofRow("NOTE", proof.canonical_note)}
+        </section>
+      `;
+
+      proofJson.textContent = JSON.stringify(proof, null, 2);
 
       proofModal.style.display = "flex";
     }
