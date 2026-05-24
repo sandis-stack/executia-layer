@@ -5,6 +5,8 @@ echo "EXECUTIA pre-deploy check"
 
 npm test
 
+node scripts/phase-3b5-governance-check.js
+
 git status --short
 git diff --stat
 

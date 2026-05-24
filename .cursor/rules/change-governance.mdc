@@ -1,0 +1,53 @@
+# EXECUTIA Change Governance (Phase 3B5)
+
+Applies to all Cursor-assisted edits in this repository.
+
+## Before proposing changes
+
+1. **Classify** the change using `.cursor/context/change-classification.md`.
+2. **List protected files** touched using `.cursor/context/protected-files.md`.
+3. **State risk level**: `LOW` | `MEDIUM` | `HIGH` | `CANONICAL`.
+4. **State verification plan** (commands and endpoints).
+
+Example:
+
+```
+Classification: REPLAY_IMPACTING_CHANGE
+Risk: HIGH
+Protected files: none (console/ledger.html only)
+Verification: npm test; manual REPLAY VERIFY in ledger console
+```
+
+## Editing rules
+
+- Do **not** mutate canonical truth (ledger hash formula, audit append semantics, verify authority) without explicit user approval.
+- Do **not** modify protected files silently or as part of unrelated refactors.
+- Prefer **small, focused diffs** and single-purpose commits.
+- Avoid broad refactors across `api/`, `services/`, and `sql/` in one change.
+- Do **not** change `sql/**` without user approval and `PHASE_3B5_ALLOW_SQL=1` for governance bypass.
+- Do **not** commit `.env*` or expose secrets in UI, docs, or logs.
+- Public verify endpoints remain **read-only** and **public-safe** (no actor email, raw payload, service role).
+
+## Canonical surfaces (do not weaken)
+
+- `/api/v1/audit/verify` — canonical verification authority
+- `ledger_entries` — material truth (`executia/ledger/v1`)
+- Supplemental global audit chain — append-only
+- `/api/v1/execution/replay` — read-only revalidation
+- `/api/v1/verify/*` — public proof foundation
+
+## Pre-deploy
+
+Run:
+
+```bash
+npm test
+node scripts/phase-3b5-governance-check.js
+```
+
+Resolve **hard violations** (exit 1) before `vercel --prod`.
+
+## UI
+
+- Light institutional UI only
+- No black backgrounds (`#000`, `background:black`)

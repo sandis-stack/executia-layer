@@ -1,5 +1,5 @@
 import { evaluateRules } from "../engine/rule-evaluator.js";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { buildLedgerHash, LEDGER_HASH_FORMULA_ID } from "../services/ledger.js";
@@ -372,6 +372,19 @@ if (publicVerifySource.includes("requireInternalKey")) {
 for (const forbidden of ["insert", "update", "delete", "upsert"]) {
   if (new RegExp(`\\.${forbidden}\\(`, "i").test(publicVerifySource)) {
     throw new Error(`Public verify must not contain database mutation: ${forbidden}`);
+  }
+}
+
+const phase35GovernanceFiles = [
+  ".cursor/context/change-classification.md",
+  ".cursor/context/protected-files.md",
+  ".cursor/rules/change-governance.mdc",
+  "scripts/phase-3b5-governance-check.js"
+];
+
+for (const file of phase35GovernanceFiles) {
+  if (!existsSync(join(__test_dir, "..", file))) {
+    throw new Error(`Missing Phase 3B5 governance file: ${file}`);
   }
 }
 
