@@ -2,17 +2,17 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T06:52:26.105Z
+**Generated:** 2026-05-25T07:05:11.523Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** bec074b1f792e968d1e668c16c0a3fab0d88a0b0
+**Commit:** 7ff3556be9e4150322a6dc3eb087a1b898684b75
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 40 |
+| Overall | 42 |
 | Architecture | 41 |
-| Governance | 68 |
+| Governance | 82 |
 | Replay | 100 |
 | Verification | 100 |
 | Endpoint consistency | 24 |
@@ -20,8 +20,8 @@ Phase 3B9 — governed deploy intelligence (local tooling only).
 Deductions from 100 (overall):
 - Orphans: −54
 - Shadow flows: −1
-- Protected file touches: −1
-- Governance warnings: −4
+- Protected file touches: −0
+- Governance warnings: −3
 - Missing canonical edges: −0
 
 ## Risk summary
@@ -39,7 +39,7 @@ Deductions from 100 (overall):
 
 ## Architecture delta
 
-Baseline: `2026-05-25T06:52:25.358Z`
+Baseline: `2026-05-25T07:05:10.506Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -60,16 +60,11 @@ _No replay layer files in current git diff._
 
 ## Governance impact
 
-Governance tooling / rules:
-- `scripts/phase-3b9-execution-intelligence.js`
-
-Protected files:
-- `scripts/test-runner.js` (scripts/test-runner.js)
+_No governance or protected paths in current git diff._
 
 ## Recommendations
 
 - Classify orphan API endpoints in architecture graph before large refactors or route removal.
-- Obtain explicit approval for protected file modifications before deploy.
 - Defer deploy until stability improves (reduce orphans, shadows, or protected touches).
 
 ## Engineering Console Status
@@ -92,5 +87,4 @@ Protected files:
 ### Findings
 - [MEDIUM] ORPHAN_ENDPOINTS: 54 unclassified API endpoint(s) disconnected from canonical anchors
 - [MEDIUM] SHADOW_FLOWS: 1 shadow flow reference(s) in codebase
-- [HIGH] PROTECTED_TOUCH: 1 protected file(s) modified in working tree
 

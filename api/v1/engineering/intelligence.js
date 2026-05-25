@@ -17,6 +17,7 @@ export default async function handler(req, res) {
       state: payload.state,
       mode: ENGINEERING_INTELLIGENCE_MODE,
       engineering_console_detected: payload.engineering_console_detected,
+      engineering_console_authority: payload.engineering_console_authority,
       architecture_graph: payload.architecture_graph,
       execution_intelligence: payload.execution_intelligence,
       engineering_ledger: payload.engineering_ledger,
