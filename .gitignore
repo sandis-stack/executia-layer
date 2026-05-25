@@ -6,3 +6,11 @@
 executia-*-governance-audit.pdf
 executia-*.pdf
 executia-proof-certificate.txt
+
+# Governed artifact stamped snapshots (canonical latest/report/last-stable remain tracked)
+architecture-graph/202*.json
+execution-intelligence/202*.json
+engineering-ledger/202*.json
+architecture-graph/archive/
+execution-intelligence/archive/
+engineering-ledger/archive/

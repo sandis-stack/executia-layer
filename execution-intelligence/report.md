@@ -2,44 +2,44 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T07:05:11.523Z
+**Generated:** 2026-05-25T11:10:34.693Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** 7ff3556be9e4150322a6dc3eb087a1b898684b75
+**Commit:** b16b93bdd805a995ff05ccd276f563aeb264c49a
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 42 |
-| Architecture | 41 |
-| Governance | 82 |
-| Replay | 100 |
+| Overall | 92 |
+| Architecture | 94 |
+| Governance | 60 |
+| Replay | 75 |
 | Verification | 100 |
-| Endpoint consistency | 24 |
+| Endpoint consistency | 99 |
 
 Deductions from 100 (overall):
-- Orphans: −54
+- Orphans: −1
 - Shadow flows: −1
-- Protected file touches: −0
-- Governance warnings: −3
+- Protected file touches: −2
+- Governance warnings: −4
 - Missing canonical edges: −0
 
 ## Risk summary
 
 | Dimension | Level |
 |-----------|-------|
-| Overall | **HIGH** |
-| Canonical | LOW |
-| Replay | LOW |
+| Overall | **CANONICAL** |
+| Canonical | CANONICAL |
+| Replay | HIGH |
 | Public verify | undefined |
 | Governance | HIGH |
 | Architecture | MEDIUM |
-| Orphan | HIGH |
+| Orphan | LOW |
 | Mutation | LOW |
 
 ## Architecture delta
 
-Baseline: `2026-05-25T07:05:10.506Z`
+Baseline: `2026-05-25T11:10:29.275Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -56,16 +56,27 @@ _No canonical authority files in current git diff._
 
 ## Replay impact
 
-_No replay layer files in current git diff._
+- `api/v1/execution/replay.js`
 
 ## Governance impact
 
-_No governance or protected paths in current git diff._
+Governance tooling / rules:
+- `scripts/phase-3b6-engineering-ledger.js`
+- `scripts/phase-3b7-architecture-drift.js`
+- `scripts/phase-3b8-architecture-graph.js`
+- `scripts/phase-3b9-execution-intelligence.js`
+- `.cursor/rules/ai-operator-governance.mdc`
+- `.cursor/rules/vendor-safety.mdc`
+
+Protected files:
+- `api/v1/execution/replay.js` (api/v1/execution/replay.js)
+- `scripts/test-runner.js` (scripts/test-runner.js)
 
 ## Recommendations
 
-- Classify orphan API endpoints in architecture graph before large refactors or route removal.
-- Defer deploy until stability improves (reduce orphans, shadows, or protected touches).
+- Run full institutional verification: npm test, ledger/audit vector tests, production audit/verify curl.
+- Replay layer touched — verify GET /api/v1/execution/replay and console REPLAY VERIFY before deploy.
+- Obtain explicit approval for protected file modifications before deploy.
 
 ## Engineering Console Status
 
@@ -85,6 +96,7 @@ _No governance or protected paths in current git diff._
 **Status:** REVIEW_REQUIRED
 
 ### Findings
-- [MEDIUM] ORPHAN_ENDPOINTS: 54 unclassified API endpoint(s) disconnected from canonical anchors
+- [MEDIUM] ORPHAN_ENDPOINTS: 1 unclassified API endpoint(s) disconnected from canonical anchors
 - [MEDIUM] SHADOW_FLOWS: 1 shadow flow reference(s) in codebase
+- [CANONICAL] PROTECTED_TOUCH: 2 protected file(s) modified in working tree
 

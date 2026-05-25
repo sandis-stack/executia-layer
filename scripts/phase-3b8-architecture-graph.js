@@ -12,22 +12,41 @@ import {
   engineeringConsoleDetected,
   ENGINEERING_CONSOLE_GOVERNANCE
 } from "../services/engineering-intelligence-loader.js";
+import {
+  isSignificantGraphChange,
+  writeGovernedArtifacts
+} from "../services/artifact-governance.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const GRAPH_DIR = join(ROOT, "architecture-graph");
 
-export const NODE_CLASSIFICATIONS = [
+/** Phase 4B — API endpoint taxonomy (orphan = unknown only). */
+export const ENDPOINT_TAXONOMY = [
   "canonical_authority",
-  "public_verification",
   "replay_layer",
+  "public_verification",
+  "governance_execution",
+  "governance_projection",
+  "proof_projection",
+  "ledger_projection",
+  "audit_projection",
+  "operator_control",
+  "health_monitoring",
+  "demo_surface",
+  "request_intake",
+  "history_projection",
+  "engineering_intelligence",
+  "legacy_projection",
+  "local_tooling",
+  "unknown"
+];
+
+export const NODE_CLASSIFICATIONS = [
+  ...ENDPOINT_TAXONOMY,
   "governance_layer",
   "architecture_memory",
   "ui_console",
-  "proof_projection",
-  "legacy_projection",
-  "local_tooling",
-  "engineering_console",
-  "unknown"
+  "engineering_console"
 ];
 
 const ENGINEERING_CONSOLE_GOVERNANCE_ROLES = [
@@ -316,6 +335,121 @@ function hasProofLegacyMarker(content) {
   return content.includes("Legacy projection check only");
 }
 
+export function routeFromApiFile(file) {
+  return file
+    .replace(/^api\/v1\//, "")
+    .replace(/\.js$/, "")
+    .replace(/\[execution_id\]/g, "execution_id");
+}
+
+/**
+ * Phase 4B endpoint taxonomy — governs orphan reduction (unknown only).
+ */
+export function classifyEndpoint(file, route = routeFromApiFile(file)) {
+  const r = route;
+
+  if (r === "audit/verify") return "canonical_authority";
+  if (r === "execution/replay") return "replay_layer";
+  if (r === "verify" || r.startsWith("verify/")) return "public_verification";
+  if (r === "engineering/intelligence") return "engineering_intelligence";
+
+  if (r === "proof" || r.startsWith("proof/")) return "proof_projection";
+
+  if (LEGACY_ENDPOINT_FILES.includes(file)) return "legacy_projection";
+  if (r.startsWith("core-ledger") || r === "ledger-verify") return "legacy_projection";
+
+  if (
+    r.includes("ledger") ||
+    r === "settle-ledger" ||
+    r === "commit-execution" ||
+    r.startsWith("truth-anchor")
+  ) {
+    return "ledger_projection";
+  }
+
+  if (
+    r.startsWith("audit/") ||
+    r === "audit-export" ||
+    r === "audit-ledger" ||
+    r === "real-time-audit" ||
+    r === "project-audit" ||
+    r === "reconciliation/verify"
+  ) {
+    return "audit_projection";
+  }
+
+  if (
+    r.startsWith("operator/") ||
+    r.startsWith("operator-") ||
+    r === "operator-queue" ||
+    r.startsWith("auth/") ||
+    r === "login" ||
+    r === "session"
+  ) {
+    return "operator_control";
+  }
+
+  if (r === "execute" || r === "submit" || r === "execution/submit") {
+    return "governance_execution";
+  }
+
+  if (
+    r === "execution/analyze" ||
+    r === "execution/registry" ||
+    r.startsWith("evolution/") ||
+    r.startsWith("rules/") ||
+    r === "proxy" ||
+    r === "users" ||
+    r === "clients" ||
+    r === "organizations" ||
+    r === "projects" ||
+    r === "tasks"
+  ) {
+    return "governance_projection";
+  }
+
+  if (r === "history" || r === "timeline" || r.startsWith("trace/")) {
+    return "history_projection";
+  }
+
+  if (r === "health" || r === "metrics" || r === "live-state" || r === "alerts") {
+    return "health_monitoring";
+  }
+
+  if (r.startsWith("demo") || r === "config/public") return "demo_surface";
+
+  if (r.startsWith("pilot/") || r === "lead") return "request_intake";
+
+  return "unknown";
+}
+
+export function buildEndpointTaxonomySummary(nodes) {
+  const endpoints = nodes.filter((n) => n.type === "endpoint");
+  const by_class = Object.fromEntries(ENDPOINT_TAXONOMY.map((c) => [c, 0]));
+
+  for (const ep of endpoints) {
+    const key = ep.classification || "unknown";
+    by_class[key] = (by_class[key] || 0) + 1;
+  }
+
+  const unknownEndpoints = endpoints.filter((ep) => ep.classification === "unknown");
+  const classifiedCount = endpoints.length - unknownEndpoints.length;
+
+  const next_classification_targets = unknownEndpoints.slice(0, 12).map((ep) => ({
+    file: ep.file,
+    id: ep.id,
+    label: ep.label
+  }));
+
+  return {
+    total_endpoints: endpoints.length,
+    classified_endpoints: classifiedCount,
+    unknown_endpoints: unknownEndpoints.length,
+    by_class,
+    next_classification_targets
+  };
+}
+
 export function classifyNode(node) {
   if (node.classification) return node.classification;
 
@@ -328,28 +462,19 @@ export function classifyNode(node) {
   if (file.startsWith("docs/")) return "architecture_memory";
   if (file.startsWith("sql/rollback/")) return "legacy_projection";
   if (file === "sql/009_atomic_execution_rpc.sql") return "legacy_projection";
-  if (LEGACY_ENDPOINT_FILES.includes(file)) return "legacy_projection";
-  if (PROOF_PROJECTION_FILES.has(file)) return "proof_projection";
   if (
     file === "console/engineering.html" ||
-    file === "public/console/engineering.html" ||
-    file === "api/v1/engineering/intelligence.js" ||
-    file === "services/engineering-intelligence-loader.js"
+    file === "public/console/engineering.html"
   ) {
     return "engineering_console";
   }
+  if (file === "services/engineering-intelligence-loader.js") return "engineering_intelligence";
   if (file.startsWith("console/") || file.startsWith("public/console/") || file === "dashboard/index.html") {
     return "ui_console";
   }
 
   if (node.type === "endpoint") {
-    const route = file.replace(/^api\/v1\//, "").replace(/\.js$/, "");
-    if (route === "audit/verify") return "canonical_authority";
-    if (route === "execution/replay") return "replay_layer";
-    if (route.startsWith("verify/")) return "public_verification";
-    if (route.startsWith("proof/")) return "proof_projection";
-    if (route.startsWith("engineering/")) return "engineering_console";
-    return "unknown";
+    return classifyEndpoint(file);
   }
 
   if (node.type === "service" && (file === "services/audit.js" || file === "services/ledger.js")) {
@@ -558,12 +683,11 @@ function nodesByClassification(nodes) {
   return map;
 }
 
-function buildOrphanCandidates(nodeMap, connected) {
+function buildOrphanCandidates(nodeMap) {
   return [...nodeMap.values()]
     .filter((n) => n.type === "endpoint")
     .filter((n) => !isOrphanPathExcluded(n.file))
     .filter((n) => n.classification === "unknown")
-    .filter((n) => !connected.has(n.id))
     .map((n) => ({
       id: n.id,
       file: n.file,
@@ -615,17 +739,44 @@ export function generateArchitectureReportMarkdown(graph) {
   section("Architecture memory", "architecture_memory");
   section("Local tooling", "local_tooling");
 
-  lines.push("## Orphan candidates");
+  const tax = graph.findings?.endpoint_taxonomy;
+  lines.push("## Endpoint taxonomy summary");
   lines.push("");
-  lines.push(
-    "Unclassified API endpoints not connected to canonical/governance anchors (excludes proof, UI, docs, tooling paths)."
-  );
+  if (tax) {
+    lines.push(`- **Total API endpoints:** ${tax.total_endpoints}`);
+    lines.push(`- **Classified:** ${tax.classified_endpoints}`);
+    lines.push(`- **Unknown:** ${tax.unknown_endpoints}`);
+    lines.push("");
+    lines.push("| Endpoint class | Count |");
+    lines.push("|----------------|------:|");
+    for (const cls of ENDPOINT_TAXONOMY) {
+      const count = tax.by_class[cls] ?? 0;
+      if (count > 0) lines.push(`| ${cls} | ${count} |`);
+    }
+    lines.push("");
+  }
+
+  lines.push("## Remaining orphan endpoints");
+  lines.push("");
+  lines.push("Only `unknown` taxonomy class (Phase 4B). Governed classes are not orphans.");
   lines.push("");
   if (!graph.findings.orphan_candidates.length) {
-    lines.push("_No orphan API endpoints after reduction._");
+    lines.push("_No orphan API endpoints after taxonomy classification._");
   } else {
     for (const o of graph.findings.orphan_candidates) {
       lines.push(`- \`${o.file}\` — ${o.label}`);
+    }
+  }
+  lines.push("");
+
+  lines.push("## Next classification targets");
+  lines.push("");
+  const targets = tax?.next_classification_targets || [];
+  if (!targets.length) {
+    lines.push("_All API endpoints classified._");
+  } else {
+    for (const t of targets) {
+      lines.push(`- \`${t.file}\` — assign taxonomy before refactor`);
     }
   }
   lines.push("");
@@ -786,14 +937,14 @@ export function buildArchitectureGraph() {
   const engineeringConsoleNodes = nodes.filter((n) => n.classification === "engineering_console");
   const projectFiles = listFiles(ROOT);
   const shadow_flow_candidates = scanShadowFlows(projectFiles);
-  const connected = collectConnectedEndpointIds(edges);
-  const orphan_candidates = buildOrphanCandidates(nodeMap, connected);
+  const endpoint_taxonomy = buildEndpointTaxonomySummary(nodes);
+  const orphan_candidates = buildOrphanCandidates(nodeMap);
   const layered = nodesByClassification(nodes);
 
   const next_recommended_cleanup = [];
-  if (orphan_candidates.length) {
+  if (endpoint_taxonomy.unknown_endpoints > 0) {
     next_recommended_cleanup.push(
-      `Classify ${orphan_candidates.length} orphan API endpoint(s) before any removal.`
+      `Assign taxonomy to ${endpoint_taxonomy.unknown_endpoints} unknown endpoint(s) (see endpoint-taxonomy.md).`
     );
   }
   if (shadow_flow_candidates.length) {
@@ -819,6 +970,7 @@ export function buildArchitectureGraph() {
       (f) => `endpoint:${f.replace(/^api\/v1\//, "").replace(/\.js$/, "")}`
     ),
     orphan_candidates,
+    endpoint_taxonomy,
     shadow_flow_candidates,
     summary_counts: {
       total_nodes: nodes.length,
@@ -848,25 +1000,24 @@ export function buildArchitectureGraph() {
   };
 }
 
-function snapshotFilename(iso) {
-  return `${iso.replace(/[:.]/g, "-")}.json`;
-}
-
 export function writeGraphOutputs(graph, root = ROOT) {
   const graphDir = join(root, "architecture-graph");
-  if (!existsSync(graphDir)) {
-    mkdirSync(graphDir, { recursive: true });
-  }
-
-  const stamped = snapshotFilename(graph.generated_at);
-  const body = `${JSON.stringify(graph, null, 2)}\n`;
   const report = generateArchitectureReportMarkdown(graph);
+  const result = writeGovernedArtifacts({
+    artifactDir: graphDir,
+    payload: graph,
+    reportMarkdown: report,
+    significantCheck: isSignificantGraphChange
+  });
 
-  writeFileSync(join(graphDir, stamped), body, "utf8");
-  writeFileSync(join(graphDir, "latest.json"), body, "utf8");
-  writeFileSync(join(graphDir, "report.md"), report, "utf8");
-
-  return { stamped: `architecture-graph/${stamped}`, report: "architecture-graph/report.md" };
+  return {
+    stamped: result.stamped,
+    report: "architecture-graph/report.md",
+    significant: result.significant,
+    archived: result.archived,
+    archiveDir: result.archiveDir,
+    rotated: result.archived
+  };
 }
 
 function main() {
@@ -881,7 +1032,11 @@ function main() {
   console.log(`orphans=${sc.orphan_candidates} shadow_flows=${sc.shadow_flow_candidates}`);
   console.log("");
   console.log("ARCHITECTURE_GRAPH_RECORDED");
-  console.log(paths.stamped);
+  if (paths.stamped) console.log(paths.stamped);
+  else console.log("(stamped snapshot skipped — no governance-significant change)");
+  if (paths.archived?.length) {
+    console.log(`archived=${paths.archived.length} snapshot(s) → architecture-graph/archive/`);
+  }
   console.log("architecture-graph/latest.json");
   console.log(paths.report);
 }

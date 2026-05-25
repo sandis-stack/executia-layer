@@ -4,10 +4,14 @@
  * Records governed engineering events before deploy. No DB, no external APIs.
  */
 import { execSync } from "node:child_process";
-import { mkdirSync, writeFileSync, existsSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
+import {
+  isSignificantLedgerChange,
+  writeGovernedArtifacts
+} from "../services/artifact-governance.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LEDGER_DIR = join(ROOT, "engineering-ledger");
@@ -183,27 +187,59 @@ export function buildEngineeringSnapshot(files_changed) {
   };
 }
 
-function snapshotFilename(iso) {
-  const safe = iso.replace(/[:.]/g, "-");
-  return `${safe}.json`;
+export function generateEngineeringLedgerReportMarkdown(snapshot) {
+  const lines = [
+    "# Engineering ledger",
+    "",
+    `**Generated:** ${snapshot.generated_at}`,
+    `**Branch:** ${snapshot.branch}`,
+    `**Commit:** ${snapshot.commit}`,
+    `**Risk:** ${snapshot.risk_level}`,
+    `**Classification:** ${snapshot.change_classification_hint}`,
+    "",
+    "## Protected files touched",
+    ""
+  ];
+  const protectedFiles = snapshot.protected_files_touched || [];
+  if (protectedFiles.length) {
+    for (const p of protectedFiles) {
+      lines.push(`- ${p.file || p}`);
+    }
+  } else {
+    lines.push("- None");
+  }
+  lines.push("");
+  lines.push(`## Files changed (${(snapshot.files_changed || []).length})`);
+  lines.push("");
+  return `${lines.join("\n")}\n`;
+}
+
+export function writeLedgerOutputs(snapshot, root = ROOT) {
+  const ledgerDir = join(root, "engineering-ledger");
+  const report = generateEngineeringLedgerReportMarkdown(snapshot);
+  return writeGovernedArtifacts({
+    artifactDir: ledgerDir,
+    payload: snapshot,
+    reportMarkdown: report,
+    significantCheck: isSignificantLedgerChange,
+    stablePredicate: (payload, significant) =>
+      significant && (payload.risk_level === "LOW" || payload.risk_level === "CANONICAL")
+  });
 }
 
 function main() {
   const files_changed = gitChangedFiles();
   const snapshot = buildEngineeringSnapshot(files_changed);
-
-  if (!existsSync(LEDGER_DIR)) {
-    mkdirSync(LEDGER_DIR, { recursive: true });
-  }
-
-  const filename = snapshotFilename(snapshot.generated_at);
-  const relativePath = join("engineering-ledger", filename);
-  const absolutePath = join(ROOT, relativePath);
-
-  writeFileSync(absolutePath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+  const result = writeLedgerOutputs(snapshot);
 
   console.log("ENGINEERING_LEDGER_RECORDED");
-  console.log(relativePath);
+  if (result.stamped) console.log(result.stamped);
+  else console.log("(stamped snapshot skipped — no governance-significant change)");
+  if (result.archived?.length) {
+    console.log(`archived=${result.archived.length} snapshot(s) → engineering-ledger/archive/`);
+  }
+  console.log("engineering-ledger/latest.json");
+  console.log("engineering-ledger/report.md");
 }
 
 const isDirectRun =

@@ -4,9 +4,9 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 
 ## Generated at
 
-- **Timestamp:** 2026-05-25T07:05:11.377Z
+- **Timestamp:** 2026-05-25T11:10:34.451Z
 - **Branch:** phase-3b3-ledger-polish
-- **Commit:** 7ff3556be9e4150322a6dc3eb087a1b898684b75
+- **Commit:** b16b93bdd805a995ff05ccd276f563aeb264c49a
 
 ## Canonical authority
 
@@ -25,6 +25,7 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 ## Public verification
 
 - `api/v1/verify/[execution_id].js` — /api/v1/verify/execution_id (`endpoint:verify/execution_id`)
+- `api/v1/verify.js` — /api/v1/verify (`endpoint:verify`)
 
 ## Governance layer
 
@@ -34,15 +35,19 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 - `git` — Git working tree (`store:git_state`)
 - `engineering-ledger` — Engineering ledger snapshots (`store:engineering_ledger`)
 - `scripts/phase-3b9-execution-intelligence.js` — Phase 3B9 execution intelligence (`governance:phase-3b9`)
+- `.cursor/rules/ai-operator-governance.mdc` — .cursor/rules/ai-operator-governance.mdc (`cursor:.cursor/rules/ai-operator-governance.mdc`)
 - `.cursor/rules/change-governance.mdc` — .cursor/rules/change-governance.mdc (`cursor:.cursor/rules/change-governance.mdc`)
 - `.cursor/rules/deployment-rules.mdc` — .cursor/rules/deployment-rules.mdc (`cursor:.cursor/rules/deployment-rules.mdc`)
 - `.cursor/rules/executia-governance.mdc` — .cursor/rules/executia-governance.mdc (`cursor:.cursor/rules/executia-governance.mdc`)
 - `.cursor/rules/security-rules.mdc` — .cursor/rules/security-rules.mdc (`cursor:.cursor/rules/security-rules.mdc`)
 - `.cursor/rules/supabase-rules.mdc` — .cursor/rules/supabase-rules.mdc (`cursor:.cursor/rules/supabase-rules.mdc`)
+- `.cursor/rules/vendor-safety.mdc` — .cursor/rules/vendor-safety.mdc (`cursor:.cursor/rules/vendor-safety.mdc`)
 - `.cursor/rules/vercel-rules.mdc` — .cursor/rules/vercel-rules.mdc (`cursor:.cursor/rules/vercel-rules.mdc`)
 
 ## Legacy projection layer
 
+- `api/v1/core-ledger-commit.js` — /api/v1/core-ledger-commit (`endpoint:core-ledger-commit`)
+- `api/v1/core-ledger-repair.js` — /api/v1/core-ledger-repair (`endpoint:core-ledger-repair`)
 - `api/v1/core-ledger-verify.js` — /api/v1/core-ledger-verify (legacy compat) (`endpoint:core-ledger-verify`)
 - `api/v1/ledger-verify.js` — /api/v1/ledger-verify (legacy compat) (`endpoint:ledger-verify`)
 
@@ -59,6 +64,7 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 - `api/v1/proof/summary.js` — /api/v1/proof/summary (`endpoint:proof/summary`)
 - `api/v1/proof/timestamp-anchor.js` — /api/v1/proof/timestamp-anchor (`endpoint:proof/timestamp-anchor`)
 - `api/v1/proof/verify.js` — /api/v1/proof/verify (`endpoint:proof/verify`)
+- `api/v1/proof.js` — /api/v1/proof (`endpoint:proof`)
 
 ## UI console
 
@@ -69,79 +75,80 @@ _None mapped._
 - `.cursor/context/architecture-graph.md` — Architecture graph context (`context:architecture-graph`)
 - `architecture-graph/latest.json` — Architecture graph artifact (`store:architecture_graph`)
 - `execution-intelligence/latest.json` — Execution intelligence artifact (`store:execution_intelligence`)
+- `.cursor/context/ai-operator-governance.md` — .cursor/context/ai-operator-governance.md (`cursor:.cursor/context/ai-operator-governance.md`)
 - `.cursor/context/architecture-drift.md` — .cursor/context/architecture-drift.md (`cursor:.cursor/context/architecture-drift.md`)
 - `.cursor/context/architecture-graph.md` — .cursor/context/architecture-graph.md (`cursor:.cursor/context/architecture-graph.md`)
 - `.cursor/context/architecture.md` — .cursor/context/architecture.md (`cursor:.cursor/context/architecture.md`)
+- `.cursor/context/artifact-governance.md` — .cursor/context/artifact-governance.md (`cursor:.cursor/context/artifact-governance.md`)
+- `.cursor/context/artifact-retention.md` — .cursor/context/artifact-retention.md (`cursor:.cursor/context/artifact-retention.md`)
+- `.cursor/context/canonical-compression.md` — .cursor/context/canonical-compression.md (`cursor:.cursor/context/canonical-compression.md`)
 - `.cursor/context/change-classification.md` — .cursor/context/change-classification.md (`cursor:.cursor/context/change-classification.md`)
+- `.cursor/context/design-system.md` — .cursor/context/design-system.md (`cursor:.cursor/context/design-system.md`)
+- `.cursor/context/endpoint-taxonomy.md` — .cursor/context/endpoint-taxonomy.md (`cursor:.cursor/context/endpoint-taxonomy.md`)
 - `.cursor/context/engineering-ledger.md` — .cursor/context/engineering-ledger.md (`cursor:.cursor/context/engineering-ledger.md`)
+- `.cursor/context/execution-consequence.md` — .cursor/context/execution-consequence.md (`cursor:.cursor/context/execution-consequence.md`)
+- `.cursor/context/execution-identity.md` — .cursor/context/execution-identity.md (`cursor:.cursor/context/execution-identity.md`)
 - `.cursor/context/execution-intelligence.md` — .cursor/context/execution-intelligence.md (`cursor:.cursor/context/execution-intelligence.md`)
+- `.cursor/context/execution-intent.md` — .cursor/context/execution-intent.md (`cursor:.cursor/context/execution-intent.md`)
+- `.cursor/context/execution-memory.md` — .cursor/context/execution-memory.md (`cursor:.cursor/context/execution-memory.md`)
+- `.cursor/context/execution-rhythm.md` — .cursor/context/execution-rhythm.md (`cursor:.cursor/context/execution-rhythm.md`)
+- `.cursor/context/execution-semantics.md` — .cursor/context/execution-semantics.md (`cursor:.cursor/context/execution-semantics.md`)
+- `.cursor/context/execution-sovereignty.md` — .cursor/context/execution-sovereignty.md (`cursor:.cursor/context/execution-sovereignty.md`)
+- `.cursor/context/execution-trust.md` — .cursor/context/execution-trust.md (`cursor:.cursor/context/execution-trust.md`)
+- `.cursor/context/final-institutional-refinement.md` — .cursor/context/final-institutional-refinement.md (`cursor:.cursor/context/final-institutional-refinement.md`)
+- `.cursor/context/governance-consolidation.md` — .cursor/context/governance-consolidation.md (`cursor:.cursor/context/governance-consolidation.md`)
+- `.cursor/context/governance-modes.md` — .cursor/context/governance-modes.md (`cursor:.cursor/context/governance-modes.md`)
+- `.cursor/context/governance-surface-separation.md` — .cursor/context/governance-surface-separation.md (`cursor:.cursor/context/governance-surface-separation.md`)
+- `.cursor/context/institutional-completion.md` — .cursor/context/institutional-completion.md (`cursor:.cursor/context/institutional-completion.md`)
+- `.cursor/context/institutional-product-completion.md` — .cursor/context/institutional-product-completion.md (`cursor:.cursor/context/institutional-product-completion.md`)
+- `.cursor/context/institutional-ui.md` — .cursor/context/institutional-ui.md (`cursor:.cursor/context/institutional-ui.md`)
+- `.cursor/context/operational-shell.md` — .cursor/context/operational-shell.md (`cursor:.cursor/context/operational-shell.md`)
+- `.cursor/context/pilot-readiness.md` — .cursor/context/pilot-readiness.md (`cursor:.cursor/context/pilot-readiness.md`)
 - `.cursor/context/production.md` — .cursor/context/production.md (`cursor:.cursor/context/production.md`)
 - `.cursor/context/protected-files.md` — .cursor/context/protected-files.md (`cursor:.cursor/context/protected-files.md`)
+- `.cursor/context/real-execution-mechanics.md` — .cursor/context/real-execution-mechanics.md (`cursor:.cursor/context/real-execution-mechanics.md`)
 - `.cursor/context/security.md` — .cursor/context/security.md (`cursor:.cursor/context/security.md`)
 - `.cursor/context/ui-rules.md` — .cursor/context/ui-rules.md (`cursor:.cursor/context/ui-rules.md`)
+- `.cursor/context/vendor-operations.md` — .cursor/context/vendor-operations.md (`cursor:.cursor/context/vendor-operations.md`)
 
 ## Local tooling
 
 - `scripts/phase-3b8-architecture-graph.js` — Phase 3B8 architecture graph (`governance:phase-3b8`)
 
-## Orphan candidates
+## Endpoint taxonomy summary
 
-Unclassified API endpoints not connected to canonical/governance anchors (excludes proof, UI, docs, tooling paths).
+- **Total API endpoints:** 72
+- **Classified:** 71
+- **Unknown:** 1
 
-- `api/v1/alerts.js` — /api/v1/alerts
-- `api/v1/audit/repair.js` — /api/v1/audit/repair
-- `api/v1/audit/timeline.js` — /api/v1/audit/timeline
-- `api/v1/audit-export.js` — /api/v1/audit-export
-- `api/v1/audit-ledger.js` — /api/v1/audit-ledger
-- `api/v1/auth/login.js` — /api/v1/auth/login
-- `api/v1/auth/operator-token.js` — /api/v1/auth/operator-token
-- `api/v1/auth/set-operator-password.js` — /api/v1/auth/set-operator-password
-- `api/v1/clients.js` — /api/v1/clients
-- `api/v1/commit-execution.js` — /api/v1/commit-execution
-- `api/v1/config/public.js` — /api/v1/config/public
-- `api/v1/core-ledger-commit.js` — /api/v1/core-ledger-commit
-- `api/v1/core-ledger-repair.js` — /api/v1/core-ledger-repair
-- `api/v1/evolution/analyze.js` — /api/v1/evolution/analyze
-- `api/v1/execute.js` — /api/v1/execute
-- `api/v1/execution/analyze.js` — /api/v1/execution/analyze
-- `api/v1/execution/registry.js` — /api/v1/execution/registry
-- `api/v1/execution/submit.js` — /api/v1/execution/submit
-- `api/v1/health.js` — /api/v1/health
-- `api/v1/history.js` — /api/v1/history
-- `api/v1/lead.js` — /api/v1/lead
-- `api/v1/live-state.js` — /api/v1/live-state
-- `api/v1/login.js` — /api/v1/login
-- `api/v1/metrics.js` — /api/v1/metrics
-- `api/v1/operator/action.js` — /api/v1/operator/action
-- `api/v1/operator/executions.js` — /api/v1/operator/executions
-- `api/v1/operator/lock.js` — /api/v1/operator/lock
-- `api/v1/operator/me.js` — /api/v1/operator/me
-- `api/v1/operator/review.js` — /api/v1/operator/review
-- `api/v1/operator-approve.js` — /api/v1/operator-approve
-- `api/v1/operator-block.js` — /api/v1/operator-block
-- `api/v1/operator-decision.js` — /api/v1/operator-decision
-- `api/v1/operator-queue.js` — /api/v1/operator-queue
-- `api/v1/organizations.js` — /api/v1/organizations
-- `api/v1/pilot/list.js` — /api/v1/pilot/list
-- `api/v1/pilot/request.js` — /api/v1/pilot/request
-- `api/v1/pilot/update.js` — /api/v1/pilot/update
-- `api/v1/project-audit.js` — /api/v1/project-audit
-- `api/v1/projects.js` — /api/v1/projects
-- `api/v1/proof.js` — /api/v1/proof
-- `api/v1/proxy.js` — /api/v1/proxy
-- `api/v1/real-time-audit.js` — /api/v1/real-time-audit
-- `api/v1/reconciliation/verify.js` — /api/v1/reconciliation/verify
-- `api/v1/rules/evaluate.js` — /api/v1/rules/evaluate
-- `api/v1/session.js` — /api/v1/session
-- `api/v1/settle-ledger.js` — /api/v1/settle-ledger
-- `api/v1/submit.js` — /api/v1/submit
-- `api/v1/tasks.js` — /api/v1/tasks
-- `api/v1/timeline.js` — /api/v1/timeline
-- `api/v1/trace/execution.js` — /api/v1/trace/execution
-- `api/v1/truth-anchor-verify.js` — /api/v1/truth-anchor-verify
-- `api/v1/truth-anchor.js` — /api/v1/truth-anchor
-- `api/v1/users.js` — /api/v1/users
-- `api/v1/verify.js` — /api/v1/verify
+| Endpoint class | Count |
+|----------------|------:|
+| canonical_authority | 1 |
+| replay_layer | 1 |
+| public_verification | 2 |
+| governance_execution | 3 |
+| governance_projection | 10 |
+| proof_projection | 12 |
+| ledger_projection | 5 |
+| audit_projection | 6 |
+| operator_control | 14 |
+| health_monitoring | 4 |
+| demo_surface | 1 |
+| request_intake | 4 |
+| history_projection | 3 |
+| engineering_intelligence | 1 |
+| legacy_projection | 4 |
+| unknown | 1 |
+
+## Remaining orphan endpoints
+
+Only `unknown` taxonomy class (Phase 4B). Governed classes are not orphans.
+
+- `api/v1/execution/transition.js` — /api/v1/execution/transition
+
+## Next classification targets
+
+- `api/v1/execution/transition.js` — assign taxonomy before refactor
 
 ## Shadow flow candidates
 
@@ -151,34 +158,42 @@ Unclassified API endpoints not connected to canonical/governance anchors (exclud
 
 | Metric | Count |
 |--------|------:|
-| Total nodes | 106 |
-| Total edges | 45 |
-| API endpoints | 71 |
-| Orphan candidates (reduced) | 54 |
+| Total nodes | 134 |
+| Total edges | 72 |
+| API endpoints | 72 |
+| Orphan candidates (reduced) | 1 |
 | Shadow flow candidates (reduced) | 1 |
 | Layer: canonical_authority | 7 |
-| Layer: public_verification | 1 |
 | Layer: replay_layer | 1 |
-| Layer: governance_layer | 12 |
-| Layer: architecture_memory | 13 |
-| Layer: ui_console | 0 |
-| Layer: proof_projection | 11 |
-| Layer: legacy_projection | 2 |
+| Layer: public_verification | 2 |
+| Layer: governance_execution | 3 |
+| Layer: governance_projection | 10 |
+| Layer: proof_projection | 12 |
+| Layer: ledger_projection | 5 |
+| Layer: audit_projection | 6 |
+| Layer: operator_control | 14 |
+| Layer: health_monitoring | 4 |
+| Layer: demo_surface | 1 |
+| Layer: request_intake | 4 |
+| Layer: history_projection | 3 |
+| Layer: engineering_intelligence | 2 |
+| Layer: legacy_projection | 4 |
 | Layer: local_tooling | 1 |
-| Layer: engineering_console | 4 |
-| Layer: unknown | 54 |
+| Layer: unknown | 1 |
+| Layer: governance_layer | 14 |
+| Layer: architecture_memory | 38 |
+| Layer: ui_console | 0 |
+| Layer: engineering_console | 2 |
 
 ## Next recommended cleanup
 
-- Classify 54 orphan API endpoint(s) before any removal.
+- Assign taxonomy to 1 unknown endpoint(s) (see endpoint-taxonomy.md).
 - Migrate remaining shadow flow references (ledger-verify URLs or legacy event names).
 
 ## Engineering Console Layer
 
-- `api/v1/engineering/intelligence.js` — GET /api/v1/engineering/intelligence (`endpoint:engineering/intelligence`)
 - `console/engineering.html` — EXECUTIA Engineering Console (`ui:engineering-console`)
 - `public/console/engineering.html` — EXECUTIA Engineering Console (public) (`ui:engineering-console-public`)
-- `services/engineering-intelligence-loader.js` — Engineering intelligence loader (`service:engineering-intelligence-loader`)
 
 engineering_console_detected = true
 

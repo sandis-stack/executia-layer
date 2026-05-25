@@ -23,6 +23,12 @@ import {
   buildEngineeringConsoleAuthority,
   resolveEngineeringConsoleDetected
 } from "../services/engineering-intelligence-loader.js";
+import {
+  isSignificantIntelligenceChange,
+  listStampedSnapshots,
+  readJsonSafe,
+  writeGovernedArtifacts
+} from "../services/artifact-governance.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const INTELLIGENCE_DIR = join(ROOT, "execution-intelligence");
@@ -129,9 +135,11 @@ function loadArchitectureReport() {
 }
 
 function loadLatestEngineeringLedger() {
+  const latest = readJsonSafe(join(LEDGER_DIR, "latest.json"));
+  if (latest) return latest;
   if (!existsSync(LEDGER_DIR)) return null;
   const files = readdirSync(LEDGER_DIR)
-    .filter((f) => f.endsWith(".json"))
+    .filter((f) => f.endsWith(".json") && f !== "latest.json" && f !== "last-stable.json")
     .map((f) => ({ name: f, path: join(LEDGER_DIR, f), mtime: statSync(join(LEDGER_DIR, f)).mtimeMs }))
     .sort((a, b) => b.mtime - a.mtime);
   if (!files.length) return null;
@@ -139,11 +147,7 @@ function loadLatestEngineeringLedger() {
 }
 
 function listGraphSnapshots() {
-  if (!existsSync(GRAPH_DIR)) return [];
-  return readdirSync(GRAPH_DIR)
-    .filter((f) => f.endsWith(".json") && f !== "latest.json")
-    .map((f) => ({ name: f, path: join(GRAPH_DIR, f), mtime: statSync(join(GRAPH_DIR, f)).mtimeMs }))
-    .sort((a, b) => b.mtime - a.mtime);
+  return listStampedSnapshots(GRAPH_DIR);
 }
 
 function loadPreviousArchitectureGraph(currentGraph) {
@@ -377,8 +381,10 @@ export function computeStabilityScores(graph, files, deploy, governanceWarningCo
   const protectedCount = deploy.protected_files_touched.length;
   const missingEdges = countMissingCanonicalEdges(graph);
 
-  const totalEndpoints = graph?.nodes?.filter((n) => n.type === "endpoint").length || 1;
-  const unknownOrphans = orphanCount;
+  const taxonomy = graph?.findings?.endpoint_taxonomy;
+  const totalEndpoints = taxonomy?.total_endpoints || graph?.nodes?.filter((n) => n.type === "endpoint").length || 1;
+  const unknownEndpoints = taxonomy?.unknown_endpoints ?? orphanCount;
+  const classifiedEndpoints = taxonomy?.classified_endpoints ?? totalEndpoints - unknownEndpoints;
 
   const deductions = {
     orphans: orphanCount,
@@ -418,7 +424,7 @@ export function computeStabilityScores(graph, files, deploy, governanceWarningCo
   );
 
   const endpoint_consistency_score = clamp(
-    100 - Math.round((unknownOrphans / totalEndpoints) * 100)
+    Math.round((classifiedEndpoints / totalEndpoints) * 100)
   );
 
   return {
@@ -428,7 +434,12 @@ export function computeStabilityScores(graph, files, deploy, governanceWarningCo
     replay_score,
     verification_score,
     endpoint_consistency_score,
-    deductions
+    deductions: {
+      ...deductions,
+      classified_endpoints: classifiedEndpoints,
+      unknown_endpoints: unknownEndpoints,
+      total_endpoints: totalEndpoints
+    }
   };
 }
 
@@ -733,27 +744,23 @@ export function generateExecutionIntelligenceReportMarkdown(intel) {
   return `${lines.join("\n")}\n`;
 }
 
-function snapshotFilename(iso) {
-  return `${iso.replace(/[:.]/g, "-")}.json`;
-}
-
 export function writeIntelligenceOutputs(intel, root = ROOT) {
   const dir = join(root, "execution-intelligence");
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-
-  const stamped = snapshotFilename(intel.generated_at);
-  const body = `${JSON.stringify(intel, null, 2)}\n`;
   const report = generateExecutionIntelligenceReportMarkdown(intel);
-
-  writeFileSync(join(dir, stamped), body, "utf8");
-  writeFileSync(join(dir, "latest.json"), body, "utf8");
-  writeFileSync(join(dir, "report.md"), report, "utf8");
+  const result = writeGovernedArtifacts({
+    artifactDir: dir,
+    payload: intel,
+    reportMarkdown: report,
+    significantCheck: isSignificantIntelligenceChange
+  });
 
   return {
-    stamped: `execution-intelligence/${stamped}`,
-    report: "execution-intelligence/report.md"
+    stamped: result.stamped,
+    report: "execution-intelligence/report.md",
+    significant: result.significant,
+    archived: result.archived,
+    archiveDir: result.archiveDir,
+    rotated: result.archived
   };
 }
 
@@ -769,7 +776,11 @@ function main() {
   console.log(`findings=${intel.findings.length} recommendations=${intel.recommendations.length}`);
   console.log("");
   console.log("EXECUTION_INTELLIGENCE_RECORDED");
-  console.log(paths.stamped);
+  if (paths.stamped) console.log(paths.stamped);
+  else console.log("(stamped snapshot skipped — no governance-significant change)");
+  if (paths.archived?.length) {
+    console.log(`archived=${paths.archived.length} snapshot(s) → execution-intelligence/archive/`);
+  }
   console.log("execution-intelligence/latest.json");
   console.log(paths.report);
 }
