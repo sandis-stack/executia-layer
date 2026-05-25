@@ -1,0 +1,16 @@
+/**
+ * EXECUTIA Governed Presentation (Phase 5G)
+ * Single load order for institutional consoles — tokens, nav, authority, surfaces, modes.
+ */
+@import url("executia-design-system.css");
+@import url("executia-governance-shell.css");
+@import url("executia-governance-core.css");
+@import url("executia-operational-shell.css");
+@import url("executia-governance-modes.css");
+@import url("executia-execution-rhythm.css");
+@import url("executia-execution-consequence.css");
+@import url("executia-execution-memory.css");
+@import url("executia-execution-intent.css");
+@import url("executia-execution-trust.css");
+@import url("executia-execution-sovereignty.css");
+@import url("executia-canonical-compression.css");

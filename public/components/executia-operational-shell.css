@@ -1,0 +1,132 @@
+/**
+ * EXECUTIA Operational Shell (Phase 5B)
+ * Unified institutional operating environment — one rhythm across governance pages.
+ * Requires: executia-design-system.css, executia-governance-shell.css
+ */
+
+body.ex-op-shell {
+  min-height: 100vh;
+}
+
+.ex-op-legacy-hidden {
+  display: none !important;
+}
+
+/* Authority frame: executia-governance-core.css */
+
+.ex-op-authority-state {
+  min-width: 0;
+}
+
+.ex-op-authority-state .ex-ds-institutional-label {
+  display: block;
+}
+
+.ex-op-state-value {
+  display: block;
+  margin-top: var(--ex-ds-s8, 8px);
+}
+
+/* Main operating frame */
+.ex-op-main {
+  flex: 1;
+  transition: opacity 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ex-op-main,
+  .ex-op-surface {
+    transition: none;
+  }
+}
+
+/* Operational surface components */
+.ex-op-surface {
+  transition: opacity 0.2s ease;
+}
+
+.ex-op-surface--governance {
+  /* crown governance block */
+}
+
+.ex-op-surface--authority {
+  /* canonical ladder */
+}
+
+.ex-op-surface--intelligence {
+  /* integrity index */
+}
+
+.ex-op-surface--replay {
+  /* replay / history */
+}
+
+.ex-op-surface--deploy {
+  /* deploy state prose */
+}
+
+.ex-op-surface--findings {
+  /* review layer */
+}
+
+.ex-op-surface--presence {
+  max-width: 26rem;
+}
+
+.ex-op-surface--audit {
+  /* audit chain, verification prose */
+}
+
+.ex-op-surface--public-verify {
+  /* minimal institutional proof */
+}
+
+.ex-op-surface--retention {
+  /* governed artifact retention state */
+}
+
+/* Interaction rhythm — calm, no dashboard jitter */
+body.ex-op-shell * {
+  animation: none !important;
+}
+
+body.ex-op-shell .ex-op-main [class*="card"],
+body.ex-op-shell .ex-op-main [class*="metric"],
+body.ex-op-shell .ex-op-main [class*="widget"] {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.ex-op-shell .ex-op-main .ex-card,
+body.ex-op-shell .ex-op-main .ex-metric {
+  border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+  background: var(--ex-ds-bg, #f4f6f9);
+}
+
+/* Normalize console page mains inside shell */
+body.ex-op-shell .ex-op-main.ex-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s64, 64px) var(--ex-ds-s24, 24px);
+}
+
+body.ex-op-shell .proofs-wrap {
+  max-width: 700px;
+  padding: var(--ex-ds-s64, 64px) var(--ex-ds-s24, 24px);
+}
+
+body.ex-op-shell .proofs-card {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+
+body.ex-op-shell .proofs-card h1 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  color: var(--ex-ds-blue, #1c3554);
+}
+

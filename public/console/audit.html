@@ -39,11 +39,15 @@
   border-color:#183a5b;
 }
 </style>
-  <link rel="stylesheet" href="/components/engine-shell.css">
-  <link rel="stylesheet" href="/components/engine-system.css">
+  <link rel="stylesheet" href="/components/engine-shell.css" />
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-governance-shell.css" />
+  <link rel="stylesheet" href="/components/executia-governance-core.css" />
+  <link rel="stylesheet" href="/components/executia-operational-shell.css" />
+  <script src="/components/executia-governance-core.js"></script>
 </head>
-<body>
-<main class="ex-main">
+<body class="ex-engine-shell ex-ds-governance-shell ex-op-shell ex-gov-core-enabled ex-operational-surface ex-ds-surface" data-op-page="audit">
+  <main class="ex-op-main ex-main">
     <section class="ex-section-tight">
       <p class="ex-kicker">Audit history</p>
       <h1 class="ex-title system-title">Execution proof</h1>
@@ -68,5 +72,23 @@
   </main>
   <script>executiaFetchJson('/api/v1/history','historyJson');</script>
   <script src="/components/engine-shell.js"></script>
+  <script src="/components/executia-operational-shell.js"></script>
+  <script>
+    (function () {
+      const T = window.EXECUTIA_GOVERNANCE_LANGUAGE?.TERMS || {};
+      if (window.EXECUTIA_GOVERNANCE_CORE?.applyPresentation) {
+        window.EXECUTIA_GOVERNANCE_CORE.applyPresentation({
+          intel: {},
+          ag: { canonical_authority: [1] },
+          data: { engineering_console_authority: { GOVERNED: true } }
+        });
+      } else if (window.EXECUTIA_OPERATIONAL_SHELL?.setAuthorityState) {
+        window.EXECUTIA_OPERATIONAL_SHELL.setAuthorityState(
+          `${T.VERIFIED || "Verified"} audit trail`,
+          `${T.CANONICAL || "Canonical"} history`
+        );
+      }
+    })();
+  </script>
 </body>
 </html>

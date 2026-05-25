@@ -1,0 +1,136 @@
+/**
+ * EXECUTIA governance shell — primary/secondary navigation (Phase 5A).
+ * Requires engine-shell.css and executia-design-system.css.
+ */
+
+body.ex-ds-governance-shell .ex-engine-header-inner {
+  max-width: 1200px;
+  height: auto;
+  min-height: 68px;
+  padding: var(--ex-ds-s16, 16px) var(--ex-ds-s24, 24px);
+  grid-template-columns: minmax(200px, 280px) 1fr auto;
+  grid-template-rows: auto auto;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s24, 24px);
+  align-items: center;
+}
+
+body.ex-ds-governance-shell .ex-engine-brand {
+  grid-row: 1 / span 2;
+  align-self: center;
+  text-transform: none;
+}
+
+body.ex-ds-governance-shell .ex-engine-brand-main {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+body.ex-ds-governance-shell .ex-engine-brand-sub {
+  display: block;
+  margin-top: var(--ex-ds-s8, 8px);
+  color: var(--ex-ds-muted, #7a8da3);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  opacity: 1;
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-wrap {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ex-ds-s8, 8px);
+  min-width: 0;
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-primary,
+body.ex-ds-governance-shell .ex-gov-nav-secondary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s24, 24px);
+  min-width: 0;
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-primary a {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: none;
+  color: var(--ex-ds-muted, #7a8da3);
+  text-decoration: none;
+  padding: var(--ex-ds-s8, 8px) 0;
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-primary a.active {
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-primary a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-primary a {
+  position: relative;
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-secondary a {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--ex-ds-muted, #7a8da3);
+  text-decoration: none;
+  padding: var(--ex-ds-s8, 8px) 0;
+  opacity: 0.9;
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-secondary a.active {
+  color: var(--ex-ds-graphite, #4d6178);
+  font-weight: 500;
+}
+
+body.ex-ds-governance-shell .ex-gov-nav-secondary a:hover,
+body.ex-ds-governance-shell .ex-gov-nav-primary a:hover {
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-ds-governance-shell .ex-engine-entry {
+  grid-row: 1 / span 2;
+  grid-column: 3;
+  align-self: center;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  padding: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+  border-radius: 0;
+}
+
+body.ex-ds-governance-shell .ex-engine-nav {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  body.ex-ds-governance-shell .ex-engine-header-inner {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  body.ex-ds-governance-shell .ex-engine-brand,
+  body.ex-ds-governance-shell .ex-engine-entry {
+    grid-row: auto;
+    grid-column: 1;
+  }
+
+  body.ex-ds-governance-shell .ex-gov-nav-wrap {
+    grid-column: 1;
+  }
+}

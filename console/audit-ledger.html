@@ -47,50 +47,25 @@
   border-radius:999px;
   padding:8px 12px;
   background:#f7fbff;
-}
-
 .engine-nav a.active{
   background:#183a5b;
   color:#fff;
   border-color:#183a5b;
-}
 </style>
-  <link rel="stylesheet" href="/components/engine-shell.css">
+  <link rel="stylesheet" href="/components/engine-shell.css" />
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-governance-shell.css" />
+  <link rel="stylesheet" href="/components/executia-governance-core.css" />
+  <link rel="stylesheet" href="/components/executia-operational-shell.css" />
 </head>
-<body>
-  <div class="ex-header-shell" data-ex-header>
-    <header class="ex-header">
-      <a class="ex-brand" href="https://executia.io" aria-label="EXECUTIA entry">
-        <span class="ex-brand-name">EXECUTIA™</span>
-        <span class="ex-brand-context">AUDIT ENGINE</span>
-      </a>
-      <nav class="ex-nav" aria-label="Engine navigation">
-        <a href="/dashboard">LIVE</a>
-        <a href="/control">CONTROL</a>
-        <a href="/history">HISTORY</a>
-        <a href="/operations">OPS</a>
-        <a href="/demo">DEMO</a>
-        <a href="/console/ledger.html">LEDGER</a>
-        <a class="active" aria-current="page" href="/console/audit-ledger.html">AUDIT</a>
-      </nav>
-    </header>
-    <div class="ex-statusbar" aria-label="Engine status">
-      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
-      <span class="ex-status-item">Registry Locked</span>
-      <span class="ex-status-item">Ledger Verified</span>
-      <span class="ex-status-item">Audit Recording</span>
-    </div>
-  </div>
-
-  <main class="ex-main">
+<body class="ex-engine-shell ex-ds-governance-shell ex-op-shell ex-gov-core-enabled ex-operational-surface ex-ds-surface" data-op-page="audit-ledger">
+  <main class="ex-op-main ex-main">
     <section class="ex-section-tight">
       <p class="ex-kicker">Balance integrity · Double-entry · Tamper detection</p>
       <h1 class="ex-title">Ledger Audit</h1>
       <p class="ex-lead">Rebuilds expected account balances from settled ledger entries and compares against recorded balances. Any mismatch = tampered data.</p>
     </section>
-
     <section class="ex-section">
-
       <!-- Status banner -->
       <div class="ex-grid ex-grid-3" style="margin-bottom:22px">
         <article class="ex-card">
@@ -98,54 +73,33 @@
           <p class="ex-card-subtitle" id="auditStatusText">Running...</p>
           <span class="ex-pill" id="auditPill">—</span>
         </article>
-        <article class="ex-card">
           <h2 class="ex-card-title">Double-Entry</h2>
           <p class="ex-card-subtitle" id="doubleEntryText">Debits must equal credits</p>
           <span class="ex-pill" id="doubleEntryPill">—</span>
-        </article>
-        <article class="ex-card">
           <h2 class="ex-card-title">Settled / Total</h2>
           <p class="ex-card-subtitle" id="entryCountText">Ledger entries processed</p>
           <span class="ex-pill ok" id="entryCountPill">—</span>
-        </article>
       </div>
-
       <!-- Volume row -->
-      <div class="ex-grid ex-grid-3" style="margin-bottom:22px">
-        <article class="ex-card">
           <h2 class="ex-card-title">Total Debited</h2>
           <p class="ex-card-subtitle" id="totalDebited">—</p>
-        </article>
-        <article class="ex-card">
           <h2 class="ex-card-title">Total Credited</h2>
           <p class="ex-card-subtitle" id="totalCredited">—</p>
-        </article>
-        <article class="ex-card">
           <h2 class="ex-card-title">Accounts Checked</h2>
           <p class="ex-card-subtitle" id="accountsChecked">—</p>
-        </article>
-      </div>
-
       <!-- Mismatches -->
       <section class="ex-card" style="margin-bottom:22px">
         <h2 class="ex-card-title" style="margin-bottom:14px">Integrity Violations</h2>
         <div id="mismatchList">Checking...</div>
       </section>
-
       <!-- Re-run button -->
       <div style="margin-bottom:22px">
         <button class="ex-button" id="rerunBtn" onclick="runAudit()">Re-run Audit</button>
-      </div>
-
       <!-- Raw JSON -->
       <section class="ex-card">
         <h2 class="ex-card-title" style="margin-bottom:10px">Raw Audit Report</h2>
         <pre id="rawJson" class="ex-json">Running...</pre>
-      </section>
-
-    </section>
   </main>
-
   <script>
     const auditStatusText  = document.getElementById("auditStatusText");
     const auditPill        = document.getElementById("auditPill");
@@ -159,42 +113,34 @@
     const mismatchList     = document.getElementById("mismatchList");
     const rawJson          = document.getElementById("rawJson");
     const rerunBtn         = document.getElementById("rerunBtn");
-
     const fmt = (n, currency = "EUR") =>
       Number(n || 0).toLocaleString("en-EU", { minimumFractionDigits: 2 }) + " " + currency;
-
     async function runAudit() {
       rerunBtn.disabled    = true;
       rerunBtn.textContent = "Running...";
       mismatchList.textContent = "Checking...";
       rawJson.textContent      = "Running...";
-
       try {
         const data = await executiaFetchJson("/api/v1/audit-ledger");
         rawJson.textContent = JSON.stringify(data, null, 2);
-
         // — Audit status
         auditStatusText.textContent = data.verified
           ? "All accounts reconcile with ledger"
           : "INTEGRITY FAILURE — balances do not match ledger";
         auditPill.textContent = data.verified ? "VERIFIED" : "TAMPERED";
         auditPill.className   = data.verified ? "ex-pill ok" : "ex-pill block";
-
         // — Double-entry
         doubleEntryText.textContent = data.double_entry
           ? `Debits = Credits (${fmt(data.total_debited)})`
           : `MISMATCH — Debits ${fmt(data.total_debited)} ≠ Credits ${fmt(data.total_credited)}`;
         doubleEntryPill.textContent = data.double_entry ? "BALANCED" : "UNBALANCED";
         doubleEntryPill.className   = data.double_entry ? "ex-pill ok" : "ex-pill block";
-
         // — Counts
         entryCountText.textContent  = `${data.settled_entries} settled / ${data.total_entries} total`;
         entryCountPill.textContent  = data.accounts_checked + " accounts";
-
         totalDebited.textContent    = fmt(data.total_debited);
         totalCredited.textContent   = fmt(data.total_credited);
         accountsChecked.textContent = data.accounts_checked + " accounts";
-
         // — Mismatches
         if (!data.mismatches || data.mismatches.length === 0) {
           mismatchList.innerHTML = `<p class="ex-muted">No violations detected.</p>`;
@@ -215,7 +161,6 @@
             mismatchList.appendChild(card);
           });
         }
-
       } catch (err) {
         auditStatusText.textContent = "Connection error";
         auditPill.textContent       = "ERROR";
@@ -227,10 +172,18 @@
         rerunBtn.textContent = "Re-run Audit";
       }
     }
-
     runAudit();
   </script>
-
+  <script src="/components/executia-governance-core.js"></script>
   <script src="/components/engine-shell.js"></script>
+  <script src="/components/executia-operational-shell.js"></script>
+    (function () {
+      const T = window.EXECUTIA_GOVERNANCE_LANGUAGE?.TERMS || {};
+      if (window.EXECUTIA_OPERATIONAL_SHELL?.setAuthorityState) {
+        window.EXECUTIA_OPERATIONAL_SHELL.setAuthorityState(
+          `${T.VERIFIED || "Verified"} ledger audit`,
+          `${T.DETERMINISTIC || "Deterministic"} balance check`
+        );
+    })();
 </body>
 </html>

@@ -1,0 +1,399 @@
+/**
+ * EXECUTIA Institutional Design System (Phase 5A)
+ * Typography, spacing rhythm, component tiers, operational surface rules.
+ * Spacing allowed: 8 · 16 · 24 · 40 · 64 px only (combine via margin+padding).
+ */
+
+:root {
+  --ex-ds-bg: #f4f6f9;
+  --ex-ds-wash: #eef2f6;
+  --ex-ds-ink: #1a2d42;
+  --ex-ds-blue: #1c3554;
+  --ex-ds-graphite: #4d6178;
+  --ex-ds-muted: #7a8da3;
+  --ex-ds-fade: rgba(28, 53, 84, 0.06);
+  --ex-ds-s8: 8px;
+  --ex-ds-s16: 16px;
+  --ex-ds-s24: 24px;
+  --ex-ds-s40: 40px;
+  --ex-ds-s64: 64px;
+}
+
+/* —— Spacing utilities (canonical rhythm) —— */
+.ex-ds-mt-8 { margin-top: var(--ex-ds-s8); }
+.ex-ds-mt-16 { margin-top: var(--ex-ds-s16); }
+.ex-ds-mt-24 { margin-top: var(--ex-ds-s24); }
+.ex-ds-mt-40 { margin-top: var(--ex-ds-s40); }
+.ex-ds-mt-64 { margin-top: var(--ex-ds-s64); }
+.ex-ds-mb-64 { margin-bottom: var(--ex-ds-s64); }
+.ex-ds-pt-64 { padding-top: var(--ex-ds-s64); }
+.ex-ds-pb-64 { padding-bottom: var(--ex-ds-s64); }
+.ex-ds-pt-40 { padding-top: var(--ex-ds-s40); }
+.ex-ds-pb-40 { padding-bottom: var(--ex-ds-s40); }
+.ex-ds-gap-stratum {
+  margin-top: var(--ex-ds-s64);
+  padding-top: var(--ex-ds-s64);
+}
+.ex-ds-gap-major {
+  margin-top: var(--ex-ds-s64);
+  padding-top: var(--ex-ds-s40);
+}
+.ex-ds-pad-block {
+  padding-bottom: var(--ex-ds-s64);
+}
+.ex-ds-pad-block-end {
+  padding-bottom: var(--ex-ds-s40);
+}
+
+/* —— Typography hierarchy —— */
+.ex-ds-surface {
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  color: var(--ex-ds-ink);
+  background: var(--ex-ds-bg);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ex-ds-executive {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: var(--ex-ds-blue);
+  line-height: 1.06;
+}
+
+.ex-ds-governance {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--ex-ds-blue);
+  line-height: 1.12;
+}
+
+.ex-ds-governance-quiet {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ex-ds-graphite);
+  line-height: 1.2;
+}
+
+/* Authority heading — canonical ladder lead */
+.ex-ds-authority-heading {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ex-ds-blue);
+  letter-spacing: -0.02em;
+}
+
+.ex-ds-authority-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ex-ds-ink);
+}
+
+.ex-ds-authority-label.lead,
+.ex-ds-authority-step.lead .ex-ds-authority-heading {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ex-ds-blue);
+  letter-spacing: -0.02em;
+}
+
+/* Institutional label — measure / integrity keys */
+.ex-ds-institutional-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ex-ds-muted);
+}
+
+/* Diagnostics — tertiary review and history */
+.ex-ds-diagnostics {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ex-ds-muted);
+  line-height: 1.7;
+}
+
+.ex-ds-operational-subtitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--ex-ds-graphite);
+  line-height: 1.75;
+  max-width: 26rem;
+}
+
+.ex-ds-operational-line {
+  margin: var(--ex-ds-s64) 0 0;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--ex-ds-graphite);
+}
+
+.ex-ds-metadata {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ex-ds-muted);
+}
+
+.ex-ds-metadata-block {
+  margin: var(--ex-ds-s40) 0 0;
+  font-size: 12px;
+  color: var(--ex-ds-muted);
+}
+
+.ex-ds-body-quiet {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ex-ds-muted);
+  line-height: 1.75;
+}
+
+.ex-ds-integrity-index {
+  margin: var(--ex-ds-s64) 0 0;
+  font-size: 80px;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  color: var(--ex-ds-blue);
+  line-height: 1;
+  opacity: 0.92;
+}
+
+.ex-ds-measure-value {
+  display: block;
+  margin-top: var(--ex-ds-s16);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ex-ds-ink);
+  letter-spacing: -0.02em;
+}
+
+/* —— Operational atmosphere layout —— */
+.ex-ds-atmosphere {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s64) var(--ex-ds-s24) var(--ex-ds-s64);
+  padding-bottom: calc(var(--ex-ds-s64) + var(--ex-ds-s64));
+}
+
+.ex-ds-strata {
+  position: relative;
+}
+
+.ex-ds-strata + .ex-ds-strata.ex-ds-gap-stratum::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ex-ds-fade);
+}
+
+.ex-ds-strata-crown {
+  margin: calc(-1 * var(--ex-ds-s40)) calc(-1 * var(--ex-ds-s24)) 0;
+  padding: var(--ex-ds-s64) var(--ex-ds-s24) var(--ex-ds-s64);
+  padding-bottom: calc(var(--ex-ds-s64) + var(--ex-ds-s40));
+  background: linear-gradient(180deg, var(--ex-ds-wash) 0%, var(--ex-ds-bg) 100%);
+}
+
+.ex-ds-strata-crown + .ex-ds-strata {
+  margin-top: calc(var(--ex-ds-s64) + var(--ex-ds-s64));
+  padding-top: 0;
+}
+
+.ex-ds-strata-crown + .ex-ds-strata::before {
+  display: none;
+}
+
+.ex-ds-strata-foundation {
+  opacity: 0.94;
+}
+
+.ex-ds-core-divider {
+  padding-top: var(--ex-ds-s64);
+  margin-top: var(--ex-ds-s64);
+  border-top: 1px solid var(--ex-ds-fade);
+}
+
+.ex-ds-foundation-gap {
+  padding-top: var(--ex-ds-s64);
+  margin-top: var(--ex-ds-s40);
+}
+
+/* —— Component tier emphasis —— */
+/* Hierarchy — canonical tiers (alias legacy ex-ds-tier-*) */
+.ex-gov-tier-primary,
+.ex-ds-tier-primary .ex-ds-component,
+.ex-ds-tier-primary {
+  font-weight: 600;
+  color: var(--ex-ds-blue);
+}
+
+.ex-ds-tier-primary .ex-ds-component {
+  padding-bottom: var(--ex-ds-s64);
+}
+
+.ex-ds-tier-primary .ex-ds-component:last-child {
+  padding-bottom: 0;
+}
+
+.ex-gov-tier-secondary,
+.ex-ds-tier-secondary {
+  font-weight: 500;
+  color: var(--ex-ds-graphite);
+}
+
+.ex-gov-tier-tertiary,
+.ex-ds-tier-tertiary {
+  font-weight: 400;
+  color: var(--ex-ds-muted);
+}
+
+/* —— Authority flow (primary component) —— */
+.ex-ds-authority-flow {
+  margin-top: var(--ex-ds-s64);
+}
+
+.ex-ds-authority-step {
+  padding-top: var(--ex-ds-s40);
+}
+
+.ex-ds-authority-step:first-child {
+  padding-top: 0;
+}
+
+.ex-ds-authority-step .ex-ds-role {
+  margin-top: var(--ex-ds-s8);
+  font-size: 15px;
+  color: var(--ex-ds-muted);
+  font-weight: 400;
+}
+
+.ex-ds-authority-step.lead .ex-ds-role {
+  margin-top: var(--ex-ds-s16);
+  font-size: 16px;
+  color: var(--ex-ds-graphite);
+}
+
+.ex-ds-authority-step.faint .ex-ds-authority-label,
+.ex-ds-authority-step.faint .ex-ds-role {
+  color: var(--ex-ds-muted);
+}
+
+.ex-ds-registry-note {
+  margin-top: var(--ex-ds-s64);
+}
+
+.ex-ds-integrity-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s64);
+  margin-top: var(--ex-ds-s64);
+}
+
+.ex-ds-integrity-row .ex-ds-measure {
+  min-width: 5rem;
+}
+
+.ex-ds-architecture-note {
+  margin-top: var(--ex-ds-s64);
+  max-width: 34rem;
+}
+
+.ex-ds-history-line {
+  padding-top: var(--ex-ds-s16);
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--ex-ds-s24);
+}
+
+.ex-ds-history-line,
+.ex-ds-review-line {
+  font-size: inherit;
+}
+
+.ex-ds-review-line {
+  padding-top: var(--ex-ds-s16);
+}
+
+.ex-ds-tier-secondary .ex-ds-component {
+  padding-bottom: var(--ex-ds-s40);
+}
+
+.ex-ds-deploy-note {
+  margin-top: var(--ex-ds-s40);
+  max-width: 34rem;
+}
+
+.ex-ds-empty,
+.ex-ds-err {
+  font-size: 14px;
+  color: var(--ex-ds-muted);
+}
+
+.ex-ds-err {
+  color: #7d4545;
+}
+
+/* —— Operational surface rules (anti-dashboard) —— */
+.ex-operational-surface main,
+.ex-operational-surface .ex-ds-atmosphere {
+  /* No cards, widgets, or pill grids on operational surfaces */
+}
+
+.ex-operational-surface .ex-ds-atmosphere * {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ex-operational-surface .ex-ds-atmosphere [class*="card"],
+.ex-operational-surface .ex-ds-atmosphere [class*="widget"],
+.ex-operational-surface .ex-ds-atmosphere [class*="pill"] {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* —— Governance shell alignment (with engine-shell) —— */
+body.ex-ds-governance-shell.ex-engine-shell {
+  background: var(--ex-ds-bg);
+  color: var(--ex-ds-ink);
+}
+
+body.ex-ds-governance-shell .ex-engine-nav a {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ex-ds-muted);
+}
+
+body.ex-ds-governance-shell .ex-engine-nav a.active {
+  color: var(--ex-ds-blue);
+  font-weight: 600;
+}
+
+body.ex-ds-governance-shell .ex-engine-brand-sub {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .ex-ds-executive { font-size: 32px; }
+  .ex-ds-governance { font-size: 24px; }
+  .ex-ds-integrity-index { font-size: 56px; }
+  .ex-ds-strata-crown {
+    margin-left: calc(-1 * var(--ex-ds-s16));
+    margin-right: calc(-1 * var(--ex-ds-s16));
+    padding-left: var(--ex-ds-s16);
+    padding-right: var(--ex-ds-s16);
+  }
+}

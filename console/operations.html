@@ -31,32 +31,19 @@
   border-radius:999px;
   padding:8px 12px;
   background:#f7fbff;
-}
-
 .engine-nav a.active{
   background:#183a5b;
   color:#fff;
   border-color:#183a5b;
-}
 </style>
-  <link rel="stylesheet" href="/components/engine-shell.css">
+  <link rel="stylesheet" href="/components/engine-shell.css" />
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-governance-shell.css" />
+  <link rel="stylesheet" href="/components/executia-governance-core.css" />
+  <link rel="stylesheet" href="/components/executia-operational-shell.css" />
 </head>
-<body>
-  <div class="ex-header-shell" data-ex-header>
-    <header class="ex-header">
-      <a class="ex-brand" href="https://executia.io" aria-label="EXECUTIA entry"><span class="ex-brand-name">EXECUTIA™</span><span class="ex-brand-context">EXECUTION ENGINE</span></a>
-      <button class="ex-mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-ex-menu-toggle><span></span><span></span></button>
-      <nav class="ex-nav" aria-label="Engine navigation"><a href="/dashboard">LIVE</a><a href="/control">CONTROL</a><a href="/history">HISTORY</a><a href="/operations" class="active" aria-current="page">OPS</a><a href="/demo">DEMO</a></nav>
-      <a class="ex-header-action" href="https://executia.io">Entry ↗</a>
-    </header>
-    <div class="ex-statusbar" aria-label="Engine status">
-      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
-      <span class="ex-status-item">Registry Locked</span>
-      <span class="ex-status-item">Ledger Verified</span>
-      <span class="ex-status-item">Audit Recording</span>
-    </div>
-  </div>
-  <main class="ex-main">
+<body class="ex-engine-shell ex-ds-governance-shell ex-op-shell ex-gov-core-enabled ex-operational-surface ex-ds-surface" data-op-page="operations">
+  <main class="ex-op-main ex-main">
     <section class="ex-section-tight">
       <p class="ex-kicker">Operations</p>
       <h1 class="ex-title system-title">System readiness</h1>
@@ -80,12 +67,8 @@
             <li><span>Ledger verification</span><strong>0 breaks</strong></li>
           </ul>
         </section>
-        <section class="ex-card">
           <div class="ex-panel-header"><div><h2 class="ex-panel-title">Ledger verification</h2><p class="ex-panel-subtitle">Live response from verification endpoint.</p></div><span class="ex-pill ok">Proof</span></div>
           <pre id="ledgerJson" class="ex-json">Loading ledger verification...</pre>
-        </section>
-      </div>
-    </section>
   </main>
   <script>
     (function () {
@@ -102,6 +85,15 @@
         .catch(function (e) { el.textContent = e.message || "Verification request failed."; });
     })();
   </script>
+  <script src="/components/executia-governance-core.js"></script>
   <script src="/components/engine-shell.js"></script>
+  <script src="/components/executia-operational-shell.js"></script>
+      const T = window.EXECUTIA_GOVERNANCE_LANGUAGE?.TERMS || {};
+      if (window.EXECUTIA_OPERATIONAL_SHELL?.setAuthorityState) {
+        window.EXECUTIA_OPERATIONAL_SHELL.setAuthorityState(
+          `${T.GOVERNED || "Governed"} operations`,
+          `${T.DETERMINISTIC || "Deterministic"} runtime`
+        );
+      }
 </body>
 </html>

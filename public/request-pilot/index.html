@@ -4,8 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>EXECUTIA — Request Pilot Project</title>
-
+  <title>EXECUTIA — Request Pilot</title>
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
+  <script src="/components/executia-institutional-environment.js" defer></script>
+  <script src="/components/executia-pilot-readiness.js" defer></script>
   <style>
     :root{
       --bg:#f4f7fb;
@@ -311,91 +314,63 @@
   </style>
 </head>
 
-<body>
+<body class="ex-institutional-env" data-ex-env-page="request">
 
   <div class="shell">
 
-    <header>
-      <a class="brand" href="https://executia.io">
-        <strong>EXECUTIA™</strong>
-        <span>Execution Control Standard</span>
-      </a>
-
-      <nav class="system-layer" aria-label="System layers">
-        <a href="https://executia.io">Entry</a>
-        <a href="/execution-test/">Execution Test</a>
-        <a href="/dashboard">Engine</a>
-      </nav>
-
-      <nav class="nav" aria-label="Pilot actions">
-        <a href="/public-proof/">Proof</a>
-        <a href="/regulator/">Regulator</a>
-        <a class="primary" href="/request-pilot/">Request Pilot</a>
-      </nav>
-    </header>
+    <header data-ex-env-header></header>
 
     <section class="hero">
 
-      <div class="eyebrow">
-        EXECUTIA PILOT ONBOARDING
-      </div>
+      <div class="eyebrow">Request pilot</div>
 
-      <h1>
-        Request institutional execution pilot.
-      </h1>
+      <h1>Institutional onboarding.</h1>
 
-      <p class="lead">
-        Define the governance problem, execution risk and operational environment. EXECUTIA will evaluate pilot suitability and create a pilot review identifier.
-      </p>
+      <p class="lead">Pilot intake — not a contact form. Review state issued under execution authority.</p>
+      <div data-ex-env-onboarding-steps></div>
+      <div data-ex-env-consequence></div>
 
     </section>
 
     <section class="panel">
 
-      <h2>
-        Pilot Request
-      </h2>
-
-      <p>
-        This onboarding flow is designed for governments, enterprises, infrastructure operators and regulated execution environments.
-      </p>
+      <h2>Pilot record</h2>
+      <div data-ex-env-pilot-examples></div>
 
       <div class="grid">
 
-        <div class="field">
+        <div class="field full">
           <label>Organization</label>
-          <input id="organization" placeholder="Organization name">
-        </div>
-
-        <div class="field">
-          <label>Execution Domain</label>
-          <select id="domain">
-            <option>Public Procurement</option>
-            <option>Banking Settlement</option>
-            <option>Infrastructure Maintenance</option>
-            <option>NATO / Defense Logistics</option>
-            <option>Healthcare Governance</option>
-            <option>AI Agent Governance</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Estimated Yearly Risk / Loss</label>
-          <input id="risk" placeholder="€5,000,000">
-        </div>
-
-        <div class="field">
-          <label>Current System</label>
-          <input id="system" placeholder="ERP / workflow / manual governance">
+          <input id="organization" placeholder="Institution or operator name">
         </div>
 
         <div class="field full">
-          <label>Governance Problem</label>
-          <textarea id="problem" placeholder="Describe execution failures, delays, audit problems, approval bypasses or governance risks."></textarea>
+          <label>Execution-critical process</label>
+          <textarea id="execution_critical_process" placeholder="Process where execution failure is material."></textarea>
+        </div>
+
+        <div class="field full">
+          <label>Governance risk</label>
+          <textarea id="governance_risk" placeholder="Material risk if execution proceeds without governance."></textarea>
+        </div>
+
+        <div class="field full">
+          <label>Deterministic execution objective</label>
+          <textarea id="deterministic_execution_objective" placeholder="What Deterministic Execution must guarantee."></textarea>
+        </div>
+
+        <div class="field full">
+          <label>Replay requirement</label>
+          <input id="replay_requirement" placeholder="Replay-Safe Verification before commit">
+        </div>
+
+        <div class="field full">
+          <label>Proof requirement</label>
+          <input id="proof_requirement" placeholder="Execution-Time Truth and canonical receipt">
         </div>
 
         <div class="field">
-          <label>Contact Person</label>
+          <label>Contact</label>
           <input id="contact" placeholder="Name">
         </div>
 
@@ -407,18 +382,14 @@
       </div>
 
       <button class="submit" onclick="submitPilotRequest()">
-        Request Pilot Review
+        Request Pilot
       </button>
 
       <div class="result" id="result">
 
-        <h3>
-          EXECUTIA Pilot Review Created
-        </h3>
+        <h3>Pilot review state issued</h3>
 
-        <p>
-          Governance onboarding request received. EXECUTIA generated a pilot review state for institutional evaluation.
-        </p>
+        <p>Onboarding record received under execution authority.</p>
 
         <div class="result-grid">
 
@@ -433,8 +404,8 @@
           </div>
 
           <div class="result-box">
-            <span>Execution Domain</span>
-            <strong id="pilotDomain">—</strong>
+            <span>Replay</span>
+            <strong id="pilotReplay">RECORDED</strong>
           </div>
 
         </div>
@@ -443,19 +414,24 @@
 
     </section>
 
+    <footer data-ex-env-footer></footer>
   </div>
 
   <script>
     async function submitPilotRequest(){
-
+      const process = document.getElementById("execution_critical_process").value;
+      const governance_risk = document.getElementById("governance_risk").value;
+      const objective = document.getElementById("deterministic_execution_objective").value;
       const payload = {
-        organization:document.getElementById("organization").value,
-        domain:document.getElementById("domain").value,
-        risk:document.getElementById("risk").value,
-        system:document.getElementById("system").value,
-        problem:document.getElementById("problem").value,
-        contact:document.getElementById("contact").value,
-        email:document.getElementById("email").value
+        organization: document.getElementById("organization").value,
+        execution_critical_process: process,
+        governance_risk,
+        deterministic_execution_objective: objective,
+        replay_requirement: document.getElementById("replay_requirement").value,
+        proof_requirement: document.getElementById("proof_requirement").value,
+        problem: [process, governance_risk, objective].filter(Boolean).join("\n\n"),
+        contact: document.getElementById("contact").value,
+        email: document.getElementById("email").value
       };
 
       const response = await fetch("/api/v1/pilot/request",{
@@ -481,8 +457,8 @@
       document.getElementById("pilotState").textContent =
         data.state || "RECEIVED";
 
-      document.getElementById("pilotDomain").textContent =
-        data.domain || "—";
+      document.getElementById("pilotReplay").textContent =
+        document.getElementById("replay_requirement").value ? "REQUIRED" : "—";
     }
   </script>
 

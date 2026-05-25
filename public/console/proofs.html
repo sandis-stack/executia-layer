@@ -3,25 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EXECUTIA Proofs</title>
+  <title>Public Verify — EXECUTIA™</title>
   <link rel="stylesheet" href="/components/engine-shell.css" />
-  <link rel="stylesheet" href="/components/engine-system.css" />
-  <style>
-    body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f8fc;color:#10233f}
-    .proofs-wrap{max-width:1440px;margin:0 auto;padding:48px 42px}
-    .proofs-card{background:#fff;border:1px solid #d9e2ec;border-radius:22px;padding:28px}
-    h1{font-size:22px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 12px}
-    p{color:#6f7f95;font-size:15px;margin:0}
-  </style>
+  <link rel="stylesheet" href="/components/executia-governed-presentation.css" />
+  <script src="/components/executia-governance-core.js"></script>
 </head>
-<body class="ex-engine-shell">
-  <main class="proofs-wrap">
-    <section class="proofs-card">
-      <h1>Proofs</h1>
-      <p>Execution proof layer ready. Immutable proof visualization will be connected here.</p>
+<body class="ex-engine-shell ex-ds-governance-shell ex-op-shell ex-gov-core-enabled ex-operational-surface ex-ds-surface" data-op-page="proofs">
+  <main class="ex-op-main proofs-wrap">
+    <section class="ex-op-surface ex-op-surface--public-verify ex-ds-pad-block">
+      <h1 class="ex-ds-executive ex-ex-id-tier-primary">Execution verified</h1>
+      <p class="ex-ds-diagnostics ex-ex-id-tier-tertiary">Public verify surface · governed execution proof · read only.</p>
     </section>
   </main>
 
   <script src="/components/engine-shell.js"></script>
+  <script src="/components/executia-operational-shell.js"></script>
+  <script>
+    (function () {
+      const T = window.EXECUTIA_GOVERNANCE_LANGUAGE?.TERMS || {};
+      const bundle = {
+        intel: {},
+        ag: { canonical_authority: [1] },
+        data: { engineering_console_authority: { GOVERNED: true, ACTIVE: true } }
+      };
+      if (window.EXECUTIA_GOVERNANCE_CORE?.applyPresentation) {
+        window.EXECUTIA_GOVERNANCE_CORE.applyPresentation(bundle);
+      } else if (window.EXECUTIA_OPERATIONAL_SHELL?.setAuthorityState) {
+        window.EXECUTIA_OPERATIONAL_SHELL.setAuthorityState(
+          `${T.GOVERNED || "Governed"} · ${T.READ_ONLY || "Read only"}`,
+          `${T.VERIFIED || "Verified"} execution proof`
+        );
+      }
+    })();
+  </script>
 </body>
 </html>

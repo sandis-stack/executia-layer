@@ -1,0 +1,98 @@
+/**
+ * EXECUTIA Governance Core (Phase 5G) — unified authority frame, states, hierarchy.
+ */
+
+.ex-gov-authority-frame,
+.ex-op-authority {
+  background: linear-gradient(180deg, var(--ex-ds-wash, #eef2f6) 0%, var(--ex-ds-bg, #f4f6f9) 100%);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-gov-authority-inner,
+.ex-op-authority-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px) var(--ex-ds-s16, 16px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ex-ds-s40, 40px);
+}
+
+.ex-gov-frame-line {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--ex-ds-s24, 24px) var(--ex-ds-s16, 16px);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ex-ds-muted, #7a8da3);
+}
+
+.ex-gov-states {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+}
+
+.ex-gov-state {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  color: var(--ex-ds-blue, #1c3554);
+  padding: var(--ex-ds-s8, 8px) 0;
+  border-bottom: 1px solid var(--ex-ds-blue, #1c3554);
+}
+
+.ex-gov-tier-primary,
+.ex-ex-id-tier-primary {
+  font-weight: 600;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-gov-tier-secondary,
+.ex-ex-id-tier-secondary {
+  font-weight: 500;
+  color: var(--ex-ds-graphite, #4d6178);
+}
+
+.ex-gov-tier-tertiary,
+.ex-ex-id-tier-tertiary {
+  font-weight: 400;
+  color: var(--ex-ds-muted, #7a8da3);
+}
+
+body.ex-gov-core-enabled .ex-op-state-value,
+body.ex-ex-id-enabled .ex-op-state-value {
+  font-size: 14px;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-gov-core-enabled .ex-ds-executive,
+body.ex-ex-id-enabled .ex-ds-executive {
+  letter-spacing: -0.02em;
+}
+
+body.ex-gov-core-enabled .ex-ds-diagnostics,
+body.ex-gov-core-enabled .ex-ds-review-line,
+body.ex-gov-core-enabled .ex-ds-history-line {
+  font-size: 13px;
+}
+
+.ex-ex-id-posture {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .ex-gov-authority-inner,
+  .ex-op-authority-inner {
+    grid-template-columns: 1fr;
+    gap: var(--ex-ds-s24, 24px);
+  }
+
+  .ex-gov-states {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
