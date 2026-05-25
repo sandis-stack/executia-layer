@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-05-25T06:45:30.613Z",
+  "generated_at": "2026-05-25T06:52:26.105Z",
   "branch": "phase-3b3-ledger-polish",
-  "commit": "c092ce43b5184056ee61591fa4e3986300b829d5",
+  "commit": "bec074b1f792e968d1e668c16c0a3fab0d88a0b0",
   "inputs": {
     "architecture_graph": true,
     "engineering_ledger_latest": true,
-    "git_files_changed": 15,
+    "git_files_changed": 10,
     "architecture_graph_report": true,
     "protected_files_config": ".cursor/context/protected-files.md"
   },
@@ -42,7 +42,7 @@
     "removed_orphans": [],
     "new_shadow_flows": [],
     "removed_shadow_flows": [],
-    "baseline": "2026-05-25T06:45:29.999Z"
+    "baseline": "2026-05-25T06:52:25.358Z"
   },
   "deploy_intelligence": {
     "protected_files_touched": [
@@ -57,7 +57,6 @@
     "replay_layer_affected": [],
     "public_verify_affected": [],
     "governance_layer_affected": [
-      "scripts/phase-3b8-architecture-graph.js",
       "scripts/phase-3b9-execution-intelligence.js"
     ]
   },
@@ -84,10 +83,16 @@
     "Defer deploy until stability improves (reduce orphans, shadows, or protected touches)."
   ],
   "deploy_readiness": "REVIEW_REQUIRED",
+  "engineering_console_detected": true,
   "engineering_console_status": {
     "DETECTED": true,
     "GOVERNED": true,
     "READ_ONLY": true,
     "LIVE_REFRESH_ENABLED": true
+  },
+  "engineering_console_authority": {
+    "ACTIVE": true,
+    "GOVERNED": true,
+    "DETECTED": true
   }
 }

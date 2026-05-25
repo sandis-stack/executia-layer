@@ -35,18 +35,51 @@ export const ENGINEERING_CONSOLE_GOVERNANCE = {
   visibility_layer: "institutional_governance"
 };
 
-export function engineeringConsoleDetected(root = ROOT) {
+export function engineeringConsoleArtifactsPresent(root = ROOT) {
   return ENGINEERING_CONSOLE_ARTIFACTS.every((file) => existsSync(join(root, file)));
 }
 
-export function buildEngineeringConsoleStatus(root = ROOT, graphFindings = null) {
-  const detected =
-    engineeringConsoleDetected(root) && graphFindings?.engineering_console_detected !== false;
+/** @deprecated Use resolveEngineeringConsoleDetected — kept for file-only checks */
+export function engineeringConsoleDetected(root = ROOT) {
+  return engineeringConsoleArtifactsPresent(root);
+}
+
+/**
+ * True when architecture graph classifies the engineering console layer,
+ * or when all console artifacts exist locally (fallback).
+ */
+export function resolveEngineeringConsoleDetected(graph = null, root = ROOT) {
+  if (graph?.findings?.engineering_console_detected === true) return true;
+
+  const byLayer = graph?.findings?.summary_counts?.by_layer?.engineering_console ?? 0;
+  if (byLayer > 0) return true;
+
+  const classifiedNodes = (graph?.nodes ?? []).filter(
+    (n) => n.classification === "engineering_console"
+  ).length;
+  if (classifiedNodes > 0) return true;
+
+  return engineeringConsoleArtifactsPresent(root);
+}
+
+export function buildEngineeringConsoleStatus(root = ROOT, graph = null) {
+  const graphData = graph ?? loadArchitectureGraphLatest(root);
+  const detected = resolveEngineeringConsoleDetected(graphData, root);
   return {
-    DETECTED: Boolean(detected),
+    DETECTED: detected,
     GOVERNED: true,
     READ_ONLY: true,
     LIVE_REFRESH_ENABLED: true
+  };
+}
+
+export function buildEngineeringConsoleAuthority(root = ROOT, graph = null) {
+  const graphData = graph ?? loadArchitectureGraphLatest(root);
+  const detected = resolveEngineeringConsoleDetected(graphData, root);
+  return {
+    ACTIVE: detected,
+    GOVERNED: true,
+    DETECTED: detected
   };
 }
 
@@ -91,7 +124,7 @@ export function summarizeArchitectureGraph(graph) {
     replay_layer: graph.findings?.replay_layer ?? [],
     public_verification: graph.findings?.public_verification ?? [],
     governance_layer: graph.findings?.governance_layer ?? [],
-    engineering_console_detected: graph.findings?.engineering_console_detected ?? false,
+    engineering_console_detected: resolveEngineeringConsoleDetected(graph),
     by_layer: sc.by_layer ?? {}
   };
 }
@@ -136,9 +169,11 @@ export function buildEngineeringIntelligencePayload(root = ROOT) {
   const ledgerSnapshots = listEngineeringLedgerSnapshots(root, 12);
   const stabilityScore = intel?.stability?.overall_score;
 
+  const consoleDetected = resolveEngineeringConsoleDetected(graph, root);
+
   const architecture_graph = summarizeArchitectureGraph(graph);
   if (architecture_graph) {
-    architecture_graph.engineering_console_detected = engineeringConsoleDetected(root);
+    architecture_graph.engineering_console_detected = consoleDetected;
   }
 
   const execution_intelligence = summarizeExecutionIntelligence(intel);
@@ -154,7 +189,8 @@ export function buildEngineeringIntelligencePayload(root = ROOT) {
 
   return {
     generated_at: new Date().toISOString(),
-    engineering_console_detected: engineeringConsoleDetected(root),
+    engineering_console_detected: consoleDetected,
+    engineering_console_authority: buildEngineeringConsoleAuthority(root, graph),
     architecture_graph,
     execution_intelligence,
     engineering_ledger,

@@ -623,6 +623,9 @@ if (!intelReportBody.includes("Stability score") || !intelReportBody.includes("D
 if (!intelReportBody.includes("Engineering Console Status")) {
   throw new Error("Execution intelligence report must include Engineering Console Status");
 }
+if (!intelReportBody.includes("Engineering Console Authority")) {
+  throw new Error("Execution intelligence report must include Engineering Console Authority");
+}
 if (intel.engineering_console_status?.DETECTED !== true) {
   throw new Error("Execution intelligence must report engineering console DETECTED");
 }
@@ -650,8 +653,14 @@ const { buildEngineeringIntelligencePayload } = await import(
   "../services/engineering-intelligence-loader.js"
 );
 const engPayload = buildEngineeringIntelligencePayload(join(__test_dir, ".."));
-if (!engPayload.engineering_console_detected) {
-  throw new Error("Engineering console must be detected when HTML files exist");
+if (engPayload.engineering_console_detected !== true) {
+  throw new Error("Engineering intelligence payload must set engineering_console_detected true from graph");
+}
+if (engPayload.architecture_graph?.engineering_console_detected !== true) {
+  throw new Error("Architecture graph summary must propagate engineering_console_detected true");
+}
+if (engPayload.engineering_console_authority?.DETECTED !== true) {
+  throw new Error("Engineering console authority must report DETECTED true");
 }
 
 console.log("EXECUTIA final full layer tests OK");

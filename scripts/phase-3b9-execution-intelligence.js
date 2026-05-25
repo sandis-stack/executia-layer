@@ -19,8 +19,9 @@ import { fileURLToPath } from "node:url";
 
 import { classifyEngineeringChange } from "./phase-3b6-engineering-ledger.js";
 import {
-  engineeringConsoleDetected,
-  buildEngineeringConsoleStatus
+  buildEngineeringConsoleStatus,
+  buildEngineeringConsoleAuthority,
+  resolveEngineeringConsoleDetected
 } from "../services/engineering-intelligence-loader.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -587,7 +588,9 @@ export function buildExecutionIntelligence(root = ROOT) {
     findings,
     recommendations,
     deploy_readiness: deriveDeployReadiness(risk, stability, findings),
-    engineering_console_status: buildEngineeringConsoleStatus(root, graph?.findings)
+    engineering_console_detected: resolveEngineeringConsoleDetected(graph, root),
+    engineering_console_status: buildEngineeringConsoleStatus(root, graph),
+    engineering_console_authority: buildEngineeringConsoleAuthority(root, graph)
   };
 }
 
@@ -705,6 +708,14 @@ export function generateExecutionIntelligenceReportMarkdown(intel) {
   lines.push(`- GOVERNED: ${ecs.GOVERNED}`);
   lines.push(`- READ_ONLY: ${ecs.READ_ONLY}`);
   lines.push(`- LIVE_REFRESH_ENABLED: ${ecs.LIVE_REFRESH_ENABLED}`);
+  lines.push("");
+
+  lines.push("## Engineering Console Authority");
+  lines.push("");
+  const eca = intel.engineering_console_authority || buildEngineeringConsoleAuthority();
+  lines.push(`- ACTIVE: ${eca.ACTIVE}`);
+  lines.push(`- GOVERNED: ${eca.GOVERNED}`);
+  lines.push(`- DETECTED: ${eca.DETECTED}`);
   lines.push("");
 
   lines.push("## Deploy readiness");

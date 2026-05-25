@@ -2,9 +2,9 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T06:45:30.613Z
+**Generated:** 2026-05-25T06:52:26.105Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** c092ce43b5184056ee61591fa4e3986300b829d5
+**Commit:** bec074b1f792e968d1e668c16c0a3fab0d88a0b0
 
 ## Stability score
 
@@ -39,7 +39,7 @@ Deductions from 100 (overall):
 
 ## Architecture delta
 
-Baseline: `2026-05-25T06:45:29.999Z`
+Baseline: `2026-05-25T06:52:25.358Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -61,7 +61,6 @@ _No replay layer files in current git diff._
 ## Governance impact
 
 Governance tooling / rules:
-- `scripts/phase-3b8-architecture-graph.js`
 - `scripts/phase-3b9-execution-intelligence.js`
 
 Protected files:
@@ -79,6 +78,12 @@ Protected files:
 - GOVERNED: true
 - READ_ONLY: true
 - LIVE_REFRESH_ENABLED: true
+
+## Engineering Console Authority
+
+- ACTIVE: true
+- GOVERNED: true
+- DETECTED: true
 
 ## Deploy readiness
 
