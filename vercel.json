@@ -27,6 +27,7 @@
     { "src": "^/ops/?$", "dest": "/public/console/operations.html" },
 
     { "src": "^/ledger/?$", "dest": "/public/console/ledger.html" },
+    { "src": "^/engineering/?$", "dest": "/public/console/engineering.html" },
     { "src": "^/audit-ledger/?$", "dest": "/public/console/audit-ledger.html" },
 
     { "src": "^/(.*)$", "dest": "/public/$1" }

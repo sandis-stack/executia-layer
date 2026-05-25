@@ -601,4 +601,31 @@ if (!intelReportBody.includes("Stability score") || !intelReportBody.includes("D
   throw new Error("Execution intelligence report.md must include required sections");
 }
 
+const phase4aFiles = [
+  "console/engineering.html",
+  "public/console/engineering.html",
+  "api/v1/engineering/intelligence.js",
+  "services/engineering-intelligence-loader.js"
+];
+
+for (const file of phase4aFiles) {
+  if (!existsSync(join(__test_dir, "..", file))) {
+    throw new Error(`Missing Phase 4A engineering console file: ${file}`);
+  }
+}
+
+const intelApiPath = join(__test_dir, "..", "api/v1/engineering/intelligence.js");
+const intelApiSource = readFileSync(intelApiPath, "utf8");
+if (!intelApiSource.includes("buildEngineeringIntelligencePayload")) {
+  throw new Error("Engineering intelligence API must aggregate local governance artifacts");
+}
+
+const { buildEngineeringIntelligencePayload } = await import(
+  "../services/engineering-intelligence-loader.js"
+);
+const engPayload = buildEngineeringIntelligencePayload(join(__test_dir, ".."));
+if (!engPayload.engineering_console_detected) {
+  throw new Error("Engineering console must be detected when HTML files exist");
+}
+
 console.log("EXECUTIA final full layer tests OK");

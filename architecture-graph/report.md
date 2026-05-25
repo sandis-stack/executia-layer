@@ -4,9 +4,9 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 
 ## Generated at
 
-- **Timestamp:** 2026-05-25T06:16:14.919Z
+- **Timestamp:** 2026-05-25T06:28:49.266Z
 - **Branch:** phase-3b3-ledger-polish
-- **Commit:** 3fa2ef70944665f7f66df4e1f484a7e8595d6107
+- **Commit:** e58b8be02586a7b3ef9aaa2494b77efc94195945
 
 ## Canonical authority
 
@@ -97,6 +97,7 @@ Unclassified API endpoints not connected to canonical/governance anchors (exclud
 - `api/v1/config/public.js` — /api/v1/config/public
 - `api/v1/core-ledger-commit.js` — /api/v1/core-ledger-commit
 - `api/v1/core-ledger-repair.js` — /api/v1/core-ledger-repair
+- `api/v1/engineering/intelligence.js` — /api/v1/engineering/intelligence
 - `api/v1/evolution/analyze.js` — /api/v1/evolution/analyze
 - `api/v1/execute.js` — /api/v1/execute
 - `api/v1/execution/analyze.js` — /api/v1/execution/analyze
@@ -147,10 +148,10 @@ Unclassified API endpoints not connected to canonical/governance anchors (exclud
 
 | Metric | Count |
 |--------|------:|
-| Total nodes | 98 |
+| Total nodes | 99 |
 | Total edges | 39 |
-| API endpoints | 70 |
-| Orphan candidates (reduced) | 54 |
+| API endpoints | 71 |
+| Orphan candidates (reduced) | 55 |
 | Shadow flow candidates (reduced) | 1 |
 | Layer: canonical_authority | 7 |
 | Layer: public_verification | 1 |
@@ -161,10 +162,14 @@ Unclassified API endpoints not connected to canonical/governance anchors (exclud
 | Layer: proof_projection | 11 |
 | Layer: legacy_projection | 2 |
 | Layer: local_tooling | 1 |
-| Layer: unknown | 54 |
+| Layer: unknown | 55 |
 
 ## Next recommended cleanup
 
-- Classify 54 orphan API endpoint(s) before any removal.
+- Classify 55 orphan API endpoint(s) before any removal.
 - Migrate remaining shadow flow references (ledger-verify URLs or legacy event names).
+
+## Engineering console
+
+engineering_console_detected = true
 

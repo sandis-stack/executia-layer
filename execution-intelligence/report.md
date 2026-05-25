@@ -2,25 +2,25 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T06:16:15.037Z
+**Generated:** 2026-05-25T06:28:49.387Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** 3fa2ef70944665f7f66df4e1f484a7e8595d6107
+**Commit:** e58b8be02586a7b3ef9aaa2494b77efc94195945
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 40 |
-| Architecture | 41 |
-| Governance | 68 |
+| Overall | 38 |
+| Architecture | 40 |
+| Governance | 60 |
 | Replay | 100 |
 | Verification | 100 |
 | Endpoint consistency | 23 |
 
 Deductions from 100 (overall):
-- Orphans: −54
+- Orphans: −55
 - Shadow flows: −1
-- Protected file touches: −1
+- Protected file touches: −2
 - Governance warnings: −4
 - Missing canonical edges: −0
 
@@ -39,7 +39,7 @@ Deductions from 100 (overall):
 
 ## Architecture delta
 
-Baseline: `2026-05-25T06:16:14.530Z`
+Baseline: `2026-05-25T06:28:48.862Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -61,10 +61,11 @@ _No replay layer files in current git diff._
 ## Governance impact
 
 Governance tooling / rules:
-- `scripts/phase-3b9-execution-intelligence.js`
+- `scripts/phase-3b8-architecture-graph.js`
 
 Protected files:
 - `scripts/test-runner.js` (scripts/test-runner.js)
+- `vercel.json` (vercel.json)
 
 ## Recommendations
 
@@ -77,7 +78,7 @@ Protected files:
 **Status:** REVIEW_REQUIRED
 
 ### Findings
-- [MEDIUM] ORPHAN_ENDPOINTS: 54 unclassified API endpoint(s) disconnected from canonical anchors
+- [MEDIUM] ORPHAN_ENDPOINTS: 55 unclassified API endpoint(s) disconnected from canonical anchors
 - [MEDIUM] SHADOW_FLOWS: 1 shadow flow reference(s) in codebase
-- [HIGH] PROTECTED_TOUCH: 1 protected file(s) modified in working tree
+- [HIGH] PROTECTED_TOUCH: 2 protected file(s) modified in working tree
 

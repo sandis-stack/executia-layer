@@ -8,6 +8,7 @@ import { mkdirSync, writeFileSync, existsSync, readdirSync, readFileSync } from 
 import { join, dirname, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
+import { engineeringConsoleDetected } from "../services/engineering-intelligence-loader.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const GRAPH_DIR = join(ROOT, "architecture-graph");
@@ -543,6 +544,11 @@ export function generateArchitectureReportMarkdown(graph) {
   }
   lines.push("");
 
+  lines.push("## Engineering console");
+  lines.push("");
+  lines.push(`engineering_console_detected = ${engineeringConsoleDetected(ROOT)}`);
+  lines.push("");
+
   return `${lines.join("\n")}\n`;
 }
 
@@ -664,7 +670,8 @@ export function buildArchitectureGraph() {
         NODE_CLASSIFICATIONS.map((layer) => [layer, (layered[layer] || []).length])
       )
     },
-    next_recommended_cleanup
+    next_recommended_cleanup,
+    engineering_console_detected: engineeringConsoleDetected(ROOT)
   };
 
   return {

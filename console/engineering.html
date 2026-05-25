@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EXECUTIA Engineering Console</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --line: #d8dee8;
+      --text: #162232;
+      --muted: #5c6b7a;
+      --blue: #1e3a5f;
+      --graphite: #475569;
+      --soft: #eef3f8;
+      --ok: #1f6b47;
+      --warn: #8a6a12;
+      --bad: #8f2f2f;
+      --canonical: #5b2d82;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 20px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--blue);
+      margin: 0;
+    }
+    .subtitle {
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+    .meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--blue);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .pill.stable { background: #e8f5ee; border-color: #b8dcc8; color: var(--ok); }
+    .pill.review { background: #fff8e8; border-color: #e8d9a8; color: var(--warn); }
+    .pill.high { background: #fdeeee; border-color: #e8bcbc; color: var(--bad); }
+    .pill.canonical { background: #f3eef8; border-color: #d4c4e4; color: var(--canonical); }
+    .pill.tag {
+      background: var(--panel);
+      color: var(--graphite);
+      font-weight: 700;
+    }
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 24px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 2px rgba(22, 34, 50, 0.04);
+    }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 800;
+    }
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+    .grid-6 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      background: #fafbfd;
+    }
+    .card .label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .card .value {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--blue);
+    }
+    .card .hint {
+      font-size: 11px;
+      color: var(--graphite);
+      margin-top: 6px;
+    }
+    .authority-item {
+      border-left: 3px solid var(--blue);
+      padding: 10px 12px;
+      background: var(--soft);
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .authority-item span {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+      font-weight: 700;
+    }
+    .graph-wrap {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+      padding: 12px;
+      overflow: auto;
+    }
+    svg { width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; }
+    ul.plain { margin: 0; padding-left: 18px; font-size: 13px; color: var(--graphite); }
+    ul.plain li { margin: 6px 0; }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 1fr 80px 80px 72px;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 12px;
+      background: #fafbfd;
+    }
+    .timeline-row .ts { color: var(--muted); font-size: 11px; }
+    .rec {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafbfd;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+    .section-tags {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .err {
+      border-color: #e8bcbc;
+      background: #fff5f5;
+      color: var(--bad);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    @media (max-width: 720px) {
+      .timeline-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1 class="title">EXECUTIA Engineering Console</h1>
+      <p class="subtitle">Governed Engineering Intelligence Layer</p>
+      <p class="meta" id="headerMeta">Loading intelligence…</p>
+    </div>
+    <div class="pills" id="statusPills">
+      <span class="pill tag">READ ONLY</span>
+      <span class="pill tag">DETERMINISTIC</span>
+      <span class="pill tag">GOVERNED</span>
+      <span class="pill" id="engStatusPill">—</span>
+    </div>
+  </header>
+
+  <main>
+    <section id="stabilitySection">
+      <h2>Stability Overview</h2>
+      <div class="grid grid-6" id="stabilityCards"></div>
+    </section>
+
+    <section id="canonicalSection">
+      <div class="section-tags">
+        <span class="pill tag">READ ONLY</span>
+        <span class="pill tag">GOVERNED</span>
+      </div>
+      <h2>Canonical Authority</h2>
+      <div class="grid grid-3" id="canonicalGrid"></div>
+    </section>
+
+    <section id="graphSection">
+      <h2>Architecture Graph</h2>
+      <div class="grid grid-2" style="margin-bottom:14px" id="graphStats"></div>
+      <div class="graph-wrap">
+        <svg id="archSvg" viewBox="0 0 640 320" role="img" aria-label="Architecture graph overview"></svg>
+      </div>
+    </section>
+
+    <section id="deploySection">
+      <div class="section-tags">
+        <span class="pill tag">DETERMINISTIC</span>
+        <span class="pill tag">GOVERNED</span>
+      </div>
+      <h2>Deploy Intelligence</h2>
+      <div id="deployBody" class="empty">Loading…</div>
+    </section>
+
+    <section id="timelineSection">
+      <div class="section-tags">
+        <span class="pill tag">READ ONLY</span>
+        <span class="pill tag">DETERMINISTIC</span>
+      </div>
+      <h2>Replayable Engineering Timeline</h2>
+      <div class="timeline" id="timelineBody"></div>
+    </section>
+
+    <section id="recSection">
+      <h2>Recommendations</h2>
+      <div id="recBody"></div>
+    </section>
+  </main>
+
+  <script>
+    const API = "/api/v1/engineering/intelligence";
+    let refreshTimer = null;
+
+    function esc(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function engineeringStatus(intel) {
+      const risk = intel?.risk?.overall || "LOW";
+      const readiness = intel?.deploy_readiness || "READY";
+      if (risk === "CANONICAL" || intel?.risk?.canonical_risk === "CANONICAL") {
+        return { label: "CANONICAL_ALERT", cls: "canonical" };
+      }
+      if (risk === "HIGH" || intel?.risk?.orphan_risk === "HIGH") {
+        return { label: "HIGH_RISK", cls: "high" };
+      }
+      if (readiness === "REVIEW_REQUIRED" || readiness === "CAUTION" || readiness === "BLOCKED") {
+        return { label: "REVIEW_REQUIRED", cls: "review" };
+      }
+      return { label: "STABLE", cls: "stable" };
+    }
+
+    function renderStability(ag, intel) {
+      const sc = intel?.stability;
+      const cards = [
+        { label: "Stability Score", value: sc?.overall_score ?? "—" },
+        { label: "Risk Level", value: intel?.risk?.overall ?? "—" },
+        { label: "Deploy Readiness", value: intel?.deploy_readiness ?? "—" },
+        { label: "Architecture Nodes", value: ag?.nodes ?? "—" },
+        { label: "Shadow Flows", value: ag?.shadow_flows ?? "—" },
+        { label: "Orphans", value: ag?.orphans ?? "—" }
+      ];
+      document.getElementById("stabilityCards").innerHTML = cards
+        .map(
+          (c) =>
+            `<article class="card"><div class="label">${esc(c.label)}</div><div class="value">${esc(c.value)}</div></article>`
+        )
+        .join("");
+    }
+
+    function renderCanonical(ag) {
+      const items = [
+        {
+          title: "Audit verify authority",
+          nodes: ag?.canonical_authority || [],
+          path: "GET /api/v1/audit/verify"
+        },
+        {
+          title: "Replay authority",
+          nodes: ag?.replay_layer || [],
+          path: "GET /api/v1/execution/replay"
+        },
+        {
+          title: "Public verify authority",
+          nodes: ag?.public_verification || [],
+          path: "GET /api/v1/verify/:execution_id"
+        },
+        {
+          title: "Governance layer",
+          nodes: ag?.governance_layer || [],
+          path: "Phase 3B5–3B9 tooling"
+        }
+      ];
+      document.getElementById("canonicalGrid").innerHTML = items
+        .map(
+          (it) =>
+            `<div class="authority-item"><strong>${esc(it.title)}</strong><span>${esc(it.path)}</span>${(it.nodes || [])
+              .map((n) => `<span>${esc(n)}</span>`)
+              .join("")}</div>`
+        )
+        .join("");
+    }
+
+    function renderGraphStats(ag) {
+      const stats = [
+        { label: "Nodes", value: ag?.nodes },
+        { label: "Edges", value: ag?.edges },
+        { label: "Orphans", value: ag?.orphans },
+        { label: "Shadow flows", value: ag?.shadow_flows }
+      ];
+      document.getElementById("graphStats").innerHTML = stats
+        .map(
+          (s) =>
+            `<article class="card"><div class="label">${esc(s.label)}</div><div class="value">${esc(s.value ?? "—")}</div></article>`
+        )
+        .join("");
+    }
+
+    function renderArchSvg(ag) {
+      const nodes = ag?.nodes || 0;
+      const edges = ag?.edges || 0;
+      const orphans = ag?.orphans || 0;
+      const svg = document.getElementById("archSvg");
+      svg.innerHTML = `
+        <rect x="0" y="0" width="640" height="320" fill="#eef3f8" rx="8"/>
+        <circle cx="320" cy="90" r="42" fill="#fff" stroke="#1e3a5f" stroke-width="2"/>
+        <text x="320" y="86" text-anchor="middle" font-size="11" fill="#1e3a5f" font-weight="700">AUDIT VERIFY</text>
+        <text x="320" y="102" text-anchor="middle" font-size="9" fill="#5c6b7a">canonical</text>
+        <circle cx="140" cy="200" r="36" fill="#fff" stroke="#475569" stroke-width="2"/>
+        <text x="140" y="198" text-anchor="middle" font-size="10" fill="#1e3a5f" font-weight="700">REPLAY</text>
+        <text x="140" y="212" text-anchor="middle" font-size="9" fill="#5c6b7a">read-only</text>
+        <circle cx="500" cy="200" r="36" fill="#fff" stroke="#475569" stroke-width="2"/>
+        <text x="500" y="198" text-anchor="middle" font-size="10" fill="#1e3a5f" font-weight="700">PUBLIC</text>
+        <text x="500" y="212" text-anchor="middle" font-size="9" fill="#5c6b7a">verify</text>
+        <circle cx="320" cy="250" r="32" fill="#fff" stroke="#475569" stroke-width="2"/>
+        <text x="320" y="248" text-anchor="middle" font-size="10" fill="#1e3a5f" font-weight="700">GOVERNANCE</text>
+        <text x="320" y="262" text-anchor="middle" font-size="9" fill="#5c6b7a">3B5–3B9</text>
+        <line x1="320" y1="132" x2="140" y2="164" stroke="#1e3a5f" stroke-width="1.5"/>
+        <line x1="320" y1="132" x2="500" y2="164" stroke="#1e3a5f" stroke-width="1.5"/>
+        <line x1="320" y1="132" x2="320" y2="218" stroke="#475569" stroke-width="1.5"/>
+        <text x="24" y="24" font-size="11" fill="#5c6b7a">nodes: ${nodes} · edges: ${edges}</text>
+        <text x="24" y="40" font-size="11" fill="#5c6b7a">orphans: ${orphans} · institutional map</text>
+      `;
+    }
+
+    function renderDeploy(di) {
+      const el = document.getElementById("deployBody");
+      if (!di) {
+        el.innerHTML = '<p class="empty">No deploy intelligence available.</p>';
+        return;
+      }
+      const blocks = [
+        { title: "Protected files touched", items: (di.protected_files_touched || []).map((p) => p.file) },
+        { title: "Canonical authority affected", items: di.canonical_authority_affected || [] },
+        { title: "Replay affected", items: di.replay_layer_affected || [] },
+        { title: "Governance affected", items: di.governance_layer_affected || [] }
+      ];
+      el.innerHTML = blocks
+        .map((b) => {
+          const list = b.items.length
+            ? `<ul class="plain">${b.items.map((i) => `<li><code>${esc(i)}</code></li>`).join("")}</ul>`
+            : '<p class="empty">None in current scope.</p>';
+          return `<div style="margin-bottom:14px"><strong style="font-size:12px;color:#1e3a5f">${esc(b.title)}</strong>${list}</div>`;
+        })
+        .join("");
+    }
+
+    function renderTimeline(ledger) {
+      const el = document.getElementById("timelineBody");
+      if (!ledger?.length) {
+        el.innerHTML = '<p class="empty">No engineering ledger snapshots. Run phase-3b6 pre-deploy.</p>';
+        return;
+      }
+      el.innerHTML = ledger
+        .map(
+          (row) => `
+        <div class="timeline-row">
+          <span class="ts">${esc(row.generated_at)}</span>
+          <span><strong>${esc(row.risk)}</strong></span>
+          <span>${row.stability != null ? esc(row.stability) : "—"}</span>
+          <span>${esc(row.findings_count)} findings</span>
+        </div>`
+        )
+        .join("");
+    }
+
+    function renderRecommendations(intel) {
+      const el = document.getElementById("recBody");
+      const recs = intel?.recommendations || [];
+      const findings = intel?.findings || [];
+      let html = "";
+      if (recs.length) {
+        html += recs.map((r) => `<div class="rec">${esc(r)}</div>`).join("");
+      }
+      if (findings.length) {
+        html += `<p style="font-size:11px;color:#5c6b7a;margin:12px 0 8px;font-weight:700">FINDINGS</p>`;
+        html += findings
+          .map((f) => `<div class="rec">[${esc(f.level)}] ${esc(f.code)}: ${esc(f.message)}</div>`)
+          .join("");
+      }
+      el.innerHTML = html || '<p class="empty">No recommendations.</p>';
+    }
+
+    async function load() {
+      try {
+        const res = await fetch(API, { cache: "no-store" });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error?.message || "Intelligence request failed");
+
+        const ag = data.architecture_graph;
+        const intel = data.execution_intelligence;
+        const status = engineeringStatus(intel);
+
+        document.getElementById("engStatusPill").textContent = status.label;
+        document.getElementById("engStatusPill").className = `pill ${status.cls}`;
+
+        const parts = [];
+        if (ag?.generated_at) parts.push(`Graph: ${ag.generated_at}`);
+        if (intel?.generated_at) parts.push(`Intelligence: ${intel.generated_at}`);
+        parts.push(`Refreshed: ${new Date().toISOString()}`);
+        if (data.missing_sources?.length) {
+          parts.push(`Missing: ${data.missing_sources.join(", ")}`);
+        }
+        document.getElementById("headerMeta").textContent = parts.join(" · ");
+
+        renderStability(ag, intel);
+        renderCanonical(ag);
+        renderGraphStats(ag);
+        renderArchSvg(ag);
+        renderDeploy(intel?.deploy_intelligence);
+        renderTimeline(data.engineering_ledger);
+        renderRecommendations(intel);
+      } catch (err) {
+        document.getElementById("headerMeta").textContent = `Error: ${err.message}`;
+        document.getElementById("stabilityCards").innerHTML =
+          `<div class="err">Unable to load engineering intelligence. Ensure pre-deploy chain has generated local artifacts and the API route is available.</div>`;
+      }
+    }
+
+    load();
+    refreshTimer = setInterval(load, 30000);
+    window.addEventListener("beforeunload", () => clearInterval(refreshTimer));
+  </script>
+</body>
+</html>

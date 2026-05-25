@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-05-25T06:28:49.545Z",
+  "branch": "phase-3b3-ledger-polish",
+  "commit": "e58b8be02586a7b3ef9aaa2494b77efc94195945",
+  "protected_files_touched": [
+    {
+      "file": "scripts/test-runner.js",
+      "patterns": [
+        "scripts/test-runner.js"
+      ]
+    },
+    {
+      "file": "vercel.json",
+      "patterns": [
+        "vercel.json"
+      ]
+    }
+  ],
+  "change_classification_hint": "PROTECTED_FILES_TOUCHED",
+  "risk_level": "HIGH",
+  "files_changed": [
+    "architecture-graph/latest.json",
+    "architecture-graph/report.md",
+    "execution-intelligence/latest.json",
+    "execution-intelligence/report.md",
+    "scripts/phase-3b8-architecture-graph.js",
+    "scripts/test-runner.js",
+    "vercel.json",
+    "api/v1/engineering/intelligence.js",
+    "architecture-graph/2026-05-25T06-25-17-516Z.json",
+    "architecture-graph/2026-05-25T06-25-21-179Z.json",
+    "architecture-graph/2026-05-25T06-25-21-764Z.json",
+    "architecture-graph/2026-05-25T06-27-57-950Z.json",
+    "architecture-graph/2026-05-25T06-27-58-358Z.json",
+    "architecture-graph/2026-05-25T06-27-58-792Z.json",
+    "architecture-graph/2026-05-25T06-28-46-290Z.json",
+    "architecture-graph/2026-05-25T06-28-48-862Z.json",
+    "architecture-graph/2026-05-25T06-28-49-266Z.json",
+    "console/engineering.html",
+    "execution-intelligence/2026-05-25T06-25-17-622Z.json",
+    "execution-intelligence/2026-05-25T06-25-21-246Z.json",
+    "execution-intelligence/2026-05-25T06-25-21-895Z.json",
+    "execution-intelligence/2026-05-25T06-27-58-046Z.json",
+    "execution-intelligence/2026-05-25T06-27-58-418Z.json",
+    "execution-intelligence/2026-05-25T06-27-58-921Z.json",
+    "execution-intelligence/2026-05-25T06-28-46-397Z.json",
+    "execution-intelligence/2026-05-25T06-28-48-921Z.json",
+    "execution-intelligence/2026-05-25T06-28-49-387Z.json",
+    "public/console/engineering.html",
+    "services/engineering-intelligence-loader.js"
+  ],
+  "governance": {
+    "replayable": true,
+    "deterministic_checks_required": true,
+    "protected_files_present": true
+  }
+}
