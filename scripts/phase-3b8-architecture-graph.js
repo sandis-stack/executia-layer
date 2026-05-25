@@ -8,7 +8,10 @@ import { mkdirSync, writeFileSync, existsSync, readdirSync, readFileSync } from 
 import { join, dirname, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
-import { engineeringConsoleDetected } from "../services/engineering-intelligence-loader.js";
+import {
+  engineeringConsoleDetected,
+  ENGINEERING_CONSOLE_GOVERNANCE
+} from "../services/engineering-intelligence-loader.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const GRAPH_DIR = join(ROOT, "architecture-graph");
@@ -23,7 +26,13 @@ export const NODE_CLASSIFICATIONS = [
   "proof_projection",
   "legacy_projection",
   "local_tooling",
+  "engineering_console",
   "unknown"
+];
+
+const ENGINEERING_CONSOLE_GOVERNANCE_ROLES = [
+  "governance_visualization",
+  "institutional_console"
 ];
 
 const SKIP_DIRS = new Set([
@@ -217,6 +226,38 @@ const KNOWN_NODES = [
     label: "Git working tree",
     canonical: false,
     classification: "governance_layer"
+  },
+  {
+    id: "store:architecture_graph",
+    type: "storage",
+    file: "architecture-graph/latest.json",
+    label: "Architecture graph artifact",
+    canonical: false,
+    classification: "architecture_memory"
+  },
+  {
+    id: "store:execution_intelligence",
+    type: "storage",
+    file: "execution-intelligence/latest.json",
+    label: "Execution intelligence artifact",
+    canonical: false,
+    classification: "architecture_memory"
+  },
+  {
+    id: "store:engineering_ledger",
+    type: "storage",
+    file: "engineering-ledger",
+    label: "Engineering ledger snapshots",
+    canonical: false,
+    classification: "governance_layer"
+  },
+  {
+    id: "governance:phase-3b9",
+    type: "governance",
+    file: "scripts/phase-3b9-execution-intelligence.js",
+    label: "Phase 3B9 execution intelligence",
+    canonical: false,
+    classification: "governance_layer"
   }
 ];
 
@@ -289,6 +330,14 @@ export function classifyNode(node) {
   if (file === "sql/009_atomic_execution_rpc.sql") return "legacy_projection";
   if (LEGACY_ENDPOINT_FILES.includes(file)) return "legacy_projection";
   if (PROOF_PROJECTION_FILES.has(file)) return "proof_projection";
+  if (
+    file === "console/engineering.html" ||
+    file === "public/console/engineering.html" ||
+    file === "api/v1/engineering/intelligence.js" ||
+    file === "services/engineering-intelligence-loader.js"
+  ) {
+    return "engineering_console";
+  }
   if (file.startsWith("console/") || file.startsWith("public/console/") || file === "dashboard/index.html") {
     return "ui_console";
   }
@@ -299,6 +348,7 @@ export function classifyNode(node) {
     if (route === "execution/replay") return "replay_layer";
     if (route.startsWith("verify/")) return "public_verification";
     if (route.startsWith("proof/")) return "proof_projection";
+    if (route.startsWith("engineering/")) return "engineering_console";
     return "unknown";
   }
 
@@ -313,7 +363,77 @@ export function classifyNode(node) {
 }
 
 function withClassification(node) {
-  return { ...node, classification: classifyNode(node) };
+  const classification = classifyNode(node);
+  const base = { ...node, classification };
+  if (classification !== "engineering_console") return base;
+  return {
+    ...base,
+    governance_roles: ENGINEERING_CONSOLE_GOVERNANCE_ROLES,
+    institutional_traits: { ...ENGINEERING_CONSOLE_GOVERNANCE }
+  };
+}
+
+function listEngineeringConsoleNodes() {
+  const defs = [
+    {
+      id: "ui:engineering-console",
+      type: "engineering_console",
+      file: "console/engineering.html",
+      label: "EXECUTIA Engineering Console",
+      canonical: false
+    },
+    {
+      id: "ui:engineering-console-public",
+      type: "engineering_console",
+      file: "public/console/engineering.html",
+      label: "EXECUTIA Engineering Console (public)",
+      canonical: false
+    },
+    {
+      id: "endpoint:engineering/intelligence",
+      type: "endpoint",
+      file: "api/v1/engineering/intelligence.js",
+      label: "GET /api/v1/engineering/intelligence",
+      canonical: false
+    },
+    {
+      id: "service:engineering-intelligence-loader",
+      type: "service",
+      file: "services/engineering-intelligence-loader.js",
+      label: "Engineering intelligence loader",
+      canonical: false
+    }
+  ];
+
+  return defs
+    .filter((def) => existsSync(join(ROOT, def.file)))
+    .map((def) => withClassification(def));
+}
+
+function addEngineeringConsoleEdges(edges) {
+  if (!engineeringConsoleDetected(ROOT)) return;
+
+  if (existsSync(join(ROOT, "console/engineering.html"))) {
+    addEdge(edges, "ui:engineering-console", "endpoint:engineering/intelligence", "visualizes");
+  }
+  if (existsSync(join(ROOT, "public/console/engineering.html"))) {
+    addEdge(
+      edges,
+      "ui:engineering-console-public",
+      "endpoint:engineering/intelligence",
+      "visualizes"
+    );
+  }
+
+  addEdge(edges, "endpoint:engineering/intelligence", "store:architecture_graph", "reads");
+  addEdge(edges, "endpoint:engineering/intelligence", "store:execution_intelligence", "reads");
+  addEdge(edges, "endpoint:engineering/intelligence", "store:engineering_ledger", "reads");
+  addEdge(
+    edges,
+    "endpoint:engineering/intelligence",
+    "service:engineering-intelligence-loader",
+    "uses"
+  );
 }
 
 function listApiEndpoints() {
@@ -544,9 +664,43 @@ export function generateArchitectureReportMarkdown(graph) {
   }
   lines.push("");
 
-  lines.push("## Engineering console");
+  const engDetected = engineeringConsoleDetected(ROOT);
+  const engLayer = byLayer.engineering_console || [];
+
+  lines.push("## Engineering Console Layer");
   lines.push("");
-  lines.push(`engineering_console_detected = ${engineeringConsoleDetected(ROOT)}`);
+  if (!engDetected) {
+    lines.push("_Engineering console artifacts not fully present._");
+  } else {
+    for (const node of engLayer) {
+      lines.push(`- \`${node.file}\` — ${node.label} (\`${node.id}\`)`);
+    }
+  }
+  lines.push("");
+  lines.push(`engineering_console_detected = ${engDetected}`);
+  lines.push("");
+
+  lines.push("## Governance Visualization Layer");
+  lines.push("");
+  lines.push("The engineering console is classified as **governance visualization** infrastructure:");
+  lines.push("");
+  lines.push("- `governance_visualization` — read-only institutional map of graph, intelligence, ledger");
+  lines.push("- `institutional_console` — system interface, not marketing or operator mutation surface");
+  lines.push("");
+  for (const role of ENGINEERING_CONSOLE_GOVERNANCE_ROLES) {
+    lines.push(`- Role: \`${role}\``);
+  }
+  lines.push("");
+
+  lines.push("## Institutional Console Status");
+  lines.push("");
+  const traits = ENGINEERING_CONSOLE_GOVERNANCE;
+  lines.push(`| Trait | Status |`);
+  lines.push(`|-------|--------|`);
+  lines.push(`| Read-only | ${traits.read_only} |`);
+  lines.push(`| Governed | ${traits.governed} |`);
+  lines.push(`| Deterministic | ${traits.deterministic} |`);
+  lines.push(`| Visibility layer | ${traits.visibility_layer} |`);
   lines.push("");
 
   return `${lines.join("\n")}\n`;
@@ -623,7 +777,13 @@ export function buildArchitectureGraph() {
   addEdge(edges, "endpoint:ledger-verify", "endpoint:audit/verify", "compat_wraps");
   addEdge(edges, "endpoint:core-ledger-verify", "endpoint:audit/verify", "compat_wraps");
 
+  for (const engNode of listEngineeringConsoleNodes()) {
+    nodeMap.set(engNode.id, engNode);
+  }
+  addEngineeringConsoleEdges(edges);
+
   const nodes = [...nodeMap.values()];
+  const engineeringConsoleNodes = nodes.filter((n) => n.classification === "engineering_console");
   const projectFiles = listFiles(ROOT);
   const shadow_flow_candidates = scanShadowFlows(projectFiles);
   const connected = collectConnectedEndpointIds(edges);
@@ -671,7 +831,11 @@ export function buildArchitectureGraph() {
       )
     },
     next_recommended_cleanup,
-    engineering_console_detected: engineeringConsoleDetected(ROOT)
+    engineering_console_detected: engineeringConsoleDetected(ROOT),
+    engineering_console_governance: { ...ENGINEERING_CONSOLE_GOVERNANCE },
+    engineering_console_nodes: engineeringConsoleNodes.map((n) => n.id),
+    governance_visualization: engineeringConsoleDetected(ROOT),
+    institutional_console: engineeringConsoleDetected(ROOT)
   };
 
   return {

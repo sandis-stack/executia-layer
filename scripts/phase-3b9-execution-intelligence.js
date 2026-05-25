@@ -18,6 +18,10 @@ import { pathToFileURL } from "node:url";
 import { fileURLToPath } from "node:url";
 
 import { classifyEngineeringChange } from "./phase-3b6-engineering-ledger.js";
+import {
+  engineeringConsoleDetected,
+  buildEngineeringConsoleStatus
+} from "../services/engineering-intelligence-loader.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const INTELLIGENCE_DIR = join(ROOT, "execution-intelligence");
@@ -582,7 +586,8 @@ export function buildExecutionIntelligence(root = ROOT) {
     deploy_intelligence,
     findings,
     recommendations,
-    deploy_readiness: deriveDeployReadiness(risk, stability, findings)
+    deploy_readiness: deriveDeployReadiness(risk, stability, findings),
+    engineering_console_status: buildEngineeringConsoleStatus(root, graph?.findings)
   };
 }
 
@@ -691,6 +696,15 @@ export function generateExecutionIntelligenceReportMarkdown(intel) {
   for (const rec of intel.recommendations) {
     lines.push(`- ${rec}`);
   }
+  lines.push("");
+
+  lines.push("## Engineering Console Status");
+  lines.push("");
+  const ecs = intel.engineering_console_status || buildEngineeringConsoleStatus();
+  lines.push(`- DETECTED: ${ecs.DETECTED}`);
+  lines.push(`- GOVERNED: ${ecs.GOVERNED}`);
+  lines.push(`- READ_ONLY: ${ecs.READ_ONLY}`);
+  lines.push(`- LIVE_REFRESH_ENABLED: ${ecs.LIVE_REFRESH_ENABLED}`);
   lines.push("");
 
   lines.push("## Deploy readiness");

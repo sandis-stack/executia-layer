@@ -4,9 +4,9 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 
 ## Generated at
 
-- **Timestamp:** 2026-05-25T06:28:49.266Z
+- **Timestamp:** 2026-05-25T06:45:30.474Z
 - **Branch:** phase-3b3-ledger-polish
-- **Commit:** e58b8be02586a7b3ef9aaa2494b77efc94195945
+- **Commit:** c092ce43b5184056ee61591fa4e3986300b829d5
 
 ## Canonical authority
 
@@ -32,6 +32,8 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 - `scripts/phase-3b6-engineering-ledger.js` — Phase 3B6 engineering ledger (`governance:phase-3b6`)
 - `scripts/phase-3b7-architecture-drift.js` — Phase 3B7 architecture drift (`governance:phase-3b7`)
 - `git` — Git working tree (`store:git_state`)
+- `engineering-ledger` — Engineering ledger snapshots (`store:engineering_ledger`)
+- `scripts/phase-3b9-execution-intelligence.js` — Phase 3B9 execution intelligence (`governance:phase-3b9`)
 - `.cursor/rules/change-governance.mdc` — .cursor/rules/change-governance.mdc (`cursor:.cursor/rules/change-governance.mdc`)
 - `.cursor/rules/deployment-rules.mdc` — .cursor/rules/deployment-rules.mdc (`cursor:.cursor/rules/deployment-rules.mdc`)
 - `.cursor/rules/executia-governance.mdc` — .cursor/rules/executia-governance.mdc (`cursor:.cursor/rules/executia-governance.mdc`)
@@ -65,6 +67,8 @@ _None mapped._
 ## Architecture memory
 
 - `.cursor/context/architecture-graph.md` — Architecture graph context (`context:architecture-graph`)
+- `architecture-graph/latest.json` — Architecture graph artifact (`store:architecture_graph`)
+- `execution-intelligence/latest.json` — Execution intelligence artifact (`store:execution_intelligence`)
 - `.cursor/context/architecture-drift.md` — .cursor/context/architecture-drift.md (`cursor:.cursor/context/architecture-drift.md`)
 - `.cursor/context/architecture-graph.md` — .cursor/context/architecture-graph.md (`cursor:.cursor/context/architecture-graph.md`)
 - `.cursor/context/architecture.md` — .cursor/context/architecture.md (`cursor:.cursor/context/architecture.md`)
@@ -97,7 +101,6 @@ Unclassified API endpoints not connected to canonical/governance anchors (exclud
 - `api/v1/config/public.js` — /api/v1/config/public
 - `api/v1/core-ledger-commit.js` — /api/v1/core-ledger-commit
 - `api/v1/core-ledger-repair.js` — /api/v1/core-ledger-repair
-- `api/v1/engineering/intelligence.js` — /api/v1/engineering/intelligence
 - `api/v1/evolution/analyze.js` — /api/v1/evolution/analyze
 - `api/v1/execute.js` — /api/v1/execute
 - `api/v1/execution/analyze.js` — /api/v1/execution/analyze
@@ -148,28 +151,53 @@ Unclassified API endpoints not connected to canonical/governance anchors (exclud
 
 | Metric | Count |
 |--------|------:|
-| Total nodes | 99 |
-| Total edges | 39 |
+| Total nodes | 106 |
+| Total edges | 45 |
 | API endpoints | 71 |
-| Orphan candidates (reduced) | 55 |
+| Orphan candidates (reduced) | 54 |
 | Shadow flow candidates (reduced) | 1 |
 | Layer: canonical_authority | 7 |
 | Layer: public_verification | 1 |
 | Layer: replay_layer | 1 |
-| Layer: governance_layer | 10 |
-| Layer: architecture_memory | 11 |
+| Layer: governance_layer | 12 |
+| Layer: architecture_memory | 13 |
 | Layer: ui_console | 0 |
 | Layer: proof_projection | 11 |
 | Layer: legacy_projection | 2 |
 | Layer: local_tooling | 1 |
-| Layer: unknown | 55 |
+| Layer: engineering_console | 4 |
+| Layer: unknown | 54 |
 
 ## Next recommended cleanup
 
-- Classify 55 orphan API endpoint(s) before any removal.
+- Classify 54 orphan API endpoint(s) before any removal.
 - Migrate remaining shadow flow references (ledger-verify URLs or legacy event names).
 
-## Engineering console
+## Engineering Console Layer
+
+- `api/v1/engineering/intelligence.js` — GET /api/v1/engineering/intelligence (`endpoint:engineering/intelligence`)
+- `console/engineering.html` — EXECUTIA Engineering Console (`ui:engineering-console`)
+- `public/console/engineering.html` — EXECUTIA Engineering Console (public) (`ui:engineering-console-public`)
+- `services/engineering-intelligence-loader.js` — Engineering intelligence loader (`service:engineering-intelligence-loader`)
 
 engineering_console_detected = true
+
+## Governance Visualization Layer
+
+The engineering console is classified as **governance visualization** infrastructure:
+
+- `governance_visualization` — read-only institutional map of graph, intelligence, ledger
+- `institutional_console` — system interface, not marketing or operator mutation surface
+
+- Role: `governance_visualization`
+- Role: `institutional_console`
+
+## Institutional Console Status
+
+| Trait | Status |
+|-------|--------|
+| Read-only | true |
+| Governed | true |
+| Deterministic | true |
+| Visibility layer | institutional_governance |
 

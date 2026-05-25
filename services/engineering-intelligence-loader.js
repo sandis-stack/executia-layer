@@ -21,11 +21,33 @@ function readJson(path) {
   }
 }
 
+export const ENGINEERING_CONSOLE_ARTIFACTS = [
+  "console/engineering.html",
+  "public/console/engineering.html",
+  "api/v1/engineering/intelligence.js",
+  "services/engineering-intelligence-loader.js"
+];
+
+export const ENGINEERING_CONSOLE_GOVERNANCE = {
+  read_only: true,
+  governed: true,
+  deterministic: true,
+  visibility_layer: "institutional_governance"
+};
+
 export function engineeringConsoleDetected(root = ROOT) {
-  return (
-    existsSync(join(root, "console/engineering.html")) &&
-    existsSync(join(root, "public/console/engineering.html"))
-  );
+  return ENGINEERING_CONSOLE_ARTIFACTS.every((file) => existsSync(join(root, file)));
+}
+
+export function buildEngineeringConsoleStatus(root = ROOT, graphFindings = null) {
+  const detected =
+    engineeringConsoleDetected(root) && graphFindings?.engineering_console_detected !== false;
+  return {
+    DETECTED: Boolean(detected),
+    GOVERNED: true,
+    READ_ONLY: true,
+    LIVE_REFRESH_ENABLED: true
+  };
 }
 
 export function loadArchitectureGraphLatest(root = ROOT) {

@@ -510,7 +510,8 @@ const classificationLabels = [
   "architecture_memory",
   "proof_projection",
   "legacy_projection",
-  "local_tooling"
+  "local_tooling",
+  "engineering_console"
 ];
 for (const label of classificationLabels) {
   if (!phase38Source.includes(label)) {
@@ -547,6 +548,19 @@ if (classifiedNodes.length < graph.nodes.length * 0.9) {
 }
 
 writeGraphOutputs(graph, join(__test_dir, ".."));
+if (graph.findings.engineering_console_detected !== true) {
+  throw new Error("Architecture graph must set engineering_console_detected === true");
+}
+const engConsoleNodes = graph.nodes.filter((n) => n.classification === "engineering_console");
+if (engConsoleNodes.length < 4) {
+  throw new Error("Architecture graph must classify at least 4 engineering_console nodes");
+}
+if (!graph.findings.summary_counts?.by_layer?.engineering_console) {
+  throw new Error("Architecture graph summary_counts.by_layer must include engineering_console");
+}
+if (!graph.findings.engineering_console_governance?.read_only) {
+  throw new Error("Architecture graph must include engineering_console_governance mapping");
+}
 const reportPath = join(__test_dir, "..", "architecture-graph/report.md");
 if (!existsSync(reportPath)) {
   throw new Error("Architecture graph must write architecture-graph/report.md");
@@ -554,6 +568,12 @@ if (!existsSync(reportPath)) {
 const reportBody = readFileSync(reportPath, "utf8");
 if (!reportBody.includes("Canonical authority") || !reportBody.includes("Summary counts")) {
   throw new Error("Architecture graph report.md must include required sections");
+}
+if (
+  !reportBody.includes("Engineering Console Layer") ||
+  !reportBody.includes("Governance Visualization Layer")
+) {
+  throw new Error("Architecture graph report must include engineering console governance sections");
 }
 if (
   !graph.findings.canonical_authority.length &&
@@ -599,6 +619,12 @@ if (!existsSync(intelReportPath)) {
 const intelReportBody = readFileSync(intelReportPath, "utf8");
 if (!intelReportBody.includes("Stability score") || !intelReportBody.includes("Deploy readiness")) {
   throw new Error("Execution intelligence report.md must include required sections");
+}
+if (!intelReportBody.includes("Engineering Console Status")) {
+  throw new Error("Execution intelligence report must include Engineering Console Status");
+}
+if (intel.engineering_console_status?.DETECTED !== true) {
+  throw new Error("Execution intelligence must report engineering console DETECTED");
 }
 
 const phase4aFiles = [

@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-05-25T06:45:30.793Z",
+  "branch": "phase-3b3-ledger-polish",
+  "commit": "c092ce43b5184056ee61591fa4e3986300b829d5",
+  "protected_files_touched": [
+    {
+      "file": "scripts/test-runner.js",
+      "patterns": [
+        "scripts/test-runner.js"
+      ]
+    }
+  ],
+  "change_classification_hint": "PROTECTED_FILES_TOUCHED",
+  "risk_level": "HIGH",
+  "files_changed": [
+    ".cursor/context/execution-intelligence.md",
+    "architecture-graph/latest.json",
+    "architecture-graph/report.md",
+    "execution-intelligence/latest.json",
+    "execution-intelligence/report.md",
+    "scripts/phase-3b8-architecture-graph.js",
+    "scripts/phase-3b9-execution-intelligence.js",
+    "scripts/test-runner.js",
+    "services/engineering-intelligence-loader.js",
+    "architecture-graph/2026-05-25T06-38-58-711Z.json",
+    "architecture-graph/2026-05-25T06-38-59-415Z.json",
+    "architecture-graph/2026-05-25T06-39-03-673Z.json",
+    "architecture-graph/2026-05-25T06-39-04-222Z.json",
+    "architecture-graph/2026-05-25T06-45-29-065Z.json",
+    "architecture-graph/2026-05-25T06-45-29-605Z.json",
+    "architecture-graph/2026-05-25T06-45-29-999Z.json",
+    "architecture-graph/2026-05-25T06-45-30-474Z.json",
+    "execution-intelligence/2026-05-25T06-38-58-947Z.json",
+    "execution-intelligence/2026-05-25T06-38-59-489Z.json",
+    "execution-intelligence/2026-05-25T06-39-03-785Z.json",
+    "execution-intelligence/2026-05-25T06-39-04-391Z.json",
+    "execution-intelligence/2026-05-25T06-45-29-241Z.json",
+    "execution-intelligence/2026-05-25T06-45-29-672Z.json",
+    "execution-intelligence/2026-05-25T06-45-30-061Z.json",
+    "execution-intelligence/2026-05-25T06-45-30-613Z.json"
+  ],
+  "governance": {
+    "replayable": true,
+    "deterministic_checks_required": true,
+    "protected_files_present": true
+  }
+}

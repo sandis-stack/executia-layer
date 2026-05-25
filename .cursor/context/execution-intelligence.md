@@ -26,6 +26,16 @@ Outputs:
 | Git working tree | Current deploy scope |
 | `.cursor/context/protected-files.md` | Institutional protected patterns |
 
+## Engineering Console (Phase 4A / 4A1)
+
+The **Engineering Console** (`/engineering`, `console/engineering.html`) is **not marketing UI**. It is **governance visualization infrastructure** — a read-only institutional layer over architecture graph, execution intelligence, and engineering ledger.
+
+Rules:
+
+- Console must remain **read-only** unless an explicit governed phase authorizes mutation surfaces.
+- Do not add ungoverned write actions, operator commits, or marketing copy to the engineering console.
+- Treat console status in intelligence reports (`DETECTED`, `GOVERNED`, `READ_ONLY`, `LIVE_REFRESH_ENABLED`) as deploy-scope signals, not product funnel metrics.
+
 ## Cursor rules
 
 1. **Read `execution-intelligence/report.md` before deploy** — stability, risk, and deploy readiness.

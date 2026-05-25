@@ -2,25 +2,25 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T06:28:49.387Z
+**Generated:** 2026-05-25T06:45:30.613Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** e58b8be02586a7b3ef9aaa2494b77efc94195945
+**Commit:** c092ce43b5184056ee61591fa4e3986300b829d5
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 38 |
-| Architecture | 40 |
-| Governance | 60 |
+| Overall | 40 |
+| Architecture | 41 |
+| Governance | 68 |
 | Replay | 100 |
 | Verification | 100 |
-| Endpoint consistency | 23 |
+| Endpoint consistency | 24 |
 
 Deductions from 100 (overall):
-- Orphans: −55
+- Orphans: −54
 - Shadow flows: −1
-- Protected file touches: −2
+- Protected file touches: −1
 - Governance warnings: −4
 - Missing canonical edges: −0
 
@@ -39,7 +39,7 @@ Deductions from 100 (overall):
 
 ## Architecture delta
 
-Baseline: `2026-05-25T06:28:48.862Z`
+Baseline: `2026-05-25T06:45:29.999Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -62,10 +62,10 @@ _No replay layer files in current git diff._
 
 Governance tooling / rules:
 - `scripts/phase-3b8-architecture-graph.js`
+- `scripts/phase-3b9-execution-intelligence.js`
 
 Protected files:
 - `scripts/test-runner.js` (scripts/test-runner.js)
-- `vercel.json` (vercel.json)
 
 ## Recommendations
 
@@ -73,12 +73,19 @@ Protected files:
 - Obtain explicit approval for protected file modifications before deploy.
 - Defer deploy until stability improves (reduce orphans, shadows, or protected touches).
 
+## Engineering Console Status
+
+- DETECTED: true
+- GOVERNED: true
+- READ_ONLY: true
+- LIVE_REFRESH_ENABLED: true
+
 ## Deploy readiness
 
 **Status:** REVIEW_REQUIRED
 
 ### Findings
-- [MEDIUM] ORPHAN_ENDPOINTS: 55 unclassified API endpoint(s) disconnected from canonical anchors
+- [MEDIUM] ORPHAN_ENDPOINTS: 54 unclassified API endpoint(s) disconnected from canonical anchors
 - [MEDIUM] SHADOW_FLOWS: 1 shadow flow reference(s) in codebase
-- [HIGH] PROTECTED_TOUCH: 2 protected file(s) modified in working tree
+- [HIGH] PROTECTED_TOUCH: 1 protected file(s) modified in working tree
 
