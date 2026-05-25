@@ -13,7 +13,7 @@ Classification is **local tooling only** — it does not change runtime API beha
 | `canonical_authority` | Material verification truth (`audit/verify`, ledger/audit services) |
 | `replay_layer` | Read-only deterministic execution replay |
 | `public_verification` | Public verify routes (no privileged payload) |
-| `governance_execution` | Execution submit / commit paths |
+| `governance_execution` | Execution submit / commit paths; `POST execution/transition` (canonical semantics via commit flow) |
 | `governance_projection` | Registry, rules, evolution, org/project surfaces |
 | `proof_projection` | Proof package/export (legacy-aware projection) |
 | `ledger_projection` | Ledger settlement, audit-ledger, truth-anchor |

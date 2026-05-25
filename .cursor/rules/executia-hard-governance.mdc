@@ -1,0 +1,95 @@
+---
+description: EXECUTIA Hard Governance — prohibit UI fragmentation, hierarchy collapse, and unapproved redesign; enforce canonical design and execution flow
+alwaysApply: true
+---
+
+# EXECUTIA Hard Governance Rules
+
+EXECUTIA is **governed infrastructure**, not iterative AI experimentation.
+
+## Absolute prohibitions
+
+Do **not**:
+
+- Improvise UI page-by-page or introduce one-off styling
+- Create multiple button, radius, or spacing systems
+- Duplicate execution surfaces or collapse multi-surface architecture into a single ENGINE page
+- Change flow hierarchy, navigation structure, or execution semantics without explicit user approval
+- Redesign pages, run broad multi-page rewrites, or “refresh” UX without explicit approval
+- Mix presentation changes with runtime/API/SQL behavior in the same unscoped diff
+- Optimize for feature expansion over institutional consistency
+
+## Single canonical systems (mandatory)
+
+| System | Source of truth |
+|--------|-----------------|
+| Design governance | `public/components/executia-design-system.css` |
+| Institutional shell | `executia-institutional-environment.js` + `.css` |
+| Surface registry | `executia-institutional-surfaces.js` |
+| Header / footer | Institutional environment mount only — no parallel headers |
+| Institutional language | `EXECUTIA_INSTITUTIONAL_SURFACES.LANGUAGE` + `AI_CLARITY` |
+| Execution semantics | `shared/canonical-execution-semantics.js` |
+| Governance presentation | `executia-governance-core.js`, `executia-governed-presentation.css` |
+
+## Canonical execution flow (do not rename or reorder)
+
+```
+REQUEST
+↓
+VALIDATION
+↓
+GOVERNANCE
+↓
+COMMIT
+↓
+PROOF
+↓
+REPLAY
+↓
+CONTINUITY
+```
+
+Map to approved states/actions in canonical semantics — do not introduce parallel vocabularies (`CONFIRMED`, `UNDER_REVIEW`, `SUCCESS` as status, etc.) unless explicitly mapped.
+
+## UI change rules
+
+1. **Tokens only** — spacing (`--ex-ds-s8|16|24|40|64`), colors, typography from design system; `border-radius: 0` on institutional surfaces unless user explicitly approves otherwise
+2. **No black backgrounds** — light institutional UI only
+3. **Inherit** header/footer via `ex-institutional-env` (public) or governance shell (console) — never duplicate `engine-shell` on pages that already use institutional environment
+4. **Eight surfaces** preserved: Execution, Governance, Proof, Replay, Health, Operations, Engineering, Request
+
+## Large change protocol (required before implementation)
+
+Every architecture or multi-file UI task must include:
+
+1. **Scope** — what is in / out
+2. **Affected files** — explicit list
+3. **Expected result** — institutional outcome, not feature list
+4. **Verification** — `node --check`, `npm test`, `.cursor/hooks/pre-deploy-check.sh`, relevant phase scripts
+5. **Screenshot review** — when UI changes are visible
+6. **Must not change** — runtime logic, API contracts, SQL, canonical flow, nav structure, semantics (unless explicitly approved)
+
+## Presentation vs runtime (strict separation)
+
+| Allowed without runtime approval | Requires explicit approval |
+|----------------------------------|----------------------------|
+| CSS, HTML structure, copy, nav labels (within taxonomy) | `api/`, `services/`, `sql/`, execution RPCs |
+| Institutional environment, design tokens | Operator decision paths, ledger/audit writes |
+| Docs and `.cursor/context` governance | New endpoints, RLS, email providers |
+
+## Drift prevention
+
+- Endpoint taxonomy: classify in `phase-3b8-architecture-graph.js` — `unknown_endpoints` must stay **0**
+- Artifact retention: archive only — never destructive-delete governed snapshots
+- No shadow validation or parallel API flows
+
+## Reference docs
+
+- `docs/governance/hard-governance-rules.md`
+- `.cursor/context/hard-governance-rules.md`
+- `.cursor/rules/change-governance.mdc`
+- `.cursor/rules/executia-governance.mdc`
+
+## Default stance
+
+**Institutional consistency over feature expansion.** When uncertain, stop and ask — do not broaden scope.

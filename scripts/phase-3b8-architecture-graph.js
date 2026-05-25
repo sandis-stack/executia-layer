@@ -389,7 +389,12 @@ export function classifyEndpoint(file, route = routeFromApiFile(file)) {
     return "operator_control";
   }
 
-  if (r === "execute" || r === "submit" || r === "execution/submit") {
+  if (
+    r === "execute" ||
+    r === "submit" ||
+    r === "execution/submit" ||
+    r === "execution/transition"
+  ) {
     return "governance_execution";
   }
 

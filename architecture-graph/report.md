@@ -4,9 +4,9 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 
 ## Generated at
 
-- **Timestamp:** 2026-05-25T11:56:22.393Z
+- **Timestamp:** 2026-05-25T13:12:40.555Z
 - **Branch:** phase-3b3-ledger-polish
-- **Commit:** a7a39257eb280b20f43cfbb1aa69e4be2c6bc818
+- **Commit:** e537acda05bae923508e60fa99196e3870f34f43
 
 ## Canonical authority
 
@@ -39,6 +39,7 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 - `.cursor/rules/change-governance.mdc` — .cursor/rules/change-governance.mdc (`cursor:.cursor/rules/change-governance.mdc`)
 - `.cursor/rules/deployment-rules.mdc` — .cursor/rules/deployment-rules.mdc (`cursor:.cursor/rules/deployment-rules.mdc`)
 - `.cursor/rules/executia-governance.mdc` — .cursor/rules/executia-governance.mdc (`cursor:.cursor/rules/executia-governance.mdc`)
+- `.cursor/rules/executia-hard-governance.mdc` — .cursor/rules/executia-hard-governance.mdc (`cursor:.cursor/rules/executia-hard-governance.mdc`)
 - `.cursor/rules/security-rules.mdc` — .cursor/rules/security-rules.mdc (`cursor:.cursor/rules/security-rules.mdc`)
 - `.cursor/rules/supabase-rules.mdc` — .cursor/rules/supabase-rules.mdc (`cursor:.cursor/rules/supabase-rules.mdc`)
 - `.cursor/rules/vendor-safety.mdc` — .cursor/rules/vendor-safety.mdc (`cursor:.cursor/rules/vendor-safety.mdc`)
@@ -99,7 +100,9 @@ _None mapped._
 - `.cursor/context/governance-consolidation.md` — .cursor/context/governance-consolidation.md (`cursor:.cursor/context/governance-consolidation.md`)
 - `.cursor/context/governance-modes.md` — .cursor/context/governance-modes.md (`cursor:.cursor/context/governance-modes.md`)
 - `.cursor/context/governance-surface-separation.md` — .cursor/context/governance-surface-separation.md (`cursor:.cursor/context/governance-surface-separation.md`)
+- `.cursor/context/hard-governance-rules.md` — .cursor/context/hard-governance-rules.md (`cursor:.cursor/context/hard-governance-rules.md`)
 - `.cursor/context/institutional-completion.md` — .cursor/context/institutional-completion.md (`cursor:.cursor/context/institutional-completion.md`)
+- `.cursor/context/institutional-multi-surface.md` — .cursor/context/institutional-multi-surface.md (`cursor:.cursor/context/institutional-multi-surface.md`)
 - `.cursor/context/institutional-product-completion.md` — .cursor/context/institutional-product-completion.md (`cursor:.cursor/context/institutional-product-completion.md`)
 - `.cursor/context/institutional-ui.md` — .cursor/context/institutional-ui.md (`cursor:.cursor/context/institutional-ui.md`)
 - `.cursor/context/operational-shell.md` — .cursor/context/operational-shell.md (`cursor:.cursor/context/operational-shell.md`)
@@ -118,15 +121,15 @@ _None mapped._
 ## Endpoint taxonomy summary
 
 - **Total API endpoints:** 72
-- **Classified:** 71
-- **Unknown:** 1
+- **Classified:** 72
+- **Unknown:** 0
 
 | Endpoint class | Count |
 |----------------|------:|
 | canonical_authority | 1 |
 | replay_layer | 1 |
 | public_verification | 2 |
-| governance_execution | 3 |
+| governance_execution | 4 |
 | governance_projection | 10 |
 | proof_projection | 12 |
 | ledger_projection | 5 |
@@ -138,17 +141,16 @@ _None mapped._
 | history_projection | 3 |
 | engineering_intelligence | 1 |
 | legacy_projection | 4 |
-| unknown | 1 |
 
 ## Remaining orphan endpoints
 
 Only `unknown` taxonomy class (Phase 4B). Governed classes are not orphans.
 
-- `api/v1/execution/transition.js` — /api/v1/execution/transition
+_No orphan API endpoints after taxonomy classification._
 
 ## Next classification targets
 
-- `api/v1/execution/transition.js` — assign taxonomy before refactor
+_All API endpoints classified._
 
 ## Shadow flow candidates
 
@@ -158,15 +160,15 @@ Only `unknown` taxonomy class (Phase 4B). Governed classes are not orphans.
 
 | Metric | Count |
 |--------|------:|
-| Total nodes | 134 |
-| Total edges | 72 |
+| Total nodes | 137 |
+| Total edges | 75 |
 | API endpoints | 72 |
-| Orphan candidates (reduced) | 1 |
+| Orphan candidates (reduced) | 0 |
 | Shadow flow candidates (reduced) | 1 |
 | Layer: canonical_authority | 7 |
 | Layer: replay_layer | 1 |
 | Layer: public_verification | 2 |
-| Layer: governance_execution | 3 |
+| Layer: governance_execution | 4 |
 | Layer: governance_projection | 10 |
 | Layer: proof_projection | 12 |
 | Layer: ledger_projection | 5 |
@@ -179,15 +181,14 @@ Only `unknown` taxonomy class (Phase 4B). Governed classes are not orphans.
 | Layer: engineering_intelligence | 2 |
 | Layer: legacy_projection | 4 |
 | Layer: local_tooling | 1 |
-| Layer: unknown | 1 |
-| Layer: governance_layer | 14 |
-| Layer: architecture_memory | 38 |
+| Layer: unknown | 0 |
+| Layer: governance_layer | 15 |
+| Layer: architecture_memory | 40 |
 | Layer: ui_console | 0 |
 | Layer: engineering_console | 2 |
 
 ## Next recommended cleanup
 
-- Assign taxonomy to 1 unknown endpoint(s) (see endpoint-taxonomy.md).
 - Migrate remaining shadow flow references (ledger-verify URLs or legacy event names).
 
 ## Engineering Console Layer

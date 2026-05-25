@@ -44,7 +44,7 @@ These three anchors remain the **verification chain** in the architecture graph.
 
 Routes are grouped by institutional role:
 
-- **Execution** — `governance_execution` (submit, execute)
+- **Execution** — `governance_execution` (submit, execute, `execution/transition` canonical state transitions)
 - **Operator** — `operator_control` (review, decisions, auth)
 - **Projections** — proof, ledger, audit, history (read/present, not redefine truth)
 - **Intelligence** — `engineering_intelligence` (local artifact aggregate)

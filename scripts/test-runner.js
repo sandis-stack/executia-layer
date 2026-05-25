@@ -557,6 +557,11 @@ if (!graph.findings.endpoint_taxonomy) {
 if (graph.findings.endpoint_taxonomy.classified_endpoints < 1) {
   throw new Error("Endpoint taxonomy must classify at least one API endpoint");
 }
+if (graph.findings.endpoint_taxonomy.unknown_endpoints !== 0) {
+  throw new Error(
+    `Endpoint taxonomy must have zero unknown endpoints; got ${graph.findings.endpoint_taxonomy.unknown_endpoints}`
+  );
+}
 const orphanBaseline = 54;
 if (graph.findings.orphan_candidates.length >= orphanBaseline) {
   throw new Error(
@@ -781,11 +786,14 @@ if (!shellJs.includes("ex-gov-nav-primary")) {
 if (!shellJs.includes("EXECUTIA_GOVERNANCE_CORE")) {
   throw new Error("Engine shell must resolve navigation from governance core");
 }
-if (!langJs.includes('["AUTHORITY", "/console/engineering.html"]')) {
-  throw new Error("Governance core must link AUTHORITY to engineering console");
+if (!langJs.includes('["ENGINEERING", "/console/engineering.html"]')) {
+  throw new Error("Governance core must link ENGINEERING surface to engineering console");
 }
-if (!langJs.includes("Execution Authority")) {
-  throw new Error("Governance language must define Execution Authority brand");
+if (!langJs.includes("buildNav") || !langJs.includes("EXECUTIA_INSTITUTIONAL_SURFACES")) {
+  throw new Error("Governance core must build navigation from institutional surfaces registry");
+}
+if (!langJs.includes("Execution Governance Infrastructure")) {
+  throw new Error("Governance language must use Execution Governance Infrastructure brand subline");
 }
 
 const phase5bFiles = [
@@ -991,11 +999,14 @@ if (!idJs.includes("applyPresentation")) {
   throw new Error("Governance core must expose applyPresentation for operational surfaces");
 }
 
-if (!langJs.includes("Execution Authority")) {
-  throw new Error("Governance language must use Execution Authority brand framing");
+if (
+  !langJs.includes("Execution Governance Infrastructure") &&
+  !langJs.includes("Execution Authority")
+) {
+  throw new Error("Governance language must use institutional infrastructure brand framing");
 }
-if (!langJs.includes('["AUTHORITY", "/console/engineering.html"]')) {
-  throw new Error("Governance language nav must label engineering as AUTHORITY");
+if (!langJs.includes('["ENGINEERING", "/console/engineering.html"]')) {
+  throw new Error("Governance language nav must include ENGINEERING surface");
 }
 
 const phase5gFiles = [
@@ -1543,8 +1554,11 @@ if (!operatorHtml6c.includes("executia-canonical-semantics.js")) {
 }
 
 const phaseInstitutionalFiles = [
+  "public/components/executia-institutional-surfaces.js",
   "public/components/executia-institutional-environment.js",
   "public/components/executia-institutional-environment.css",
+  "docs/governance/institutional-multi-surface.md",
+  ".cursor/context/institutional-multi-surface.md",
   "docs/governance/institutional-completion.md",
   ".cursor/context/institutional-completion.md"
 ];
@@ -1561,8 +1575,26 @@ const envJs = readFileSync(
 if (!envJs.includes("INSTITUTIONAL") && !envJs.includes("FLOW")) {
   throw new Error("Institutional environment must define flow architecture");
 }
-if (!envJs.includes('"Execution"') || !envJs.includes('"Request"')) {
-  throw new Error("Institutional flow must include Execution and Request navigation");
+const surfacesJsInstitutional = readFileSync(
+  join(__test_dir, "..", "public/components/executia-institutional-surfaces.js"),
+  "utf8"
+);
+for (const surface of [
+  "Execution",
+  "Governance",
+  "Proof",
+  "Replay",
+  "Health",
+  "Operations",
+  "Engineering",
+  "Request"
+]) {
+  if (!surfacesJsInstitutional.includes(`label: "${surface}"`)) {
+    throw new Error(`Institutional surfaces registry must include ${surface}`);
+  }
+}
+if (!surfacesJsInstitutional.includes("engineHome: true")) {
+  throw new Error("Execution surface must remain canonical engine home");
 }
 
 const entryHtml = readFileSync(join(__test_dir, "..", "public/index.html"), "utf8");
@@ -1577,11 +1609,16 @@ for (const publicPage of [
   "public/execution-test/index.html",
   "public/request-pilot/index.html",
   "public/public-proof/index.html",
-  "public/execution-demo.html"
+  "public/execution-demo.html",
+  "public/proof-explorer/index.html",
+  "public/health/index.html"
 ]) {
   const html = readFileSync(join(__test_dir, "..", publicPage), "utf8");
   if (!html.includes("ex-institutional-env") || !html.includes("data-ex-env-header")) {
     throw new Error(`${publicPage} must mount institutional environment`);
+  }
+  if (!html.includes("executia-institutional-surfaces.js")) {
+    throw new Error(`${publicPage} must load canonical institutional surfaces registry`);
   }
 }
 
@@ -1601,8 +1638,8 @@ if (!envJs.includes("AI_CLARITY") || !envJs.includes("DEMO_FLOW")) {
 if (!envJs.includes("Execution Governance Infrastructure") || !envJs.includes("Execution-Time Truth")) {
   throw new Error("AI clarity must use Execution Governance Infrastructure and Execution-Time Truth");
 }
-if (!envJs.includes('label: "Execution"') || !envJs.includes('label: "Request"')) {
-  throw new Error("Primary navigation must be Execution, Governance, Proof, Request");
+if (!envJs.includes("ex-env-flow-institutional") || !envJs.includes("ex-env-flow-operational")) {
+  throw new Error("Institutional header must separate institutional and operational surfaces");
 }
 
 const entryHtmlProduct = readFileSync(join(__test_dir, "..", "public/index.html"), "utf8");
@@ -1650,6 +1687,15 @@ const envJsFinal = readFileSync(
 );
 if (!envJsFinal.includes("Enter Execution") || !envJsFinal.includes("Request Pilot")) {
   throw new Error("Homepage hero must expose Enter Execution and Request Pilot CTAs");
+}
+if (!envJsFinal.includes("ex-env-home-engine") || !envJsFinal.includes("ex-env-surface-orchestration")) {
+  throw new Error("Homepage must restore full institutional orchestration sections");
+}
+if (!envJsFinal.includes("ex-env-home-orchestration")) {
+  throw new Error("Homepage must show execution hierarchy orchestration ladder");
+}
+if (!envJsFinal.includes("ENGINE_IDENTITY") && !envJsFinal.includes("Execution Engine")) {
+  throw new Error("Homepage must expose Execution Engine identity");
 }
 if (!envJsFinal.includes("Proof Engine") && !demoHtml.includes("Proof Engine")) {
   throw new Error("Execution demo must be branded as Proof Engine");
@@ -1735,6 +1781,39 @@ const preDeployHook = readFileSync(
 );
 if (!preDeployHook.includes("phase-ai-operator-check.js")) {
   throw new Error("Pre-deploy hook must run phase-ai-operator-check.js");
+}
+
+const hardGovernanceFiles = [
+  ".cursor/rules/executia-hard-governance.mdc",
+  ".cursor/context/hard-governance-rules.md",
+  "docs/governance/hard-governance-rules.md"
+];
+for (const file of hardGovernanceFiles) {
+  if (!existsSync(join(__test_dir, "..", file))) {
+    throw new Error(`Missing hard governance file: ${file}`);
+  }
+}
+
+const hardRule = readFileSync(
+  join(__test_dir, "..", ".cursor/rules/executia-hard-governance.mdc"),
+  "utf8"
+);
+if (!hardRule.includes("alwaysApply: true")) {
+  throw new Error("Hard governance rule must always apply");
+}
+if (!hardRule.includes("REQUEST") || !hardRule.includes("CONTINUITY")) {
+  throw new Error("Hard governance must enforce canonical execution flow");
+}
+if (!hardRule.includes("Must not change") || !hardRule.includes("executia-design-system.css")) {
+  throw new Error("Hard governance must require must-not-change and design system");
+}
+
+const hardDoc = readFileSync(
+  join(__test_dir, "..", "docs/governance/hard-governance-rules.md"),
+  "utf8"
+);
+if (!/institutional consistency over feature expansion/i.test(hardDoc)) {
+  throw new Error("Hard governance doc must prioritize institutional consistency");
 }
 
 /* Artifact retention & stability layer */

@@ -1,37 +1,37 @@
 {
-  "generated_at": "2026-05-25T11:56:22.535Z",
+  "generated_at": "2026-05-25T13:12:40.676Z",
   "branch": "phase-3b3-ledger-polish",
-  "commit": "a7a39257eb280b20f43cfbb1aa69e4be2c6bc818",
+  "commit": "e537acda05bae923508e60fa99196e3870f34f43",
   "inputs": {
     "architecture_graph": true,
     "engineering_ledger_latest": true,
-    "git_files_changed": 6,
+    "git_files_changed": 20,
     "architecture_graph_report": true,
     "protected_files_config": ".cursor/context/protected-files.md"
   },
   "stability": {
-    "overall_score": 97,
-    "architecture_score": 94,
-    "governance_score": 94,
+    "overall_score": 95,
+    "architecture_score": 95,
+    "governance_score": 74,
     "replay_score": 100,
     "verification_score": 100,
-    "endpoint_consistency_score": 99,
+    "endpoint_consistency_score": 100,
     "deductions": {
-      "orphans": 1,
+      "orphans": 0,
       "shadows": 1,
-      "protected": 0,
-      "governance_warnings": 1,
+      "protected": 1,
+      "governance_warnings": 3,
       "missing_canonical_edges": 0,
-      "classified_endpoints": 71,
-      "unknown_endpoints": 1,
+      "classified_endpoints": 72,
+      "unknown_endpoints": 0,
       "total_endpoints": 72
     }
   },
   "risk": {
-    "overall": "LOW",
+    "overall": "HIGH",
     "canonical_risk": "LOW",
     "replay_risk": "LOW",
-    "governance_risk": "LOW",
+    "governance_risk": "HIGH",
     "architecture_risk": "MEDIUM",
     "orphan_risk": "LOW",
     "mutation_risk": "LOW"
@@ -45,31 +45,42 @@
     "removed_orphans": [],
     "new_shadow_flows": [],
     "removed_shadow_flows": [],
-    "baseline": "2026-05-25T11:56:21.422Z"
+    "baseline": "2026-05-25T12:32:34.408Z"
   },
   "deploy_intelligence": {
-    "protected_files_touched": [],
+    "protected_files_touched": [
+      {
+        "file": "scripts/test-runner.js",
+        "patterns": [
+          "scripts/test-runner.js"
+        ]
+      }
+    ],
     "canonical_authority_affected": [],
     "replay_layer_affected": [],
     "public_verify_affected": [],
-    "governance_layer_affected": []
+    "governance_layer_affected": [
+      ".cursor/rules/change-governance.mdc",
+      "scripts/phase-3b8-architecture-graph.js",
+      ".cursor/rules/executia-hard-governance.mdc"
+    ]
   },
   "findings": [
     {
       "level": "MEDIUM",
-      "code": "ORPHAN_ENDPOINTS",
-      "message": "1 unclassified API endpoint(s) disconnected from canonical anchors"
-    },
-    {
-      "level": "MEDIUM",
       "code": "SHADOW_FLOWS",
       "message": "1 shadow flow reference(s) in codebase"
+    },
+    {
+      "level": "HIGH",
+      "code": "PROTECTED_TOUCH",
+      "message": "1 protected file(s) modified in working tree"
     }
   ],
   "recommendations": [
-    "Deploy readiness: LOW risk and acceptable stability — proceed with governed pre-deploy chain."
+    "Obtain explicit approval for protected file modifications before deploy."
   ],
-  "deploy_readiness": "READY",
+  "deploy_readiness": "REVIEW_REQUIRED",
   "engineering_console_detected": true,
   "engineering_console_status": {
     "DETECTED": true,

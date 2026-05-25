@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-25T11:56:21.422Z",
+  "generated_at": "2026-05-25T12:32:34.408Z",
   "branch": "phase-3b3-ledger-polish",
-  "commit": "a7a39257eb280b20f43cfbb1aa69e4be2c6bc818",
+  "commit": "e537acda05bae923508e60fa99196e3870f34f43",
   "nodes": [
     {
       "id": "endpoint:audit/verify",
@@ -321,7 +321,7 @@
       "file": "api/v1/execution/transition.js",
       "label": "/api/v1/execution/transition",
       "canonical": false,
-      "classification": "unknown"
+      "classification": "governance_execution"
     },
     {
       "id": "endpoint:health",
@@ -740,6 +740,14 @@
       "classification": "governance_layer"
     },
     {
+      "id": "cursor:.cursor/rules/executia-hard-governance.mdc",
+      "type": "governance",
+      "file": ".cursor/rules/executia-hard-governance.mdc",
+      "label": ".cursor/rules/executia-hard-governance.mdc",
+      "canonical": false,
+      "classification": "governance_layer"
+    },
+    {
       "id": "cursor:.cursor/rules/security-rules.mdc",
       "type": "governance",
       "file": ".cursor/rules/security-rules.mdc",
@@ -964,10 +972,26 @@
       "classification": "architecture_memory"
     },
     {
+      "id": "cursor:.cursor/context/hard-governance-rules.md",
+      "type": "context",
+      "file": ".cursor/context/hard-governance-rules.md",
+      "label": ".cursor/context/hard-governance-rules.md",
+      "canonical": false,
+      "classification": "architecture_memory"
+    },
+    {
       "id": "cursor:.cursor/context/institutional-completion.md",
       "type": "context",
       "file": ".cursor/context/institutional-completion.md",
       "label": ".cursor/context/institutional-completion.md",
+      "canonical": false,
+      "classification": "architecture_memory"
+    },
+    {
+      "id": "cursor:.cursor/context/institutional-multi-surface.md",
+      "type": "context",
+      "file": ".cursor/context/institutional-multi-surface.md",
+      "label": ".cursor/context/institutional-multi-surface.md",
       "canonical": false,
       "classification": "architecture_memory"
     },
@@ -1223,6 +1247,11 @@
       "relation": "ai_governance"
     },
     {
+      "from": "cursor:.cursor/rules/executia-hard-governance.mdc",
+      "to": "governance:phase-3b5",
+      "relation": "ai_governance"
+    },
+    {
       "from": "cursor:.cursor/rules/security-rules.mdc",
       "to": "governance:phase-3b5",
       "relation": "ai_governance"
@@ -1363,7 +1392,17 @@
       "relation": "memory"
     },
     {
+      "from": "cursor:.cursor/context/hard-governance-rules.md",
+      "to": "context:architecture-graph",
+      "relation": "memory"
+    },
+    {
       "from": "cursor:.cursor/context/institutional-completion.md",
+      "to": "context:architecture-graph",
+      "relation": "memory"
+    },
+    {
+      "from": "cursor:.cursor/context/institutional-multi-surface.md",
       "to": "context:architecture-graph",
       "relation": "memory"
     },
@@ -1478,23 +1517,16 @@
       "endpoint:ledger-verify",
       "endpoint:core-ledger-verify"
     ],
-    "orphan_candidates": [
-      {
-        "id": "endpoint:execution/transition",
-        "file": "api/v1/execution/transition.js",
-        "label": "/api/v1/execution/transition",
-        "classification": "unknown"
-      }
-    ],
+    "orphan_candidates": [],
     "endpoint_taxonomy": {
       "total_endpoints": 72,
-      "classified_endpoints": 71,
-      "unknown_endpoints": 1,
+      "classified_endpoints": 72,
+      "unknown_endpoints": 0,
       "by_class": {
         "canonical_authority": 1,
         "replay_layer": 1,
         "public_verification": 2,
-        "governance_execution": 3,
+        "governance_execution": 4,
         "governance_projection": 10,
         "proof_projection": 12,
         "ledger_projection": 5,
@@ -1507,15 +1539,9 @@
         "engineering_intelligence": 1,
         "legacy_projection": 4,
         "local_tooling": 0,
-        "unknown": 1
+        "unknown": 0
       },
-      "next_classification_targets": [
-        {
-          "file": "api/v1/execution/transition.js",
-          "id": "endpoint:execution/transition",
-          "label": "/api/v1/execution/transition"
-        }
-      ]
+      "next_classification_targets": []
     },
     "shadow_flow_candidates": [
       {
@@ -1525,16 +1551,16 @@
       }
     ],
     "summary_counts": {
-      "total_nodes": 134,
-      "total_edges": 72,
+      "total_nodes": 137,
+      "total_edges": 75,
       "api_endpoints": 72,
-      "orphan_candidates": 1,
+      "orphan_candidates": 0,
       "shadow_flow_candidates": 1,
       "by_layer": {
         "canonical_authority": 7,
         "replay_layer": 1,
         "public_verification": 2,
-        "governance_execution": 3,
+        "governance_execution": 4,
         "governance_projection": 10,
         "proof_projection": 12,
         "ledger_projection": 5,
@@ -1547,15 +1573,14 @@
         "engineering_intelligence": 2,
         "legacy_projection": 4,
         "local_tooling": 1,
-        "unknown": 1,
-        "governance_layer": 14,
-        "architecture_memory": 38,
+        "unknown": 0,
+        "governance_layer": 15,
+        "architecture_memory": 40,
         "ui_console": 0,
         "engineering_console": 2
       }
     },
     "next_recommended_cleanup": [
-      "Assign taxonomy to 1 unknown endpoint(s) (see endpoint-taxonomy.md).",
       "Migrate remaining shadow flow references (ledger-verify URLs or legacy event names)."
     ],
     "engineering_console_detected": true,
