@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-05-25T10:30:43.500Z",
+  "generated_at": "2026-05-25T11:14:09.519Z",
   "branch": "phase-3b3-ledger-polish",
-  "commit": "b16b93bdd805a995ff05ccd276f563aeb264c49a",
+  "commit": "4247c9344fa9b0ded4a6d66c6593433d40fcbb02",
   "inputs": {
     "architecture_graph": true,
     "engineering_ledger_latest": true,
-    "git_files_changed": 106,
+    "git_files_changed": 72,
     "architecture_graph_report": true,
     "protected_files_config": ".cursor/context/protected-files.md"
   },
@@ -45,7 +45,7 @@
     "removed_orphans": [],
     "new_shadow_flows": [],
     "removed_shadow_flows": [],
-    "baseline": "2026-05-25T10:30:35.677Z"
+    "baseline": "2026-05-25T11:14:08.986Z"
   },
   "deploy_intelligence": {
     "protected_files_touched": [
@@ -68,9 +68,9 @@
     ],
     "public_verify_affected": [],
     "governance_layer_affected": [
-      "scripts/phase-3b6-engineering-ledger.js",
-      "scripts/phase-3b8-architecture-graph.js",
-      "scripts/phase-3b9-execution-intelligence.js"
+      "scripts/phase-3b7-architecture-drift.js",
+      ".cursor/rules/ai-operator-governance.mdc",
+      ".cursor/rules/vendor-safety.mdc"
     ]
   },
   "findings": [

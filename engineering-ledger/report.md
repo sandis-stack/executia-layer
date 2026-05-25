@@ -1,8 +1,8 @@
 # Engineering ledger
 
-**Generated:** 2026-05-25T11:10:35.047Z
+**Generated:** 2026-05-25T11:14:10.379Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** b16b93bdd805a995ff05ccd276f563aeb264c49a
+**Commit:** 4247c9344fa9b0ded4a6d66c6593433d40fcbb02
 **Risk:** CANONICAL
 **Classification:** AUDIT_REPLAY_OR_SECURITY_CHANGE
 
@@ -11,5 +11,5 @@
 - api/v1/execution/replay.js
 - scripts/test-runner.js
 
-## Files changed (148)
+## Files changed (75)
 
