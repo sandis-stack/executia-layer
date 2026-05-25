@@ -100,6 +100,7 @@ function isAuditMutationAllowed(rel) {
   if (rel.startsWith(".cursor/")) return true;
   if (rel === "scripts/phase-3b7-architecture-drift.js") return true;
   if (rel === "scripts/phase-3b5-governance-check.js") return true;
+  if (rel === "scripts/phase-ai-operator-check.js") return true;
   return false;
 }
 

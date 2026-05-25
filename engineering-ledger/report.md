@@ -1,15 +1,14 @@
 # Engineering ledger
 
-**Generated:** 2026-05-25T11:14:10.379Z
+**Generated:** 2026-05-25T11:17:19.182Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** 4247c9344fa9b0ded4a6d66c6593433d40fcbb02
-**Risk:** CANONICAL
-**Classification:** AUDIT_REPLAY_OR_SECURITY_CHANGE
+**Commit:** 7cb44bfe66d5834d5742d5e047e210d323693430
+**Risk:** HIGH
+**Classification:** API_OR_ROUTING_CHANGE
 
 ## Protected files touched
 
-- api/v1/execution/replay.js
-- scripts/test-runner.js
+- None
 
-## Files changed (75)
+## Files changed (10)
 

@@ -91,12 +91,13 @@ export function loadExecutionIntelligenceLatest(root = ROOT) {
   return readJson(join(root, "execution-intelligence", "latest.json"));
 }
 
-export function listEngineeringLedgerSnapshots(root = ROOT, limit = 12) {
+export function listEngineeringLedgerSnapshots(root = ROOT, limit = 8) {
   const dir = join(root, "engineering-ledger");
   if (!existsSync(dir)) return [];
 
-  return readdirSync(dir)
-    .filter((f) => f.endsWith(".json"))
+  const canonicalSkip = new Set(["latest.json", "last-stable.json"]);
+  const stamped = readdirSync(dir)
+    .filter((f) => f.endsWith(".json") && !canonicalSkip.has(f))
     .map((name) => {
       const path = join(dir, name);
       return { name, path, mtime: statSync(path).mtimeMs };
@@ -105,6 +106,12 @@ export function listEngineeringLedgerSnapshots(root = ROOT, limit = 12) {
     .slice(0, limit)
     .map(({ path }) => readJson(path))
     .filter(Boolean);
+
+  const latest = readJson(join(dir, "latest.json"));
+  if (!latest) return stamped;
+  const seen = new Set(stamped.map((s) => s.generated_at));
+  if (!seen.has(latest.generated_at)) return [latest, ...stamped].slice(0, limit);
+  return stamped;
 }
 
 export function summarizeArchitectureGraph(graph) {
@@ -125,7 +132,8 @@ export function summarizeArchitectureGraph(graph) {
     public_verification: graph.findings?.public_verification ?? [],
     governance_layer: graph.findings?.governance_layer ?? [],
     engineering_console_detected: resolveEngineeringConsoleDetected(graph),
-    by_layer: sc.by_layer ?? {}
+    by_layer: sc.by_layer ?? {},
+    endpoint_taxonomy: graph.findings?.endpoint_taxonomy ?? null
   };
 }
 
@@ -142,7 +150,15 @@ export function summarizeExecutionIntelligence(intel) {
     architecture_delta: intel.architecture_delta,
     deploy_intelligence: intel.deploy_intelligence,
     findings: intel.findings ?? [],
-    recommendations: intel.recommendations ?? []
+    recommendations: intel.recommendations ?? [],
+    endpoint_taxonomy: intel.stability?.deductions
+      ? {
+          classified_endpoints: intel.stability.deductions.classified_endpoints,
+          unknown_endpoints: intel.stability.deductions.unknown_endpoints,
+          total_endpoints: intel.stability.deductions.total_endpoints,
+          endpoint_consistency_score: intel.stability.endpoint_consistency_score
+        }
+      : null
   };
 }
 
@@ -191,6 +207,7 @@ export function buildEngineeringIntelligencePayload(root = ROOT) {
     generated_at: new Date().toISOString(),
     engineering_console_detected: consoleDetected,
     engineering_console_authority: buildEngineeringConsoleAuthority(root, graph),
+    endpoint_taxonomy: graph?.findings?.endpoint_taxonomy ?? null,
     architecture_graph,
     execution_intelligence,
     engineering_ledger,

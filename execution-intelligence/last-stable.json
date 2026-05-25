@@ -1,26 +1,26 @@
 {
-  "generated_at": "2026-05-25T11:14:09.519Z",
+  "generated_at": "2026-05-25T11:17:17.997Z",
   "branch": "phase-3b3-ledger-polish",
-  "commit": "4247c9344fa9b0ded4a6d66c6593433d40fcbb02",
+  "commit": "7cb44bfe66d5834d5742d5e047e210d323693430",
   "inputs": {
     "architecture_graph": true,
     "engineering_ledger_latest": true,
-    "git_files_changed": 72,
+    "git_files_changed": 7,
     "architecture_graph_report": true,
     "protected_files_config": ".cursor/context/protected-files.md"
   },
   "stability": {
-    "overall_score": 92,
+    "overall_score": 95,
     "architecture_score": 94,
-    "governance_score": 60,
-    "replay_score": 75,
+    "governance_score": 82,
+    "replay_score": 100,
     "verification_score": 100,
     "endpoint_consistency_score": 99,
     "deductions": {
       "orphans": 1,
       "shadows": 1,
-      "protected": 2,
-      "governance_warnings": 4,
+      "protected": 0,
+      "governance_warnings": 3,
       "missing_canonical_edges": 0,
       "classified_endpoints": 71,
       "unknown_endpoints": 1,
@@ -28,10 +28,10 @@
     }
   },
   "risk": {
-    "overall": "CANONICAL",
-    "canonical_risk": "CANONICAL",
-    "replay_risk": "HIGH",
-    "governance_risk": "HIGH",
+    "overall": "MEDIUM",
+    "canonical_risk": "LOW",
+    "replay_risk": "LOW",
+    "governance_risk": "MEDIUM",
     "architecture_risk": "MEDIUM",
     "orphan_risk": "LOW",
     "mutation_risk": "LOW"
@@ -48,29 +48,12 @@
     "baseline": "2026-05-25T11:14:08.986Z"
   },
   "deploy_intelligence": {
-    "protected_files_touched": [
-      {
-        "file": "api/v1/execution/replay.js",
-        "patterns": [
-          "api/v1/execution/replay.js"
-        ]
-      },
-      {
-        "file": "scripts/test-runner.js",
-        "patterns": [
-          "scripts/test-runner.js"
-        ]
-      }
-    ],
+    "protected_files_touched": [],
     "canonical_authority_affected": [],
-    "replay_layer_affected": [
-      "api/v1/execution/replay.js"
-    ],
+    "replay_layer_affected": [],
     "public_verify_affected": [],
     "governance_layer_affected": [
-      "scripts/phase-3b7-architecture-drift.js",
-      ".cursor/rules/ai-operator-governance.mdc",
-      ".cursor/rules/vendor-safety.mdc"
+      "scripts/phase-3b7-architecture-drift.js"
     ]
   },
   "findings": [
@@ -83,19 +66,12 @@
       "level": "MEDIUM",
       "code": "SHADOW_FLOWS",
       "message": "1 shadow flow reference(s) in codebase"
-    },
-    {
-      "level": "CANONICAL",
-      "code": "PROTECTED_TOUCH",
-      "message": "2 protected file(s) modified in working tree"
     }
   ],
   "recommendations": [
-    "Run full institutional verification: npm test, ledger/audit vector tests, production audit/verify curl.",
-    "Replay layer touched — verify GET /api/v1/execution/replay and console REPLAY VERIFY before deploy.",
-    "Obtain explicit approval for protected file modifications before deploy."
+    "Maintain engineering ledger and architecture graph snapshots each pre-deploy run."
   ],
-  "deploy_readiness": "REVIEW_REQUIRED",
+  "deploy_readiness": "CAUTION",
   "engineering_console_detected": true,
   "engineering_console_status": {
     "DETECTED": true,

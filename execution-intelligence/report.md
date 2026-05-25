@@ -2,44 +2,44 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T11:14:10.077Z
+**Generated:** 2026-05-25T11:17:18.958Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** 4247c9344fa9b0ded4a6d66c6593433d40fcbb02
+**Commit:** 7cb44bfe66d5834d5742d5e047e210d323693430
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 92 |
+| Overall | 95 |
 | Architecture | 94 |
-| Governance | 60 |
-| Replay | 75 |
+| Governance | 82 |
+| Replay | 100 |
 | Verification | 100 |
 | Endpoint consistency | 99 |
 
 Deductions from 100 (overall):
 - Orphans: −1
 - Shadow flows: −1
-- Protected file touches: −2
-- Governance warnings: −4
+- Protected file touches: −0
+- Governance warnings: −3
 - Missing canonical edges: −0
 
 ## Risk summary
 
 | Dimension | Level |
 |-----------|-------|
-| Overall | **CANONICAL** |
-| Canonical | CANONICAL |
-| Replay | HIGH |
+| Overall | **MEDIUM** |
+| Canonical | LOW |
+| Replay | LOW |
 | Public verify | undefined |
-| Governance | HIGH |
+| Governance | MEDIUM |
 | Architecture | MEDIUM |
 | Orphan | LOW |
 | Mutation | LOW |
 
 ## Architecture delta
 
-Baseline: `2026-05-25T11:14:08.986Z`
+Baseline: `2026-05-25T11:17:17.898Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -56,24 +56,16 @@ _No canonical authority files in current git diff._
 
 ## Replay impact
 
-- `api/v1/execution/replay.js`
+_No replay layer files in current git diff._
 
 ## Governance impact
 
 Governance tooling / rules:
 - `scripts/phase-3b7-architecture-drift.js`
-- `.cursor/rules/ai-operator-governance.mdc`
-- `.cursor/rules/vendor-safety.mdc`
-
-Protected files:
-- `api/v1/execution/replay.js` (api/v1/execution/replay.js)
-- `scripts/test-runner.js` (scripts/test-runner.js)
 
 ## Recommendations
 
-- Run full institutional verification: npm test, ledger/audit vector tests, production audit/verify curl.
-- Replay layer touched — verify GET /api/v1/execution/replay and console REPLAY VERIFY before deploy.
-- Obtain explicit approval for protected file modifications before deploy.
+- Maintain engineering ledger and architecture graph snapshots each pre-deploy run.
 
 ## Engineering Console Status
 
@@ -90,10 +82,9 @@ Protected files:
 
 ## Deploy readiness
 
-**Status:** REVIEW_REQUIRED
+**Status:** CAUTION
 
 ### Findings
 - [MEDIUM] ORPHAN_ENDPOINTS: 1 unclassified API endpoint(s) disconnected from canonical anchors
 - [MEDIUM] SHADOW_FLOWS: 1 shadow flow reference(s) in codebase
-- [CANONICAL] PROTECTED_TOUCH: 2 protected file(s) modified in working tree
 
