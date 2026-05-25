@@ -1,0 +1,105 @@
+/**
+ * EXECUTIA Execution Rhythm (Phase 5H) — calm institutional pulse, no dashboard motion.
+ */
+
+.ex-rhythm-band {
+  background: var(--ex-ds-bg, #f4f6f9);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-rhythm-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s16, 16px) var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
+}
+
+.ex-rhythm-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--ex-ds-s16, 16px);
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-rhythm-pulse {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ex-ds-blue, #1c3554);
+  opacity: 0.55;
+}
+
+.ex-rhythm-secondary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 13px;
+}
+
+.ex-rhythm-tertiary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+}
+
+.ex-rhythm-continuity-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+  margin-top: var(--ex-ds-s16, 16px);
+}
+
+.ex-rhythm-continuity {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ex-ds-muted, #7a8da3);
+  padding: var(--ex-ds-s8, 8px) 0;
+}
+
+body.ex-rhythm-stable .ex-rhythm-continuity.is-active {
+  color: var(--ex-ds-blue, #1c3554);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.12));
+}
+
+body.ex-rhythm-syncing .ex-op-main {
+  opacity: 0.98;
+}
+
+body.ex-rhythm-syncing .ex-rhythm-pulse {
+  opacity: 0.85;
+}
+
+@keyframes ex-rhythm-institutional-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+body.ex-rhythm-enabled.ex-rhythm-stable .ex-rhythm-pulse {
+  animation: ex-rhythm-institutional-pulse 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.ex-rhythm-enabled .ex-rhythm-pulse {
+    animation: none;
+    opacity: 0.7;
+  }
+
+  body.ex-rhythm-syncing .ex-op-main {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .ex-rhythm-continuity-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

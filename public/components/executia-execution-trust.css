@@ -1,0 +1,98 @@
+/**
+ * EXECUTIA Execution Trust (Phase 5L) — structural inevitability, not marketing reassurance.
+ */
+
+.ex-trust-band {
+  background: var(--ex-ds-wash, #eef2f6);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
+}
+
+.ex-trust-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s16, 16px) var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
+}
+
+.ex-trust-primary {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-trust-secondary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ex-trust-tertiary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+  max-width: 42rem;
+  line-height: 1.5;
+}
+
+.ex-trust-frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+  margin-top: var(--ex-ds-s16, 16px);
+}
+
+.ex-trust-frame {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ex-ds-muted, #7a8da3);
+  padding: var(--ex-ds-s8, 8px) 0;
+}
+
+body.ex-trust-stable .ex-trust-frame.is-active {
+  color: var(--ex-ds-blue, #1c3554);
+  border-bottom: 1px solid var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-trust-active:not(.ex-trust-stable) .ex-trust-frame.is-active {
+  color: var(--ex-ds-graphite, #4d6178);
+  border-bottom: 1px solid var(--ex-ds-graphite, #4d6178);
+}
+
+.ex-trust-reliability-block {
+  padding: var(--ex-ds-s16, 16px) 0 var(--ex-ds-s8, 8px);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-trust-reliability-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-trust-reliability-line {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 40rem;
+  line-height: 1.5;
+}
+
+.ex-trust-predictability-line,
+.ex-trust-stability-line {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+  max-width: 40rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .ex-trust-frames {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

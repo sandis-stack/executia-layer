@@ -1,0 +1,128 @@
+/**
+ * EXECUTIA Governance Modes — Phase 5D/5E surface separation.
+ */
+
+/* Institutional perspective switcher (not tab widgets) */
+.ex-gov-mode-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px) var(--ex-ds-s16, 16px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--ex-ds-s24, 24px);
+  align-items: start;
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+  background: var(--ex-ds-bg, #f4f6f9);
+}
+
+.ex-gov-mode-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ex-ds-muted, #7a8da3);
+  padding-top: var(--ex-ds-s8, 8px);
+}
+
+.ex-gov-mode-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s24, 24px);
+}
+
+.ex-gov-mode-bar a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ex-ds-muted, #7a8da3);
+  text-decoration: none;
+  padding: var(--ex-ds-s8, 8px) 0;
+  border-bottom: 2px solid transparent;
+}
+
+.ex-gov-mode-bar a.is-active {
+  color: var(--ex-ds-blue, #1c3554);
+  font-weight: 600;
+  border-bottom-color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-gov-mode-bar a:hover {
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+/* Mode panels — one surface per perspective (5E) */
+.ex-gov-surface-root {
+  width: 100%;
+}
+
+.ex-gov-mode-panel {
+  display: none;
+}
+
+.ex-gov-mode-panel.is-active {
+  display: block;
+}
+
+/* Density by active mode */
+body.ex-gov-mode-executive .ex-ds-atmosphere {
+  max-width: 520px;
+}
+
+body.ex-gov-mode-operational .ex-ds-atmosphere {
+  max-width: 600px;
+}
+
+body.ex-gov-mode-engineering .ex-ds-atmosphere {
+  max-width: 720px;
+}
+
+body.ex-gov-mode-audit .ex-ds-atmosphere {
+  max-width: 580px;
+}
+
+body.ex-gov-mode-public-verify .ex-ds-atmosphere {
+  max-width: 440px;
+}
+
+body.ex-gov-mode-executive .ex-ds-integrity-index,
+body.ex-gov-mode-public-verify .ex-ds-integrity-index {
+  font-size: 52px;
+}
+
+/* Public verify proof facts */
+.ex-proof-facts {
+  margin: 0;
+  padding: 0;
+}
+
+.ex-proof-fact {
+  padding: var(--ex-ds-s24, 24px) 0 0;
+  border-top: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-proof-fact:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.ex-proof-fact dt {
+  margin: 0;
+}
+
+.ex-proof-fact dd {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ex-ds-text, #1a2d42);
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 640px) {
+  .ex-gov-mode-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ex-gov-mode-bar a {
+    transition: none;
+  }
+}

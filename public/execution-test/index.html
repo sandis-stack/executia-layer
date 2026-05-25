@@ -4,7 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>EXECUTIA — Execution Test</title>
-  <meta name="description" content="Define an outcome. Let EXECUTIA test execution risk, governance readiness, and proof structure." />
+  <meta name="description" content="Define an outcome. Governed execution test — risk, validation, proof structure, replay continuity." />
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
   <style>
     :root{
       --bg:#f6f8fb;
@@ -866,38 +868,22 @@
 
 </style>
 </head>
-<body>
+<body class="ex-institutional-env" data-ex-env-page="execution">
   <div class="shell">
-    <header>
-      <a class="brand" href="https://executia.io">
-        <strong>EXECUTIA™</strong>
-        <span>Execution Control Standard</span>
-      </a>
-
-      <nav class="system-layer" aria-label="System layers">
-        <a href="https://executia.io">Entry</a>
-        <a class="active" href="/execution-test/">Execution Test</a>
-        <a href="/dashboard">Engine</a>
-      </nav>
-
-      <nav class="nav" aria-label="Execution actions">
-        <a href="/public-proof/">Proof</a>
-        <a href="/regulator/">Regulator</a>
-        <a class="primary" href="/request-pilot/">Request Pilot</a>
-      </nav>
-    </header>
+    <header data-ex-env-header></header>
 
     <section class="hero">
       <div>
-        <div class="eyebrow">Public Execution Test</div>
-        <h1>Define the result. EXECUTIA controls the execution.</h1>
+        <div class="eyebrow">Execution</div>
+        <h1>Define the outcome. Govern the commit.</h1>
         <p class="lead">
-          Test how an outcome is transformed into governance checks, execution risk, proof structure and pilot readiness.
+          Execution-Time Truth · Deterministic Execution · Canonical Governance · Replay-Safe Verification
         </p>
         <div class="hero-actions">
-          <a class="btn btn-main" href="#test">Start Execution Test</a>
-          <a class="btn btn-soft" href="/proof-explorer/">Verify Proof</a>
+          <a class="btn btn-main" href="#test">Enter Execution</a>
+          <a class="btn btn-soft" href="/execution-demo.html">Proof Engine</a>
         </div>
+        <div data-ex-env-consequence></div>
 
         <div class="governance-ribbon">
 
@@ -1623,27 +1609,18 @@
           </div>
 
           <div class="cta">
-            <h2>Turn this test into a pilot.</h2>
-            <p>Submit the execution case and request a structured EXECUTIA pilot proposal.</p>
-            <a class="btn" id="pilotLink" href="/request-pilot/">Request Pilot</a>
+            <h2>Institutional onboarding.</h2>
+            <p>Submit the execution case for governed pilot evaluation under EXECUTIA jurisdiction.</p>
+            <a class="btn" id="pilotLink" href="/request-pilot/">Institutional Onboarding</a>
           </div>
         </div>
       </section>
     </main>
 
-    <footer>
-      <div>EXECUTIA™ — Execution-time truth infrastructure.</div>
-      <div>
-        <a href="/">Entry</a> ·
-        <a href="/proof-explorer/">Proof</a> ·
-        <a href="/regulator/">Regulator</a> ·
-        <a href="/request-pilot/">Request</a>
-      </div>
-    </footer>
-
-
+    <footer data-ex-env-footer></footer>
   </div>
-
+  <script src="/components/executia-institutional-environment.js"></script>
+  <script src="/components/executia-pilot-readiness.js"></script>
   <script>
 
 

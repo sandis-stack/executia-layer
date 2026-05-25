@@ -1,0 +1,111 @@
+/**
+ * EXECUTIA Execution Consequence (Phase 5I) — institutional gravity, not UI controls.
+ */
+
+.ex-consequence-band {
+  background: var(--ex-ds-wash, #eef2f6);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
+}
+
+.ex-consequence-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s16, 16px) var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
+}
+
+.ex-consequence-primary {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-consequence-secondary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ex-consequence-tertiary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+  max-width: 40rem;
+  line-height: 1.5;
+}
+
+.ex-consequence-transitions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+  margin-top: var(--ex-ds-s16, 16px);
+}
+
+.ex-consequence-transition {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ex-ds-muted, #7a8da3);
+  padding: var(--ex-ds-s8, 8px) 0;
+}
+
+body.ex-consequence-stable .ex-consequence-transition.is-active {
+  color: var(--ex-ds-blue, #1c3554);
+  border-bottom: 1px solid var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-consequence-pending .ex-consequence-primary {
+  color: var(--ex-ds-graphite, #4d6178);
+}
+
+/* Governed acts — not buttons */
+.ex-consequence-act,
+button.ex-consequence-act,
+a.ex-consequence-act {
+  display: inline-block;
+  margin: 0 var(--ex-ds-s16, 16px) var(--ex-ds-s8, 8px) 0;
+  padding: var(--ex-ds-s8, 8px) 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.2));
+  border-radius: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.ex-consequence-act:hover {
+  border-bottom-color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-consequence-act:focus-visible {
+  outline: 1px solid var(--ex-ds-blue, #1c3554);
+  outline-offset: 2px;
+}
+
+body.ex-op-shell .authority-panel button:not(.ex-consequence-act),
+body.ex-op-shell button.danger:not(.ex-consequence-act) {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .ex-consequence-transitions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ex-consequence-act {
+    transition: none;
+  }
+}

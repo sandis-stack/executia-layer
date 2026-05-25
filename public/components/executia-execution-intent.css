@@ -1,0 +1,93 @@
+/**
+ * EXECUTIA Execution Intent (Phase 5K) — purpose gravity, not workflow or tasks.
+ */
+
+.ex-intent-band {
+  background: var(--ex-ds-bg, #f4f6f9);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-intent-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s16, 16px) var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
+}
+
+.ex-intent-primary {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-intent-secondary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ex-intent-tertiary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+  max-width: 42rem;
+  line-height: 1.5;
+}
+
+.ex-intent-frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+  margin-top: var(--ex-ds-s16, 16px);
+}
+
+.ex-intent-frame {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ex-ds-muted, #7a8da3);
+  padding: var(--ex-ds-s8, 8px) 0;
+}
+
+body.ex-intent-active .ex-intent-frame.is-active {
+  color: var(--ex-ds-blue, #1c3554);
+  border-bottom: 1px solid var(--ex-ds-blue, #1c3554);
+}
+
+.ex-intent-objective-block {
+  padding: var(--ex-ds-s16, 16px) 0 var(--ex-ds-s8, 8px);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-intent-objective-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-intent-objective-line {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 40rem;
+  line-height: 1.5;
+}
+
+.ex-intent-direction-line,
+.ex-intent-outcome-line {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+  max-width: 40rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .ex-intent-frames {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

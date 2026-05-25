@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>EXECUTIA — Public Proof Receipt</title>
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
   <style>
     :root{
       --bg:#f6f8fb;
@@ -567,37 +569,14 @@
     }
   </style>
 </head>
-<body>
+<body class="ex-institutional-env" data-ex-env-page="proof">
   <div class="shell">
-    <header>
-      <a class="brand" href="https://executia.io">
-        <strong>EXECUTIA™</strong>
-        <span>Execution Control Standard</span>
-      </a>
-
-      <nav class="system-layer" aria-label="System layers">
-        <a href="https://executia.io">Entry</a>
-        <a href="/execution-test/">Execution Test</a>
-        <a href="/dashboard">Engine</a>
-      </nav>
-
-      <nav class="nav" aria-label="Proof actions">
-        <a class="active" href="/public-proof/">Proof</a>
-        <a href="/regulator/">Regulator</a>
-        <a class="primary" href="/request-pilot/">Request Pilot</a>
-      </nav>
-    </header>
-
+    <header data-ex-env-header></header>
+    <div data-ex-env-proof-intro></div>
+    <div data-ex-env-proof-examples></div>
     <div id="app"></div>
 
-    <footer>
-      <div>EXECUTIA™ — Public Execution Proof Infrastructure.</div>
-      <div>
-        <a href="/execution-test/">Execution Test</a> ·
-        <a href="/proof-explorer/">Proof Explorer</a> ·
-        <a href="/regulator/">Regulator</a>
-      </div>
-    </footer>
+    <footer data-ex-env-footer></footer>
   </div>
 
   <script>
@@ -882,5 +861,7 @@
 
     loadProof();
   </script>
+  <script src="/components/executia-institutional-environment.js"></script>
+  <script src="/components/executia-pilot-readiness.js"></script>
 </body>
 </html>

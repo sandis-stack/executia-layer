@@ -1,0 +1,73 @@
+/**
+ * EXECUTIA Canonical Compression (Phase 6A) — quieter bands, stronger inevitability.
+ */
+
+body.ex-compression-enabled .ex-rhythm-band,
+body.ex-compression-enabled .ex-consequence-band,
+body.ex-compression-enabled .ex-memory-band,
+body.ex-compression-enabled .ex-intent-band,
+body.ex-compression-enabled .ex-trust-band,
+body.ex-compression-enabled .ex-sovereignty-band {
+  padding-block: 0;
+}
+
+body.ex-compression-enabled .ex-rhythm-inner,
+body.ex-compression-enabled .ex-consequence-inner,
+body.ex-compression-enabled .ex-memory-inner,
+body.ex-compression-enabled .ex-intent-inner,
+body.ex-compression-enabled .ex-trust-inner,
+body.ex-compression-enabled .ex-sovereignty-inner {
+  padding-top: var(--ex-ds-s8, 8px);
+  padding-bottom: var(--ex-ds-s16, 16px);
+}
+
+body.ex-compression-enabled .ex-intent-objective-block,
+body.ex-compression-enabled .ex-trust-reliability-block,
+body.ex-compression-enabled .ex-sovereignty-jurisdiction-block {
+  padding-bottom: var(--ex-ds-s8, 8px);
+}
+
+body.ex-compression-enabled .ex-intent-direction-line,
+body.ex-compression-enabled .ex-intent-outcome-line,
+body.ex-compression-enabled .ex-trust-predictability-line,
+body.ex-compression-enabled .ex-trust-stability-line,
+body.ex-compression-enabled .ex-sovereignty-independence-line,
+body.ex-compression-enabled .ex-sovereignty-continuity-line {
+  display: none;
+}
+
+body.ex-compression-enabled .ex-canonical-posture {
+  padding: var(--ex-ds-s16, 16px) 0 var(--ex-ds-s8, 8px);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+  margin-bottom: var(--ex-ds-s16, 16px);
+}
+
+.ex-canonical-posture-primary {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-canonical-posture-secondary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ex-canonical-posture-tertiary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+}
+
+body.ex-compression-enabled .ex-ds-operational-subtitle {
+  font-size: 13px;
+  max-width: 36rem;
+  line-height: 1.45;
+}
+
+body.ex-compression-enabled .ex-memory-record-label {
+  display: none;
+}

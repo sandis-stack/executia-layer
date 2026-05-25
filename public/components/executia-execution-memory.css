@@ -1,0 +1,102 @@
+/**
+ * EXECUTIA Execution Memory (Phase 5J) — institutional continuity, not logs or dumps.
+ */
+
+.ex-memory-band {
+  background: var(--ex-ds-bg, #f4f6f9);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-memory-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s16, 16px) var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
+}
+
+.ex-memory-primary {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-memory-secondary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ex-memory-tertiary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+  max-width: 42rem;
+  line-height: 1.5;
+}
+
+.ex-memory-frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+  margin-top: var(--ex-ds-s16, 16px);
+}
+
+.ex-memory-frame {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ex-ds-muted, #7a8da3);
+  padding: var(--ex-ds-s8, 8px) 0;
+}
+
+body.ex-memory-active .ex-memory-frame.is-active {
+  color: var(--ex-ds-blue, #1c3554);
+  border-bottom: 1px solid var(--ex-ds-blue, #1c3554);
+}
+
+.ex-memory-timeline {
+  display: grid;
+  gap: var(--ex-ds-s8, 8px);
+}
+
+.ex-memory-record {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) repeat(3, auto);
+  gap: var(--ex-ds-s16, 16px);
+  align-items: baseline;
+  padding: var(--ex-ds-s8, 8px) 0;
+  border-top: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-memory-record:first-child {
+  border-top: none;
+}
+
+.ex-memory-record-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ex-ds-muted, #7a8da3);
+}
+
+.ex-ds-history-line {
+  /* legacy alias — prefer ex-memory-record in 5J surfaces */
+}
+
+body.ex-memory-enabled .ex-ds-history-line {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .ex-memory-record {
+    grid-template-columns: 1fr;
+    gap: var(--ex-ds-s8, 8px);
+  }
+
+  .ex-memory-frames {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

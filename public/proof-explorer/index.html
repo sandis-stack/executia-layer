@@ -161,33 +161,18 @@ box-shadow:0 18px 46px rgba(16,32,51,.055);
 }
 
 </style>
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
 </head>
-<body>
+<body class="ex-institutional-env" data-ex-env-page="proof">
   <div class="reg-shell">
-    <header class="reg-header">
-      <a class="reg-brand" href="https://executia.io">
-        <strong>EXECUTIA™</strong>
-        <span>Execution Control Standard</span>
-      </a>
-
-      <nav class="system-layer" aria-label="System layers">
-        <a href="https://executia.io">Entry</a>
-        <a href="/execution-test/">Execution Test</a>
-        <a href="/dashboard">Engine</a>
-      </nav>
-
-      <nav class="reg-nav" aria-label="Proof actions">
-        <a class="active" href="/proof-explorer/">Proof</a>
-        <a href="/regulator/">Regulator</a>
-        <a class="primary" href="/request-pilot/">Request Pilot</a>
-      </nav>
-    </header>
+    <header data-ex-env-header></header>
 
 <main>
   <section class="card">
-    <div class="kicker">EXECUTIA · PUBLIC PROOF EXPLORER</div>
+    <div class="kicker">Proof verify · replay-safe governance</div>
     <h1>Verify execution proof integrity.</h1>
-    <p>Enter a governance review ID to verify immutable chain continuity, head hash, and event sequence.</p>
+    <p class="lead" style="margin-top:12px;font-size:16px;color:#4d6178">Deterministic chain continuity · execution-time truth · canonical verification.</p>
 
     <input id="reviewId" placeholder="Review ID" />
     <button onclick="verifyProof()">VERIFY PROOF</button>
@@ -251,6 +236,9 @@ async function verifyProof(){
   `;
 }
 </script>
+    <footer data-ex-env-footer></footer>
   </div>
+  <script src="/components/executia-institutional-environment.js"></script>
+  <script src="/components/executia-pilot-readiness.js"></script>
 </body>
 </html>

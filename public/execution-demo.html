@@ -3,441 +3,195 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EXECUTIA™ — Execution Governance Engine</title>
+  <title>EXECUTIA™ — Proof Engine</title>
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
   <style>
-    :root{
-      --bg:#f6f8fb;
-      --panel:#ffffff;
-      --ink:#111827;
-      --muted:#6b7280;
-      --line:#d9e1ec;
-      --primary:#1E3A5F;
-      --primary-soft:#e8eef6;
-      --blocked:#b42318;
-      --blocked-soft:#fff1f0;
-      --ok:#166534;
-      --shadow:0 18px 45px rgba(17,24,39,.08);
-      --radius:22px;
+    .ex-demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--ex-ds-s16, 16px);
+      margin-top: var(--ex-ds-s24, 24px);
     }
-
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:var(--bg);
-      color:var(--ink);
+    .ex-demo-panel {
+      border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
+      background: #fff;
+      padding: var(--ex-ds-s24, 24px);
+      min-height: 300px;
     }
-
-    .shell{
-      min-height:100vh;
-      padding:28px;
+    .ex-demo-panel h2 {
+      margin: 0 0 var(--ex-ds-s16, 16px);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ex-ds-blue, #1c3554);
     }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:18px;
-      max-width:1280px;
-      margin:0 auto 24px;
-      padding:18px 22px;
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
+    #demoRequest {
+      margin: 0;
+      padding: var(--ex-ds-s16, 16px);
+      background: var(--ex-ds-wash, #eef2f6);
+      border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
-
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
+    .ex-demo-btn {
+      width: 100%;
+      margin-top: var(--ex-ds-s16, 16px);
+      border: 0;
+      padding: 14px 16px;
+      background: var(--ex-ds-blue, #1c3554);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
     }
-
-    .brand strong{
-      color:var(--primary);
-      font-size:20px;
-      letter-spacing:.04em;
+    .ex-demo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .ex-demo-posture {
+      padding: var(--ex-ds-s16, 16px);
+      border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
+      background: var(--ex-ds-wash, #eef2f6);
     }
-
-    .brand span{
-      color:var(--muted);
-      font-size:13px;
+    .ex-demo-posture.is-blocked { border-color: #c4a89a; background: #faf6f4; }
+    .ex-demo-posture-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ex-ds-muted, #7a8da3); }
+    .ex-demo-posture-value { font-size: 20px; font-weight: 600; color: var(--ex-ds-blue, #1c3554); margin-top: 8px; }
+    .ex-demo-posture.is-blocked .ex-demo-posture-value { color: #9a3412; }
+    .ex-demo-proof-line {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
     }
-
-    .live-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:9px;
-      padding:10px 14px;
-      border:1px solid var(--line);
-      border-radius:999px;
-      color:var(--primary);
-      background:var(--primary-soft);
-      font-size:12px;
-      font-weight:700;
-      letter-spacing:.08em;
-      white-space:nowrap;
-    }
-
-    .live-dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--ok);
-    }
-
-    .grid{
-      max-width:1280px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:1.05fr 1fr 1.05fr;
-      gap:20px;
-    }
-
-    .panel{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:22px;
-      min-height:430px;
-    }
-
-    .panel h2{
-      margin:0 0 16px;
-      color:var(--primary);
-      font-size:13px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-    }
-
-    pre{
-      margin:0;
-      padding:18px;
-      background:#f9fafb;
-      border:1px solid var(--line);
-      border-radius:16px;
-      overflow:auto;
-      color:#1f2937;
-      font-size:13px;
-      line-height:1.65;
-    }
-
-    .button{
-      width:100%;
-      margin-top:18px;
-      border:0;
-      border-radius:16px;
-      padding:15px 18px;
-      background:var(--primary);
-      color:white;
-      font-weight:800;
-      letter-spacing:.08em;
-      cursor:pointer;
-      transition:transform .15s ease, opacity .15s ease;
-    }
-
-    .button:hover{transform:translateY(-1px)}
-    .button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-
-    .timeline{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .step{
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      padding:14px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:#f9fafb;
-      opacity:.45;
-      transition:opacity .2s ease, background .2s ease, border-color .2s ease;
-    }
-
-    .step.active{
-      opacity:1;
-      background:var(--primary-soft);
-      border-color:#b7c7dc;
-    }
-
-    .step.blocked{
-      opacity:1;
-      background:var(--blocked-soft);
-      border-color:#f0b8b4;
-    }
-
-    .step-dot{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      margin-top:5px;
-      background:#94a3b8;
-      flex:0 0 auto;
-    }
-
-    .step.active .step-dot{background:var(--primary)}
-    .step.blocked .step-dot{background:var(--blocked)}
-
-    .step strong{
-      display:block;
-      font-size:13px;
-      letter-spacing:.06em;
-      color:#111827;
-    }
-
-    .step span{
-      display:block;
-      margin-top:4px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
-    }
-
-    .decision{
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-    }
-
-    .decision-card{
-      padding:22px;
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:#f9fafb;
-    }
-
-    .decision-card.blocked{
-      background:var(--blocked-soft);
-      border-color:#f0b8b4;
-    }
-
-    .decision-label{
-      margin-bottom:8px;
-      color:var(--muted);
-      font-size:12px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      font-weight:800;
-    }
-
-    .decision-result{
-      color:var(--blocked);
-      font-size:28px;
-      font-weight:900;
-      letter-spacing:.04em;
-    }
-
-    .decision-subtext{
-      margin-top:10px;
-      color:#374151;
-      font-size:14px;
-      line-height:1.6;
-    }
-
-    .proof{
-      display:grid;
-      gap:10px;
-    }
-
-    .proof-row{
-      padding:12px 14px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:#fff;
-    }
-
-    .proof-row span{
-      display:block;
-      color:var(--muted);
-      font-size:11px;
-      letter-spacing:.1em;
-      text-transform:uppercase;
-      font-weight:800;
-      margin-bottom:5px;
-    }
-
-    .proof-row strong{
-      display:block;
-      color:#111827;
-      font-size:13px;
-      line-height:1.4;
-      word-break:break-word;
-    }
-
-    .footer-note{
-      max-width:1280px;
-      margin:20px auto 0;
-      color:var(--muted);
-      font-size:13px;
-      text-align:center;
-    }
-
-    @media (max-width:1000px){
-      .grid{grid-template-columns:1fr}
-      .panel{min-height:auto}
-    }
-
-    @media (max-width:640px){
-      .shell{padding:16px}
-      .topbar{align-items:flex-start;flex-direction:column}
-      .decision-result{font-size:23px}
-    }
-  
-/* UNIFIED EXECUTIA ENGINE HEADER */
-
-.shell{
-  padding-top:52px !important;
-}
-
-</style>
-  <link rel="stylesheet" href="/components/engine-shell.css" />
-  <link rel="stylesheet" href="/components/engine-system.css" />
+    .ex-demo-proof-line span { color: var(--ex-ds-muted, #7a8da3); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+    @media (max-width: 960px) { .ex-demo-grid { grid-template-columns: 1fr; } }
+  </style>
 </head>
-<body>
-
-
-
+<body class="ex-institutional-env ex-env-demo ex-ds-surface" data-ex-env-page="governance">
   <main class="shell">
-    
+    <header data-ex-env-header></header>
 
-    <section class="grid" aria-label="EXECUTIA live governance demo">
-      <article class="panel">
-        <h2>Execution Request</h2>
-        <pre>{
-  "execution_type": "PROCUREMENT_PAYMENT",
-  "vendor": "External Contractor",
-  "amount": 250000,
-  "approval_status": "MISSING"
-}</pre>
-        <button id="validateBtn" class="button" type="button">VALIDATE EXECUTION</button>
-      </article>
+    <section class="hero" style="padding-top:var(--ex-ds-s40,40px);max-width:36rem">
+      <p class="eyebrow">EXECUTIA Proof Engine</p>
+      <h1 style="margin:0;font-size:28px!important">Product proof.</h1>
+      <p class="lead" style="margin-top:12px;font-size:15px!important">Deterministic path. Replay-Safe Verification. Canonical proof continuity.</p>
+    </section>
 
-      <article class="panel">
-        <h2>Execution Timeline</h2>
-        <div class="timeline">
-          <div class="step" data-step="0">
-            <span class="step-dot"></span>
-            <div><strong>REQUEST_RECEIVED</strong><span>Execution request entered governance engine.</span></div>
-          </div>
-          <div class="step" data-step="1">
-            <span class="step-dot"></span>
-            <div><strong>VALIDATION_STARTED</strong><span>Execution rules and approval requirements evaluated.</span></div>
-          </div>
-          <div class="step" data-step="2">
-            <span class="step-dot"></span>
-            <div><strong>RULE_VIOLATION_DETECTED</strong><span>Required approval is missing.</span></div>
-          </div>
-          <div class="step" data-step="3">
-            <span class="step-dot"></span>
-            <div><strong>EXECUTION_BLOCKED</strong><span>Governance engine prevents execution before damage occurs.</span></div>
-          </div>
-          <div class="step" data-step="4">
-            <span class="step-dot"></span>
-            <div><strong>PROOF_GENERATED</strong><span>Immutable proof materialized for audit and replay.</span></div>
-          </div>
+    <div data-ex-env-demo-flow></div>
+
+    <section class="ex-demo-grid" aria-label="Proof engine">
+      <article class="ex-demo-panel">
+        <h2>Request</h2>
+        <div class="ex-demo-scenario">
+          <label for="demoScenario">Institutional example</label>
+          <select id="demoScenario" aria-label="Pilot example scenario"></select>
         </div>
+        <pre id="demoRequest"></pre>
+        <button id="validateBtn" class="ex-demo-btn" type="button">Run proof engine</button>
       </article>
 
-      <article class="panel">
-        <h2>Governance Decision</h2>
-        <div class="decision">
-          <div id="decisionCard" class="decision-card">
-            <div class="decision-label">Status</div>
-            <div id="decisionResult" class="decision-result">STANDBY</div>
-            <div id="decisionSubtext" class="decision-subtext">Press validate to run execution-time governance.</div>
-          </div>
-
-          <div>
-            <h2>Immutable Proof</h2>
-            <div class="proof">
-              <div class="proof-row"><span>execution_id</span><strong id="executionId">—</strong></div>
-              <div class="proof-row"><span>proof_hash</span><strong id="proofHash">—</strong></div>
-              <div class="proof-row"><span>timestamp</span><strong id="timestamp">—</strong></div>
-              <div class="proof-row"><span>governance_status</span><strong id="governanceStatus">—</strong></div>
-            </div>
-          </div>
+      <article class="ex-demo-panel">
+        <h2>Posture</h2>
+        <div id="postureCard" class="ex-demo-posture">
+          <div class="ex-demo-posture-label">Execution state</div>
+          <div id="postureValue" class="ex-demo-posture-value">STANDBY</div>
+          <p id="postureNote" style="margin:8px 0 0;font-size:13px;color:var(--ex-ds-graphite,#4d6178)">Awaiting run.</p>
+        </div>
+        <div id="proofLines" style="margin-top:16px;opacity:0.4">
+          <div class="ex-demo-proof-line"><span>Integrity</span><strong id="lineIntegrity">—</strong></div>
+          <div class="ex-demo-proof-line"><span>Replay</span><strong id="lineReplay">—</strong></div>
+          <div class="ex-demo-proof-line"><span>Truth</span><strong id="lineTruth">—</strong></div>
         </div>
       </article>
     </section>
 
-    <p class="footer-note">Human defines outcome. EXECUTIA governs execution. AI realizes and evolves the system.</p>
+    <footer data-ex-env-footer></footer>
   </main>
-
+  <script src="/components/executia-institutional-environment.js"></script>
+  <script src="/components/executia-pilot-readiness.js"></script>
   <script>
-    const validateBtn = document.getElementById('validateBtn');
-    const steps = Array.from(document.querySelectorAll('.step'));
-    const decisionCard = document.getElementById('decisionCard');
-    const decisionResult = document.getElementById('decisionResult');
-    const decisionSubtext = document.getElementById('decisionSubtext');
-    const executionId = document.getElementById('executionId');
-    const proofHash = document.getElementById('proofHash');
-    const timestamp = document.getElementById('timestamp');
-    const governanceStatus = document.getElementById('governanceStatus');
+    const ENV = window.EXECUTIA_INSTITUTIONAL_ENV;
+    const PILOT = window.EXECUTIA_PILOT_READINESS;
+    const FLOW = ENV?.DEMO_FLOW || [];
+    const STATE = PILOT?.STATE_LABELS || {};
+    const validateBtn = document.getElementById("validateBtn");
+    const demoScenario = document.getElementById("demoScenario");
+    const demoRequest = document.getElementById("demoRequest");
+    const postureCard = document.getElementById("postureCard");
+    const postureValue = document.getElementById("postureValue");
+    const postureNote = document.getElementById("postureNote");
+    const proofLines = document.getElementById("proofLines");
+    const lineIntegrity = document.getElementById("lineIntegrity");
+    const lineReplay = document.getElementById("lineReplay");
+    const lineTruth = document.getElementById("lineTruth");
 
-    function resetDemo(){
-      steps.forEach(step => step.classList.remove('active', 'blocked'));
-      decisionCard.classList.remove('blocked');
-      decisionResult.textContent = 'VALIDATING';
-      decisionResult.style.color = 'var(--primary)';
-      decisionSubtext.textContent = 'Execution governance validation in progress.';
-      executionId.textContent = '—';
-      proofHash.textContent = '—';
-      timestamp.textContent = '—';
-      governanceStatus.textContent = 'VALIDATING';
+    function fillScenarioSelect() {
+      const examples = PILOT?.PILOT_EXAMPLES || [];
+      demoScenario.innerHTML = examples
+        .map((ex) => `<option value="${ex.id}">${ex.title}</option>`)
+        .join("");
+      applyScenario(demoScenario.value);
     }
 
-    function randomHex(length){
-      const values = 'abcdef0123456789';
-      let output = '';
-      for(let i = 0; i < length; i++) output += values[Math.floor(Math.random() * values.length)];
-      return output;
+    function applyScenario(id) {
+      const sc = PILOT?.getDemoScenario?.(id);
+      if (!sc) return;
+      demoRequest.textContent = JSON.stringify(sc.request, null, 2);
     }
 
-    function createProof(){
-      const now = new Date();
-      executionId.textContent = `exec_${randomHex(8)}_${now.getTime()}`;
-      proofHash.textContent = `0x${randomHex(64)}`;
-      timestamp.textContent = now.toISOString();
-      governanceStatus.textContent = 'BLOCKED';
+    function resetDemo() {
+      ENV?.mountDemoFlowLadder?.(-1);
+      postureCard.classList.remove("is-blocked");
+      postureValue.textContent = "STANDBY";
+      postureNote.textContent = "Awaiting run.";
+      proofLines.style.opacity = "0.4";
+      lineIntegrity.textContent = lineReplay.textContent = lineTruth.textContent = "—";
     }
 
-    async function runDemo(){
+    async function runDemo() {
       validateBtn.disabled = true;
       resetDemo();
 
-      for(let i = 0; i < steps.length; i++){
-        await new Promise(resolve => setTimeout(resolve, i === 0 ? 250 : 650));
-        steps[i].classList.add(i >= 2 ? 'blocked' : 'active');
+      for (let i = 0; i < FLOW.length; i++) {
+        await new Promise((r) => setTimeout(r, i === 0 ? 220 : 480));
+        ENV?.mountDemoFlowLadder?.(i);
 
-        if(i === 2){
-          decisionResult.textContent = 'VIOLATION DETECTED';
-          decisionResult.style.color = 'var(--blocked)';
-          decisionSubtext.textContent = 'Required approval missing. Governance validation failed.';
+        if (i === 1) {
+          postureValue.textContent = "VALIDATED";
+          postureNote.textContent = STATE.VALIDATED || "Validation binding.";
         }
-
-        if(i === 3){
-          decisionCard.classList.add('blocked');
-          decisionResult.textContent = 'EXECUTION BLOCKED';
-          decisionResult.style.color = 'var(--blocked)';
-          decisionSubtext.textContent = 'Execution was blocked before operational damage occurred.';
+        if (i === 2) {
+          postureValue.textContent = "PENDING_REVIEW";
+          postureNote.textContent = STATE.PENDING_REVIEW || "Governance review.";
         }
-
-        if(i === 4){
-          createProof();
+        if (i === 3) {
+          postureCard.classList.add("is-blocked");
+          postureValue.textContent = "BLOCKED";
+          postureNote.textContent = STATE.BLOCKED || "Commit denied.";
+        }
+        if (i === 4) {
+          lineReplay.textContent = "REPLAY_SAFE";
+          proofLines.style.opacity = "1";
+        }
+        if (i === 5) {
+          postureCard.classList.remove("is-blocked");
+          postureValue.textContent = "VERIFIED";
+          postureNote.textContent = STATE.REPLAY_SAFE || "Proof verified.";
+          lineIntegrity.textContent = "VERIFIED";
+          lineTruth.textContent = "PROOF_VERIFIED";
         }
       }
 
       validateBtn.disabled = false;
     }
 
-    validateBtn.addEventListener('click', runDemo);
+    demoScenario.addEventListener("change", () => applyScenario(demoScenario.value));
+    validateBtn.addEventListener("click", runDemo);
+    fillScenarioSelect();
   </script>
-  <script src="/components/engine-shell.js"></script>
 </body>
 </html>
-

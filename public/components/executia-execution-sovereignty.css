@@ -1,0 +1,98 @@
+/**
+ * EXECUTIA Execution Sovereignty (Phase 5M) — jurisdiction supremacy, not platform tooling.
+ */
+
+.ex-sovereignty-band {
+  background: var(--ex-ds-bg, #f4f6f9);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-sovereignty-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ex-ds-s16, 16px) var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
+}
+
+.ex-sovereignty-primary {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-sovereignty-secondary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ex-sovereignty-tertiary {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+  max-width: 42rem;
+  line-height: 1.5;
+}
+
+.ex-sovereignty-frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+  margin-top: var(--ex-ds-s16, 16px);
+}
+
+.ex-sovereignty-frame {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ex-ds-muted, #7a8da3);
+  padding: var(--ex-ds-s8, 8px) 0;
+}
+
+body.ex-sovereignty-supreme .ex-sovereignty-frame.is-active {
+  color: var(--ex-ds-blue, #1c3554);
+  border-bottom: 1px solid var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-sovereignty-active:not(.ex-sovereignty-supreme) .ex-sovereignty-frame.is-active {
+  color: var(--ex-ds-graphite, #4d6178);
+  border-bottom: 1px solid var(--ex-ds-graphite, #4d6178);
+}
+
+.ex-sovereignty-jurisdiction-block {
+  padding: var(--ex-ds-s16, 16px) 0 var(--ex-ds-s8, 8px);
+  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
+}
+
+.ex-sovereignty-jurisdiction-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-sovereignty-jurisdiction-line {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 40rem;
+  line-height: 1.5;
+}
+
+.ex-sovereignty-independence-line,
+.ex-sovereignty-continuity-line {
+  margin: var(--ex-ds-s8, 8px) 0 0;
+  font-size: 12px;
+  max-width: 40rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .ex-sovereignty-frames {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
