@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-05-25T11:17:17.997Z",
+  "generated_at": "2026-05-25T11:21:22.137Z",
   "branch": "phase-3b3-ledger-polish",
-  "commit": "7cb44bfe66d5834d5742d5e047e210d323693430",
+  "commit": "49162f775cbcba45b95c40c8a5fe688d5384ed87",
   "inputs": {
     "architecture_graph": true,
     "engineering_ledger_latest": true,
-    "git_files_changed": 7,
+    "git_files_changed": 5,
     "architecture_graph_report": true,
     "protected_files_config": ".cursor/context/protected-files.md"
   },
   "stability": {
-    "overall_score": 95,
+    "overall_score": 96,
     "architecture_score": 94,
-    "governance_score": 82,
+    "governance_score": 88,
     "replay_score": 100,
     "verification_score": 100,
     "endpoint_consistency_score": 99,
@@ -20,7 +20,7 @@
       "orphans": 1,
       "shadows": 1,
       "protected": 0,
-      "governance_warnings": 3,
+      "governance_warnings": 2,
       "missing_canonical_edges": 0,
       "classified_endpoints": 71,
       "unknown_endpoints": 1,
@@ -28,10 +28,10 @@
     }
   },
   "risk": {
-    "overall": "MEDIUM",
+    "overall": "LOW",
     "canonical_risk": "LOW",
     "replay_risk": "LOW",
-    "governance_risk": "MEDIUM",
+    "governance_risk": "HIGH",
     "architecture_risk": "MEDIUM",
     "orphan_risk": "LOW",
     "mutation_risk": "LOW"
@@ -45,16 +45,14 @@
     "removed_orphans": [],
     "new_shadow_flows": [],
     "removed_shadow_flows": [],
-    "baseline": "2026-05-25T11:14:08.986Z"
+    "baseline": "2026-05-25T11:21:21.604Z"
   },
   "deploy_intelligence": {
     "protected_files_touched": [],
     "canonical_authority_affected": [],
     "replay_layer_affected": [],
     "public_verify_affected": [],
-    "governance_layer_affected": [
-      "scripts/phase-3b7-architecture-drift.js"
-    ]
+    "governance_layer_affected": []
   },
   "findings": [
     {
@@ -69,9 +67,9 @@
     }
   ],
   "recommendations": [
-    "Maintain engineering ledger and architecture graph snapshots each pre-deploy run."
+    "Deploy readiness: LOW risk and acceptable stability — proceed with governed pre-deploy chain."
   ],
-  "deploy_readiness": "CAUTION",
+  "deploy_readiness": "READY",
   "engineering_console_detected": true,
   "engineering_console_status": {
     "DETECTED": true,

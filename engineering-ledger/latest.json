@@ -1,25 +1,24 @@
 {
-  "generated_at": "2026-05-25T11:17:19.182Z",
+  "generated_at": "2026-05-25T11:21:23.005Z",
   "branch": "phase-3b3-ledger-polish",
-  "commit": "7cb44bfe66d5834d5742d5e047e210d323693430",
+  "commit": "49162f775cbcba45b95c40c8a5fe688d5384ed87",
   "protected_files_touched": [],
-  "change_classification_hint": "API_OR_ROUTING_CHANGE",
-  "risk_level": "HIGH",
+  "change_classification_hint": "GENERAL_ENGINEERING_CHANGE",
+  "risk_level": "LOW",
   "files_changed": [
-    "api/v1/engineering/intelligence.js",
-    "architecture-graph/2026-05-24T13-48-54-731Z.json",
+    "architecture-graph/2026-05-24T13-48-56-077Z.json",
+    "architecture-graph/2026-05-24T14-00-05-885Z.json",
     "architecture-graph/last-stable.json",
     "architecture-graph/latest.json",
     "architecture-graph/report.md",
+    "execution-intelligence/2026-05-25T06-16-15-037Z.json",
     "execution-intelligence/last-stable.json",
     "execution-intelligence/latest.json",
-    "execution-intelligence/report.md",
-    "scripts/phase-3b7-architecture-drift.js",
-    "services/engineering-intelligence-loader.js"
+    "execution-intelligence/report.md"
   ],
   "governance": {
     "replayable": true,
-    "deterministic_checks_required": true,
+    "deterministic_checks_required": false,
     "protected_files_present": false
   }
 }

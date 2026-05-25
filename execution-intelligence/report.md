@@ -2,17 +2,17 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T11:17:18.958Z
+**Generated:** 2026-05-25T11:21:22.695Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** 7cb44bfe66d5834d5742d5e047e210d323693430
+**Commit:** 49162f775cbcba45b95c40c8a5fe688d5384ed87
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 95 |
+| Overall | 96 |
 | Architecture | 94 |
-| Governance | 82 |
+| Governance | 88 |
 | Replay | 100 |
 | Verification | 100 |
 | Endpoint consistency | 99 |
@@ -21,25 +21,25 @@ Deductions from 100 (overall):
 - Orphans: −1
 - Shadow flows: −1
 - Protected file touches: −0
-- Governance warnings: −3
+- Governance warnings: −2
 - Missing canonical edges: −0
 
 ## Risk summary
 
 | Dimension | Level |
 |-----------|-------|
-| Overall | **MEDIUM** |
+| Overall | **LOW** |
 | Canonical | LOW |
 | Replay | LOW |
 | Public verify | undefined |
-| Governance | MEDIUM |
+| Governance | HIGH |
 | Architecture | MEDIUM |
 | Orphan | LOW |
 | Mutation | LOW |
 
 ## Architecture delta
 
-Baseline: `2026-05-25T11:17:17.898Z`
+Baseline: `2026-05-25T11:21:21.604Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -60,12 +60,11 @@ _No replay layer files in current git diff._
 
 ## Governance impact
 
-Governance tooling / rules:
-- `scripts/phase-3b7-architecture-drift.js`
+_No governance or protected paths in current git diff._
 
 ## Recommendations
 
-- Maintain engineering ledger and architecture graph snapshots each pre-deploy run.
+- Deploy readiness: LOW risk and acceptable stability — proceed with governed pre-deploy chain.
 
 ## Engineering Console Status
 
@@ -82,7 +81,7 @@ Governance tooling / rules:
 
 ## Deploy readiness
 
-**Status:** CAUTION
+**Status:** READY
 
 ### Findings
 - [MEDIUM] ORPHAN_ENDPOINTS: 1 unclassified API endpoint(s) disconnected from canonical anchors

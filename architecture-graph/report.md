@@ -4,9 +4,9 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 
 ## Generated at
 
-- **Timestamp:** 2026-05-25T11:17:18.821Z
+- **Timestamp:** 2026-05-25T11:21:22.557Z
 - **Branch:** phase-3b3-ledger-polish
-- **Commit:** 7cb44bfe66d5834d5742d5e047e210d323693430
+- **Commit:** 49162f775cbcba45b95c40c8a5fe688d5384ed87
 
 ## Canonical authority
 
