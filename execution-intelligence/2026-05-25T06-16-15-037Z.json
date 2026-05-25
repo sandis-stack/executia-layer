@@ -1,0 +1,86 @@
+{
+  "generated_at": "2026-05-25T06:16:15.037Z",
+  "branch": "phase-3b3-ledger-polish",
+  "commit": "3fa2ef70944665f7f66df4e1f484a7e8595d6107",
+  "inputs": {
+    "architecture_graph": true,
+    "engineering_ledger_latest": true,
+    "git_files_changed": 13,
+    "architecture_graph_report": true,
+    "protected_files_config": ".cursor/context/protected-files.md"
+  },
+  "stability": {
+    "overall_score": 40,
+    "architecture_score": 41,
+    "governance_score": 68,
+    "replay_score": 100,
+    "verification_score": 100,
+    "endpoint_consistency_score": 23,
+    "deductions": {
+      "orphans": 54,
+      "shadows": 1,
+      "protected": 1,
+      "governance_warnings": 4,
+      "missing_canonical_edges": 0
+    }
+  },
+  "risk": {
+    "overall": "HIGH",
+    "canonical_risk": "LOW",
+    "replay_risk": "LOW",
+    "governance_risk": "HIGH",
+    "architecture_risk": "MEDIUM",
+    "orphan_risk": "HIGH",
+    "mutation_risk": "LOW"
+  },
+  "architecture_delta": {
+    "new_nodes": [],
+    "removed_nodes": [],
+    "new_edges": [],
+    "removed_edges": [],
+    "new_orphans": [],
+    "removed_orphans": [],
+    "new_shadow_flows": [],
+    "removed_shadow_flows": [],
+    "baseline": "2026-05-25T06:16:14.530Z"
+  },
+  "deploy_intelligence": {
+    "protected_files_touched": [
+      {
+        "file": "scripts/test-runner.js",
+        "patterns": [
+          "scripts/test-runner.js"
+        ]
+      }
+    ],
+    "canonical_authority_affected": [],
+    "replay_layer_affected": [],
+    "public_verify_affected": [],
+    "governance_layer_affected": [
+      "scripts/phase-3b9-execution-intelligence.js"
+    ]
+  },
+  "findings": [
+    {
+      "level": "MEDIUM",
+      "code": "ORPHAN_ENDPOINTS",
+      "message": "54 unclassified API endpoint(s) disconnected from canonical anchors"
+    },
+    {
+      "level": "MEDIUM",
+      "code": "SHADOW_FLOWS",
+      "message": "1 shadow flow reference(s) in codebase"
+    },
+    {
+      "level": "HIGH",
+      "code": "PROTECTED_TOUCH",
+      "message": "1 protected file(s) modified in working tree"
+    }
+  ],
+  "recommendations": [
+    "Classify orphan API endpoints in architecture graph before large refactors or route removal.",
+    "Obtain explicit approval for protected file modifications before deploy.",
+    "Defer deploy until stability improves (reduce orphans, shadows, or protected touches)."
+  ],
+  "deploy_readiness": "REVIEW_REQUIRED"
+}

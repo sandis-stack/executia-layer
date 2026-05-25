@@ -563,4 +563,42 @@ if (
   throw new Error("Architecture graph latest must have institutional findings");
 }
 
+const phase39Files = [
+  "scripts/phase-3b9-execution-intelligence.js",
+  ".cursor/context/execution-intelligence.md",
+  "docs/governance/execution-intelligence.md",
+  "execution-intelligence/.gitkeep"
+];
+
+for (const file of phase39Files) {
+  if (!existsSync(join(__test_dir, "..", file))) {
+    throw new Error(`Missing Phase 3B9 execution intelligence file: ${file}`);
+  }
+}
+
+const { buildExecutionIntelligence, writeIntelligenceOutputs } = await import(
+  "../scripts/phase-3b9-execution-intelligence.js"
+);
+
+const intel = buildExecutionIntelligence(join(__test_dir, ".."));
+if (typeof intel.stability?.overall_score !== "number") {
+  throw new Error("Execution intelligence must include stability scores");
+}
+if (!intel.risk?.overall) {
+  throw new Error("Execution intelligence must include risk summary");
+}
+if (!intel.architecture_delta) {
+  throw new Error("Execution intelligence must include architecture_delta");
+}
+
+writeIntelligenceOutputs(intel, join(__test_dir, ".."));
+const intelReportPath = join(__test_dir, "..", "execution-intelligence/report.md");
+if (!existsSync(intelReportPath)) {
+  throw new Error("Execution intelligence must write execution-intelligence/report.md");
+}
+const intelReportBody = readFileSync(intelReportPath, "utf8");
+if (!intelReportBody.includes("Stability score") || !intelReportBody.includes("Deploy readiness")) {
+  throw new Error("Execution intelligence report.md must include required sections");
+}
+
 console.log("EXECUTIA final full layer tests OK");

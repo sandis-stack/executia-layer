@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-05-25T06:16:15.241Z",
+  "branch": "phase-3b3-ledger-polish",
+  "commit": "3fa2ef70944665f7f66df4e1f484a7e8595d6107",
+  "protected_files_touched": [
+    {
+      "file": "scripts/test-runner.js",
+      "patterns": [
+        "scripts/test-runner.js"
+      ]
+    }
+  ],
+  "change_classification_hint": "PROTECTED_FILES_TOUCHED",
+  "risk_level": "HIGH",
+  "files_changed": [
+    ".cursor/hooks/pre-deploy-check.sh",
+    "architecture-graph/latest.json",
+    "architecture-graph/report.md",
+    "scripts/test-runner.js",
+    ".cursor/context/execution-intelligence.md",
+    "architecture-graph/2026-05-25T06-14-01-266Z.json",
+    "architecture-graph/2026-05-25T06-14-04-140Z.json",
+    "architecture-graph/2026-05-25T06-14-04-590Z.json",
+    "architecture-graph/2026-05-25T06-16-14-161Z.json",
+    "architecture-graph/2026-05-25T06-16-14-530Z.json",
+    "architecture-graph/2026-05-25T06-16-14-919Z.json",
+    "docs/governance/execution-intelligence.md",
+    "execution-intelligence/.gitkeep",
+    "execution-intelligence/2026-05-25T06-14-00-869Z.json",
+    "execution-intelligence/2026-05-25T06-14-01-367Z.json",
+    "execution-intelligence/2026-05-25T06-14-04-202Z.json",
+    "execution-intelligence/2026-05-25T06-14-04-732Z.json",
+    "execution-intelligence/2026-05-25T06-16-13-804Z.json",
+    "execution-intelligence/2026-05-25T06-16-14-253Z.json",
+    "execution-intelligence/2026-05-25T06-16-14-593Z.json",
+    "execution-intelligence/2026-05-25T06-16-15-037Z.json",
+    "execution-intelligence/latest.json",
+    "execution-intelligence/report.md",
+    "scripts/phase-3b9-execution-intelligence.js"
+  ],
+  "governance": {
+    "replayable": true,
+    "deterministic_checks_required": true,
+    "protected_files_present": true
+  }
+}

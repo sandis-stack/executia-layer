@@ -4,9 +4,9 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 
 ## Generated at
 
-- **Timestamp:** 2026-05-24T14:00:05.885Z
+- **Timestamp:** 2026-05-25T06:16:14.919Z
 - **Branch:** phase-3b3-ledger-polish
-- **Commit:** c334dd17eb4c0c57f4ffac3a0d1fb44526981ab7
+- **Commit:** 3fa2ef70944665f7f66df4e1f484a7e8595d6107
 
 ## Canonical authority
 
@@ -70,6 +70,7 @@ _None mapped._
 - `.cursor/context/architecture.md` — .cursor/context/architecture.md (`cursor:.cursor/context/architecture.md`)
 - `.cursor/context/change-classification.md` — .cursor/context/change-classification.md (`cursor:.cursor/context/change-classification.md`)
 - `.cursor/context/engineering-ledger.md` — .cursor/context/engineering-ledger.md (`cursor:.cursor/context/engineering-ledger.md`)
+- `.cursor/context/execution-intelligence.md` — .cursor/context/execution-intelligence.md (`cursor:.cursor/context/execution-intelligence.md`)
 - `.cursor/context/production.md` — .cursor/context/production.md (`cursor:.cursor/context/production.md`)
 - `.cursor/context/protected-files.md` — .cursor/context/protected-files.md (`cursor:.cursor/context/protected-files.md`)
 - `.cursor/context/security.md` — .cursor/context/security.md (`cursor:.cursor/context/security.md`)
@@ -146,8 +147,8 @@ Unclassified API endpoints not connected to canonical/governance anchors (exclud
 
 | Metric | Count |
 |--------|------:|
-| Total nodes | 97 |
-| Total edges | 38 |
+| Total nodes | 98 |
+| Total edges | 39 |
 | API endpoints | 70 |
 | Orphan candidates (reduced) | 54 |
 | Shadow flow candidates (reduced) | 1 |
@@ -155,7 +156,7 @@ Unclassified API endpoints not connected to canonical/governance anchors (exclud
 | Layer: public_verification | 1 |
 | Layer: replay_layer | 1 |
 | Layer: governance_layer | 10 |
-| Layer: architecture_memory | 10 |
+| Layer: architecture_memory | 11 |
 | Layer: ui_console | 0 |
 | Layer: proof_projection | 11 |
 | Layer: legacy_projection | 2 |
