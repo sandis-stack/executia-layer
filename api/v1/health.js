@@ -103,6 +103,15 @@ export default async function handler(req, res) {
         settlement_engine: "ACTIVE"
       },
 
+      execution_authority: {
+        runtime: "OK",
+        registry_state: hasSupabaseEnv() ? "CONFIGURED" : "DRY_RUN",
+        governance_engine: "ACTIVE",
+        proof_layer_enabled: true,
+        proof_chain_integrity: "ACTIVE",
+        auth_configured: hasApiKey
+      },
+
       timestamp: new Date().toISOString()
     });
 
