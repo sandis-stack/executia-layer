@@ -15,6 +15,8 @@ node scripts/phase-3b9-execution-intelligence.js
 
 node scripts/phase-3b6-engineering-ledger.js
 
+node scripts/phase-ai-operator-check.js
+
 git status --short
 git diff --stat
 

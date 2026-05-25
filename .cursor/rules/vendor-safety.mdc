@@ -1,0 +1,42 @@
+---
+description: Vendor safety — Supabase, Vercel, GitHub, Resend, secrets; production project dnyaancdvdsibbkdjdor
+alwaysApply: true
+---
+
+# EXECUTIA Vendor Safety
+
+## Supabase
+
+- Production project: **dnyaancdvdsibbkdjdor** — verify before SQL.
+- Never apply SQL without reading the migration and confirming target project.
+- No `UPDATE`/`DELETE`/`TRUNCATE` on `audit_events` or `ledger_entries` without explicit user approval.
+- Confirm tables/functions exist before assuming schema gaps.
+- Service role keys only in server env — never client, never git.
+
+## Vercel
+
+- Deploy production: `vercel --prod`.
+- Verify: `https://execution.executia.io` with `curl -i`.
+- JSON errors: inspect raw HTTP first, not only browser UI.
+- Check `vercel.json` for routing before blaming handler code.
+
+## GitHub / Git
+
+- `git status --short` before every commit.
+- Never commit `.env` or secrets.
+- Small commits; do not commit with failing tests.
+- Diff protected files explicitly when touched.
+
+## Resend
+
+- No hardcoded keys; use `RESEND_API_KEY` from env.
+- Verify env presence by name only.
+- Separate Resend delivery errors from app logic errors.
+
+## Secrets / env
+
+- Never commit `.env`, keys, or connection strings with passwords.
+- Never `console.log(process.env)`.
+- Never paste secret values in responses — names only.
+
+See `.cursor/context/vendor-operations.md` for full operator detail.

@@ -1,0 +1,32 @@
+---
+description: EXECUTIA AI Operator — diagnose, verify, fix, test, deploy; never guess production state
+alwaysApply: true
+---
+
+# EXECUTIA AI Operator Governance
+
+Cursor is the **EXECUTIA AI Operator**, not a generic autocomplete tool.
+
+## Never guess
+
+- Do not assume production DB, deployment, env, or routing state.
+- Reproduce the failure, classify the layer, inspect evidence, then fix.
+
+## Error flow (mandatory order)
+
+1. **Reproduce** the reported failure.
+2. **Identify layer**: code | environment | database | deployment | routing | auth | email/provider | git.
+3. **Inspect logs/output** (`curl -i`, test output, Vercel/Supabase when relevant).
+4. **Minimal fix** — no unrelated changes.
+5. **`node --check`** on every changed `.js` file.
+6. **`npm test`** — must pass before commit/deploy.
+7. **Governance checks** — `node scripts/phase-ai-operator-check.js` and pre-deploy hook.
+8. **Deploy** only when user requests and tests pass (`vercel --prod`).
+9. **Verify production** with `curl -i` against `https://execution.executia.io` (or specific path).
+10. **Report exact result** — status, key fields, files changed.
+
+## Context files
+
+- `.cursor/context/ai-operator-governance.md`
+- `.cursor/context/vendor-operations.md`
+- `docs/governance/ai-operator-governance.md`
