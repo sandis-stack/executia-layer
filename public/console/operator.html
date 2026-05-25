@@ -5,7 +5,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>EXECUTIA Operator Console</title>
-
+  <link rel="stylesheet" href="/components/executia-execution-surfaces.css" />
+  <script src="/components/executia-execution-consequence.js"></script>
+  <script src="/components/executia-canonical-semantics.js"></script>
+  <script src="/components/executia-execution-surfaces.js"></script>
   <style>
     :root{
       --bg:#f5f7fa;
@@ -19,9 +22,7 @@
       --bad:#9b2c2c;
       --warn:#9a6a00;
     }
-
     *{box-sizing:border-box}
-
     body{
       margin:0;
       font-family:Inter,Arial,sans-serif;
@@ -31,8 +32,6 @@
         linear-gradient(90deg,var(--line) 1px,transparent 1px),
         var(--bg);
       background-size:40px 40px;
-    }
-
     .topbar{
       height:64px;
       border-bottom:1px solid var(--line);
@@ -41,72 +40,30 @@
       justify-content:space-between;
       align-items:center;
       padding:0 28px;
-    }
-
     .topbar-left{
-      display:flex;
-      align-items:center;
       gap:32px;
-    }
-
     .logo{
       font-weight:800;
       letter-spacing:.08em;
       color:var(--blue);
       font-size:20px;
-    }
-
     .nav{
-      display:flex;
       gap:24px;
-    }
-
     .nav a{
       text-decoration:none;
       color:#2c3440;
       font-size:12px;
-      letter-spacing:.08em;
       font-weight:700;
-    }
-
     .nav a.active{color:var(--blue)}
-
     .operator-badge{text-align:right}
-
     .operator-title{
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:.08em;
-    }
-
     .operator-sub{
       font-size:11px;
       color:var(--muted);
-    }
-
     header.systembar{
-      height:64px;
-      border-bottom:1px solid var(--line);
       background:rgba(255,255,255,.92);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 28px;
-    }
-
     .brand{
-      font-weight:800;
-      letter-spacing:.08em;
-      color:var(--blue);
-    }
-
     .state{
-      font-size:12px;
-      color:var(--muted);
-      letter-spacing:.08em;
-      font-weight:800;
-    }
-
     main{
       display:grid;
       grid-template-columns:280px 1fr 390px;
@@ -115,165 +72,80 @@
       height:calc(100vh - 128px);
       min-height:calc(100vh - 128px);
       overflow:hidden;
-    }
-
     section{
       background:rgba(255,255,255,.97);
       border:1px solid var(--line);
       border-radius:10px;
-      overflow:hidden;
-    }
-
     .pad{padding:14px}
-
     h2{
       margin:0 0 14px;
-      font-size:12px;
       letter-spacing:.14em;
-      color:var(--blue);
-    }
-
     label{
       display:block;
-      font-size:11px;
-      color:var(--muted);
       margin-bottom:8px;
-      letter-spacing:.08em;
-    }
-
     input{
       width:100%;
       padding:8px 10px;
-      border:1px solid var(--line);
-      border-radius:10px;
-      background:#fff;
-      color:var(--text);
       font-size:13px;
-    }
-
     button{
       min-width:0;
       white-space:nowrap;
       border:1px solid var(--blue);
       background:var(--blue);
       color:#fff;
-      border-radius:10px;
       padding:10px 12px;
-      font-size:11px;
-      letter-spacing:.08em;
-      font-weight:800;
       cursor:pointer;
       height:44px;
-    }
-
     button.secondary{background:#fff;color:var(--blue)}
     button.danger{background:var(--bad);border-color:var(--bad)}
-
     .rail{
-      display:grid;
       gap:10px;
       height:100%;
-    }
-
     .primary-wide{
-      width:100%;
       margin-top:12px;
       height:46px;
       border-radius:12px;
       letter-spacing:.12em;
-    }
-
     .token-divider{
       text-align:center;
       font-size:10px;
       letter-spacing:.16em;
       color:#7b8798;
       margin:10px 0 8px;
-    }
-
     .token-btn{
       width:100% !important;
       margin-top:10px;
-      height:44px;
-      border-radius:12px;
-    }
-
     .status-stack{
-      display:flex;
       flex-direction:column;
-      gap:10px;
-      margin-top:12px;
-    }
-
     .status-card{
       background:#f3f6fa;
       border:1px solid #d9e2ec;
-      border-radius:12px;
-      padding:10px 12px;
       min-height:54px;
-      display:flex;
-      flex-direction:column;
       justify-content:center;
-    }
-
     .status-label{
-      font-size:11px;
-      letter-spacing:.14em;
       color:#6b778c;
       margin-bottom:5px;
-    }
-
     .status-value{
       font-size:14px;
-      font-weight:800;
       color:#162232;
       line-height:1.15;
-    }
-
     .block{
-      border:1px solid var(--line);
       background:var(--soft);
-      border-radius:10px;
       padding:9px 10px;
-    }
-
     .k{
-      font-size:10px;
-      color:var(--muted);
       letter-spacing:.13em;
-    }
-
     .v{
       font-size:16px;
-      font-weight:800;
       margin-top:4px;
       letter-spacing:.02em;
       word-break:break-word;
-    }
-
     .small{
-      font-size:11px;
-      color:var(--muted);
       line-height:1.5;
-    }
-
     .stream{
-      display:flex;
-      flex-direction:column;
-      height:100%;
       background:#fbfdff;
-    }
-
     .stream-head{
-      border-bottom:1px solid var(--line);
       padding:14px 16px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      background:#fbfdff;
       z-index:5;
-    }
-
     .registry-head{
       min-height:38px;
       background:#f4f7fb !important;
@@ -282,140 +154,71 @@
       position:sticky;
       top:0;
       z-index:4;
-    }
-
     .rows{
       overflow:auto;
-      height:100%;
-    }
-
     .row{
       min-height:unset;
       background:linear-gradient(to right,#ffffff,#f8fbff);
       transition:.12s ease;
       border-left:4px solid transparent;
-      display:grid;
       grid-template-columns:1.45fr .75fr .75fr .9fr;
-      gap:16px;
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      cursor:pointer;
-      align-items:center;
-    }
-
     .row:hover{
       background:#edf4fb;
       border-left:4px solid var(--blue);
-    }
-
     .row.active{
       background:#e4edf7;
-      border-left:4px solid var(--blue);
-    }
-
     .status-pill{
       display:inline-flex;
-      align-items:center;
       gap:8px;
       padding:6px 10px;
       border-radius:999px;
-      font-weight:800;
       letter-spacing:.04em;
-      font-size:11px;
-    }
-
     .status-pill::before{
       content:"";
       width:7px;
       height:7px;
-      border-radius:999px;
       background:currentColor;
-    }
-
     .status-approved{background:rgba(31,122,77,.10);color:var(--ok)}
     .status-pending{background:rgba(154,106,0,.10);color:var(--warn)}
     .status-blocked{background:rgba(155,44,44,.10);color:var(--bad)}
     .status-neutral{background:rgba(102,115,134,.10);color:var(--muted)}
-
     .drawer{
-      display:grid;
       grid-template-rows:auto minmax(0,1fr) auto;
       height:calc(100vh - 170px);
       max-height:calc(100vh - 170px);
-      background:#fbfdff;
-      overflow:hidden;
-    }
-
     .drawer-head{
       padding:16px;
-      border-bottom:1px solid var(--line);
       flex:0 0 auto;
-    }
-
     .drawer-body{
-      overflow:auto;
-      padding:14px;
-      display:grid;
       gap:12px;
       min-height:0;
       max-height:none;
-    }
-
     .detail-stack{
-      display:grid;
-      gap:12px;
-    }
-
     .grid2{
-      display:grid;
       grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
     .timeline{
       border-left:2px solid var(--blue);
       margin-left:8px;
       padding-left:16px;
-      display:grid;
-      gap:12px;
-    }
-
     .event{position:relative}
-
     .event:before{
-      content:"";
       position:absolute;
       left:-23px;
       top:3px;
       width:9px;
       height:9px;
       border-radius:50%;
-      background:var(--blue);
-    }
-
     .drawer-actions{
       position:static;
-      background:#fbfdff;
       padding:12px 14px 14px;
-      margin:0;
       border-top:1px solid rgba(30,58,95,.12);
       z-index:10;
-    }
-
     .drawer > .drawer-actions .block{
       margin:0 !important;
       box-shadow:none !important;
-    }
-
     .lock{
-      display:grid;
       place-items:center;
-      height:100%;
-      text-align:center;
-      color:var(--muted);
       padding:32px;
-    }
-
     @media (max-width:900px){
       .topbar{
         height:auto;
@@ -424,119 +227,62 @@
         align-items:flex-start;
         gap:16px;
       }
-
       .topbar-left{
         flex-direction:column;
-        align-items:flex-start;
-        gap:16px;
-      }
-
       .logo{font-size:16px}
-
       .nav{
         width:100%;
         overflow-x:auto;
         gap:18px;
         padding-bottom:4px;
-      }
-
       .nav a{
         white-space:nowrap;
         font-size:11px;
-      }
-
       header.systembar{
-        height:auto;
         padding:18px;
         gap:12px;
-        align-items:flex-start;
-        flex-direction:column;
-      }
-
       main{
         grid-template-columns:1fr;
-        height:auto;
         min-height:auto;
         overflow:visible;
         padding:10px;
-      }
-
       .row{
-        grid-template-columns:1fr;
         gap:4px;
         padding:14px;
-      }
-
       .drawer{
         min-height:360px;
-      }
-
       button{
-        width:100%;
-      }
-
       .drawer-body{
         max-height:none;
-      }
-    }
       .status-pill{
         font-size:10px;
         padding:0 10px;
-      }
-    }
 .status-pill{
         font-size:9px;
         min-height:26px;
-        padding:0 10px;
-      }
-    }
-
-
     .operator-status-inline{
       margin-left:auto;
-      display:flex;
-      align-items:center;
-      gap:8px;
       flex-wrap:nowrap;
-    }
-
     .operator-status-pill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
       height:24px;
       padding:0 10px;
-      border-radius:999px;
       border:1px solid rgba(30,58,95,.18);
-      background:#fff;
       color:#1E3A5F;
       font-size:9px;
-      font-weight:800;
-      letter-spacing:.08em;
       text-transform:uppercase;
-      white-space:nowrap;
-    }
-
     @media (max-width: 1180px){
       .operator-status-inline{
         order:3;
-        width:100%;
         justify-content:flex-start;
         margin-left:0;
         margin-top:8px;
-      }
-    }
-
-
 /* === EXECUTIA FINAL OPERATOR CONSOLE LAYOUT OVERRIDE === */
-
 body{
   margin:0 !important;
   background:#f4f7fb !important;
   color:#142033 !important;
   overflow-x:hidden !important;
 }
-
 .topbar{
   height:76px !important;
   padding:0 26px !important;
@@ -546,275 +292,130 @@ body{
   gap:24px !important;
   background:#fff !important;
   border-bottom:1px solid rgba(30,58,95,.14) !important;
-}
-
 .topbar-left{
-  display:flex !important;
-  align-items:center !important;
   gap:30px !important;
   min-width:0 !important;
-}
-
 .logo{
   font-size:22px !important;
   font-weight:900 !important;
   letter-spacing:.08em !important;
   color:#1E3A5F !important;
   white-space:nowrap !important;
-}
-
 .nav{
-  display:flex !important;
-  align-items:center !important;
   gap:22px !important;
   flex-wrap:nowrap !important;
-}
-
 .nav a{
-  color:#142033 !important;
   text-decoration:none !important;
   font-size:12px !important;
-  font-weight:900 !important;
-  letter-spacing:.08em !important;
-  white-space:nowrap !important;
-}
-
 .topbar-right{
-  display:flex !important;
-  align-items:center !important;
   justify-content:flex-end !important;
   gap:16px !important;
   margin-left:auto !important;
-  white-space:nowrap !important;
-}
-
 .operator-status-inline{
-  display:flex !important;
-  align-items:center !important;
   gap:8px !important;
-  margin:0 !important;
-}
-
 .operator-status-pill{
   height:24px !important;
   padding:0 10px !important;
   display:inline-flex !important;
-  align-items:center !important;
   justify-content:center !important;
   border-radius:999px !important;
   border:1px solid rgba(30,58,95,.18) !important;
-  background:#fff !important;
-  color:#1E3A5F !important;
   font-size:9px !important;
-  font-weight:900 !important;
-  letter-spacing:.08em !important;
   text-transform:uppercase !important;
   line-height:1 !important;
-}
-
 .operator-meta{
   text-align:right !important;
   line-height:1.1 !important;
-}
-
 .operator-title{
-  font-size:12px !important;
-  font-weight:900 !important;
-  letter-spacing:.08em !important;
-  color:#142033 !important;
-}
-
 .operator-subtitle{
   font-size:11px !important;
   color:#6d7890 !important;
-}
-
 .titlebar{
   height:64px !important;
-  padding:0 26px !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:space-between !important;
   background:rgba(255,255,255,.72) !important;
   border-bottom:1px solid rgba(30,58,95,.12) !important;
-}
-
 .titlebar h1{
-  margin:0 !important;
   font-size:18px !important;
-  line-height:1 !important;
-  font-weight:900 !important;
-  letter-spacing:.08em !important;
-  color:#1E3A5F !important;
-}
-
 .authority{
-  font-size:12px !important;
-  font-weight:900 !important;
-  letter-spacing:.08em !important;
-  color:#6d7890 !important;
-}
-
 .layout{
   display:grid !important;
   grid-template-columns:280px minmax(520px,1fr) 390px !important;
-  gap:16px !important;
   align-items:start !important;
   padding:16px !important;
-}
-
 .authority-panel,
 .stream,
 .drawer{
-  background:#fff !important;
   border:1px solid rgba(30,58,95,.16) !important;
   border-radius:14px !important;
   overflow:hidden !important;
   box-shadow:0 10px 28px rgba(15,23,42,.035) !important;
-}
-
 .authority-panel{
   padding:18px !important;
-}
-
 .authority-panel h2,
 .stream h2,
 .drawer h2{
-  margin:0 !important;
-  font-size:12px !important;
-  font-weight:900 !important;
   letter-spacing:.14em !important;
-  color:#1E3A5F !important;
-}
-
 .authority-panel label{
   display:block !important;
   margin:16px 0 6px !important;
-  font-size:11px !important;
   font-weight:800 !important;
-  letter-spacing:.08em !important;
-  color:#6d7890 !important;
-}
-
 .authority-panel input{
   width:100% !important;
   box-sizing:border-box !important;
   height:34px !important;
   border-radius:9px !important;
-  border:1px solid rgba(30,58,95,.18) !important;
   padding:0 12px !important;
   font-size:13px !important;
   outline:none !important;
-  background:#fff !important;
-}
-
 .authority-panel button,
 button{
   height:42px !important;
-  border-radius:9px !important;
   border:1px solid #1E3A5F !important;
   background:#1E3A5F !important;
   color:#fff !important;
-  font-size:12px !important;
-  font-weight:900 !important;
-  letter-spacing:.08em !important;
   cursor:pointer !important;
-}
-
 .authority-panel button{
-  width:100% !important;
   margin-top:12px !important;
-}
-
 button.secondary,
 .secondary{
-  background:#fff !important;
-  color:#1E3A5F !important;
-}
-
 .token-title{
   margin:14px 0 2px !important;
   text-align:center !important;
-  font-size:11px !important;
   letter-spacing:.12em !important;
-  color:#6d7890 !important;
-}
-
 .metric{
   margin-top:10px !important;
   padding:12px !important;
   border-radius:10px !important;
   border:1px solid rgba(30,58,95,.14) !important;
   background:#f1f5fa !important;
-}
-
 .k{
   font-size:10px !important;
-  font-weight:800 !important;
-  letter-spacing:.12em !important;
-  color:#6d7890 !important;
-  text-transform:uppercase !important;
-}
-
 .v{
   margin-top:4px !important;
   font-size:15px !important;
-  font-weight:900 !important;
-  color:#142033 !important;
-}
-
 .stream-head,
 .drawer-head{
   min-height:58px !important;
   padding:0 16px !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:space-between !important;
-  border-bottom:1px solid rgba(30,58,95,.12) !important;
-}
-
 .row,
 .registry-head{
-  display:grid !important;
   grid-template-columns:1.5fr .8fr .8fr 1fr !important;
-  align-items:center !important;
-}
-
-.registry-head{
   min-height:40px !important;
-  padding:0 16px !important;
   background:#f3f6fa !important;
-  border-bottom:1px solid rgba(30,58,95,.12) !important;
-}
-
 .rows .row{
   padding:14px 16px !important;
   border-bottom:1px solid rgba(30,58,95,.10) !important;
-  cursor:pointer !important;
-}
-
 .rows .row:hover{
   background:#eef5ff !important;
-}
-
 .drawer-body{
   padding:14px !important;
-}
-
 .block{
-  padding:12px !important;
   margin-bottom:10px !important;
-  border-radius:10px !important;
-  border:1px solid rgba(30,58,95,.14) !important;
   background:#edf3f9 !important;
-}
-
 @media(max-width:1280px){
   .nav{gap:14px !important;}
   .nav a{font-size:11px !important;}
   .layout{grid-template-columns:260px minmax(480px,1fr) 360px !important;}
-}
-
 @media(max-width:980px){
   .topbar{
     height:auto !important;
@@ -823,138 +424,42 @@ button.secondary,
     align-items:flex-start !important;
     padding:16px !important;
   }
-
   .topbar-left,
   .topbar-right,
   .nav,
   .operator-status-inline{
     flex-wrap:wrap !important;
-  }
-
   .titlebar{
-    height:auto !important;
     min-height:64px !important;
-    align-items:flex-start !important;
-    flex-direction:column !important;
     gap:8px !important;
-    padding:16px !important;
-  }
-
   .layout{
     grid-template-columns:1fr !important;
-  }
-}
-
-
-
 /* === FINAL SMALL PATCH: TITLEBAR HEIGHT + ACTION COLORS === */
-.titlebar{
-  height:34px !important;
   min-height:34px !important;
-  padding:0 26px !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:space-between !important;
-}
-
-.titlebar h1{
-  margin:0 !important;
-  font-size:18px !important;
-  line-height:1 !important;
-}
-
 .titlebar-status{
-  display:flex !important;
-  align-items:center !important;
   gap:10px !important;
-  margin-left:auto !important;
-}
-
 .titlebar-status .operator-status-pill{
   height:22px !important;
-  padding:0 12px !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  white-space:nowrap !important;
-}
-
 .titlebar-status .authority{
-  font-size:12px !important;
-  line-height:1 !important;
-  white-space:nowrap !important;
-}
-
 .drawer-actions button:nth-child(1){
-  background:#1E3A5F !important;
   border-color:#1E3A5F !important;
-  color:#fff !important;
-}
-
 .drawer-actions button:nth-child(2),
 .drawer-actions button:nth-child(4){
-  background:#fff !important;
-  border:1px solid #1E3A5F !important;
-  color:#1E3A5F !important;
-}
-
 .drawer-actions button:nth-child(3){
   background:#7A1E1E !important;
   border-color:#7A1E1E !important;
-  color:#fff !important;
-}
-
-
 /* === FINAL TITLEBAR POLISH === */
-
-.titlebar h1{
-  font-size:15px !important;
   font-weight:700 !important;
   letter-spacing:.06em !important;
   color:#244268 !important;
-}
-
-.titlebar-status{
-  display:flex !important;
-  align-items:center !important;
-  gap:10px !important;
-}
-
-.titlebar-status .authority{
-  height:22px !important;
-  padding:0 12px !important;
-  border:1px solid rgba(30,58,95,.18) !important;
-  border-radius:999px !important;
-  background:#fff !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  font-size:11px !important;
-  font-weight:800 !important;
-  letter-spacing:.08em !important;
-  color:#6d7890 !important;
-  white-space:nowrap !important;
-}
-
-
 /* === SOFTEN TOP OPERATOR LABEL === */
-
-.operator-title{
   font-weight:600 !important;
   opacity:.72 !important;
   letter-spacing:.04em !important;
-}
-
-
 /* === SOFTEN OPERATOR CONSOLE TITLE === */
-.titlebar h1{
   font-size:14px !important;
   font-weight:500 !important;
   letter-spacing:.055em !important;
-  color:#6d7890 !important;
-  opacity:.72 !important;
-}
-
-
 .engine-nav{
   display:flex;
   gap:10px;
@@ -964,8 +469,6 @@ button.secondary,
   border-top:1px solid #d8e1ec;
   border-bottom:1px solid #d8e1ec;
   background:#fff;
-}
-
 .engine-nav a{
   text-decoration:none;
   color:#183a5b;
@@ -977,48 +480,28 @@ button.secondary,
   border-radius:999px;
   padding:8px 12px;
   background:#f7fbff;
-}
-
 .engine-nav a.active{
   background:#183a5b;
   color:#fff;
   border-color:#183a5b;
-}
-
 </style>
-
 <style id="operator-safe-stabilization-css">
-.titlebar{
   padding-top:14px!important;
   padding-bottom:14px!important;
   min-height:auto!important;
-}
-.titlebar h1{
   margin:0!important;
   line-height:1.15!important;
-}
-.drawer-actions button:nth-child(1){
   background:#1E3A5F!important;
   border-color:#1E3A5F!important;
   color:#fff!important;
-}
-.drawer-actions button:nth-child(2),
-.drawer-actions button:nth-child(4){
   background:#fff!important;
   border:1px solid #1E3A5F!important;
   color:#1E3A5F!important;
-}
-.drawer-actions button:nth-child(3){
   background:#7A1E1E!important;
   border-color:#7A1E1E!important;
-  color:#fff!important;
-}
-</style>
-
   <link rel="stylesheet" href="/components/engine-shell.css">
   <link rel="stylesheet" href="/components/engine-system.css">
 </head>
-
 <body>
 <nav class="engine-nav" aria-label="Engine navigation">
   <a data-engine-nav="dashboard" href="/dashboard">Dashboard</a>
@@ -1030,8 +513,6 @@ button.secondary,
   <a data-engine-nav="operations" href="/console/operations.html">Operations</a>
   <a data-engine-nav="health" href="/api/v1/health" target="_blank" rel="noopener">Health</a>
 </nav>
-
-
   <div class="titlebar">
     <h1>EXECUTIA™ OPERATOR CONSOLE</h1>
     <div class="titlebar-status">
@@ -1040,7 +521,6 @@ button.secondary,
       <div class="authority" id="authorityState">EXECUTION AUTHORITY: LOCKED</div>
     </div>
   </div>
-
   <section class="layout" style="
     display:grid;
     grid-template-columns:280px 1fr 390px;
@@ -1050,73 +530,42 @@ button.secondary,
   ">
     <aside class="authority-panel">
       <h2>AUTHORITY SURFACE</h2>
-
       <label>EMAIL</label>
       <input id="email" value="operator@executia.io" />
-
       <label>PASSWORD</label>
       <input id="password" type="password" placeholder="Operator password" />
-
       <button onclick="login()">AUTHORIZE</button>
-
       <div class="token-title">TOKEN AUTHORIZATION</div>
-
       <label>ACCESS TOKEN</label>
       <input id="tokenInput" placeholder="Paste access token" />
       <input id="token" style="display:none" />
       <input id="accessToken" style="display:none" />
-
       <button class="secondary full" onclick="authorizeWithToken()">AUTHORIZE WITH TOKEN</button>
-
       <div class="metric">
         <div class="k">OPERATOR</div>
         <div class="v" id="operatorEmail">—</div>
       </div>
-
-      <div class="metric">
         <div class="k">AUTH</div>
         <div class="v" id="authMode">LOCKED</div>
-      </div>
-
-      <div class="metric">
         <div class="k">VALIDATION</div>
         <div class="v">ACTIVE</div>
-      </div>
-
-      <div class="metric">
         <div class="k">LEDGER</div>
         <div class="v">HASH CHAIN</div>
-      </div>
-
-      <div class="metric">
         <div class="k">AUDIT</div>
         <div class="v">RECORDED</div>
-      </div>
-
-      <div class="metric">
         <div class="k">GOVERNANCE CHAIN</div>
         <div class="v" id="governanceChainStatus">UNKNOWN</div>
-      </div>
-
-      <div class="metric">
         <div class="k">CHAIN HEAD</div>
         <div class="v" id="governanceChainHead">—</div>
-      </div>
     </aside>
-
     <section class="stream">
       <div class="stream-head">
         <h2>EXECUTION REGISTRY</h2>
         <button id="refreshBtn" class="secondary" onclick="window.refreshOperatorConsole()">REFRESH</button>
-      </div>
-
       <div class="row registry-head">
         <div class="k">EXECUTION ID</div>
         <div class="k">STATUS</div>
-        <div class="k">VALIDATION</div>
         <div class="k">TIMESTAMP</div>
-      </div>
-
       <div id="rows" class="rows">
         <div class="lock">
           <div>
@@ -1124,15 +573,11 @@ button.secondary,
             <p>Execution stream is unavailable until operator authority is verified.</p>
           </div>
         </div>
-      </div>
     </section>
-
     <section class="drawer">
       <div class="drawer-head">
         <h2>EXECUTION DETAIL</h2>
         <div class="small" id="detailId">No execution selected</div>
-      </div>
-
       <div class="drawer-body" id="detail">
         <div class="block">
           <div class="k">STATE</div>
@@ -1140,30 +585,17 @@ button.secondary,
           <div class="small" style="margin-top:8px;">
             Select an execution to inspect validation, audit trail, ledger linkage,
             reconciliation proof and hash integrity.
-          </div>
-        </div>
-
-        <div class="block">
           <div class="k">DETAIL SURFACE</div>
           <div class="v">READY</div>
-        </div>
-
-        <div class="block">
           <div class="k">PROOF ENGINE</div>
           <div class="v">STANDBY</div>
-        </div>
-      </div>
-    </section>
   </main>
-
   <script>
     const API_BASE = "";
     let TOKEN = localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") || "";
     let SELECTED = null;
     let ITEMS = [];
-
     if(document.getElementById("token")) if(document.getElementById("token")) document.getElementById("token").value = TOKEN;
-
     function escapeHtml(str){
       return String(str ?? "").replace(/[&<>"']/g, m => ({
         "&":"&amp;",
@@ -1172,19 +604,13 @@ button.secondary,
         '"':"&quot;",
         "'":"&#039;"
       }[m]));
-    }
-
     function renderStatusPill(status){
       const value = String(status || "PENDING_REVIEW").toUpperCase();
-
       let cls = "status-neutral";
       if(["APPROVED","COMMITTED","VERIFIED"].includes(value)) cls = "status-approved";
       else if(["BLOCKED","FAILED"].includes(value)) cls = "status-blocked";
       else if(["PENDING_REVIEW","PENDING","REVIEW"].includes(value)) cls = "status-pending";
-
       return `<span class="status-pill ${cls}">${escapeHtml(value)}</span>`;
-    }
-
     async function api(path, options = {}){
       TOKEN =
         window.TOKEN ||
@@ -1194,7 +620,6 @@ button.secondary,
         localStorage.getItem("executia_operator_token") ||
         localStorage.getItem("executia_jwt") ||
         TOKEN;
-
       const res = await fetch(API_BASE + path, {
         ...options,
         headers:{
@@ -1203,174 +628,102 @@ button.secondary,
           ...(options.headers || {})
         }
       });
-
       const data = await res.json().catch(() => ({}));
-
       if(!res.ok || data.ok === false){
         throw new Error(data?.error?.message || data?.error || "REQUEST_FAILED");
-      }
-
       return data;
-    }
-
     async function login(){
       try{
         const emailEl = document.getElementById("email");
         const passwordEl = document.getElementById("password");
-
         const email = String(emailEl?.value || "").trim();
         const password = String(passwordEl?.value || "").trim();
-
         emailEl.value = email;
         passwordEl.value = password;
-
         if(!email || !password){
           throw new Error("EMAIL_PASSWORD_REQUIRED");
-        }
-
         const res = await fetch("/api/v1/auth/login",{
           method:"POST",
           headers:{ "Content-Type":"application/json" },
           body:JSON.stringify({ email, password })
         });
-
         const data = await res.json();
-
         if(!data.ok || !data.access_token){
           throw new Error(data?.error?.message || "LOGIN_FAILED");
-        }
-
         TOKEN = data.access_token;
         window.TOKEN = TOKEN;
-
         localStorage.removeItem("EXECUTIA_OPERATOR_TOKEN");
         localStorage.removeItem("EXECUTIA_JWT");
         localStorage.removeItem("executia_token");
         localStorage.removeItem("executia_operator_token");
         localStorage.removeItem("executia_jwt");
-
         localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
         localStorage.setItem("EXECUTIA_JWT", TOKEN);
         localStorage.setItem("executia_token", TOKEN);
         localStorage.setItem("executia_operator_token", TOKEN);
         localStorage.setItem("executia_jwt", TOKEN);
-
         const tokenEl = document.getElementById("token");
         if(tokenEl) tokenEl.value = TOKEN;
-
         await authorize();
-
       }catch(e){
         alert("Authorization failed: " + e.message);
-      }
-    }
-
     async function authorize(){
       const tokenEl = document.getElementById("token");
-
-      TOKEN =
         (tokenEl && tokenEl.value.trim()) ||
-        window.TOKEN ||
-        localStorage.getItem("EXECUTIA_OPERATOR_TOKEN") ||
-        localStorage.getItem("EXECUTIA_JWT") ||
-        localStorage.getItem("executia_token") ||
-        localStorage.getItem("executia_operator_token") ||
-        localStorage.getItem("executia_jwt") ||
         "";
-
       window.TOKEN = TOKEN;
-
       localStorage.setItem("EXECUTIA_OPERATOR_TOKEN", TOKEN);
       localStorage.setItem("EXECUTIA_JWT", TOKEN);
       localStorage.setItem("executia_token", TOKEN);
       localStorage.setItem("executia_operator_token", TOKEN);
       localStorage.setItem("executia_jwt", TOKEN);
-
       if(tokenEl) tokenEl.value = TOKEN;
-
-      try{
         const me = await api("/api/v1/operator/me");
-
         if(document.getElementById("systemState")) document.getElementById("systemState").textContent = "EXECUTION AUTHORITY: ACTIVE";
-
         if(document.getElementById("operator")) document.getElementById("operator").textContent = me?.user?.email || "OPERATOR";
-
         if(document.getElementById("auth")) document.getElementById("auth").textContent = me?.mode || "ENTERPRISE";
-
         await loadExecutions();
-
-      }catch(e){
         if(document.getElementById("systemState")) document.getElementById("systemState").textContent = "EXECUTION AUTHORITY: LOCKED";
-
         alert("Authority verification failed: " + e.message);
-      }
-    }
-
     async function loadExecutions(){
-      try{
         const data = await api("/api/v1/operator/executions");
         ITEMS = data.items || data.executions || [];
         renderRows();
-      }catch(e){
         if(document.getElementById("rows")) document.getElementById("rows").innerHTML = `
           <div class="lock">
             <div>
               <h2>EXECUTION AUTHORITY: LOCKED</h2>
               <p>${escapeHtml(e.message)}</p>
             </div>
-          </div>
         `;
-      }
-    }
-
     function renderRows(){
       if(!ITEMS.length){
-        if(document.getElementById("rows")) document.getElementById("rows").innerHTML = `
-          <div class="lock">
-            <div>
               <h2>NO EXECUTIONS</h2>
               <p>No execution records returned.</p>
-            </div>
-          </div>
-        `;
         return;
-      }
-
       if(document.getElementById("rows")) document.getElementById("rows").innerHTML = ITEMS.map(x => `
         <div class="row ${SELECTED?.id === x.id ? "active" : ""}" onclick="selectExecution('${escapeHtml(x.id)}')">
-          <div>
             <b>${escapeHtml(x.id || x.execution_id || "EXECUTION")}</b>
             <div class="small">${escapeHtml(x.actor || x.user || "actor:not declared")}</div>
-          </div>
           <div>${renderStatusPill(x.status || "PENDING_REVIEW")}</div>
           <div class="small">${escapeHtml(x.validation_result || x.validation || "VALIDATION")}</div>
           <div class="small">${escapeHtml(x.created_at || x.timestamp || "NO TIMESTAMP")}</div>
-        </div>
       `).join("");
-    }
-
     async function selectExecution(id){
       SELECTED = ITEMS.find(x => String(x.id) === String(id));
       renderRows();
       renderDetail(SELECTED);
-
       await loadProof(SELECTED);
       await loadAuditTimeline(SELECTED);
       await renderRuleSurface(SELECTED);
       await loadExecutionTrace(SELECTED);
-    }
-
     async function loadProof(x){
       if(!x?.execution_id) return;
-
       const el = document.getElementById("proofPanel");
       if(!el) return;
-
-      try{
         const proof = await api("/api/v1/proof/summary?execution_id=" + encodeURIComponent(x.execution_id));
         const ledger = proof.ledger || {};
         const summary = proof.summary || {};
-
         el.innerHTML = `
           <div class="k">EXECUTION PROOF</div>
           <div class="grid2" style="margin-top:10px;">
@@ -1380,44 +733,21 @@ button.secondary,
             <div><div class="k">RECONCILIATION</div><div class="v">${escapeHtml(ledger.reconciliation_state || "-")}</div></div>
             <div><div class="k">AUDIT CHAIN</div><div class="v">${proof.audit?.verified ? "VERIFIED" : "PARTIAL"}</div></div>
             <div><div class="k">TRACE</div><div class="v">${escapeHtml(String(proof.trace?.events || 0))} EVENTS</div></div>
-          </div>
-
           <div class="block" style="margin-top:8px;background:#fff;">
             <div class="k">PROOF HASH</div>
             <div class="small" style="word-break:break-all;font-family:monospace;">
               ${escapeHtml((proof.proof_hash || "").slice(0,32))}...
-            </div>
-          </div>
-
-          <div class="block" style="margin-top:8px;background:#fff;">
             <div class="k">SUMMARY</div>
             <div class="small">
               LEDGER ${summary.ledger_linked ? "LINKED" : "UNLINKED"} ·
               SETTLEMENT ${summary.settlement_completed ? "SETTLED" : "PENDING"} ·
               RECONCILIATION ${summary.reconciliation_verified ? "VERIFIED" : "PENDING"} ·
               PROOF ${summary.proof_verified ? "VERIFIED" : "PARTIAL"}
-            </div>
-          </div>
-        `;
-      }catch(e){
-        el.innerHTML = `
-          <div class="k">EXECUTION PROOF</div>
           <div class="small">Proof unavailable: ${escapeHtml(e.message)}</div>
-        `;
-      }
-    }
-
     async function loadAuditTimeline(x){
-      if(!x?.execution_id) return;
-
       const el = document.getElementById("auditTimelinePanel");
-      if(!el) return;
-
-      try{
         const data = await api("/api/v1/audit/timeline?execution_id=" + encodeURIComponent(x.execution_id));
         const items = data.items || [];
-
-        el.innerHTML = `
           <div class="k">AUDIT TIMELINE</div>
           <div class="timeline" style="margin-top:12px;">
             ${items.length ? items.map(ev => `
@@ -1427,40 +757,21 @@ button.secondary,
                 <div class="small">${escapeHtml(ev.created_at || "")}</div>
               </div>
             `).join("") : `
-              <div class="event">
                 <div class="k">NO EVENTS</div>
                 <div class="small">Audit trail is ready but no events were returned.</div>
-              </div>
             `}
-          </div>
-        `;
-      }catch(e){
-        el.innerHTML = `
-          <div class="k">AUDIT TIMELINE</div>
           <div class="small">Timeline unavailable: ${escapeHtml(e.message)}</div>
-        `;
-      }
-    }
-
     async function renderRuleSurface(x){
       const el = document.getElementById("ruleSurfaceContent");
-      if(!el) return;
-
       const id = x?.execution_id || x?.id;
-
-      try{
         const result = await api(`/api/v1/rules/evaluate?execution_id=${encodeURIComponent(id)}`);
         const rules = Array.isArray(result.rules) ? result.rules : [];
-
         if(!rules.length){
           el.innerHTML = `<span style="opacity:.6">No policy context attached.</span>`;
           return;
-        }
-
         const okStates = ["PASSED","VERIFIED","LINKED"];
         const reviewStates = ["REVIEW","PENDING","PENDING_REVIEW","INFO"];
         const badStates = ["BLOCKED","MISSING","FAILED"];
-
         el.innerHTML = `<div style="display:grid;gap:6px">` + rules.map(rule => {
           const state = String(rule.status || "INFO").toUpperCase();
           const color =
@@ -1468,7 +779,6 @@ button.secondary,
             reviewStates.includes(state) ? "var(--warn)" :
             badStates.includes(state) ? "var(--bad)" :
             "var(--text)";
-
           return `
             <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:6px 8px;background:#fff;border-radius:7px;border:1px solid var(--line)">
               <span style="font-size:11px;font-weight:800;letter-spacing:.06em">${escapeHtml(rule.rule || rule.rule_code || "RULE")}</span>
@@ -1477,274 +787,163 @@ button.secondary,
               </span>
               <span style="grid-column:1 / -1;font-size:10px;color:var(--muted)">
                 ${escapeHtml(rule.impact || rule.severity || "execution_control")}
-              </span>
-            </div>
           `;
         }).join("") + `</div>`;
-
-      }catch(e){
         el.innerHTML = `<span style="opacity:.6">Policy materialization unavailable: ${escapeHtml(e.message)}</span>`;
-      }
-    }
-
     async function loadExecutionTrace(x){
       const el = document.getElementById("executionTraceContent");
-      if(!el) return;
-
-      const id = x?.execution_id || x?.id;
-
-      try{
         const data = await api(`/api/v1/trace/execution?execution_id=${encodeURIComponent(id)}`);
         const trace = data.trace || [];
-
         if(!trace.length){
           el.innerHTML = `<span style="opacity:.6">No trace data available.</span>`;
-          return;
-        }
-
         const ok = ["PASSED","VERIFIED","LINKED","RECORDED","APPROVED"];
         const warn = ["REVIEW","PENDING","PENDING_REVIEW","UNCLEAR","INFO"];
         const bad = ["BLOCKED","MISSING","FAILED"];
-
         el.innerHTML = `<div style="display:grid;gap:4px">` + trace.map(step => {
           const state = String(step.state || "INFO").toUpperCase();
-          const color =
             ok.includes(state) ? "var(--ok)" :
             warn.includes(state) ? "var(--warn)" :
             bad.includes(state) ? "var(--bad)" :
             "var(--muted)";
-
-          return `
             <div style="display:grid;grid-template-columns:14px 1fr auto;gap:6px;align-items:center;padding:3px 0">
               <span style="color:${color};font-size:11px">●</span>
               <span style="font-size:10px;font-weight:900;letter-spacing:.12em;color:${color}">${escapeHtml(step.step || "STEP")}</span>
               <span style="font-size:10px;color:var(--muted)">${escapeHtml(step.timestamp || "")}</span>
               <span style="grid-column:2 / -1;font-size:10px;color:var(--muted)">${escapeHtml(step.detail || "")}</span>
-            </div>
-          `;
-        }).join("") + `</div>`;
-
-      }catch(e){
         el.innerHTML = `<span style="opacity:.6">Trace unavailable: ${escapeHtml(e.message)}</span>`;
-      }
-    }
-
     function renderDetail(x){
       const el = document.getElementById("detail");
-
       if(!x){
-        el.innerHTML = `
-          <div class="block">
-            <div class="k">STATE</div>
-            <div class="v">AWAITING SELECTION</div>
-          </div>
-        `;
+        el.innerHTML = `<div class="block"><div class="k">STATE</div><div class="v">AWAITING SELECTION</div></div>`;
         return;
       }
-
       if(document.getElementById("detailId")) document.getElementById("detailId").textContent = x.execution_id || x.id || "No execution selected";
-
       el.innerHTML = `
         <div class="detail-stack">
-          <div class="block">
             <div class="k">EXECUTION ID</div>
             <div class="v">${escapeHtml(x.execution_id || x.id || "-")}</div>
-          </div>
-
           <div class="grid2">
             <div class="block">
               <div class="k">STATUS</div>
               <div class="v">${renderStatusPill(x.status || "-")}</div>
-            </div>
-
-            <div class="block">
               <div class="k">VALIDATION</div>
               <div class="v">${escapeHtml(x.validation_result === "UNCLEAR" && x.status === "APPROVED" ? "PASSED" : (x.validation_result || "-"))}</div>
-            </div>
-
-            <div class="block">
               <div class="k">ACTOR</div>
               <div class="v">${escapeHtml(x.actor || "-")}</div>
-            </div>
-
-            <div class="block">
               <div class="k">REQUEST TYPE</div>
               <div class="v">${escapeHtml(x.request_type || "-")}</div>
-            </div>
-          </div>
-
-          <div class="block">
             <div class="k">SUBJECT</div>
             <div class="v">${escapeHtml(x.subject || "-")}</div>
-          </div>
-
-          <div class="grid2">
-            <div class="block">
               <div class="k">LEDGER</div>
               <div class="v">${escapeHtml(x.ledger_state || "HASH_LINKED")}</div>
-            </div>
-
-            <div class="block">
               <div class="k">AUDIT</div>
               <div class="v">${escapeHtml(x.audit_state || "RECORDED")}</div>
-            </div>
-
-            <div class="block">
               <div class="k">RECONCILIATION</div>
               <div class="v">${escapeHtml(x.reconciliation_state === "PENDING" ? "VERIFIED" : (x.reconciliation_state || "VERIFIED"))}</div>
-            </div>
-
-            <div class="block">
               <div class="k">HASH</div>
               <div class="v">${x.hash ? "VERIFIED" : "MISSING"}</div>
-            </div>
-          </div>
-
           <div id="proofPanel" class="block">
             <div class="k">EXECUTION PROOF</div>
             <div class="v">LOADING...</div>
-          </div>
-
           <div id="auditTimelinePanel" class="block">
             <div class="k">AUDIT TIMELINE</div>
             <div class="small">Loading timeline...</div>
-          </div>
-
           <div id="ruleSurfacePanel" class="block">
             <div class="k">POLICY MATERIALIZATION</div>
             <div id="ruleSurfaceContent" class="small">Loading policy context...</div>
-          </div>
-
           <div id="executionTracePanel" class="block">
             <div class="k">EXECUTION TRACE</div>
             <div id="executionTraceContent" class="small">Loading trace...</div>
-          </div>
-
-          <div class="drawer-actions">
-            <div class="block">
-              <div class="k">OPERATOR ACTIONS</div>
-
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;overflow:hidden;">
-                <button onclick="operatorAction('APPROVE')">APPROVE</button>
-                <button class="secondary" onclick="operatorAction('ESCALATE')">ESCALATE</button>
-                <button class="danger" onclick="operatorAction('REJECT')">REJECT</button>
-                <button class="secondary" onclick="operatorAction('FREEZE')">FREEZE</button>
-              </div>
-            </div>
-          </div>
-        </div>
+          <div id="execSurfacesHost" class="drawer-actions"></div>
       `;
+      const host = document.getElementById("execSurfacesHost");
+      if (host && window.EXECUTIA_EXECUTION_SURFACES) {
+        host.innerHTML = window.EXECUTIA_EXECUTION_SURFACES.renderOperatorSurfaces(x);
+        window.EXECUTIA_EXECUTION_SURFACES.bindOperatorSurfaces(host, {
+          getExecution: () => SELECTED,
+          onAction: (act) => operatorAction(act)
+        });
+      }
     }
-
     async function operatorAction(action){
       if(!SELECTED) return alert("No execution selected.");
-
-      try{
+      try {
         const result = await api("/api/v1/operator/action", {
-          method:"POST",
-          body:JSON.stringify({
-            execution_id:SELECTED.execution_id || SELECTED.id,
+          method: "POST",
+          body: JSON.stringify({
+            execution_id: SELECTED.execution_id || SELECTED.id,
             action,
-            reason:`Operator ${action.toLowerCase()} action.`
+            reason: `Operator ${String(action).toLowerCase()} action.`
           })
         });
-
-        if(result?.next_state){
+        if (result?.next_state) {
           SELECTED.status = result.next_state;
         }
-
-        SELECTED.operator_action = action;
+        if (result?.verification_phase) {
+          SELECTED.reconciliation_state = result.verification_phase;
+        } else if (result?.replay?.replay_safe) {
+          SELECTED.reconciliation_state = "VERIFIED";
+        }
+        SELECTED.operator_action = result.action || action;
         SELECTED.audit_state = "RECORDED";
-        SELECTED.reconciliation_state = "VERIFIED";
-
-        await loadExecutions();
-
+        if (result?.replay?.canonical_replay_result) {
+          SELECTED.ledger_state = result.replay.canonical_replay_result;
+        }
         const fresh =
           ITEMS.find(item => String(item.id) === String(SELECTED.id)) ||
           ITEMS.find(item => String(item.execution_id) === String(SELECTED.execution_id)) ||
           SELECTED;
-
         SELECTED = fresh;
-
-        renderRows();
-
+        if (window.EXECUTIA_EXECUTION_SURFACES?.applyTransitionResult) {
+          window.EXECUTIA_EXECUTION_SURFACES.applyTransitionResult(result);
+        }
         await releaseExecutionLock();
         await acquireExecutionLock(SELECTED?.id);
         renderDetail(SELECTED);
-
         await loadProof(SELECTED);
         await loadAuditTimeline(SELECTED);
         await renderRuleSurface(SELECTED);
         await loadExecutionTrace(SELECTED);
-
-      }catch(e){
+      } catch (e) {
         alert("Action failed: " + e.message);
       }
     }
-
-
     let LIVE_SYNC_TIMER = null;
     let LIVE_SYNC_BUSY = false;
     let LIVE_SYNC_LAST = 0;
-
     function setLiveSyncState(state){
       const el = document.getElementById("liveSyncState");
-      if(!el) return;
       el.textContent = "LIVE SYNC: " + state;
       el.style.opacity = state === "CONNECTED" ? "1" : ".72";
-    }
-
     async function refreshSelectedExecution(){
       if(!TOKEN) return;
       if(LIVE_SYNC_BUSY) return;
-
       LIVE_SYNC_BUSY = true;
-
-      try{
         if(typeof loadExecutions === "function"){
           await loadExecutions();
-        }
-
         if(SELECTED){
           if(typeof loadProof === "function") await loadProof(SELECTED);
           if(typeof loadAuditTimeline === "function") await loadAuditTimeline(SELECTED);
           if(typeof renderRuleSurface === "function") await renderRuleSurface(SELECTED);
           if(typeof loadExecutionTrace === "function") await loadExecutionTrace(SELECTED);
-        }
-
         LIVE_SYNC_LAST = Date.now();
         setLiveSyncState("CONNECTED");
-      }catch(e){
         console.warn("[EXECUTIA] live sync failed", e);
         setLiveSyncState("DISCONNECTED");
       }finally{
         LIVE_SYNC_BUSY = false;
-      }
-    }
-
     function startLiveSync(){
       if(LIVE_SYNC_TIMER) clearInterval(LIVE_SYNC_TIMER);
       setLiveSyncState("CONNECTED");
-
       LIVE_SYNC_TIMER = setInterval(async () => {
         await refreshSelectedExecution();
       }, 5000);
-    }
-
-
-
     let CURRENT_LOCK = null;
-
     function setLockState(text){
       const el = document.getElementById("lockState");
-      if(!el) return;
       el.textContent = text;
-    }
-
     async function acquireExecutionLock(executionId){
       if(!executionId || !TOKEN) return false;
-
-      try{
         const r = await fetch("/api/v1/operator/lock", {
           method: "POST",
           headers: {
@@ -1752,79 +951,48 @@ button.secondary,
             "Authorization": "Bearer " + TOKEN
           },
           body: JSON.stringify({ execution_id: executionId })
-        });
-
         const j = await r.json();
-
         if(!j.ok){
           if(j.error === "EXECUTION_LOCKED"){
             setLockState("LOCKED BY ANOTHER AUTHORITY");
             return false;
           }
           throw new Error(j.error || "LOCK_FAILED");
-        }
-
         CURRENT_LOCK = executionId;
         setLockState("EXECUTION LOCK: ACTIVE");
         return true;
-
-      }catch(e){
         console.warn("[LOCK]", e);
         setLockState("LOCK FAILED");
         return false;
-      }
-    }
-
     async function releaseExecutionLock(){
       if(!CURRENT_LOCK || !TOKEN) return;
-
-      try{
         await fetch("/api/v1/operator/lock?execution_id=" + CURRENT_LOCK, {
           method: "DELETE",
           headers: { "Authorization": "Bearer " + TOKEN }
-        });
-      }catch(e){
         console.warn("[LOCK RELEASE]", e);
-      }
-
       CURRENT_LOCK = null;
       setLockState("EXECUTION LOCK: INACTIVE");
-    }
-
-
-
     window.addEventListener("beforeunload", () => {
-      if(!CURRENT_LOCK || !TOKEN) return;
-
-      try{
         navigator.sendBeacon(
           "/api/v1/operator/lock?execution_id=" + CURRENT_LOCK,
           new Blob([], { type: "application/json" })
         );
       }catch(e){}
     });
-
-
     if(TOKEN) authorize().then(startLiveSync);
   </script>
-
 <script id="operator-final-actions-js">
 window.authorizeWithToken = async function(){
   try{
     await authorize();
   }catch(e){
     alert("Authorization failed: " + e.message);
-  }
 };
-
 async function loadGovernanceChainStatus(){
   const statusEl = document.getElementById("governanceChainStatus");
   const headEl = document.getElementById("governanceChainHead");
-
-  try{
     if(statusEl) statusEl.textContent = "CHECKING";
     if(headEl) headEl.textContent = "—";
-
     const token =
       window.ACCESS_TOKEN ||
       window.TOKEN ||
@@ -1833,102 +1001,61 @@ async function loadGovernanceChainStatus(){
       document.getElementById("tokenInput")?.value ||
       document.getElementById("token")?.value ||
       document.getElementById("accessToken")?.value;
-
     if(!token){
       if(statusEl) statusEl.textContent = "LOCKED";
       return;
-    }
-
     const r = await fetch("/api/v2/governance/chain/verify", {
       method: "GET",
       headers: {
         "Authorization": "Bearer " + token
-      }
-    });
-
     const data = await r.json();
-
     if(!r.ok || !data.ok){
       if(statusEl) statusEl.textContent = "BROKEN";
       if(headEl) headEl.textContent = data?.error?.code || "VERIFY FAILED";
-      return;
-    }
-
     if(statusEl) statusEl.textContent = data.verified ? "VERIFIED" : "BROKEN";
     if(headEl) headEl.textContent = data.head_hash ? data.head_hash.slice(0, 12) + "…" : "—";
-  }catch(e){
     if(statusEl) statusEl.textContent = "ERROR";
     if(headEl) headEl.textContent = e.message || "VERIFY ERROR";
-  }
-}
-
 window.refreshOperatorConsole = async function(){
   const btn = document.getElementById("refreshBtn");
   const started = Date.now();
-
-  try{
     if(btn){
       btn.textContent = "REFRESHING…";
       btn.disabled = true;
       btn.style.opacity = "0.72";
-    }
-
     await loadExecutions();
     await loadGovernanceChainStatus();
-
     const wait = Math.max(0, 700 - (Date.now() - started));
     await new Promise(resolve => setTimeout(resolve, wait));
-
-    if(btn){
       const t = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
       btn.textContent = "REFRESHED " + t;
       setTimeout(() => { btn.textContent = "REFRESH"; }, 1200);
-    }
-  }catch(e){
     alert("Refresh failed: " + e.message);
   }finally{
-    if(btn){
       btn.disabled = false;
       btn.style.opacity = "";
-    }
-  }
-};
-
 window.refresh = window.refreshOperatorConsole;
 </script>
-
-
 <script id="operator-actions-dock-final">
 (function(){
   function dockOperatorActions(){
     const detail = document.getElementById("detail");
     const drawer = document.querySelector(".drawer");
     if(!detail || !drawer) return;
-
     const actions = detail.querySelector(".drawer-actions");
     const existing = Array.from(drawer.children).find(el => el.classList && el.classList.contains("drawer-actions"));
-
     if(actions){
       if(existing && existing !== actions) existing.remove();
       drawer.appendChild(actions);
-    }
-  }
-
   document.addEventListener("DOMContentLoaded", dockOperatorActions);
-
   const observer = new MutationObserver(dockOperatorActions);
   document.addEventListener("DOMContentLoaded", function(){
-    const detail = document.getElementById("detail");
     if(detail) observer.observe(detail, { childList:true, subtree:false });
     dockOperatorActions();
   });
-
   window.addEventListener("click", function(){
     setTimeout(dockOperatorActions, 50);
-  });
 })();
-</script>
-
   <script src="/components/engine-shell.js"></script>
 </body>
 </html>

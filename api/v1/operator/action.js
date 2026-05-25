@@ -2,12 +2,13 @@ import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
 import crypto from "crypto";
 import { writeAuditEvent } from "../../../services/audit.js";
+import { canonicalExecutionId } from "../../../services/execution.js";
+import { runExecutionCommitFlow } from "../../../services/execution-commit-flow.js";
 import {
-  canonicalExecutionId,
-  commitOperatorTerminalDecision,
-  OperatorDecisionError,
-  syncCoreLedgerTerminalState
-} from "../../../services/execution.js";
+  ExecutionTransitionError,
+  surfaceForAction
+} from "../../../services/execution-state-transition.js";
+import { OperatorDecisionError } from "../../../services/execution.js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -60,43 +61,10 @@ function verifyJwtHS256(token) {
   };
 }
 
-function transitionFor(action) {
-  const a = String(action || "").toUpperCase();
-
-  const map = {
-    APPROVE: {
-      next_state: "APPROVED",
-      trace: ["OPERATOR_APPROVED", "POLICY_STATE_CHANGED", "LEDGER_COMMITTED", "AUDIT_RECORDED"]
-    },
-    REJECT: {
-      next_state: "BLOCKED",
-      trace: ["OPERATOR_REJECTED", "POLICY_STATE_CHANGED", "LEDGER_COMMITTED", "AUDIT_RECORDED"]
-    },
-    FREEZE: {
-      next_state: "PENDING_REVIEW",
-      trace: ["OPERATOR_FREEZE", "POLICY_STATE_CHANGED", "EXECUTION_FROZEN", "AUDIT_RECORDED"]
-    },
-    ESCALATE: {
-      next_state: "PENDING_REVIEW",
-      trace: ["OPERATOR_ESCALATED", "POLICY_STATE_CHANGED", "REVIEW_REQUIRED", "AUDIT_RECORDED"]
-    }
-  };
-
-  return map[a] ? { action: a, ...map[a] } : null;
-}
-
-function isTerminalAction(action) {
-  return action === "APPROVE" || action === "REJECT";
-}
-
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
       return json(res, 405, { ok: false, error: { code: "METHOD_NOT_ALLOWED", message: "POST required." } });
-    }
-
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      return json(res, 500, { ok: false, error: { code: "SUPABASE_ENV_MISSING", message: "Supabase env missing." } });
     }
 
     const incomingKey = req.headers["x-api-key"] || req.headers["x-executia-key"];
@@ -110,7 +78,6 @@ export default async function handler(req, res) {
       };
     } else {
       const token = String(req.headers.authorization || "").replace("Bearer ", "").trim();
-
       operator = verifyJwtHS256(token);
 
       if (!operator && token && token.split(".").length === 3) {
@@ -123,7 +90,8 @@ export default async function handler(req, res) {
             payload.operator?.role ||
             payload.authority?.role ||
             "OPERATOR";
-          const email = payload.email || payload.user?.email || payload.operator?.email || payload.authority?.email || "operator@executia.io";
+          const email =
+            payload.email || payload.user?.email || payload.operator?.email || payload.authority?.email || "operator@executia.io";
 
           if (["OPERATOR", "ADMIN", "authenticated"].includes(role)) {
             operator = {
@@ -142,124 +110,53 @@ export default async function handler(req, res) {
 
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const execution_id = body.execution_id;
-    const transition = transitionFor(body.action);
 
     if (!execution_id || execution_id === "PASTE_EXECUTION_ID_HERE") {
       return json(res, 400, { ok: false, error: { code: "EXECUTION_ID_REQUIRED", message: "Real execution_id required." } });
     }
 
-    if (!transition) {
+    if (!body.action) {
       return json(res, 400, { ok: false, error: { code: "INVALID_ACTION", message: "Invalid operator action." } });
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { realtime: { transport: ws } });
+    const supabase =
+      SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+        ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { realtime: { transport: ws } })
+        : null;
 
-    const { data: current, error: readError } = await supabase
-      .from("execution_results")
-      .select("id,status,execution_id")
-      .or(`id.eq.${execution_id},execution_id.eq.${execution_id}`)
-      .limit(1)
-      .maybeSingle();
+    const result = await runExecutionCommitFlow({
+      execution_id,
+      action: body.action,
+      reason: body.reason || `Operator ${String(body.action).toLowerCase()} action.`,
+      operator,
+      organization_id: body.organization_id || null,
+      supabase
+    });
 
-    if (readError || !current) {
-      return json(res, 404, {
-        ok: false,
-        error: { code: "EXECUTION_NOT_FOUND", message: readError?.message || "Execution not found." }
-      });
-    }
-
-    const previous_state = current.status || null;
+    const rpcExecutionId = canonicalExecutionId(result.execution);
     const now = new Date().toISOString();
-    const rpcExecutionId = canonicalExecutionId(current);
 
-    if (isTerminalAction(transition.action)) {
-      if (previous_state !== "PENDING_REVIEW") {
-        return json(res, 409, {
-          ok: false,
-          error: {
-            code: "INVALID_EXECUTION_STATUS",
-            message: `Execution cannot ${transition.action.toLowerCase()} from status ${previous_state}.`
-          }
-        });
-      }
-
-      await commitOperatorTerminalDecision({
-        supabase,
-        execution_id,
-        decision: transition.action === "APPROVE" ? "APPROVE" : "REJECT",
-        actor: operator.email,
-        reason: body.reason || `Operator ${transition.action}`,
-        operator,
-        enrichMetadata: false,
-        supplementalAudit: false,
-        materializeCoreLedger: transition.action === "APPROVE"
-      });
-
-      if (transition.action === "REJECT") {
-        await syncCoreLedgerTerminalState(supabase, rpcExecutionId, {
-          status: transition.next_state,
-          decision: "BLOCK"
-        });
-      }
-    } else {
-      const { error: updateError } = await supabase
-        .from("execution_results")
-        .update({ status: transition.next_state })
-        .eq("id", current.id);
-
-      if (updateError) {
-        return json(res, 500, { ok: false, error: { code: "STATE_UPDATE_FAILED", message: updateError.message } });
-      }
-
-      const materializedDecision = "REVIEW";
-
-      const { error: coreLedgerUpdateError } = await supabase
-        .from("core_ledger")
-        .update({
-          status: transition.next_state,
-          decision: materializedDecision
-        })
-        .eq("execution_id", rpcExecutionId);
-
-      if (coreLedgerUpdateError) {
-        return json(res, 500, {
-          ok: false,
-          error: {
-            code: "CORE_LEDGER_STATE_UPDATE_FAILED",
-            message: coreLedgerUpdateError.message
-          }
-        });
-      }
-    }
-
-    const trace = transition.trace.map((state) => ({
-      state,
-      timestamp: now,
-      actor: operator.email,
-      role: operator.role
-    }));
-
-    let auditEvent;
-
+    let auditEvent = null;
     try {
       const auditResult = await writeAuditEvent({
         execution_id: rpcExecutionId,
         event_type: "OPERATOR_ACTION",
-        action: transition.action,
-        previous_state,
-        next_state: transition.next_state,
+        action: result.action,
+        previous_state: result.previous_state,
+        next_state: result.next_state,
         actor: operator.email,
         actor_email: operator.email,
         actor_role: operator.role,
         reason: body.reason || null,
-        trace,
+        trace: result.transition?.trace || [],
         metadata: {
           source: "operator_console",
-          governance: "execution_time_truth",
+          surface: surfaceForAction(result.action),
+          semantics: result.semantics,
+          commit_flow: result.commit_flow?.stages || [],
           materialized: true
         }
       });
-
       auditEvent = auditResult.auditEvent;
     } catch (auditError) {
       return json(res, 500, { ok: false, error: { code: "AUDIT_EVENT_FAILED", message: auditError.message } });
@@ -269,14 +166,22 @@ export default async function handler(req, res) {
       ok: true,
       materialized: true,
       execution_id: rpcExecutionId,
-      action: transition.action,
-      previous_state,
-      next_state: transition.next_state,
-      audit_event_id: auditEvent.id,
-      trace
+      action: result.action,
+      previous_state: result.previous_state,
+      next_state: result.next_state,
+      state: result.next_state,
+      verification_phase: result.verification_phase,
+      semantics: result.semantics,
+      transition: result.transition,
+      commit_flow: result.commit_flow,
+      replay: result.replay,
+      audit_event_id: auditEvent?.id,
+      trace: result.transition?.trace,
+      surface: surfaceForAction(result.action),
+      at: now
     });
   } catch (err) {
-    if (err instanceof OperatorDecisionError) {
+    if (err instanceof ExecutionTransitionError || err instanceof OperatorDecisionError) {
       return json(res, err.status, {
         ok: false,
         error: { code: err.code, message: err.message }

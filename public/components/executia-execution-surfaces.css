@@ -1,0 +1,111 @@
+/**
+ * EXECUTIA Canonical Execution Surfaces (Phase 6B) — governed mechanics, not dashboard widgets.
+ */
+
+.ex-exec-surfaces-root {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.ex-exec-surface {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.ex-exec-surface-title {
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1e3a5f;
+}
+
+.ex-exec-line {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #162232;
+}
+
+.ex-exec-meta {
+  margin: 0 0 10px;
+  font-size: 11px;
+  color: #667386;
+}
+
+.ex-exec-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ex-exec-act {
+  border: 1px solid #1e3a5f;
+  background: #1e3a5f;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.ex-exec-act--secondary {
+  background: #fff;
+  color: #1e3a5f;
+}
+
+.ex-exec-act--reject {
+  background: #9b2c2c;
+  border-color: #9b2c2c;
+}
+
+.ex-exec-act--commit {
+  background: #1f7a4d;
+  border-color: #1f7a4d;
+}
+
+.ex-exec-act:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ex-exec-flow {
+  border-top: 1px solid #d8dee8;
+  padding-top: 12px;
+}
+
+.ex-exec-flow-title {
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1e3a5f;
+}
+
+.ex-exec-flow-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 11px;
+  color: #162232;
+}
+
+.ex-exec-flow-stage {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.ex-exec-semantics {
+  margin: 10px 0 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #4d6178;
+}
