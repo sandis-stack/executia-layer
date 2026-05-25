@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-05-25T11:21:22.695Z",
+  "generated_at": "2026-05-25T11:56:22.535Z",
   "branch": "phase-3b3-ledger-polish",
-  "commit": "49162f775cbcba45b95c40c8a5fe688d5384ed87",
+  "commit": "a7a39257eb280b20f43cfbb1aa69e4be2c6bc818",
   "inputs": {
     "architecture_graph": true,
     "engineering_ledger_latest": true,
-    "git_files_changed": 5,
+    "git_files_changed": 6,
     "architecture_graph_report": true,
     "protected_files_config": ".cursor/context/protected-files.md"
   },
   "stability": {
-    "overall_score": 96,
+    "overall_score": 97,
     "architecture_score": 94,
-    "governance_score": 88,
+    "governance_score": 94,
     "replay_score": 100,
     "verification_score": 100,
     "endpoint_consistency_score": 99,
@@ -20,7 +20,7 @@
       "orphans": 1,
       "shadows": 1,
       "protected": 0,
-      "governance_warnings": 2,
+      "governance_warnings": 1,
       "missing_canonical_edges": 0,
       "classified_endpoints": 71,
       "unknown_endpoints": 1,
@@ -31,7 +31,7 @@
     "overall": "LOW",
     "canonical_risk": "LOW",
     "replay_risk": "LOW",
-    "governance_risk": "HIGH",
+    "governance_risk": "LOW",
     "architecture_risk": "MEDIUM",
     "orphan_risk": "LOW",
     "mutation_risk": "LOW"
@@ -45,7 +45,7 @@
     "removed_orphans": [],
     "new_shadow_flows": [],
     "removed_shadow_flows": [],
-    "baseline": "2026-05-25T11:21:21.604Z"
+    "baseline": "2026-05-25T11:56:21.422Z"
   },
   "deploy_intelligence": {
     "protected_files_touched": [],

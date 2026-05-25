@@ -2,17 +2,17 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T11:21:22.695Z
+**Generated:** 2026-05-25T11:56:22.535Z
 **Branch:** phase-3b3-ledger-polish
-**Commit:** 49162f775cbcba45b95c40c8a5fe688d5384ed87
+**Commit:** a7a39257eb280b20f43cfbb1aa69e4be2c6bc818
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 96 |
+| Overall | 97 |
 | Architecture | 94 |
-| Governance | 88 |
+| Governance | 94 |
 | Replay | 100 |
 | Verification | 100 |
 | Endpoint consistency | 99 |
@@ -21,7 +21,7 @@ Deductions from 100 (overall):
 - Orphans: −1
 - Shadow flows: −1
 - Protected file touches: −0
-- Governance warnings: −2
+- Governance warnings: −1
 - Missing canonical edges: −0
 
 ## Risk summary
@@ -32,14 +32,14 @@ Deductions from 100 (overall):
 | Canonical | LOW |
 | Replay | LOW |
 | Public verify | undefined |
-| Governance | HIGH |
+| Governance | LOW |
 | Architecture | MEDIUM |
 | Orphan | LOW |
 | Mutation | LOW |
 
 ## Architecture delta
 
-Baseline: `2026-05-25T11:21:21.604Z`
+Baseline: `2026-05-25T11:56:21.422Z`
 
 - New nodes: 0
 - Removed nodes: 0
