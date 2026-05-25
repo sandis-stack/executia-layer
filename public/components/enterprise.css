@@ -18,7 +18,16 @@
   --ex-amber: #b57b14;
   --ex-red: #b84545;
   --ex-shadow-sm: 0 10px 28px rgba(15, 53, 93, 0.055);
+  --ex-cta-shadow: 0 10px 28px rgba(15, 53, 93, 0.055);
+  --ex-cta-shadow-hover: 0 10px 28px rgba(15, 53, 93, 0.08);
+  --ex-cta-radius: 999px;
+  --ex-cta-primary-bg: #1e3a5f;
+  --ex-cta-primary-border: #1e3a5f;
+  --ex-cta-soft-bg: #ffffff;
+  --ex-cta-soft-border: #dce5ef;
   --ex-radius: 18px;
+  --ex-inst-radius: 18px;
+  --ex-inst-shadow: 0 10px 28px rgba(15, 53, 93, 0.055);
   --ex-max: 1220px;
 }
 
@@ -944,4 +953,140 @@ body {
 @media (max-width: 640px) {
   .ex-title, .ex-title.system-title { font-size: 30px; }
   .ex-control-strip { grid-template-columns: 1fr; }
+}
+
+/* EXECUTIA institutional execution authority — unified CTAs
+   Load this sheet after executia-institutional-environment.css on institutional surfaces. */
+
+body.ex-institutional-env .btn-main,
+body.ex-institutional-env .btn.btn-main,
+body.ex-institutional-env button.btn-main,
+body.ex-institutional-env .submit,
+body.ex-institutional-env button.submit,
+body.ex-institutional-env .btn.primary,
+body.ex-institutional-env a.btn.primary,
+body.ex-institutional-env .ex-env-hero-cta a.is-primary,
+body.ex-institutional-env .actions .btn.primary,
+body.ex-institutional-env .actions a.btn.primary,
+.shell .btn-main,
+.shell .btn.btn-main,
+.shell button.btn-main,
+.shell a.btn.btn-main,
+.shell .hero-actions .btn,
+.shell .hero-actions .btn-main,
+.shell .hero-actions a.btn-main,
+.shell .hero-actions a.btn,
+.shell .nav a.primary {
+  border-radius: var(--ex-cta-radius) !important;
+  border: 1px solid var(--ex-cta-primary-border) !important;
+  box-shadow: var(--ex-cta-shadow) !important;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+body.ex-institutional-env .btn-soft,
+body.ex-institutional-env .btn.btn-soft,
+body.ex-institutional-env a.btn-soft,
+body.ex-institutional-env .btn.soft,
+body.ex-institutional-env a.btn.soft,
+body.ex-institutional-env .ex-env-hero-cta a:not(.is-primary),
+body.ex-institutional-env .actions .btn.soft,
+body.ex-institutional-env .actions a.btn.soft,
+.shell .btn-soft,
+.shell .btn.btn-soft,
+.shell a.btn-soft,
+.shell .hero-actions .btn-soft,
+.shell .hero-actions a.btn-soft {
+  border-radius: var(--ex-cta-radius) !important;
+  border: 1px solid var(--ex-cta-soft-border) !important;
+  box-shadow: none !important;
+  transition: background 0.18s ease, border-color 0.18s ease !important;
+}
+
+body.ex-institutional-env .btn-main:hover,
+body.ex-institutional-env .btn.btn-main:hover,
+body.ex-institutional-env button.btn-main:hover,
+body.ex-institutional-env .submit:hover,
+body.ex-institutional-env button.submit:hover,
+body.ex-institutional-env .btn.primary:hover,
+body.ex-institutional-env a.btn.primary:hover,
+body.ex-institutional-env .ex-env-hero-cta a.is-primary:hover,
+body.ex-institutional-env .actions .btn.primary:hover,
+body.ex-institutional-env .actions a.btn.primary:hover,
+.shell .btn-main:hover,
+.shell .btn.btn-main:hover,
+.shell button.btn-main:hover,
+.shell a.btn.btn-main:hover,
+.shell .hero-actions .btn-main:hover,
+.shell .hero-actions a.btn-main:hover,
+.shell .hero-actions a.btn:hover,
+.shell .nav a.primary:hover {
+  box-shadow: var(--ex-cta-shadow-hover) !important;
+  transform: none !important;
+}
+
+body.ex-institutional-env .btn-soft:hover,
+body.ex-institutional-env .btn.btn-soft:hover,
+body.ex-institutional-env a.btn-soft:hover,
+body.ex-institutional-env .btn.soft:hover,
+body.ex-institutional-env a.btn.soft:hover,
+body.ex-institutional-env .ex-env-hero-cta a:not(.is-primary):hover,
+body.ex-institutional-env .actions .btn.soft:hover,
+body.ex-institutional-env .actions a.btn.soft:hover,
+.shell .btn-soft:hover,
+.shell .btn.btn-soft:hover,
+.shell a.btn-soft:hover,
+.shell .hero-actions .btn-soft:hover,
+.shell .hero-actions a.btn-soft:hover {
+  background: #f5f8fc !important;
+  border-color: var(--ex-cta-primary-bg) !important;
+  transform: none !important;
+}
+
+body.ex-institutional-env .btn-main:active,
+body.ex-institutional-env .submit:active,
+body.ex-institutional-env .btn.primary:active,
+.shell .btn-main:active,
+.shell button.btn-main:active,
+.shell a.btn.btn-main:active {
+  transform: none !important;
+  box-shadow: var(--ex-cta-shadow) !important;
+}
+
+/* EXECUTIA institutional governance surfaces — unified radius (execution-test shell + institutional pages) */
+
+.shell .panel,
+.shell .status-card,
+.shell .governance-ribbon-card,
+.shell .result-head,
+.shell .result-box,
+.shell .comparison-card,
+.shell .scenario-card,
+.shell .flow-card,
+.shell .timeline-card,
+.shell .test-card,
+.shell input,
+.shell textarea,
+.shell select {
+  border-radius: var(--ex-inst-radius) !important;
+}
+
+.shell .panel,
+.shell .status-card,
+.shell .governance-ribbon-card,
+.shell .result-head,
+.shell .result-box,
+.shell .comparison-card,
+.shell .scenario-card,
+.shell .flow-card,
+.shell .timeline-card,
+.shell .test-card,
+body.ex-institutional-env .ex-proof-example-card {
+  box-shadow: var(--ex-inst-shadow) !important;
+  border: 1px solid var(--ex-line, #e2e9f2) !important;
+}
+
+.shell .hero .pill,
+.shell .badge,
+.shell .live-pill {
+  border-radius: 999px !important;
 }

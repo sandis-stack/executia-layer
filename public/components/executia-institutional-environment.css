@@ -11,6 +11,8 @@ body.ex-institutional-env {
   background: var(--ex-ds-bg, #f4f6f9);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  --ex-inst-radius: 18px;
+  --ex-inst-shadow: 0 10px 28px rgba(15, 53, 93, 0.055);
 }
 
 body.ex-institutional-env .shell,
@@ -381,20 +383,25 @@ body.ex-institutional-env .eyebrow {
 }
 
 body.ex-institutional-env .panel,
-body.ex-institutional-env .status-card {
-  border-radius: 0 !important;
-  box-shadow: none !important;
+body.ex-institutional-env .status-card,
+body.ex-institutional-env .governance-ribbon-card,
+body.ex-institutional-env .missing,
+body.ex-institutional-env .result,
+body.ex-institutional-env .result-box,
+body.ex-institutional-env .explain-card,
+body.ex-institutional-env .event-chain-panel,
+body.ex-institutional-env .comparison-card,
+body.ex-institutional-env .scenario-card,
+body.ex-institutional-env .flow-card,
+body.ex-institutional-env .timeline-card {
+  border-radius: var(--ex-inst-radius) !important;
+  box-shadow: var(--ex-inst-shadow) !important;
   border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08)) !important;
 }
 
 body.ex-institutional-env .hero {
   padding-top: var(--ex-ds-s64, 64px) !important;
   padding-bottom: var(--ex-ds-s40, 40px) !important;
-}
-
-body.ex-institutional-env .governance-ribbon-card {
-  border-radius: 0 !important;
-  box-shadow: none !important;
 }
 
 body.ex-institutional-env .governance-ribbon {
@@ -412,16 +419,21 @@ body.ex-institutional-env .governance-ribbon-value {
   font-weight: 600 !important;
 }
 
-body.ex-institutional-env .status-card,
-body.ex-institutional-env .hero .pill {
-  border-radius: 0 !important;
-  box-shadow: none !important;
+body.ex-institutional-env .hero .pill,
+body.ex-institutional-env .eyebrow {
+  border-radius: 999px !important;
+}
+
+body.ex-institutional-env input,
+body.ex-institutional-env textarea,
+body.ex-institutional-env select {
+  border-radius: var(--ex-inst-radius) !important;
+  border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.1)) !important;
 }
 
 body.ex-institutional-env .btn-main,
 body.ex-institutional-env .btn.btn-main,
 body.ex-institutional-env .submit {
-  border-radius: 0 !important;
   font-weight: 600 !important;
   letter-spacing: 0.08em !important;
   text-transform: uppercase !important;
@@ -507,9 +519,11 @@ body.ex-institutional-env .ex-env-consequence-band strong {
   text-transform: uppercase;
   padding: 10px 14px;
   border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.1));
+  border-radius: var(--ex-inst-radius, 18px);
   background: #fff;
   color: var(--ex-ds-blue, #1c3554);
   cursor: pointer;
+  box-shadow: var(--ex-inst-shadow, 0 10px 28px rgba(15, 53, 93, 0.055));
 }
 
 .ex-pilot-example-btn:hover {
@@ -523,8 +537,11 @@ body.ex-institutional-env .ex-env-consequence-band strong {
 }
 
 .ex-proof-example-card {
-  padding: var(--ex-ds-s16, 16px) 0;
-  border-top: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
+  padding: var(--ex-ds-s16, 16px);
+  border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
+  border-radius: var(--ex-inst-radius, 18px);
+  background: #fff;
+  box-shadow: var(--ex-inst-shadow, 0 10px 28px rgba(15, 53, 93, 0.055));
 }
 
 .ex-proof-example-card h3 {
