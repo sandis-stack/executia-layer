@@ -281,13 +281,13 @@ body.ex-env-entry .shell {
 
 /* —— Demo page calm overrides —— */
 body.ex-env-demo .panel {
-  border-radius: 0 !important;
+  border-radius: var(--ex-inst-radius, 18px) !important;
   box-shadow: none !important;
   min-height: 360px !important;
 }
 
 body.ex-env-demo .button {
-  border-radius: 0 !important;
+  border-radius: 999px !important;
   transform: none !important;
   font-weight: 600 !important;
 }
@@ -297,7 +297,7 @@ body.ex-env-demo .button:hover {
 }
 
 body.ex-env-demo .step {
-  border-radius: 0 !important;
+  border-radius: var(--ex-inst-radius, 18px) !important;
 }
 
 @media (max-width: 900px) {
