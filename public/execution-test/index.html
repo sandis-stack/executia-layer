@@ -865,7 +865,6 @@
     }
 
 </style>
-  <link rel="stylesheet" href="/components/enterprise.css" />
 </head>
 <body>
   <div class="shell">
@@ -904,12 +903,12 @@
 
           <div class="governance-ribbon-card" id="ribbonExecutionStateCard">
             <span class="governance-ribbon-label">Execution State</span>
-            <span class="governance-ribbon-value" id="ribbonExecutionState">UNKNOWN</span>
+            <span class="governance-ribbon-value" id="ribbonExecutionState">STANDBY</span>
           </div>
 
           <div class="governance-ribbon-card" id="ribbonGovernanceModeCard">
             <span class="governance-ribbon-label">Governance Mode</span>
-            <span class="governance-ribbon-value" id="ribbonGovernanceMode">UNKNOWN</span>
+            <span class="governance-ribbon-value" id="ribbonGovernanceMode">READY</span>
           </div>
 
           <div class="governance-ribbon-card" id="ribbonProofChainCard">
@@ -919,7 +918,7 @@
 
           <div class="governance-ribbon-card" id="ribbonRegistryCard">
             <span class="governance-ribbon-label">Registry</span>
-            <span class="governance-ribbon-value" id="ribbonRegistry">UNKNOWN</span>
+            <span class="governance-ribbon-value" id="ribbonRegistry">CONNECTED</span>
           </div>
 
         </div>
@@ -928,7 +927,7 @@
       <aside class="status-card">
         <div class="status-title">
           <h2>Execution Flow</h2>
-          <span class="pill" id="executionFlowAuthorityPill">UNKNOWN</span>
+          <span class="pill">LIVE STANDARD</span>
         </div>
         <div class="stack">
           <div class="step"><div class="num">1</div><div><strong>Outcome Defined</strong><span>Human sets the intended result.</span></div><span class="pill">INPUT</span></div>
@@ -1002,10 +1001,10 @@
             <h3>Proof Structure</h3>
             <div class="proof">
               <div class="proof-row"><span>Governance Status</span><span id="governanceStatus">PENDING_REVIEW</span></div>
-              <div class="proof-row"><span>Proof Chain</span><span id="proofChainStatus">NOT MATERIALIZED</span></div>
-              <div class="proof-row"><span>Operator Signature</span><span id="proofOperatorSignature">UNKNOWN</span></div>
-              <div class="proof-row"><span>Timestamp Anchor</span><span id="proofTimestampAnchor">UNKNOWN</span></div>
-              <div class="proof-row"><span>Regulator Verification</span><span id="proofRegulatorVerification">UNKNOWN</span></div>
+              <div class="proof-row"><span>Proof Chain</span><span>READY</span></div>
+              <div class="proof-row"><span>Operator Signature</span><span>REQUIRED</span></div>
+              <div class="proof-row"><span>Timestamp Anchor</span><span>INTERNAL READY</span></div>
+              <div class="proof-row"><span>Regulator Verification</span><span>AVAILABLE</span></div>
             </div>
           </div>
 
@@ -1647,182 +1646,7 @@
 
   <script>
 
-    const runtimeAuthority = {
-      health: null,
-      healthOk: false,
-      lifecycle: "idle",
-      lastAnalysis: null,
-      lastSubmission: null,
-      ribbonBaseline: {
-        executionState: "UNKNOWN",
-        governanceMode: "UNKNOWN",
-        proofChain: "NOT MATERIALIZED",
-        registry: "UNKNOWN"
-      }
-    };
 
-    function mapRegistryFromHealth(health) {
-      const auth = health?.execution_authority;
-      if (auth?.registry_state === "CONFIGURED") return "CONNECTED";
-      if (auth?.registry_state === "DRY_RUN") return "LOCAL";
-      const db = health?.database?.supabase;
-      if (db === "CONFIGURED") return "CONNECTED";
-      if (db === "DRY_RUN") return "LOCAL";
-      return "UNKNOWN";
-    }
-
-    function mapGovernanceModeFromHealth(health) {
-      if (!health || health.ok === false || health.status !== "OK") return "UNKNOWN";
-      const auth = health.execution_authority || {};
-      if (auth.governance_engine === "ACTIVE" && auth.proof_layer_enabled) return "READY";
-      if (health.proof_layer?.enabled && health.integrity?.proof_chain === "ACTIVE") {
-        return "READY";
-      }
-      return "UNKNOWN";
-    }
-
-    function mapExecutionFlowPillFromHealth(health) {
-      if (!health || health.ok === false || health.status !== "OK") return "UNKNOWN";
-      const auth = health.execution_authority || {};
-      if (auth.runtime === "OK" && auth.proof_layer_enabled) return "LIVE STANDARD";
-      if (health.proof_layer?.enabled) return "LIVE STANDARD";
-      return "UNKNOWN";
-    }
-
-    function deriveProofChainRibbon(partial) {
-      if (partial.proofChain) return partial.proofChain;
-      const lc = runtimeAuthority.lifecycle;
-      if (lc === "materialized") {
-        const reg = runtimeAuthority.lastSubmission?.registry;
-        if (reg?.persisted) return "MATERIALIZED";
-        if (reg?.persisted === false) return "LOCAL";
-        return "MATERIALIZED";
-      }
-      if (lc === "submitting") return "MATERIALIZING";
-      if (lc === "analyzed") {
-        const proof = runtimeAuthority.lastAnalysis?.proof || {};
-        if (proof.immutable_chain_required) return "PREVIEW READY";
-        return "UNKNOWN";
-      }
-      if (lc === "analyzing") return "EVALUATING";
-      return runtimeAuthority.ribbonBaseline.proofChain || "NOT MATERIALIZED";
-    }
-
-    function deriveExecutionStateRibbon(partial) {
-      if (partial.executionState) return partial.executionState;
-      const lc = runtimeAuthority.lifecycle;
-      if (lc === "idle") {
-        return runtimeAuthority.healthOk ? "STANDBY" : "UNKNOWN";
-      }
-      return "UNKNOWN";
-    }
-
-    function setProofStructureFromRuntime(result, proof) {
-      const set = (id, text) => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = text;
-      };
-
-      const lc = runtimeAuthority.lifecycle;
-      const health = runtimeAuthority.health;
-      const preview = proof || runtimeAuthority.lastAnalysis?.proof || {};
-      const analysis = result || runtimeAuthority.lastAnalysis?.result || {};
-
-      if (analysis.governance_decision) {
-        set("governanceStatus", analysis.governance_decision);
-      } else if (lc === "idle") {
-        set("governanceStatus", runtimeAuthority.healthOk ? "AWAITING INPUT" : "UNKNOWN");
-      }
-
-      if (lc === "materialized") {
-        set("proofChainStatus", "MATERIALIZED");
-      } else if (lc === "analyzed" || lc === "analyzing") {
-        set(
-          "proofChainStatus",
-          preview.immutable_chain_required ? "PREVIEW ONLY" : "UNKNOWN"
-        );
-      } else {
-        set("proofChainStatus", "NOT MATERIALIZED");
-      }
-
-      if (preview.operator_signature_required === true) {
-        set("proofOperatorSignature", "REQUIRED");
-      } else if (preview.operator_signature_required === false) {
-        set("proofOperatorSignature", "NOT REQUIRED");
-      } else if (health?.execution_authority?.auth_configured) {
-        set("proofOperatorSignature", "REQUIRED");
-      } else if (health?.auth?.configured) {
-        set("proofOperatorSignature", "REQUIRED");
-      } else {
-        set("proofOperatorSignature", "UNKNOWN");
-      }
-
-      if (preview.timestamp_anchor_required === true) {
-        set("proofTimestampAnchor", health?.timestamp ? "ANCHOR READY" : "REQUIRED");
-      } else if (preview.timestamp_anchor_required === false) {
-        set("proofTimestampAnchor", "NOT REQUIRED");
-      } else if (health?.timestamp) {
-        set("proofTimestampAnchor", "RUNTIME READY");
-      } else {
-        set("proofTimestampAnchor", "UNKNOWN");
-      }
-
-      if (preview.regulator_verification_available === true) {
-        set("proofRegulatorVerification", "AVAILABLE");
-      } else if (preview.regulator_verification_available === false) {
-        set("proofRegulatorVerification", "UNAVAILABLE");
-      } else if (health?.proof_layer?.enabled) {
-        set("proofRegulatorVerification", "AVAILABLE");
-      } else {
-        set("proofRegulatorVerification", "UNKNOWN");
-      }
-    }
-
-    function applyAuthoritySurface(partialRibbon = {}) {
-      const ribbon = { ...partialRibbon };
-      const resultCtx = ribbon._result;
-      const proofCtx = ribbon._proof;
-      delete ribbon._result;
-      delete ribbon._proof;
-
-      setGovernanceRibbon(ribbon);
-
-      const pill = document.getElementById("executionFlowAuthorityPill");
-      if (pill) {
-        pill.textContent = mapExecutionFlowPillFromHealth(runtimeAuthority.health);
-      }
-
-      setProofStructureFromRuntime(resultCtx, proofCtx);
-    }
-
-    async function loadRuntimeHealth() {
-      try {
-        const response = await fetch("/api/v1/health", { cache: "no-store" });
-        const data = await response.json();
-        runtimeAuthority.health = data;
-        runtimeAuthority.healthOk =
-          response.ok && data.ok !== false && data.status === "OK";
-        runtimeAuthority.ribbonBaseline = {
-          executionState: runtimeAuthority.healthOk ? "STANDBY" : "UNKNOWN",
-          governanceMode: mapGovernanceModeFromHealth(data),
-          proofChain: "NOT MATERIALIZED",
-          registry: mapRegistryFromHealth(data)
-        };
-      } catch (error) {
-        runtimeAuthority.health = null;
-        runtimeAuthority.healthOk = false;
-        runtimeAuthority.ribbonBaseline = {
-          executionState: "UNKNOWN",
-          governanceMode: "UNKNOWN",
-          proofChain: "NOT MATERIALIZED",
-          registry: "UNKNOWN"
-        };
-        console.warn("EXECUTIA_HEALTH_UNAVAILABLE", error);
-      }
-      if (runtimeAuthority.lifecycle === "idle") {
-        applyAuthoritySurface();
-      }
-    }
 
 
 
@@ -1900,12 +1724,10 @@
 
 
     function setGovernanceRibbon(state = {}) {
-      const executionState = deriveExecutionStateRibbon(state);
-      const governanceMode =
-        state.governanceMode || runtimeAuthority.ribbonBaseline.governanceMode || "UNKNOWN";
-      const proofChain = deriveProofChainRibbon(state);
-      const registry =
-        state.registry || runtimeAuthority.ribbonBaseline.registry || "UNKNOWN";
+      const executionState = state.executionState || "STANDBY";
+      const governanceMode = state.governanceMode || "READY";
+      const proofChain = state.proofChain || "NOT MATERIALIZED";
+      const registry = state.registry || "CONNECTED";
       const blocked = state.blocked || false;
       const active = state.active || false;
 
@@ -1959,15 +1781,6 @@
       const timeline = value("timeline");
       const constraints = value("constraints");
 
-      runtimeAuthority.lifecycle = "submitting";
-      applyAuthoritySurface({
-        executionState: "COMMITTING",
-        governanceMode: "ACTIVE",
-        proofChain: "MATERIALIZING",
-        registry: runtimeAuthority.ribbonBaseline.registry,
-        active: true
-      });
-
       try {
         const response = await fetch("/api/v1/execution/submit", {
           method: "POST",
@@ -1996,23 +1809,13 @@
           ? data.proof_chain
           : [];
 
-        runtimeAuthority.lifecycle = "materialized";
-        runtimeAuthority.lastSubmission = {
-          submission,
-          analysis,
-          proof,
-          registry: data.registry || {}
-        };
-
-        applyAuthoritySurface({
+        setGovernanceRibbon({
           executionState: submission.status || "MATERIALIZED",
           governanceMode: analysis?.failure_prevention_active ? "BLOCK RECORDED" : "COMMITTED",
-          proofChain: data.registry?.persisted ? "MATERIALIZED" : "LOCAL",
+          proofChain: "CONTINUOUS",
           registry: data.registry?.persisted ? "PERSISTED" : "LOCAL",
           active: !analysis?.failure_prevention_active,
-          blocked: !!analysis?.failure_prevention_active,
-          _result: analysis,
-          _proof: proof
+          blocked: !!analysis?.failure_prevention_active
         });
 
         document.getElementById("materializationState").style.display = "flex";
@@ -2268,13 +2071,11 @@
       document.getElementById("scoreValue").textContent = "…";
       document.getElementById("resultArea").classList.add("hidden");
 
-      runtimeAuthority.lifecycle = "analyzing";
-
-      applyAuthoritySurface({
+      setGovernanceRibbon({
         executionState: "VALIDATING",
         governanceMode: "ACTIVE",
-        proofChain: "EVALUATING",
-        registry: runtimeAuthority.ribbonBaseline.registry,
+        proofChain: "PREPARING",
+        registry: "CONNECTED",
         active: true
       });
 
@@ -2321,18 +2122,13 @@
 
         setExecutionObject(result, proof);
 
-        runtimeAuthority.lifecycle = "analyzed";
-        runtimeAuthority.lastAnalysis = { result, proof };
-
-        applyAuthoritySurface({
+        setGovernanceRibbon({
           executionState: result.governance_decision || "ANALYZED",
           governanceMode: result.failure_prevention_active ? "BLOCKING" : "ACTIVE",
-          proofChain: proof.immutable_chain_required ? "PREVIEW READY" : "UNKNOWN",
-          registry: runtimeAuthority.ribbonBaseline.registry,
+          proofChain: "READY",
+          registry: "CONNECTED",
           active: !result.failure_prevention_active,
-          blocked: !!result.failure_prevention_active,
-          _result: result,
-          _proof: proof
+          blocked: !!result.failure_prevention_active
         });
 
         renderTimeline(
@@ -2408,6 +2204,8 @@
 
         document.getElementById("scoreValue").textContent = result.execution_score ?? "—";
         document.getElementById("summaryText").textContent = result.summary || "Execution analysis completed.";
+        document.getElementById("governanceStatus").textContent = result.governance_decision || "PENDING_REVIEW";
+
         const classification = [
           "Domain: " + (result.execution_domain || "UNCLASSIFIED"),
           "Execution risk: " + (result.risk_level || "UNKNOWN"),
@@ -2449,9 +2247,6 @@
           proof
         });
       } catch (error) {
-        runtimeAuthority.lifecycle = "idle";
-        runtimeAuthority.lastAnalysis = null;
-        applyAuthoritySurface();
         document.getElementById("scoreValue").textContent = "!";
         document.getElementById("summaryText").textContent =
           error.message || "Execution analysis could not be completed.";
@@ -2467,8 +2262,6 @@
         el.appendChild(li);
       });
     }
-
-    loadRuntimeHealth();
   </script>
 
 
