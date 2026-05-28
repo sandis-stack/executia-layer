@@ -2,9 +2,14 @@
  * EXECUTIA Institutional Design System (Phase 5A)
  * Typography, spacing rhythm, component tiers, operational surface rules.
  * Spacing allowed: 8 · 16 · 24 · 40 · 64 px only (combine via margin+padding).
+ *
+ * Visual governance (Phase 1): canonical token authority for institutional surfaces.
+ * ENTRY (executia.io) is the visual reference. Radius and shadow for governed cards,
+ * panels, and institutional fields are defined only here — consumers use var().
  */
 
 :root {
+  /* Foundation — color, spacing rhythm */
   --ex-ds-bg: #f4f6f9;
   --ex-ds-wash: #eef2f6;
   --ex-ds-ink: #1a2d42;
@@ -17,6 +22,14 @@
   --ex-ds-s24: 24px;
   --ex-ds-s40: 40px;
   --ex-ds-s64: 64px;
+
+  /*
+   * Institutional surface geometry (canonical authority — ENTRY language).
+   * Soft institutional corner radius; calm, low-noise elevation on light surfaces.
+   * Do not redefine in other stylesheets or page :root blocks.
+   */
+  --ex-inst-radius: 18px;
+  --ex-inst-shadow: 0 8px 22px rgba(15, 53, 93, 0.045);
 }
 
 /* —— Spacing utilities (canonical rhythm) —— */

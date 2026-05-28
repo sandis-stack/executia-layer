@@ -74,8 +74,6 @@ a.ex-consequence-act {
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.2));
-  border-radius: 0;
-  box-shadow: none;
   cursor: pointer;
 }
 
@@ -93,7 +91,7 @@ body.ex-op-shell button.danger:not(.ex-consequence-act) {
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  border-radius: 0;
+  border-radius: var(--ex-inst-radius);
   box-shadow: none;
 }
 

@@ -166,6 +166,25 @@
       line-height:1.8;
     }
 
+    .institutional-review-note{
+      margin:20px 0 0;
+      padding:16px 0 0;
+      border-top:1px solid var(--line);
+      font-size:14px;
+      line-height:1.7;
+      color:var(--muted);
+    }
+
+    .institutional-review-note strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--blue);
+    }
+
     .grid{
       margin-top:28px;
       display:grid;
@@ -337,15 +356,15 @@
     <section class="hero">
 
       <div class="eyebrow">
-        EXECUTIA PILOT ONBOARDING
+        Institutional execution review
       </div>
 
       <h1>
-        Request institutional execution pilot.
+        Request institutional execution review
       </h1>
 
       <p class="lead">
-        Define the governance problem, execution risk and operational environment. EXECUTIA will evaluate pilot suitability and create a pilot review identifier.
+        This institutional review evaluates operational governance exposure before critical commitments continue. Describe where operational commitments continue without sufficient oversight, review continuity, or governance control.
       </p>
 
     </section>
@@ -353,11 +372,16 @@
     <section class="panel">
 
       <h2>
-        Pilot Request
+        Institutional operational review initiation
       </h2>
 
       <p>
-        This onboarding flow is designed for governments, enterprises, infrastructure operators and regulated execution environments.
+        Submit governance exposure for institutional evaluation. Designed for governments, enterprises, infrastructure operators, and regulated execution environments.
+      </p>
+
+      <p class="institutional-review-note">
+        <strong>Institutional review may assess:</strong>
+        procurement exposure · operational oversight continuity · governance accountability · audit evidence continuity · regulated execution exposure
       </p>
 
       <div class="grid">
@@ -375,7 +399,7 @@
             <option>Infrastructure Maintenance</option>
             <option>NATO / Defense Logistics</option>
             <option>Healthcare Governance</option>
-            <option>AI Agent Governance</option>
+            <option>Automated decision systems</option>
           </select>
         </div>
 
@@ -386,7 +410,7 @@
 
         <div class="field">
           <label>Current System</label>
-          <input id="system" placeholder="ERP / workflow / manual governance">
+          <input id="system" placeholder="ERP / manual governance">
         </div>
 
         <div class="field full">
@@ -407,17 +431,17 @@
       </div>
 
       <button class="submit" onclick="submitPilotRequest()">
-        Request Pilot Review
+        Submit for Institutional Evaluation
       </button>
 
       <div class="result" id="result">
 
         <h3>
-          EXECUTIA Pilot Review Created
+          Execution governance case recorded
         </h3>
 
         <p>
-          Governance onboarding request received. EXECUTIA generated a pilot review state for institutional evaluation.
+          Your submission has been recorded for institutional evaluation and governance review.
         </p>
 
         <div class="result-grid">

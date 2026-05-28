@@ -53,7 +53,7 @@ Map to approved states/actions in canonical semantics — do not introduce paral
 
 ## UI change rules
 
-1. **Tokens only** — spacing (`--ex-ds-s8|16|24|40|64`), colors, typography from design system; `border-radius: 0` on institutional surfaces unless user explicitly approves otherwise
+1. **Tokens only** — spacing (`--ex-ds-s8|16|24|40|64`), colors, typography from design system; institutional surfaces follow the Entry reference: soft Apple-level radius via design tokens; no square/kantaini blocks unless explicitly approved
 2. **No black backgrounds** — light institutional UI only
 3. **Inherit** header/footer via `ex-institutional-env` (public) or governance shell (console) — never duplicate `engine-shell` on pages that already use institutional environment
 4. **Eight surfaces** preserved: Execution, Governance, Proof, Replay, Health, Operations, Engineering, Request

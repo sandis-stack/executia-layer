@@ -93,14 +93,14 @@ body.ex-op-shell * {
 body.ex-op-shell .ex-op-main [class*="card"],
 body.ex-op-shell .ex-op-main [class*="metric"],
 body.ex-op-shell .ex-op-main [class*="widget"] {
-  border-radius: 0;
+  border-radius: var(--ex-inst-radius);
   box-shadow: none;
 }
 
 body.ex-op-shell .ex-op-main .ex-card,
 body.ex-op-shell .ex-op-main .ex-metric {
   border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
-  background: var(--ex-ds-bg, #f4f6f9);
+  background: #fff;
 }
 
 /* Normalize console page mains inside shell */
@@ -116,9 +116,10 @@ body.ex-op-shell .proofs-wrap {
 }
 
 body.ex-op-shell .proofs-card {
-  border: none;
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
+  border-radius: var(--ex-inst-radius);
+  background: #fff;
+  box-shadow: none;
   padding: 0;
 }
 
