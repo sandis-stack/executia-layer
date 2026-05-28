@@ -116,6 +116,57 @@
     "Operational accountability"
   ]);
 
+  /** Execution-test consequence state transitions (intake-driven, client-side). */
+  const EXECUTION_CONSEQUENCE_STATES = Object.freeze({
+    READINESS: ["STANDBY", "REVIEWING", "VALIDATING", "HARDENED"],
+    REGULATORY: ["PENDING REVIEW", "UNDER REVIEW"],
+    PROOF: ["NOT MATERIALIZED", "EVIDENCE PENDING", "CONTINUITY VERIFIED"],
+    AUTHORITY: ["WITHHELD", "CONDITIONAL", "CONTROLLED", "AUTHORIZATION ELIGIBLE"]
+  });
+
+  /** Execution pathway engine segments (execution-test shell). */
+  const EXECUTION_PATHWAY_ENGINE = Object.freeze([
+    { id: "intake", label: "Intake segment" },
+    { id: "governance", label: "Governance segment" },
+    { id: "continuity", label: "Continuity segment" },
+    { id: "authority", label: "Authority segment" },
+    { id: "authorization", label: "Authorization segment" }
+  ]);
+
+  /** Execution-test live governance flow — institutional sequence labels. */
+  const EXECUTION_LIVE_GOVERNANCE_FLOW = Object.freeze([
+    {
+      id: "outcome",
+      label: "Outcome Defined",
+      detail: "Institutional outcome recorded for governance evaluation.",
+      phase: "INTAKE"
+    },
+    {
+      id: "validation",
+      label: "Governance Validation",
+      detail: "Governance constraints and approval order under review.",
+      phase: "CONTROL"
+    },
+    {
+      id: "exposure",
+      label: "Exposure Assessment",
+      detail: "Operational exposure surface mapped across commitments.",
+      phase: "ASSESS"
+    },
+    {
+      id: "proof",
+      label: "Proof Continuity",
+      detail: "Reviewable evidence continuity evaluated before authorization.",
+      phase: "PROOF"
+    },
+    {
+      id: "authorization",
+      label: "Execution Authorization",
+      detail: "Execution authority issued or withheld under governance.",
+      phase: "AUTHORITY"
+    }
+  ]);
+
   const DEMO_FLOW = Object.freeze([
     { id: "REQUEST", label: "REQUEST", detail: "Request received." },
     { id: "VALIDATION", label: "VALIDATION", detail: "Rules evaluated." },
@@ -631,6 +682,18 @@
       }
       titleEl.textContent = `${AI_CLARITY.PRODUCT} — operational governance continuity layer`;
     }
+
+    if (pageId === "execution" && !isEntry) {
+      const execDesc =
+        "Live operational governance shell for institutional execution evaluation, exposure assessment, proof continuity, and execution authorization.";
+      if (!meta.content || meta.content.includes("Define an outcome")) {
+        meta.content = execDesc;
+      }
+      let titleEl = document.querySelector("title");
+      if (titleEl) {
+        titleEl.textContent = `${AI_CLARITY.PRODUCT} — Live Governance Shell`;
+      }
+    }
   }
 
   function mountHeader(pageId) {
@@ -729,6 +792,9 @@
     renderEntryInevitabilityBeforeCta,
     ENTRY_PRESSURE_LINES,
     ENTRY_CONTINUITY_CHAIN,
+    EXECUTION_LIVE_GOVERNANCE_FLOW,
+    EXECUTION_CONSEQUENCE_STATES,
+    EXECUTION_PATHWAY_ENGINE,
     renderInstitutionalProofCases,
     renderInevitabilityBlock,
     renderInstitutionalLegitimacy,

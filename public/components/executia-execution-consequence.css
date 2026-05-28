@@ -107,3 +107,79 @@ body.ex-op-shell button.danger:not(.ex-consequence-act) {
     transition: none;
   }
 }
+
+/* —— Execution-test consequence posture strip —— */
+body.ex-exec-gov-shell .ex-exec-consequence-strip {
+  margin-top: var(--ex-ds-s24, 24px);
+  padding: var(--ex-ds-s16, 16px) 0 0;
+  border-top: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
+}
+
+body.ex-exec-gov-shell .ex-exec-consequence-strip .ex-consequence-inner {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body.ex-exec-gov-shell .governance-ribbon-card {
+  box-shadow: none;
+  border-radius: 14px;
+}
+
+body.ex-exec-gov-shell .status-card,
+body.ex-exec-gov-shell .panel {
+  box-shadow: 0 8px 20px rgba(16, 32, 51, 0.03);
+  border-radius: 16px;
+}
+
+body.ex-exec-gov-shell.is-governance-reacting .ex-consequence-primary {
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-exec-gov-shell .ex-hero-primary .ex-exec-consequence-strip {
+  margin-top: var(--ex-ds-s16, 16px);
+}
+
+/* —— Consequence engine propagation (execution-test) —— */
+body.ex-exec-gov-shell.ex-consequence-engine[data-consequence-phase="review"] .ex-gov-telemetry-fill,
+body.ex-exec-gov-shell.ex-consequence-engine[data-consequence-phase="validate"] .ex-gov-telemetry-fill {
+  background: rgba(28, 53, 84, 0.5);
+}
+
+body.ex-exec-gov-shell.ex-consequence-engine[data-consequence-phase="idle"] .ex-gov-telemetry-value {
+  color: var(--ex-ds-muted, #7a8da3);
+}
+
+body.ex-exec-gov-shell.ex-consequence-engine[data-consequence-phase="review"] .ex-consequence-primary,
+body.ex-exec-gov-shell.ex-consequence-engine[data-consequence-phase="validate"] .ex-consequence-primary {
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+body.ex-exec-gov-shell .ex-consequence-result-panel {
+  border-radius: 16px;
+}
+
+body.ex-exec-gov-shell.is-governance-reacting .ex-consequence-result-shell {
+  border-color: rgba(28, 53, 84, 0.14);
+}
+
+body.ex-exec-gov-shell.ex-pathway-materialization[data-pathway-tier="advancing"] .ex-gov-result-escalation--primary,
+body.ex-exec-gov-shell.ex-pathway-materialization[data-pathway-tier="ready"] .ex-gov-result-escalation--primary {
+  background: #f4f7fa;
+}
+
+body.ex-exec-gov-shell.ex-pathway-materialization[data-pathway-tier="ready"] .ex-commit-readiness {
+  border-color: rgba(28, 53, 84, 0.18);
+}
+
+body.ex-exec-gov-shell.ex-controlled-authority[data-authority-tier="controlled"] .ex-gov-result-escalation--primary,
+body.ex-exec-gov-shell.ex-controlled-authority[data-authority-tier="eligible"] .ex-gov-result-escalation--primary {
+  background: #f4f7fa;
+}
+
+body.ex-exec-gov-shell.ex-controlled-authority[data-continuity-lock="stabilized"] .ex-execution-pathway-engine.is-pathway-active {
+  border-top-color: rgba(28, 53, 84, 0.12);
+}
+
+body.ex-exec-gov-shell.ex-controlled-authority[data-authority-tier="eligible"] .ex-commit-readiness-cell dd {
+  color: var(--ex-ds-blue, #1c3554);
+}

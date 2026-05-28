@@ -1185,3 +1185,8 @@ body.ex-institutional-env .ex-env-consequence-band strong {
     grid-template-columns: 1fr;
   }
 }
+
+/* —— Execution-test shell (with ex-exec-gov-shell) —— */
+body.ex-exec-gov-shell.ex-institutional-env {
+  background: var(--ex-ds-bg, #f4f6f9);
+}

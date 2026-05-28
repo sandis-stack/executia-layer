@@ -3,8 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>EXECUTIA — Execution Test</title>
-  <meta name="description" content="Define an outcome. Let EXECUTIA test execution risk, governance readiness, and proof structure." />
+  <title>EXECUTIA — Live Governance Shell</title>
+  <meta name="description" content="Live operational governance shell for institutional execution evaluation, exposure assessment, proof continuity, and execution authorization." />
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
+  <link rel="stylesheet" href="/components/executia-operational-shell.css" />
+  <link rel="stylesheet" href="/components/executia-execution-consequence.css" />
   <style>
     :root{
       --bg:#f6f8fb;
@@ -126,10 +130,14 @@
 
     .governance-ribbon-card{
       border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px;
+      border-radius:14px;
+      padding:14px 16px;
       background:#ffffff;
       box-shadow:0 8px 22px rgba(16,32,51,.04);
+      min-height:72px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
     }
 
     .governance-ribbon-label{
@@ -144,11 +152,19 @@
 
     .governance-ribbon-value{
       display:block;
-      font-size:14px;
-      font-weight:900;
-      letter-spacing:.04em;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.05em;
       color:#1E3A5F;
-      word-break:break-word;
+      white-space:nowrap;
+      word-break:normal;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    #ribbonProofChain{
+      font-size:10px;
+      letter-spacing:.04em;
     }
 
     .governance-ribbon-card.active .governance-ribbon-value{
@@ -866,12 +882,12 @@
 
 </style>
 </head>
-<body>
+<body class="ex-exec-gov-shell ex-consequence-engine ex-pathway-materialization ex-controlled-authority ex-audit-minimal" data-ex-env-page="execution" data-consequence-phase="idle" data-pathway-tier="idle" data-authority-tier="withheld" data-continuity-lock="open">
   <div class="shell">
     <header>
-      <a class="brand" href="https://executia.io">
+      <a class="brand" href="/">
         <strong>EXECUTIA™</strong>
-        <span>Execution Control Standard</span>
+        <span>Live Operational Governance Shell</span>
       </a>
 
       <nav class="system-layer" aria-label="System layers">
@@ -887,103 +903,330 @@
       </nav>
     </header>
 
-    <section class="hero">
-      <div>
-        <div class="eyebrow">Public Execution Test</div>
-        <h1>Define the result. EXECUTIA controls the execution.</h1>
-        <p class="lead">
-          Test how an outcome is transformed into governance checks, execution risk, proof structure and pilot readiness.
-        </p>
+    <section class="hero ex-hero-governance">
+      <div class="ex-hero-primary">
+        <div class="eyebrow">Governance Audit</div>
+        <h1>Describe the operational commitment.</h1>
+        <p class="lead">EXECUTIA runs a governed institutional audit and determines controlled authorization eligibility.</p>
+        <ul class="ex-hero-continuity-refs" aria-label="Operational continuity references">
+          <li>Decision → Approval → Execution under oversight continuity</li>
+          <li>Reviewable evidence required before execution authority issuance</li>
+          <li>Exposure surface mapped across procurement, payments, infrastructure, compliance</li>
+        </ul>
+        <div class="ex-exec-consequence-strip" aria-label="Governance posture">
+          <div class="ex-consequence-band">
+            <div class="ex-consequence-inner">
+              <p class="ex-consequence-primary">Operational governance continuity</p>
+              <p class="ex-consequence-secondary">Execution authority is issued only after governance validation and proof continuity are satisfied.</p>
+            </div>
+          </div>
+        </div>
+        <p class="ex-continuity-lock-indicator" id="continuityLockIndicator" aria-live="polite" hidden>Continuity stabilized — operational definition locked under governance control.</p>
+        <div class="ex-gov-telemetry" id="governanceTelemetry" aria-label="Governance telemetry">
+          <p class="ex-gov-telemetry-title">Governance telemetry (institutional signal)</p>
+          <div class="ex-gov-telemetry-grid">
+            <div class="ex-gov-telemetry-cell" data-telemetry="exposure">
+              <span class="ex-gov-telemetry-label">Exposure surface</span>
+              <span class="ex-gov-telemetry-track" aria-hidden="true"><span class="ex-gov-telemetry-fill" id="telExposureFill"></span></span>
+              <span class="ex-gov-telemetry-value" id="telExposure">LOW</span>
+            </div>
+            <div class="ex-gov-telemetry-cell" data-telemetry="continuity">
+              <span class="ex-gov-telemetry-label">Continuity integrity</span>
+              <span class="ex-gov-telemetry-track" aria-hidden="true"><span class="ex-gov-telemetry-fill" id="telContinuityFill"></span></span>
+              <span class="ex-gov-telemetry-value" id="telContinuity">STABLE</span>
+            </div>
+            <div class="ex-gov-telemetry-cell" data-telemetry="readiness">
+              <span class="ex-gov-telemetry-label">Governance readiness</span>
+              <span class="ex-gov-telemetry-track" aria-hidden="true"><span class="ex-gov-telemetry-fill" id="telReadinessFill"></span></span>
+              <span class="ex-gov-telemetry-value" id="telReadiness">STANDBY</span>
+            </div>
+            <div class="ex-gov-telemetry-cell" data-telemetry="regulatory">
+              <span class="ex-gov-telemetry-label">Regulatory alignment</span>
+              <span class="ex-gov-telemetry-track" aria-hidden="true"><span class="ex-gov-telemetry-fill" id="telRegulatoryFill"></span></span>
+              <span class="ex-gov-telemetry-value" id="telRegulatory">PENDING</span>
+            </div>
+            <div class="ex-gov-telemetry-cell" data-telemetry="proof">
+              <span class="ex-gov-telemetry-label">Proof propagation</span>
+              <span class="ex-gov-telemetry-track" aria-hidden="true"><span class="ex-gov-telemetry-fill" id="telProofFill"></span></span>
+              <span class="ex-gov-telemetry-value" id="telProof">DORMANT</span>
+            </div>
+          </div>
+        </div>
         <div class="hero-actions">
-          <a class="btn btn-main" href="#test">Start Execution Test</a>
+          <a class="btn btn-main" href="#test">Start Governance Audit</a>
           <a class="btn btn-soft" href="/proof-explorer/">Verify Proof</a>
         </div>
 
         <div class="governance-ribbon">
 
           <div class="governance-ribbon-card" id="ribbonExecutionStateCard">
-            <span class="governance-ribbon-label">Execution State</span>
+            <span class="governance-ribbon-label">Execution Posture</span>
             <span class="governance-ribbon-value" id="ribbonExecutionState">STANDBY</span>
           </div>
 
           <div class="governance-ribbon-card" id="ribbonGovernanceModeCard">
-            <span class="governance-ribbon-label">Governance Mode</span>
+            <span class="governance-ribbon-label">Oversight Mode</span>
             <span class="governance-ribbon-value" id="ribbonGovernanceMode">READY</span>
           </div>
 
           <div class="governance-ribbon-card" id="ribbonProofChainCard">
-            <span class="governance-ribbon-label">Proof Chain</span>
-            <span class="governance-ribbon-value" id="ribbonProofChain">NOT MATERIALIZED</span>
+            <span class="governance-ribbon-label">Proof Continuity</span>
+            <span class="governance-ribbon-value" id="ribbonProofChain" title="NOT MATERIALIZED">NOT&nbsp;MATERIALIZED</span>
           </div>
 
           <div class="governance-ribbon-card" id="ribbonRegistryCard">
-            <span class="governance-ribbon-label">Registry</span>
+            <span class="governance-ribbon-label">Registry Link</span>
             <span class="governance-ribbon-value" id="ribbonRegistry">CONNECTED</span>
           </div>
 
         </div>
+
+        <div class="ex-execution-path-materialization ex-execution-pathway-engine" id="executionPathMaterialization" aria-label="Execution pathway engine" data-path-index="-1">
+          <p class="ex-execution-path-label">Execution pathway control standard</p>
+          <div class="ex-execution-path-track" role="list">
+            <div class="ex-execution-path-segment" role="listitem" data-segment="intake">
+              <span class="ex-path-segment-type">Intake segment</span>
+              <span class="ex-path-segment-state" data-path-state>—</span>
+            </div>
+            <div class="ex-execution-path-segment" role="listitem" data-segment="governance">
+              <span class="ex-path-segment-type">Governance segment</span>
+              <span class="ex-path-segment-state" data-path-state>—</span>
+            </div>
+            <div class="ex-execution-path-segment" role="listitem" data-segment="continuity">
+              <span class="ex-path-segment-type">Continuity segment</span>
+              <span class="ex-path-segment-state" data-path-state>—</span>
+            </div>
+            <div class="ex-execution-path-segment" role="listitem" data-segment="authority">
+              <span class="ex-path-segment-type">Authority segment</span>
+              <span class="ex-path-segment-state" data-path-state>—</span>
+            </div>
+            <div class="ex-execution-path-segment" role="listitem" data-segment="authorization">
+              <span class="ex-path-segment-type">Authorization segment</span>
+              <span class="ex-path-segment-state" data-path-state>—</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <aside class="status-card">
+      <aside class="status-card ex-live-gov-flow">
         <div class="status-title">
-          <h2>Execution Flow</h2>
-          <span class="pill">LIVE STANDARD</span>
+          <h2>Live Governance Flow</h2>
+          <span class="pill ex-live-pill"><span class="ex-live-dot is-active" id="liveGovDot" aria-hidden="true"></span> LIVE</span>
         </div>
-        <div class="stack">
-          <div class="step"><div class="num">1</div><div><strong>Outcome Defined</strong><span>Human sets the intended result.</span></div><span class="pill">INPUT</span></div>
-          <div class="step"><div class="num">2</div><div><strong>Governance Checked</strong><span>Rules, constraints and risk are evaluated.</span></div><span class="pill">CONTROL</span></div>
-          <div class="step"><div class="num">3</div><div><strong>Execution Proof Created</strong><span>Decision becomes verifiable evidence.</span></div><span class="pill">PROOF</span></div>
+        <div class="ex-flow-track-shell" id="liveFlowTrack">
+          <div class="ex-flow-continuity-spine" id="liveFlowSpine" aria-hidden="true"></div>
+          <div class="ex-execution-path-spine" id="executionPathSpine" aria-hidden="true"></div>
+          <div class="stack ex-flow-steps" id="liveGovernanceFlow">
+            <div class="step is-active" data-gov-step="0"><div class="num">1</div><div><strong>Outcome Defined</strong><span>Institutional outcome recorded for governance evaluation.</span></div><span class="pill">INTAKE</span></div>
+            <div class="step" data-gov-step="1"><div class="num">2</div><div><strong>Governance Validation</strong><span>Governance constraints and approval order under review.</span></div><span class="pill">CONTROL</span></div>
+            <div class="step" data-gov-step="2"><div class="num">3</div><div><strong>Exposure Assessment</strong><span>Operational exposure surface mapped across commitments.</span></div><span class="pill">ASSESS</span></div>
+            <div class="step is-authority-layer" data-gov-step="3"><div class="num">4</div><div><strong>Proof Continuity</strong><span>Reviewable evidence continuity evaluated before authorization.</span></div><span class="pill">PROOF</span></div>
+            <div class="step is-authority-layer" data-gov-step="4"><div class="num">5</div><div><strong>Execution Authorization</strong><span>Execution authority issued or withheld under governance.</span></div><span class="pill">AUTHORITY</span></div>
+          </div>
         </div>
       </aside>
     </section>
 
     <main id="test">
-      <section class="panel">
-        <h2>Run Execution Test</h2>
-        <p>Enter a project, process or public/private execution case. EXECUTIA will classify execution risk and generate a proof-ready governance structure.</p>
+      <section class="panel ex-exec-form-panel ex-exec-intake-shell ex-governance-intake-surface ex-execution-authority-environment">
+        <header class="ex-intake-surface-header">
+          <p class="ex-intake-kicker">Governance audit intake</p>
+          <h2>Operational commitment intake</h2>
+          <p class="ex-intake-lead">Define one governed operational commitment through a sequential institutional intake.</p>
+          <p class="ex-intake-step-status" id="intakeStepStatus">Step 1 of 6 — Country</p>
+        </header>
 
-        <label for="domain">Execution Domain</label>
+        <fieldset class="ex-intake-fieldset" data-intake-step="1">
+          <legend>1. Country</legend>
+        <label for="timeline" class="ex-sr-only">Country</label>
+        <input id="timeline" placeholder="e.g. Latvia" />
+
+        </fieldset>
+
+        <fieldset class="ex-intake-fieldset" data-intake-step="2">
+          <legend>2. Industry</legend>
+        <label for="domain" class="ex-sr-only">Industry</label>
         <select id="domain">
           <option value="public-procurement">Public procurement</option>
-          <option value="finance">Finance / payment / accounting</option>
-          <option value="infrastructure">Infrastructure project</option>
-          <option value="compliance">Compliance control</option>
-          <option value="operations">Business operations</option>
+          <option value="finance">Regulated payments / finance</option>
+          <option value="infrastructure">Infrastructure operations</option>
+          <option value="compliance">Compliance-controlled execution</option>
+          <option value="operations">Multi-party operational execution</option>
         </select>
 
-        <label for="outcome">Defined Outcome</label>
-        <textarea id="outcome" placeholder="Example: Build a compliant supplier selection and payment process where incorrect execution is blocked before commitment."></textarea>
+        </fieldset>
 
-        <div class="grid2">
-          <div>
-            <label for="budget">Budget / Value</label>
-            <input id="budget" placeholder="Example: €250,000" />
-          </div>
-          <div>
-            <label for="timeline">Timeline</label>
-            <input id="timeline" placeholder="Example: 90 days" />
-          </div>
-        </div>
+        <fieldset class="ex-intake-fieldset" data-intake-step="3">
+          <legend>3. Organization</legend>
+        <label for="budget" class="ex-sr-only">Organization</label>
+        <input id="budget" placeholder="e.g. Ministry of Transport" />
+        </fieldset>
 
-        <label for="constraints">Rules / Constraints</label>
-        <textarea id="constraints" placeholder="Example: supplier must be verified, approval must happen before payment, audit trail must be immutable, settlement must be reconciled."></textarea>
+        <fieldset class="ex-intake-fieldset" data-intake-step="4">
+          <legend>4. Operational Commitment</legend>
+        <label for="outcome" class="ex-sr-only">Operational Commitment</label>
+        <textarea id="outcome" placeholder="Describe the operational commitment to be governed."></textarea>
+        </fieldset>
 
-        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn-main" onclick="runExecutionTest()">Run EXECUTIA Analysis</button>
-          <button class="btn-soft" onclick="loadExample()">Load Example</button>
+        <fieldset class="ex-intake-fieldset" data-intake-step="5">
+          <legend>5. Constraints / Oversight Conditions</legend>
+        <label for="constraints" class="ex-sr-only">Constraints and Oversight Conditions</label>
+        <textarea id="constraints" placeholder="List oversight conditions, sequencing controls, and proof obligations."></textarea>
+        </fieldset>
+
+        <div class="ex-intake-submit-row">
+          <button class="btn-main" id="runAuditBtn" onclick="runExecutionTest()">Generate Institutional Assessment</button>
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel ex-consequence-result-panel">
         <div class="result-head">
           <div>
-            <h2>Governance Result</h2>
-            <p id="summaryText">No execution test has been run yet.</p>
+            <h2>Governance Audit Result</h2>
+            <p id="summaryText">Institutional governance assessment initialized for commitment intake.</p>
           </div>
-          <div class="score">
-            <strong id="scoreValue">—</strong>
-            <span>Score</span>
+          <div class="score ex-readiness-badge" id="readinessBadge" data-readiness="STANDBY">
+            <strong id="scoreValue">STANDBY</strong>
+            <span>Governance readiness</span>
           </div>
+        </div>
+
+        <div class="ex-gov-result-shell ex-consequence-result-shell" id="governanceResultShell" aria-label="Governance result shell" data-consequence-phase="idle">
+          <div class="ex-gov-result-escalation ex-gov-result-escalation--primary" aria-label="Governance audit result">
+            <p class="ex-gov-result-escalation-label">Primary governance determinations</p>
+            <div class="ex-gov-result-row ex-gov-result-row--primary ex-gov-result-row--authority">
+              <span class="ex-gov-result-label">Execution Authority</span>
+              <span class="ex-gov-result-value" id="govAuthority">WITHHELD</span>
+            </div>
+            <div class="ex-gov-result-row ex-gov-result-row--primary">
+              <span class="ex-gov-result-label">Continuity Stabilization</span>
+              <span class="ex-gov-result-value" id="govOperationalContinuity">OPEN</span>
+            </div>
+            <div class="ex-gov-result-row ex-gov-result-row--primary">
+              <span class="ex-gov-result-label">Controlled Authorization Eligibility</span>
+              <span class="ex-gov-result-value" id="govAuthorizationEligibility">NOT ESTABLISHED</span>
+            </div>
+          </div>
+          <div class="ex-gov-result-escalation ex-gov-result-escalation--secondary" aria-label="Secondary governance dependencies">
+            <p class="ex-gov-result-escalation-label">Secondary dependencies</p>
+            <div class="ex-gov-result-row ex-gov-result-row--secondary">
+              <span class="ex-gov-result-label">Regulatory Exposure</span>
+              <span class="ex-gov-result-value" id="govExposure">UNDEFINED</span>
+            </div>
+            <div class="ex-gov-result-row ex-gov-result-row--secondary">
+              <span class="ex-gov-result-label">Audit Dependency</span>
+              <span class="ex-gov-result-value" id="govAuditDependency">PENDING</span>
+            </div>
+            <div class="ex-gov-result-row ex-gov-result-row--secondary">
+              <span class="ex-gov-result-label">Operational Escalation</span>
+              <span class="ex-gov-result-value" id="govOperationalEscalation">BASELINE</span>
+            </div>
+            <div class="ex-gov-result-row ex-gov-result-row--secondary">
+              <span class="ex-gov-result-label">Pilot Readiness</span>
+              <span class="ex-gov-result-value" id="govPilotReadiness">PENDING</span>
+            </div>
+          </div>
+        </div>
+        <section class="ex-gov-assessment-document" id="governanceAssessmentDocument" aria-label="Institutional governance assessment document">
+          <p class="ex-governance-reasoning-title">Institutional governance assessment artifact</p>
+          <div class="ex-gov-assessment-grid">
+            <p><strong>Governance exposure:</strong> <span id="docExposure">Unassessed</span></p>
+            <p><strong>Proof continuity:</strong> <span id="docProofPropagation">Pending</span></p>
+            <p><strong>Execution authority:</strong> <span id="docAuthorityEligibility">Withheld</span></p>
+            <p><strong>Operational continuity:</strong> <span id="docContinuityStabilization">Open</span></p>
+            <p><strong>Escalation risk:</strong> <span id="docEscalationRisk">Baseline</span></p>
+            <p><strong>Pilot readiness:</strong> <span id="docPilotReadiness">Pending</span></p>
+            <p><strong>Governance stabilization pathway:</strong> <span id="docStabilizationPathway">Commitment → Continuity → Proof → Authority</span></p>
+          </div>
+          <p id="docCorrectionRecommendations">Governance correction requirements are issued as exposure and continuity conditions mature.</p>
+          <p id="docPilotRecommendation">Pilot recommendation pending institutional assessment sufficiency and authority continuity conditions.</p>
+        </section>
+        <section class="ex-gov-pathway-visualization" aria-label="Execution pathway visualization">
+          <p class="ex-governance-reasoning-title">Execution pathway visualization</p>
+          <div class="ex-gov-pathway-track" id="govPathwayVisualization">
+            <span data-path-visual-step="0">Commitment</span>
+            <span data-path-visual-step="1">Continuity</span>
+            <span data-path-visual-step="2">Proof</span>
+            <span data-path-visual-step="3">Authority</span>
+            <span data-path-visual-step="4">Stabilization</span>
+            <span data-path-visual-step="5">Controlled Authorization</span>
+          </div>
+        </section>
+        <section class="ex-gov-assessment-document" aria-label="Governance scoring model">
+          <p class="ex-governance-reasoning-title">Governance scoring model</p>
+          <div class="ex-gov-assessment-grid">
+            <p><strong>Authority stability:</strong> <span id="metricAuthorityStability">0/100</span></p>
+            <p><strong>Continuity integrity:</strong> <span id="metricContinuityIntegrity">0/100</span></p>
+            <p><strong>Exposure severity:</strong> <span id="metricExposureSeverity">0/100</span></p>
+            <p><strong>Governance maturity:</strong> <span id="metricGovernanceMaturity">0/100</span></p>
+            <p><strong>Operational escalation risk:</strong> <span id="metricOperationalRisk">0/100</span></p>
+          </div>
+        </section>
+        <section class="ex-governance-reasoning" id="governanceReasoning" aria-label="Governance reasoning materialization">
+          <p class="ex-governance-reasoning-title">Governance reasoning materialization</p>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Governance observations</span>
+            <p id="reasoningObservations">Institutional intake pending operational commitment definition.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Exposure analysis</span>
+            <p id="reasoningExposure">Exposure analysis awaits country, industry, organization, and commitment context.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Proof continuity reasoning</span>
+            <p id="reasoningProof">Proof continuity remains unverified until oversight conditions are specified.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Authority reasoning</span>
+            <p id="reasoningAuthority">Execution authority remains withheld pending governed intake sufficiency.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Execution path narrative</span>
+            <p id="reasoningPathway">Execution path has not entered governed progression.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Pilot recommendation</span>
+            <p id="reasoningPilot">Controlled governance pilot recommendation will be issued after baseline audit conditions are present.</p>
+            <div class="ex-governance-pilot-intelligence">
+              <p><strong>Pilot scope:</strong> <span id="reasoningPilotScope">Pending governance scope definition.</span></p>
+              <p><strong>Governance layer:</strong> <span id="reasoningPilotLayer">Initial validation layer.</span></p>
+              <p><strong>Exposure reduction target:</strong> <span id="reasoningPilotTarget">Not established.</span></p>
+              <p><strong>Required oversight controls:</strong> <span id="reasoningPilotControls">Specify oversight sequencing and proof controls.</span></p>
+              <p><strong>Implementation order:</strong> <span id="reasoningPilotOrder">Governance order pending.</span></p>
+              <p><strong>Stabilization timeline:</strong> <span id="reasoningPilotTimeline">Timeline pending governance assessment.</span></p>
+            </div>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Governance memory</span>
+            <p id="reasoningMemory">Session governance memory initialized for progression tracking.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Execution consequence simulation</span>
+            <p id="reasoningConsequenceSimulation">Forward consequence simulation awaits governed intake sufficiency.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Authority risk forecasting</span>
+            <p id="reasoningAuthorityRisk">Authorization risk forecast pending continuity and exposure conditions.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Execution path forecast</span>
+            <p id="reasoningPathForecast">Path forecast is pending progression evidence.</p>
+          </div>
+          <div class="ex-governance-reasoning-row">
+            <span class="ex-governance-reasoning-label">Governance correction engine</span>
+            <p id="reasoningCorrection">Governance correction recommendations will materialize with exposure and continuity signals.</p>
+            <div class="ex-governance-pilot-intelligence">
+              <p><strong>Approval controls:</strong> <span id="reasoningApprovalControls">Pending control recommendations.</span></p>
+              <p><strong>Audit propagation requirements:</strong> <span id="reasoningAuditPropagation">Pending propagation requirements.</span></p>
+              <p><strong>Payment restrictions:</strong> <span id="reasoningPaymentRestrictions">Pending payment restrictions.</span></p>
+              <p><strong>Oversight stabilization recommendations:</strong> <span id="reasoningOversightStabilization">Pending stabilization recommendations.</span></p>
+              <p><strong>Continuity enforcement controls:</strong> <span id="reasoningContinuityEnforcement">Pending continuity enforcement controls.</span></p>
+            </div>
+          </div>
+        </section>
+        <div class="ex-audit-pilot-path">
+          <button class="btn btn-main" type="button" onclick="exportGovernanceAssessmentPdf()">Export Governance Assessment PDF</button>
+          <a class="btn btn-soft" href="/request-pilot/">Request Controlled Governance Pilot</a>
         </div>
 
         <div id="resultArea" class="hidden">
@@ -1650,6 +1893,997 @@
 
 
 
+    let __execGovReactionLocked = false;
+    let __execConsequencePrev = {};
+    let __autoAssessmentTriggered = false;
+    const __governanceMemory = {
+      maxScore: 0,
+      maxPathwayIndex: -1,
+      lastAuthority: "WITHHELD",
+      lastContinuityStage: "PENDING",
+      transitions: []
+    };
+    const __organizationMemoryFoundation = {
+      auditHistory: [],
+      governanceProgression: [],
+      pilotContinuity: [],
+      authorityEvolution: []
+    };
+
+    const GOVERNANCE_DOMAIN_TEMPLATES = {
+      procurement: {
+        layer: "Procurement governance layer",
+        controls: "Supplier verification, approval-before-award, and disbursement sequencing controls.",
+        timeline: "Stabilization timeline: 30-45 governance days."
+      },
+      construction: {
+        layer: "Construction governance layer",
+        controls: "Safety approval gating, contractor compliance checkpoints, and site-release controls.",
+        timeline: "Stabilization timeline: 45-75 governance days."
+      },
+      infrastructure: {
+        layer: "Infrastructure governance layer",
+        controls: "Asset integrity checkpoints, change-control authorization, and continuity replay controls.",
+        timeline: "Stabilization timeline: 40-70 governance days."
+      },
+      payments: {
+        layer: "Payments governance layer",
+        controls: "Approval-before-settlement, sanctions screening, and reconciliation continuity controls.",
+        timeline: "Stabilization timeline: 10-30 governance days."
+      },
+      municipalities: {
+        layer: "Municipal governance layer",
+        controls: "Public accountability approvals, budget boundary controls, and evidence publication sequencing.",
+        timeline: "Stabilization timeline: 35-60 governance days."
+      },
+      regulated: {
+        layer: "Regulated operations governance layer",
+        controls: "Regulator-aligned checkpoints, mandatory audit propagation, and execution boundary controls.",
+        timeline: "Stabilization timeline: 20-50 governance days."
+      }
+    };
+
+    function resolveDomainTemplate(domainRaw) {
+      const d = String(domainRaw || "").toLowerCase();
+      if (d.includes("construction")) return GOVERNANCE_DOMAIN_TEMPLATES.construction;
+      if (d.includes("municip")) return GOVERNANCE_DOMAIN_TEMPLATES.municipalities;
+      if (d.includes("payment") || d.includes("finance") || d.includes("settlement")) return GOVERNANCE_DOMAIN_TEMPLATES.payments;
+      if (d.includes("infrastructure")) return GOVERNANCE_DOMAIN_TEMPLATES.infrastructure;
+      if (d.includes("regulat") || d.includes("compliance")) return GOVERNANCE_DOMAIN_TEMPLATES.regulated;
+      if (d.includes("procurement")) return GOVERNANCE_DOMAIN_TEMPLATES.procurement;
+      return GOVERNANCE_DOMAIN_TEMPLATES.regulated;
+    }
+
+    function computePathwaySegmentStates(score, continuityLocked, authority) {
+      const dormant = "—";
+      if (score <= 0) return [dormant, dormant, dormant, dormant, dormant];
+      return [
+        score >= 1 ? "ACTIVE" : dormant,
+        score >= 2 ? "ACCUMULATING" : dormant,
+        score >= 3 ? (continuityLocked ? "STABILIZED" : "VERIFYING") : dormant,
+        score >= 4
+          ? authority === "AUTHORIZATION ELIGIBLE"
+            ? "CONTROLLED"
+            : authority === "CONTROLLED"
+              ? "CONTROLLED"
+              : "CONDITIONAL"
+          : score >= 2
+            ? "FORMING"
+            : dormant,
+        score >= 5 && authority === "AUTHORIZATION ELIGIBLE" ? "ELIGIBLE" : score >= 4 ? "THRESHOLD" : dormant
+      ];
+    }
+
+    function buildCommitMaterialization(score, continuityLocked, authority, commitReadiness) {
+      return {
+        evidence:
+          score <= 0
+            ? "Awaiting operational definition"
+            : score < 3
+              ? "Governance evidence accumulation in progress"
+              : score < 5
+                ? "Evidence under continuity review"
+                : "Evidence threshold satisfied for evaluation",
+        threshold:
+          authority === "AUTHORIZATION ELIGIBLE"
+            ? "Governed threshold satisfied for authorization review"
+            : authority === "CONTROLLED"
+              ? "Controlled authorization threshold in force"
+              : score >= 3
+                ? "Threshold approaching"
+                : "Not approached",
+        eligibility:
+          authority === "AUTHORIZATION ELIGIBLE"
+            ? "Authorization eligible under institutional oversight"
+            : authority === "CONTROLLED"
+              ? "Controlled authorization requires proof continuity"
+              : authority === "CONDITIONAL"
+                ? "Authority withheld until continuity is satisfied"
+                : "Withheld",
+        continuity: continuityLocked ? "Stabilized — locked" : score >= 2 ? "Stabilizing" : "Open"
+      };
+    }
+
+    function computeIntakeSignal() {
+      const domain = value("domain");
+      const outcome = value("outcome");
+      const budget = value("budget");
+      const timeline = value("timeline");
+      const constraints = value("constraints");
+      let score = 0;
+      if (domain) score += 1;
+      if (outcome.length > 20) score += 1;
+      if (outcome.length > 80) score += 1;
+      if (budget || timeline) score += 1;
+      if (constraints.length > 30) score += 1;
+      const flowIndex = Math.min(4, Math.max(0, score - 1));
+      const pct = Math.round((score / 5) * 100);
+      return { domain, outcome, budget, timeline, constraints, score, flowIndex, pct };
+    }
+
+    function evaluateSequentialIntakeStep(signal) {
+      const checks = [
+        !!signal.timeline,
+        !!signal.domain,
+        !!signal.budget,
+        signal.outcome.length > 20,
+        signal.constraints.length > 20
+      ];
+      const currentStep = checks.findIndex((ok) => !ok) + 1;
+      const step = currentStep === 0 ? 6 : currentStep;
+      return { step, complete: step === 6 };
+    }
+
+    function setSequentialIntakeFlow(signal) {
+      const { step, complete } = evaluateSequentialIntakeStep(signal);
+      const status = document.getElementById("intakeStepStatus");
+      const shell = document.querySelector(".ex-exec-intake-shell");
+      const fieldsets = document.querySelectorAll(".ex-exec-intake-shell [data-intake-step]");
+
+      if (status) {
+        status.textContent = complete
+          ? "Step 6 of 6 — EXECUTIA generates institutional governance assessment"
+          : `Step ${step} of 6 — ${["Country", "Industry", "Organization", "Operational commitment", "Governance constraints"][step - 1]}`;
+      }
+      if (shell) shell.setAttribute("data-intake-step", String(step));
+
+      fieldsets.forEach((fs) => {
+        const idx = Number(fs.getAttribute("data-intake-step") || "0");
+        fs.classList.toggle("is-step-active", idx === step && !complete);
+        fs.classList.toggle("is-step-complete", idx < step || complete);
+      });
+
+      if (complete && !__execGovReactionLocked && !__autoAssessmentTriggered) {
+        __autoAssessmentTriggered = true;
+        window.setTimeout(() => {
+          if (!__execGovReactionLocked) runExecutionTest();
+        }, 180);
+      } else if (!complete) {
+        __autoAssessmentTriggered = false;
+      }
+    }
+
+    function computeConsequenceState(signal) {
+      const s = signal.score;
+      const constraints = signal.constraints || "";
+
+      let readiness = "STANDBY";
+      if (s >= 3) readiness = "VALIDATING";
+      else if (s >= 1) readiness = "REVIEWING";
+
+      let regulatory = "PENDING REVIEW";
+      if (s >= 2) regulatory = "UNDER REVIEW";
+
+      let proof = "NOT MATERIALIZED";
+      if (s >= 4 && constraints.length > 25) proof = "CONTINUITY VERIFIED";
+      else if (s >= 2) proof = "EVIDENCE PENDING";
+
+      let authority = "WITHHELD";
+      if (s >= 5 && constraints.length > 30) authority = "AUTHORIZATION ELIGIBLE";
+      else if (s >= 4) authority = "CONTROLLED";
+      else if (s >= 2) authority = "CONDITIONAL";
+
+      const continuityLocked =
+        s >= 3 && signal.outcome.length > 20 && !!signal.domain && (signal.budget || signal.timeline);
+
+      const continuityStage =
+        proof === "CONTINUITY VERIFIED"
+          ? "VERIFIED"
+          : continuityLocked
+            ? "STABILIZED"
+            : s >= 3
+              ? "PROPAGATING"
+              : "PENDING";
+
+      let commitReadiness = "NOT ESTABLISHED";
+      if (s >= 5 && authority === "AUTHORIZATION ELIGIBLE") commitReadiness = "AUTHORIZATION THRESHOLD";
+      else if (s >= 4) commitReadiness = "CONTROLLED ELIGIBLE";
+      else if (s >= 3) commitReadiness = "THRESHOLD APPROACHING";
+      else if (s >= 1) commitReadiness = "ACCUMULATING";
+
+      let exposure = "DORMANT";
+      if (s >= 1) exposure = "REGISTERED";
+      if (s >= 2) exposure = "MAPPING";
+      if (s >= 4) exposure = "ELEVATED";
+
+      let audit = "DORMANT";
+      if (s >= 2) audit = "PENDING";
+      if (constraints.length > 30) audit = "STAGING";
+
+      let consequenceSeverity = "BASELINE";
+      if (exposure === "ELEVATED" && authority === "WITHHELD") consequenceSeverity = "CRITICAL";
+      else if (exposure === "ELEVATED" || authority === "CONDITIONAL") consequenceSeverity = "HIGH";
+      else if (exposure === "MAPPING" || authority === "CONTROLLED") consequenceSeverity = "MODERATE";
+
+      const phase = s === 0 ? "idle" : s < 3 ? "review" : s < 5 ? "validate" : "authorize";
+      const pathwayIndex = s === 0 ? -1 : Math.min(4, s - 1);
+      const pathwaySegmentStates = computePathwaySegmentStates(s, continuityLocked, authority);
+      const authorityTier =
+        authority === "AUTHORIZATION ELIGIBLE"
+          ? "eligible"
+          : authority === "CONTROLLED"
+            ? "controlled"
+            : authority === "CONDITIONAL"
+              ? "conditional"
+              : "withheld";
+
+      const operationalContinuity = continuityLocked ? "STABILIZED" : s >= 2 ? "STABILIZING" : "OPEN";
+      const pilotReadiness =
+        authority === "AUTHORIZATION ELIGIBLE" ? "READY" : s >= 3 ? "UNDER REVIEW" : "PENDING";
+
+      return {
+        readiness,
+        regulatory,
+        proof,
+        authority,
+        exposure,
+        audit,
+        commitReadiness,
+        operationalContinuity,
+        pilotReadiness,
+        continuityStage,
+        consequenceSeverity,
+        continuityLocked,
+        authorityTier,
+        pathwayIndex,
+        pathwaySegmentStates,
+        flowIndex: signal.flowIndex,
+        pct: signal.pct,
+        ribbonProof:
+          proof === "NOT MATERIALIZED"
+            ? "NOT MATERIALIZED"
+            : proof === "CONTINUITY VERIFIED"
+              ? "VERIFIED"
+              : proof,
+        ribbonExecution: s < 1 ? "STANDBY" : authority,
+        ribbonMode: s < 2 ? "MONITORING" : s < 4 ? "REVIEWING" : "VALIDATING",
+        commitMaterialization: buildCommitMaterialization(s, continuityLocked, authority, commitReadiness),
+        telemetry: {
+          exposure: s < 1 ? "DORMANT" : s < 3 ? "REGISTERED" : s < 4 ? "MAPPING" : "ACTIVE",
+          continuity: continuityLocked
+            ? "STABILIZED"
+            : s < 2
+              ? "NOMINAL"
+              : s < 4
+                ? "STABILIZING"
+                : "APPROACHING",
+          readiness: continuityLocked && s >= 3 ? "HARDENED" : readiness,
+          regulatory: s < 2 ? "PENDING" : "UNDER REVIEW",
+          proof:
+            continuityStage === "VERIFIED"
+              ? "VERIFIED"
+              : continuityStage === "STABILIZED"
+                ? "STABILIZED"
+                : continuityStage === "PROPAGATING"
+                  ? "PROPAGATING"
+                  : "PENDING"
+        },
+        telemetryWidth: {
+          exposure: Math.min(100, 10 + s * 12),
+          continuity: Math.min(100, 8 + s * 11),
+          readiness: Math.min(100, 10 + s * 11),
+          regulatory: Math.min(100, 12 + s * 10),
+          proof: Math.min(100, Math.max(0, (s - 1) * 14))
+        }
+      };
+    }
+
+    function setGovernanceTelemetryFromConsequence(consequence) {
+      const t = consequence.telemetry;
+      const w = consequence.telemetryWidth;
+      const pairs = [
+        ["telExposure", "telExposureFill", t.exposure, w.exposure],
+        ["telContinuity", "telContinuityFill", t.continuity, w.continuity],
+        ["telReadiness", "telReadinessFill", t.readiness, w.readiness],
+        ["telRegulatory", "telRegulatoryFill", t.regulatory, w.regulatory],
+        ["telProof", "telProofFill", t.proof, w.proof]
+      ];
+
+      pairs.forEach(([valId, fillId, label, width]) => {
+        const valEl = document.getElementById(valId);
+        const fillEl = document.getElementById(fillId);
+        const cell = valEl?.closest(".ex-gov-telemetry-cell");
+        if (valEl) valEl.textContent = label;
+        if (fillEl) fillEl.style.width = `${width}%`;
+        if (cell) cell.setAttribute("data-telemetry-level", String(Math.round(width / 25)));
+      });
+    }
+
+    function setReadinessBadge(readiness) {
+      const badge = document.getElementById("readinessBadge");
+      const scoreEl = document.getElementById("scoreValue");
+      if (badge) {
+        badge.setAttribute("data-readiness", readiness);
+      }
+      if (scoreEl && document.getElementById("resultArea")?.classList.contains("hidden")) {
+        scoreEl.textContent = readiness;
+      }
+    }
+
+    function markConsequenceRowShift(id, nextRaw) {
+      const prev = __execConsequencePrev[id];
+      if (prev === nextRaw) return;
+      const row = document.getElementById(id)?.closest(".ex-gov-result-row");
+      if (row) {
+        row.classList.add("is-consequence-shift");
+        window.setTimeout(() => row.classList.remove("is-consequence-shift"), 380);
+      }
+    }
+
+    const EXECUTION_PATHWAY_ENGINE_LENGTH = 5;
+
+    function setExecutionPathMaterialization(consequence) {
+      const idx = Number.isFinite(consequence.pathwayIndex) ? consequence.pathwayIndex : -1;
+      const states = consequence.pathwaySegmentStates || [];
+      const root = document.getElementById("executionPathMaterialization");
+      const pathSpine = document.getElementById("executionPathSpine");
+      const segments = document.querySelectorAll(".ex-execution-path-segment");
+
+      if (root) {
+        root.setAttribute("data-path-index", String(idx));
+        root.classList.toggle("is-pathway-active", idx >= 0);
+      }
+
+      const tier =
+        consequence.authorityTier === "eligible"
+          ? "ready"
+          : idx < 0
+            ? "idle"
+            : idx < 2
+              ? "forming"
+              : idx < 4
+                ? "advancing"
+                : "ready";
+      document.body.setAttribute("data-pathway-tier", tier);
+
+      segments.forEach((seg, i) => {
+        const stateEl = seg.querySelector("[data-path-state]");
+        const stateText = states[i] || "—";
+        if (stateEl) stateEl.textContent = stateText;
+        seg.classList.toggle("is-path-unlocked", i <= idx && stateText !== "—");
+        seg.classList.toggle("is-path-active", i === idx);
+        seg.classList.toggle("is-path-complete", i < idx);
+        seg.classList.toggle("is-path-locked", states[i] === "STABILIZED" || states[i] === "ELIGIBLE");
+      });
+
+      if (pathSpine) {
+        const extension =
+          idx < 0 ? 0 : ((idx + 1) / EXECUTION_PATHWAY_ENGINE_LENGTH) * 100;
+        pathSpine.style.setProperty("--path-extension", `${extension}%`);
+        pathSpine.classList.toggle("is-visible", idx >= 0);
+      }
+    }
+
+    function setContinuityLock(consequence) {
+      const locked = !!consequence.continuityLocked;
+      const body = document.body;
+      const indicator = document.getElementById("continuityLockIndicator");
+      const telCell = document.querySelector('.ex-gov-telemetry-cell[data-telemetry="continuity"]');
+
+      if (body) {
+        body.setAttribute("data-continuity-lock", locked ? "stabilized" : "open");
+      }
+      if (indicator) {
+        indicator.hidden = !locked;
+      }
+      if (telCell) {
+        telCell.classList.toggle("is-continuity-locked", locked);
+      }
+    }
+
+    function setAuthorityThreshold(consequence) {
+      const body = document.body;
+      const tier = consequence.authorityTier || "withheld";
+      if (body) {
+        body.setAttribute("data-authority-tier", tier);
+      }
+    }
+
+    function setCommitReadinessMaterialization(consequence) {
+      const block = document.getElementById("commitReadiness");
+      const primary = document.getElementById("commitReadinessPrimary");
+      const m = consequence.commitMaterialization || {};
+      const map = {
+        commitEvidence: m.evidence,
+        commitThreshold: m.threshold,
+        commitEligibility: m.eligibility,
+        commitContinuity: m.continuity
+      };
+
+      Object.entries(map).forEach(([id, text]) => {
+        const el = document.getElementById(id);
+        if (el && text) el.textContent = text;
+      });
+
+      let tier = "idle";
+      let linePrimary = "Execution authority awaiting institutional operational definition.";
+      const auth = consequence.authority;
+
+      if (auth === "AUTHORIZATION ELIGIBLE") {
+        tier = "eligible";
+        linePrimary =
+          "Governed threshold reached: authorization eligible under institutional oversight, subject to formal submission.";
+      } else if (auth === "CONTROLLED") {
+        tier = "controlled";
+        linePrimary =
+          "Controlled authorization requires proof continuity.";
+      } else if (auth === "CONDITIONAL") {
+        tier = "conditional";
+        linePrimary = "Authority withheld until continuity is satisfied.";
+      } else if (consequence.pathwayIndex >= 0) {
+        tier = "forming";
+        linePrimary = "Execution path remains governed under institutional oversight.";
+      }
+
+      if (primary) primary.textContent = linePrimary;
+      if (block) block.setAttribute("data-readiness-tier", tier);
+    }
+
+    function setLiveGovernanceFlow(activeIndex, options = {}) {
+      const steps = document.querySelectorAll("#liveGovernanceFlow .step");
+      const dot = document.getElementById("liveGovDot");
+      const spine = document.getElementById("liveFlowSpine");
+      const track = document.getElementById("liveFlowTrack");
+      const idx = Number.isFinite(activeIndex) ? activeIndex : 0;
+      const escalate = options.escalate !== false;
+
+      steps.forEach((step, i) => {
+        step.classList.toggle("is-active", i === idx);
+        step.classList.toggle("is-complete", i < idx);
+        step.classList.toggle("is-escalated", escalate && i <= idx && i >= 2);
+        step.classList.toggle("is-authority-emphasis", escalate && i === idx && i >= 3);
+        step.classList.toggle("is-proof-layer", i === 3);
+        step.classList.toggle("is-authority-layer-active", escalate && i >= 3 && i <= idx);
+      });
+
+      if (track) {
+        track.setAttribute("data-flow-index", String(idx));
+      }
+
+      if (spine) {
+        const progress = ((idx + 1) / steps.length) * 100;
+        spine.style.setProperty("--flow-progress", `${progress}%`);
+      }
+
+      if (dot) {
+        dot.classList.toggle("is-pending", idx > 0 && idx < 4);
+        dot.classList.toggle("is-active", true);
+        dot.classList.toggle("is-elevated", idx >= 3);
+      }
+    }
+
+    function applyExecutionConsequence(signal) {
+      const consequence = computeConsequenceState(signal);
+      const shell = document.querySelector(".shell");
+      const body = document.body;
+
+      if (body) {
+        body.setAttribute("data-consequence-phase", consequence.phase);
+      }
+      if (shell) shell.classList.add("is-governance-reacting");
+
+      setExecutionPathMaterialization(consequence);
+      setContinuityLock(consequence);
+      setAuthorityThreshold(consequence);
+      setCommitReadinessMaterialization(consequence);
+
+      const resultShell = document.getElementById("governanceResultShell");
+      if (resultShell) {
+        resultShell.setAttribute("data-consequence-phase", consequence.phase);
+      }
+
+      setLiveGovernanceFlow(consequence.flowIndex, { escalate: true });
+      setGovernanceTelemetryFromConsequence(consequence);
+      setReadinessBadge(consequence.readiness);
+
+      setGovernanceRibbon({
+        executionState: consequence.ribbonExecution,
+        governanceMode: consequence.ribbonMode,
+        proofChain: consequence.ribbonProof,
+        registry: "LINKED",
+        active: signal.score >= 2,
+        blocked: false
+      });
+
+      const shellState = {
+        exposure: consequence.exposure,
+        regulatory: consequence.regulatory,
+        audit: consequence.audit,
+        authority: consequence.authority,
+        commitReadiness: consequence.commitReadiness,
+        operationalContinuity: consequence.operationalContinuity,
+        pilotReadiness: consequence.pilotReadiness,
+        operationalEscalation: consequence.consequenceSeverity
+      };
+
+      const rowIds = {
+        exposure: "govExposure",
+        authority: "govAuthority",
+        commitReadiness: "govAuthorizationEligibility",
+        operationalContinuity: "govOperationalContinuity",
+        pilotReadiness: "govPilotReadiness",
+        audit: "govAuditDependency",
+        operationalEscalation: "govOperationalEscalation"
+      };
+
+      Object.entries(rowIds).forEach(([key, id]) => {
+        markConsequenceRowShift(id, shellState[key]);
+      });
+
+      setGovernanceResultShell({ ...shellState, phase: consequence.phase });
+      setGovernanceReasoning(signal, consequence);
+      __execConsequencePrev = {};
+      Object.entries(rowIds).forEach(([key, id]) => {
+        __execConsequencePrev[id] = shellState[key];
+      });
+
+      const summary = document.getElementById("summaryText");
+      const resultHidden = document.getElementById("resultArea")?.classList.contains("hidden");
+      if (summary && resultHidden) {
+        if (consequence.phase === "idle") {
+          summary.textContent = "Institutional governance assessment awaiting sequential intake completion.";
+        } else if (consequence.phase === "review") {
+          summary.textContent =
+            "Authority withheld until continuity is satisfied.";
+        } else if (consequence.phase === "validate") {
+          summary.textContent =
+            "Controlled authorization requires proof continuity.";
+        } else if (consequence.authority === "AUTHORIZATION ELIGIBLE") {
+          summary.textContent =
+            "Governed threshold established: authorization eligible under institutional oversight.";
+        } else {
+          summary.textContent =
+            "Execution path remains governed under institutional oversight.";
+        }
+      }
+
+      window.clearTimeout(window.__execGovReactTimer);
+      window.__execGovReactTimer = window.setTimeout(() => {
+        if (shell) shell.classList.remove("is-governance-reacting");
+      }, 280);
+    }
+
+    function reactToGovernanceIntake() {
+      if (__execGovReactionLocked) return;
+      const signal = computeIntakeSignal();
+      setSequentialIntakeFlow(signal);
+      applyExecutionConsequence(signal);
+    }
+
+    function initGovernanceReaction() {
+      ["domain", "outcome", "budget", "timeline", "constraints"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("input", reactToGovernanceIntake);
+        el.addEventListener("change", reactToGovernanceIntake);
+        el.addEventListener("focus", () => el.classList.add("is-governance-active"));
+        el.addEventListener("blur", () => el.classList.remove("is-governance-active"));
+      });
+      setSequentialIntakeFlow(computeIntakeSignal());
+      reactToGovernanceIntake();
+    }
+
+    function setGovernanceResultShell(state = {}) {
+      const map = {
+        govExposure: state.exposure || "UNDEFINED",
+        govAuthority: state.authority || "WITHHELD",
+        govAuthorizationEligibility: state.commitReadiness || "NOT ESTABLISHED",
+        govOperationalContinuity: state.operationalContinuity || "OPEN",
+        govPilotReadiness: state.pilotReadiness || "PENDING",
+        govAuditDependency: state.audit || "PENDING",
+        govOperationalEscalation: state.operationalEscalation || "BASELINE"
+      };
+
+      Object.entries(map).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const raw = String(value);
+        el.textContent = ribbonDisplayValue(raw);
+        el.title = raw;
+        el.classList.remove("is-active", "is-blocked", "is-consequence-active");
+        if (/VALIDATING|UNDER REVIEW|EVIDENCE PENDING|CONTINUITY VERIFIED|CONDITIONAL|CONTROLLED|AUTHORIZATION ELIGIBLE|REVIEWING|CONTINUOUS|ISSUED|AUTHORIZED|VERIFIED|ELIGIBLE|THRESHOLD|HARDENED/i.test(raw)) {
+          el.classList.add("is-consequence-active");
+        } else if (/WITHHELD|NOT MATERIALIZED|NOT ESTABLISHED|PENDING REVIEW|DORMANT|BLOCK/i.test(raw)) {
+          el.classList.add("is-blocked");
+        } else if (/MAPPING|ELEVATED|STAGING|PENDING|ACCUMULATING|APPROACHING/i.test(raw)) {
+          el.classList.add("is-active");
+        }
+      });
+
+      const shellEl = document.getElementById("governanceResultShell");
+      if (shellEl && state.phase) {
+        shellEl.setAttribute("data-consequence-phase", state.phase);
+      }
+    }
+
+    function setGovernanceAssessmentDocument(signal, consequence, derived) {
+      const docMap = {
+        docExposure: consequence.exposure,
+        docAuthorityEligibility: consequence.authority,
+        docContinuityStabilization: consequence.continuityStage,
+        docProofPropagation: consequence.continuityStage,
+        docEscalationRisk: consequence.consequenceSeverity,
+        docPilotReadiness: consequence.pilotReadiness,
+        docStabilizationPathway:
+          consequence.authority === "AUTHORIZATION ELIGIBLE"
+            ? "Commitment → Continuity → Proof → Authority → Stabilization → Controlled Authorization"
+            : consequence.continuityStage === "STABILIZED" || consequence.continuityStage === "VERIFIED"
+              ? "Commitment → Continuity → Proof → Authority → Stabilization"
+              : "Commitment → Continuity → Proof → Authority"
+      };
+      Object.entries(docMap).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = String(value || "—");
+      });
+
+      const correction = document.getElementById("docCorrectionRecommendations");
+      if (correction) correction.textContent = derived.correctionLine;
+      const pilot = document.getElementById("docPilotRecommendation");
+      if (pilot) pilot.textContent = derived.pilotLine;
+    }
+
+    function setExecutionPathwayVisualization(consequence) {
+      const active = Math.max(0, consequence.pathwayIndex + 1);
+      const steps = document.querySelectorAll("#govPathwayVisualization [data-path-visual-step]");
+      steps.forEach((step, i) => {
+        step.classList.toggle("is-path-active", i === active);
+        step.classList.toggle("is-path-complete", i < active);
+      });
+    }
+
+    function setGovernanceScoringModel(consequence) {
+      const authorityBase =
+        consequence.authority === "AUTHORIZATION ELIGIBLE" ? 92 : consequence.authority === "CONTROLLED" ? 74 : consequence.authority === "CONDITIONAL" ? 48 : 22;
+      const continuityBase =
+        consequence.continuityStage === "VERIFIED" ? 94 : consequence.continuityStage === "STABILIZED" ? 76 : consequence.continuityStage === "PROPAGATING" ? 52 : 26;
+      const exposureSeverity =
+        consequence.consequenceSeverity === "CRITICAL" ? 92 : consequence.consequenceSeverity === "HIGH" ? 72 : consequence.consequenceSeverity === "MODERATE" ? 48 : 24;
+      const maturity = Math.min(100, Math.round((authorityBase + continuityBase + (100 - exposureSeverity)) / 3));
+      const operationalRisk = Math.max(0, Math.min(100, Math.round((exposureSeverity + (100 - authorityBase)) / 2)));
+
+      const metricMap = {
+        metricAuthorityStability: `${authorityBase}/100`,
+        metricContinuityIntegrity: `${continuityBase}/100`,
+        metricExposureSeverity: `${exposureSeverity}/100`,
+        metricGovernanceMaturity: `${maturity}/100`,
+        metricOperationalRisk: `${operationalRisk}/100`
+      };
+      Object.entries(metricMap).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      });
+
+      return {
+        authorityStability: authorityBase,
+        continuityIntegrity: continuityBase,
+        exposureSeverity,
+        governanceMaturity: maturity,
+        operationalEscalationRisk: operationalRisk
+      };
+    }
+
+    function updateOrganizationMemory(signal, consequence, scores) {
+      const record = {
+        ts: new Date().toISOString(),
+        domain: signal.domain || "unspecified",
+        authority: consequence.authority,
+        continuityStage: consequence.continuityStage,
+        pathwayIndex: consequence.pathwayIndex,
+        severity: consequence.consequenceSeverity,
+        scores
+      };
+      __organizationMemoryFoundation.auditHistory.push(record);
+      __organizationMemoryFoundation.governanceProgression.push({
+        ts: record.ts,
+        gate: Math.max(0, consequence.pathwayIndex + 1),
+        transitions: [...__governanceMemory.transitions]
+      });
+      __organizationMemoryFoundation.pilotContinuity.push({
+        ts: record.ts,
+        pilotReadiness: consequence.pilotReadiness,
+        continuity: consequence.continuityStage
+      });
+      __organizationMemoryFoundation.authorityEvolution.push({
+        ts: record.ts,
+        authority: consequence.authority
+      });
+
+      Object.keys(__organizationMemoryFoundation).forEach((k) => {
+        __organizationMemoryFoundation[k] = __organizationMemoryFoundation[k].slice(-24);
+      });
+    }
+
+    function exportGovernanceAssessmentPdf() {
+      const read = (id, fallback = "—") =>
+        (document.getElementById(id)?.textContent || fallback).trim();
+      const now = new Date().toISOString();
+      const title = "EXECUTIA Institutional Governance Assessment";
+      const html = `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>
+      @page{size:A4;margin:18mm 16mm}
+      body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#1a2d42;line-height:1.45}
+      h1{font-size:20px;letter-spacing:.02em;margin:0 0 8px}
+      h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 6px;color:#4d6178;break-after:avoid}
+      p{font-size:12px;margin:4px 0}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+      .muted{color:#4d6178}
+      .rule{border-top:1px solid rgba(28,53,84,.18);margin:14px 0}
+      .section{break-inside:avoid}
+      .header-meta{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+      </style></head><body>
+      <h1>${title}</h1>
+      <div class="header-meta">
+        <p class="muted">Generated: ${now}</p>
+        <p class="muted">Assessment ID: GA-${Date.now().toString().slice(-8)}</p>
+      </div>
+      <p class="muted">Domain Governance Layer: ${read("reasoningPilotLayer")}</p>
+      <p class="muted">Classification: Institutional Governance Assessment Artifact v1</p>
+      <div class="rule"></div>
+      <div class="section"><h2>Governance Assessment</h2>
+      <div class="grid">
+        <p><strong>Governance exposure:</strong> ${read("docExposure")}</p>
+        <p><strong>Execution authority:</strong> ${read("docAuthorityEligibility")}</p>
+        <p><strong>Proof continuity:</strong> ${read("docProofPropagation")}</p>
+        <p><strong>Continuity stabilization:</strong> ${read("docContinuityStabilization")}</p>
+        <p><strong>Operational escalation:</strong> ${read("govOperationalEscalation")}</p>
+        <p><strong>Escalation risk:</strong> ${read("docEscalationRisk")}</p>
+        <p><strong>Pilot readiness:</strong> ${read("docPilotReadiness")}</p>
+        <p><strong>Governance stabilization pathway:</strong> ${read("docStabilizationPathway")}</p>
+        <p><strong>Pilot recommendation:</strong> ${read("docPilotRecommendation")}</p>
+      </div></div>
+      <div class="section"><h2>Governance Scoring</h2>
+      <div class="grid">
+        <p><strong>Authority stability:</strong> ${read("metricAuthorityStability")}</p>
+        <p><strong>Continuity integrity:</strong> ${read("metricContinuityIntegrity")}</p>
+        <p><strong>Exposure severity:</strong> ${read("metricExposureSeverity")}</p>
+        <p><strong>Governance maturity:</strong> ${read("metricGovernanceMaturity")}</p>
+        <p><strong>Operational escalation risk:</strong> ${read("metricOperationalRisk")}</p>
+      </div></div>
+      <div class="section"><h2>Governance Corrections</h2>
+      <p>${read("docCorrectionRecommendations")}</p>
+      <p><strong>Approval controls:</strong> ${read("reasoningApprovalControls")}</p>
+      <p><strong>Audit propagation requirements:</strong> ${read("reasoningAuditPropagation")}</p>
+      <p><strong>Payment restrictions:</strong> ${read("reasoningPaymentRestrictions")}</p>
+      <p><strong>Oversight stabilization:</strong> ${read("reasoningOversightStabilization")}</p>
+      <p><strong>Continuity enforcement:</strong> ${read("reasoningContinuityEnforcement")}</p></div>
+      <div class="section"><h2>Pilot Construction</h2>
+      <p><strong>Pilot scope:</strong> ${read("reasoningPilotScope")}</p>
+      <p><strong>Governance layer:</strong> ${read("reasoningPilotLayer")}</p>
+      <p><strong>Exposure reduction target:</strong> ${read("reasoningPilotTarget")}</p>
+      <p><strong>Oversight controls:</strong> ${read("reasoningPilotControls")}</p>
+      <p><strong>Implementation sequence:</strong> ${read("reasoningPilotOrder")}</p>
+      <p><strong>Stabilization timeline:</strong> ${read("reasoningPilotTimeline")}</p></div>
+      </body></html>`;
+      const w = window.open("", "_blank", "noopener,noreferrer,width=900,height=960");
+      if (!w) return;
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    function setGovernanceReasoning(signal, consequence) {
+      const country = (signal.timeline || "Unspecified country").trim();
+      const industry = (signal.domain || "Unspecified industry").trim();
+      const organization = (signal.budget || "Unspecified organization").trim();
+      const commitment = (signal.outcome || "").trim();
+      const constraints = (signal.constraints || "").trim();
+
+      const commitmentScope =
+        commitment.length > 120 ? `${commitment.slice(0, 117)}...` : commitment || "Operational commitment not yet defined.";
+
+      const hasOversight = constraints.length > 25;
+      const proofLine =
+        consequence.continuityStage === "VERIFIED"
+          ? "Proof continuity is verified under institutional controls; evidence chain is reviewable for governed authorization."
+          : consequence.continuityStage === "STABILIZED"
+            ? "Proof continuity is stabilized; verification readiness is established pending final governance review."
+            : consequence.continuityStage === "PROPAGATING"
+              ? "Proof continuity is propagating through oversight checkpoints; verification remains pending."
+              : hasOversight
+                ? "Proof continuity remains pending despite defined oversight conditions; additional evidence propagation is required."
+                : "Proof continuity remains pending until oversight sequencing and evidence obligations are materially defined.";
+
+      const authorityLine =
+        consequence.authority === "AUTHORIZATION ELIGIBLE"
+          ? "Execution authority is authorization-eligible within controlled institutional boundaries and formal governance conditions."
+          : consequence.authority === "CONTROLLED"
+            ? "Execution authority is controlled; continuity and proof conditions satisfy governed threshold controls."
+            : consequence.authority === "CONDITIONAL"
+              ? "Execution authority remains conditional pending continuity stabilization and oversight sufficiency."
+              : "Execution authority remains withheld until continuity and exposure controls are institutionally satisfied.";
+
+      const pathwayLine =
+        consequence.pathwayIndex >= 4
+          ? "Execution pathway has progressed through intake, governance, continuity, and authority gates to governed eligibility review."
+          : consequence.pathwayIndex >= 2
+            ? "Execution pathway is in governed progression with continuity stabilization underway before authority escalation."
+            : consequence.pathwayIndex >= 0
+              ? "Execution pathway has entered institutional intake and governance review gates."
+              : "Execution pathway has not entered governed progression.";
+
+      const pilotLine =
+        consequence.pilotReadiness === "READY"
+          ? "Controlled governance pilot is operationally actionable under maintained continuity, authority discipline, and oversight integrity."
+          : consequence.pilotReadiness === "UNDER REVIEW"
+            ? "Pilot readiness remains under governance review; implement required controls before institutional pilot initiation."
+            : "Pilot initiation remains deferred until baseline governance assessment conditions are materially established.";
+
+      const progressionStep = Math.max(0, consequence.pathwayIndex + 1);
+      __governanceMemory.maxScore = Math.max(__governanceMemory.maxScore, signal.score || 0);
+      __governanceMemory.maxPathwayIndex = Math.max(__governanceMemory.maxPathwayIndex, consequence.pathwayIndex);
+      if (
+        __governanceMemory.lastAuthority !== consequence.authority ||
+        __governanceMemory.lastContinuityStage !== consequence.continuityStage
+      ) {
+        __governanceMemory.transitions.push(
+          `${consequence.authority}/${consequence.continuityStage}/S${progressionStep}`
+        );
+        __governanceMemory.transitions = __governanceMemory.transitions.slice(-4);
+      }
+      __governanceMemory.lastAuthority = consequence.authority;
+      __governanceMemory.lastContinuityStage = consequence.continuityStage;
+
+      const template = resolveDomainTemplate(signal.domain);
+      const pilotScope =
+        consequence.authority === "AUTHORIZATION ELIGIBLE"
+          ? "Controlled multi-stage pilot covering commitment execution, proof capture, and authorization issuance."
+          : consequence.authority === "CONTROLLED"
+            ? "Limited controlled pilot focused on continuity stabilization and authority safeguards."
+            : "Pre-pilot governance intake scope for controlled execution definition.";
+
+      const pilotLayer =
+        consequence.authority === "AUTHORIZATION ELIGIBLE"
+          ? `${template.layer} (authorization phase)`
+          : consequence.authority === "CONTROLLED"
+            ? `${template.layer} (controlled phase)`
+            : consequence.authority === "CONDITIONAL"
+              ? `${template.layer} (conditional phase)`
+              : `${template.layer} (withheld phase)`;
+
+      const pilotTarget =
+        consequence.consequenceSeverity === "CRITICAL"
+          ? "Reduce elevated exposure to mapped risk before authorization."
+          : consequence.consequenceSeverity === "HIGH"
+            ? "Reduce mapped exposure while enforcing authority controls."
+            : consequence.consequenceSeverity === "MODERATE"
+              ? "Reduce registered exposure through continuity hardening."
+              : "Maintain baseline exposure through governed sequencing.";
+
+      const pilotControls =
+        consequence.continuityStage === "VERIFIED"
+          ? "Preserve approval ordering, immutable proof issuance, and regulatory replay controls."
+          : consequence.continuityStage === "STABILIZED"
+            ? "Enforce continuity lock, approval-before-commit, and evidence propagation controls."
+            : consequence.continuityStage === "PROPAGATING"
+              ? "Require explicit oversight sequencing and intermediary proof checkpoints."
+              : "Specify oversight sequencing, proof obligations, and execution boundary controls.";
+      const implementationOrder =
+        "Commitment registration → continuity controls → proof propagation → authority gate → stabilization controls → controlled authorization review.";
+      const stabilizationTimeline = template.timeline;
+
+      const consequenceSimulation =
+        consequence.consequenceSeverity === "CRITICAL"
+          ? "If unresolved, execution consequence is expected to escalate into regulatory breach exposure and authorization blockage at execution-time."
+          : consequence.consequenceSeverity === "HIGH"
+            ? "If unresolved, execution consequence is expected to escalate into controlled denial conditions before commitment."
+            : consequence.consequenceSeverity === "MODERATE"
+              ? "If unresolved, execution consequence remains operationally constrained and requires staged correction before authority progression."
+              : "Execution consequence remains baseline under current governed intake scope.";
+
+      const authorityRisk =
+        consequence.authority === "AUTHORIZATION ELIGIBLE"
+          ? "Authorization eligibility remains revocable if continuity or oversight conditions degrade."
+          : consequence.authority === "CONTROLLED"
+            ? "Authorization remains at risk of reversion to conditional status if continuity propagation stalls."
+            : consequence.authority === "CONDITIONAL"
+              ? "Authorization risk is elevated: unresolved exposure and continuity gaps prevent controlled issuance."
+              : "Authorization remains blocked until continuity evidence and exposure controls are materially established.";
+
+      const pathForecast =
+        consequence.authority === "AUTHORIZATION ELIGIBLE"
+          ? "Execution pathway forecast: stabilized under governed authorization review."
+          : consequence.consequenceSeverity === "CRITICAL"
+            ? "Execution pathway forecast: blocked unless corrective oversight controls are enacted."
+            : consequence.continuityStage === "PROPAGATING" || consequence.continuityStage === "STABILIZED"
+              ? "Execution pathway forecast: escalating toward controlled stabilization if continuity controls persist."
+              : "Execution pathway forecast: remains constrained within intake and governance gates.";
+
+      const approvalControls =
+        consequence.authority === "AUTHORIZATION ELIGIBLE"
+          ? "Maintain dual-stage institutional approval before any execution commit."
+          : "Enforce approval-before-commit with explicit authority checkpoints.";
+
+      const auditPropagation =
+        consequence.continuityStage === "VERIFIED"
+          ? "Immutable audit propagation required across full decision, approval, commit, and replay chain."
+          : "Intermediary audit propagation checkpoints required at each governance transition.";
+
+      const paymentRestrictions =
+        consequence.authority === "AUTHORIZATION ELIGIBLE"
+          ? "Release restrictions remain conditional on verified oversight continuity."
+          : "Payment/settlement commitment prohibited until controlled authorization conditions are satisfied.";
+
+      const oversightStabilization =
+        consequence.consequenceSeverity === "CRITICAL" || consequence.consequenceSeverity === "HIGH"
+          ? "Increase oversight cadence with mandatory cross-functional governance review."
+          : "Maintain stabilization cadence with scheduled institutional oversight reviews.";
+
+      const continuityEnforcement =
+        consequence.continuityStage === "VERIFIED"
+          ? "Continuity enforcement locked: maintain replayable evidence chain and exception controls."
+          : "Enforce continuity controls through sequencing validation, proof checkpoints, and exception blocks.";
+
+      const correctionLine =
+        `Governance correction requirements indicate ${consequence.consequenceSeverity.toLowerCase()} escalation posture with ${consequence.continuityStage.toLowerCase()} continuity handling and mandatory oversight sequencing.`;
+
+      const memoryLine =
+        `Progression memory: max intake score ${__governanceMemory.maxScore}/5, highest pathway gate ${Math.max(0, __governanceMemory.maxPathwayIndex + 1)}/5, continuity ${consequence.continuityStage.toLowerCase()}, consequence severity ${consequence.consequenceSeverity.toLowerCase()}. Recent transitions: ${__governanceMemory.transitions.join(" → ") || "none"}.`;
+
+      const lines = {
+        reasoningObservations:
+          `Intake registers ${industry} commitment context in ${country} for ${organization}. Commitment scope: ${commitmentScope}. Governance progression gate ${progressionStep}/5.`,
+        reasoningExposure:
+          `Exposure is assessed as ${consequence.exposure}. Regulatory posture is ${consequence.regulatory.toLowerCase()}, with audit state ${consequence.audit.toLowerCase()}. Consequence escalation is ${consequence.consequenceSeverity.toLowerCase()}.`,
+        reasoningProof: proofLine,
+        reasoningAuthority: authorityLine,
+        reasoningPathway: pathwayLine,
+        reasoningPilot: pilotLine,
+        reasoningPilotScope: pilotScope,
+        reasoningPilotLayer: pilotLayer,
+        reasoningPilotTarget: pilotTarget,
+        reasoningPilotControls: `${pilotControls} ${template.controls}`,
+        reasoningPilotOrder: implementationOrder,
+        reasoningPilotTimeline: stabilizationTimeline,
+        reasoningMemory: memoryLine,
+        reasoningConsequenceSimulation: consequenceSimulation,
+        reasoningAuthorityRisk: authorityRisk,
+        reasoningPathForecast: pathForecast,
+        reasoningCorrection: correctionLine,
+        reasoningApprovalControls: approvalControls,
+        reasoningAuditPropagation: auditPropagation,
+        reasoningPaymentRestrictions: paymentRestrictions,
+        reasoningOversightStabilization: oversightStabilization,
+        reasoningContinuityEnforcement: continuityEnforcement
+      };
+
+      Object.entries(lines).forEach(([id, text]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      });
+      const scores = setGovernanceScoringModel(consequence);
+      updateOrganizationMemory(signal, consequence, scores);
+      setGovernanceAssessmentDocument(signal, consequence, {
+        correctionLine,
+        pilotLine
+      });
+      setExecutionPathwayVisualization(consequence);
+    }
+
+    function ribbonDisplayValue(value) {
+      return value === "NOT MATERIALIZED" ? "NOT\u00a0MATERIALIZED" : String(value || "—");
+    }
+
     function setExecutionObject(result = {}, proof = {}) {
       const object = document.getElementById("executionObject");
       const pill = document.getElementById("executionObjectPill");
@@ -1742,7 +2976,10 @@
         const valueEl = document.getElementById(valueId);
         const cardEl = document.getElementById(cardId);
 
-        if(valueEl) valueEl.textContent = value;
+        if (valueEl) {
+          valueEl.textContent = ribbonDisplayValue(value);
+          valueEl.title = String(value || "");
+        }
 
         if(cardEl){
           cardEl.classList.remove("active", "blocked");
@@ -1781,6 +3018,7 @@
       const timeline = value("timeline");
       const constraints = value("constraints");
 
+      __execGovReactionLocked = true;
       try {
         const response = await fetch("/api/v1/execution/submit", {
           method: "POST",
@@ -1816,6 +3054,17 @@
           registry: data.registry?.persisted ? "PERSISTED" : "LOCAL",
           active: !analysis?.failure_prevention_active,
           blocked: !!analysis?.failure_prevention_active
+        });
+
+        setLiveGovernanceFlow(4, { escalate: true });
+        applyExecutionConsequence(computeIntakeSignal());
+        setGovernanceResultShell({
+          readiness: analysis?.failure_prevention_active ? "BLOCK RECORDED" : "AUTHORIZED",
+          exposure: analysis?.risk_level || "ASSESSED",
+          regulatory: "UNDER OVERSIGHT",
+          proof: "CONTINUOUS",
+          audit: "VERIFIED",
+          authority: analysis?.failure_prevention_active ? "WITHHELD" : "ISSUED"
         });
 
         document.getElementById("materializationState").style.display = "flex";
@@ -1937,7 +3186,10 @@
 
         console.log("EXECUTIA_SUBMISSION_RESULT", data);
       } catch (error) {
-        document.getElementById("summaryText").textContent = error.message || "EXECUTION SUBMISSION FAILED."; document.getElementById("governanceStatus").textContent = "SUBMISSION_FAILED";
+        document.getElementById("summaryText").textContent = error.message || "EXECUTION SUBMISSION FAILED.";
+        document.getElementById("governanceStatus").textContent = "SUBMISSION_FAILED";
+      } finally {
+        __execGovReactionLocked = false;
       }
     }
 
@@ -2067,9 +3319,23 @@
       const timeline = value("timeline");
       const constraints = value("constraints");
 
-      document.getElementById("summaryText").textContent = "EXECUTIA is analyzing execution structure...";
+      __execGovReactionLocked = true;
+      document.getElementById("summaryText").textContent =
+        "Governance evaluation in progress across validation, exposure, and proof continuity.";
       document.getElementById("scoreValue").textContent = "…";
       document.getElementById("resultArea").classList.add("hidden");
+
+      setLiveGovernanceFlow(1, { escalate: true });
+      setGovernanceResultShell({
+        readiness: "VALIDATING",
+        exposure: "MAPPING",
+        regulatory: "UNDER REVIEW",
+        proof: "EVIDENCE PENDING",
+        audit: "PENDING",
+        authority: "WITHHELD",
+        phase: "validate"
+      });
+      setReadinessBadge("VALIDATING");
 
       setGovernanceRibbon({
         executionState: "VALIDATING",
@@ -2125,11 +3391,24 @@
         setGovernanceRibbon({
           executionState: result.governance_decision || "ANALYZED",
           governanceMode: result.failure_prevention_active ? "BLOCKING" : "ACTIVE",
-          proofChain: "READY",
+          proofChain: result.failure_prevention_active ? "BLOCK RECORDED" : "READY",
           registry: "CONNECTED",
           active: !result.failure_prevention_active,
           blocked: !!result.failure_prevention_active
         });
+
+        setLiveGovernanceFlow(result.failure_prevention_active ? 2 : 3, { escalate: true });
+        setGovernanceResultShell({
+          readiness: result.failure_prevention_active ? "REVIEWING" : "VALIDATING",
+          exposure: result.risk_level || "MAPPED",
+          regulatory: "UNDER REVIEW",
+          proof: "EVIDENCE PENDING",
+          audit: result.failure_prevention_active ? "STAGING" : "PENDING",
+          authority: result.failure_prevention_active ? "WITHHELD" : "CONDITIONAL",
+          phase: "authorize"
+        });
+        setReadinessBadge(result.failure_prevention_active ? "REVIEWING" : "VALIDATING");
+        document.getElementById("scoreValue").textContent = result.execution_score ?? "—";
 
         renderTimeline(
           result.failure_prevention_active
@@ -2250,6 +3529,8 @@
         document.getElementById("scoreValue").textContent = "!";
         document.getElementById("summaryText").textContent =
           error.message || "Execution analysis could not be completed.";
+      } finally {
+        __execGovReactionLocked = false;
       }
     }
 
@@ -2262,6 +3543,8 @@
         el.appendChild(li);
       });
     }
+
+    initGovernanceReaction();
   </script>
 
 
