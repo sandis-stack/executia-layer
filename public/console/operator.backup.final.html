@@ -37,6 +37,8 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
 .rail-step{display:flex;align-items:center;justify-content:center;height:28px;padding:0 14px;border-radius:999px;border:1px solid #dbe5f0;background:#fff;color:#6c8197;font-size:10px;font-weight:900;letter-spacing:.16em}
 .rail-step.active{background:#edf7ff;border-color:#cfe2f7;color:#0f355d}
 .rail-step.review{background:#fff7e8;border-color:#f3dfb4;color:#8a5d00}
+
+
 .empty-authority{
   display:grid;
   gap:8px;
@@ -50,23 +52,32 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
   font-weight:900;
   letter-spacing:.14em;
   color:#0f355d;
+}
 .empty-authority span{
+  font-size:13px;
   color:#60778f;
+}
 .empty-authority span:last-child{
   font-size:10px;
+  font-weight:900;
   letter-spacing:.18em;
   color:#7a8fa4;
+}
 .auth .head{
   margin-bottom:12px;
+}
 .auth .pill{
   transform:translateY(-2px);
+}
 .registry .tile{
   min-height:58px;
   display:flex;
   flex-direction:column;
   justify-content:center;
+}
 .registry .tile strong{
   letter-spacing:.04em;
+}
 </style>
 </head>
 <body>
@@ -76,6 +87,7 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
   <a class="entry" href="https://executia.io">Entry ↗</a>
 </header>
 <div class="state"><span>● JWT SESSION</span><span>TENANT ISOLATED</span><span>ROLE GOVERNED</span><span>AUDIT RECORDING</span></div>
+
 <main class="shell">
   <section class="grid">
     <div class="card auth">
@@ -87,15 +99,21 @@ body:not(.authorized) .login{display:grid}body:not(.authorized) .authrow{display
       <div class="head"><div><p class="label">TELEMETRY</p><h2>Execution telemetry</h2></div><span class="pill ok">LIVE</span></div>
       <div class="telegrid"><div class="tile"><span>MODE</span><strong id="modeValue">—</strong></div><div class="tile"><span>TENANT</span><strong id="tenantValue">—</strong></div><div class="tile"><span>ROLE</span><strong id="roleValue">—</strong></div><div class="tile"><span>QUEUE</span><strong id="queueCount">—</strong></div></div>
       <details class="rawBox"><summary>RAW TELEMETRY</summary><pre id="queueJson" class="summary">Waiting for session...</pre></details>
+    </div>
   </section>
+
+  <section class="grid">
     <div class="card stream">
       <div class="head"><div><p class="label">EXECUTION STREAM</p><h2>Live execution stream</h2></div><span class="pill warn">QUEUE</span></div>
       <div id="queueList"><div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div></div>
+    </div>
     <aside class="card">
       <div class="head"><div><p class="label">REGISTRY</p><h2>Execution registry</h2></div><span class="pill">CONTROL</span></div>
       <div class="registry"><div class="tile"><span>AUTH</span><strong>Bearer JWT</strong></div><div class="tile"><span>VALIDATION</span><strong>ACTIVE</strong></div><div class="tile"><span>LEDGER</span><strong>VERIFIED</strong></div><div class="tile"><span>AUDIT</span><strong>RECORDING</strong></div></div>
     </aside>
+  </section>
 </main>
+
 <script>
 const TOKEN_KEY="executia_operator_jwt";
 const $=id=>document.getElementById(id);
@@ -108,12 +126,15 @@ function render(){
  if(!t){document.body.classList.remove("authorized");$("sessionPill").className="pill warn";$("sessionPill").textContent="NOT SIGNED IN";$("sessionInfo").textContent="Operator authority not verified.";$("modeValue").textContent=$("tenantValue").textContent=$("roleValue").textContent=$("queueCount").textContent="—";return}
  const p=decode(t),u=p.user||{};
  document.body.classList.add("authorized");$("sessionPill").className="pill ok";$("sessionPill").textContent="AUTHORIZED";$("sessionInfo").textContent=`${u.email||"operator"} · ${p.role||u.role||"OPERATOR"} · ${p.organization_id||"tenant"}`;$("modeValue").textContent=p.mode||"ENTERPRISE";$("tenantValue").textContent="VERIFIED";$("roleValue").textContent=p.role||u.role||"OPERATOR";
+}
 async function api(path,opt={}){
  const h={"Content-Type":"application/json",...(opt.headers||{})}; if(token())h.Authorization=`Bearer ${token()}`;
  const r=await fetch(path,{...opt,headers:h}); const tx=await r.text(); try{return JSON.parse(tx)}catch{return{ok:false,error:tx}}
+}
 async function login(){
  const r=await fetch("/api/v1/login",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":$("apiKey").value.trim(),"x-organization-id":$("organizationId").value.trim(),"x-user-email":$("userEmail").value.trim()},body:"{}"});
  const d=await r.json(); $("queueJson").textContent=JSON.stringify(d,null,2); if(!d.ok||!d.token)return; localStorage.setItem(TOKEN_KEY,d.token); $("apiKey").value=""; render(); loadQueue();
+}
 async function loadQueue(){
  if(!token()){$("queueList").textContent="<div class="empty-authority"><strong>OPERATOR SESSION REQUIRED</strong><span>Execution stream is locked until authority is verified.</span><span>JWT · TENANT · ROLE · AUDIT</span></div>";$("queueJson").textContent="Waiting for session...";return}
  $("queueList").textContent="Synchronizing execution stream...";
@@ -130,6 +151,7 @@ async function loadQueue(){
   card.innerHTML=`<div class="top"><span class="pill warn">${status}</span><span class="pill">REVIEW</span></div><h3></h3><div class="rail"><div class="rail-step active">REQUESTED</div><div class="rail-line"></div><div class="rail-step review">REVIEW</div><div class="rail-line"></div><div class="rail-step">COMMIT</div></div><div class="meta"><span>Execution ID</span><strong>${id}</strong><span>Actor</span><strong>${actor}</strong><span>Status</span><strong>${reason(item.reason)}</strong></div><div class="cmdrow"><button class="cmd commit" data-action="approve" data-id="${id}">COMMIT</button><button class="cmd reject" data-action="block" data-id="${id}">REJECT</button></div>`;
   $("queueList").appendChild(card);
  })
+}
 async function decide(a,id){await api(a==="approve"?"/api/v1/operator-approve":"/api/v1/operator-block",{method:"POST",body:JSON.stringify({execution_id:id,reason:a==="approve"?"Committed by enterprise operator":"Rejected by enterprise operator"})});loadQueue()}
 $("loginBtn").onclick=login;$("logoutBtn").onclick=()=>{localStorage.removeItem(TOKEN_KEY);render();loadQueue()};$("refreshBtn").onclick=loadQueue;
 document.addEventListener("click",e=>{const b=e.target.closest("button[data-action]");if(b)decide(b.dataset.action,b.dataset.id)});

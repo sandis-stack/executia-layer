@@ -37,7 +37,9 @@
 
     <div class="grid" id="requests">
       <div class="empty">Loading execution intake requests...</div>
+    </div>
   </main>
+
   <script>
     const escapeHtml = (value) => String(value ?? "")
       .replaceAll("&","&amp;")
@@ -45,20 +47,28 @@
       .replaceAll(">","&gt;")
       .replaceAll('"',"&quot;")
       .replaceAll("'","&#039;");
+
     async function loadRequests(){
       const root = document.getElementById("requests");
       const count = document.getElementById("count");
+
       try{
         const res = await fetch("/api/request/list");
         const data = await res.json();
+
         if(!data.ok){
           root.innerHTML = '<div class="empty">Request intake failed.</div>';
           count.textContent = "ERROR";
           return;
         }
+
         count.textContent = `${data.count} REQUESTS`;
+
         if(!data.requests.length){
           root.innerHTML = '<div class="empty">No execution requests received yet.</div>';
+          return;
+        }
+
         root.innerHTML = data.requests.map(item => `
           <article class="card">
             <div class="top">
@@ -69,27 +79,49 @@
               </div>
               <div class="status">${escapeHtml(item.analysis_status || "QUEUED")}</div>
             </div>
+
             <div class="cols">
               <div class="box">
                 <div class="label">DOMAIN</div>
                 <div class="text">${escapeHtml(item.execution_domain || "—")}</div>
+              </div>
+
+              <div class="box">
                 <div class="label">STATE</div>
                 <div class="text">${escapeHtml(item.request_state || "—")}</div>
+              </div>
+
+              <div class="box">
                 <div class="label">GOVERNANCE</div>
                 <div class="text">${escapeHtml(item.governance_status || "—")}</div>
+              </div>
+            </div>
+
+            <div class="cols">
+              <div class="box">
                 <div class="label">CURRENT PROBLEM</div>
                 <div class="text">${escapeHtml(item.current_problem || "—")}</div>
+              </div>
+
+              <div class="box">
                 <div class="label">DESIRED OUTCOME</div>
                 <div class="text">${escapeHtml(item.desired_outcome || "—")}</div>
+              </div>
+
+              <div class="box">
                 <div class="label">CURRENT STACK</div>
                 <div class="text">${escapeHtml(item.current_stack || "—")}</div>
+              </div>
+            </div>
           </article>
         `).join("");
+
       }catch(error){
         root.innerHTML = '<div class="empty">Request intake unavailable.</div>';
         count.textContent = "ERROR";
       }
     }
+
     loadRequests();
   </script>
 </body>

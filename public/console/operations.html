@@ -31,19 +31,19 @@
   border-radius:999px;
   padding:8px 12px;
   background:#f7fbff;
+}
+
 .engine-nav a.active{
   background:#183a5b;
   color:#fff;
   border-color:#183a5b;
+}
 </style>
-  <link rel="stylesheet" href="/components/engine-shell.css" />
-  <link rel="stylesheet" href="/components/executia-design-system.css" />
-  <link rel="stylesheet" href="/components/executia-governance-shell.css" />
-  <link rel="stylesheet" href="/components/executia-governance-core.css" />
-  <link rel="stylesheet" href="/components/executia-operational-shell.css" />
+  <link rel="stylesheet" href="/components/engine-shell.css">
+  <link rel="stylesheet" href="/components/engine-system.css">
 </head>
-<body class="ex-engine-shell ex-ds-governance-shell ex-op-shell ex-gov-core-enabled ex-operational-surface ex-ds-surface" data-op-page="operations">
-  <main class="ex-op-main ex-main">
+<body>
+<main class="ex-main">
     <section class="ex-section-tight">
       <p class="ex-kicker">Operations</p>
       <h1 class="ex-title system-title">System readiness</h1>
@@ -67,8 +67,12 @@
             <li><span>Ledger verification</span><strong>0 breaks</strong></li>
           </ul>
         </section>
+        <section class="ex-card">
           <div class="ex-panel-header"><div><h2 class="ex-panel-title">Ledger verification</h2><p class="ex-panel-subtitle">Live response from verification endpoint.</p></div><span class="ex-pill ok">Proof</span></div>
           <pre id="ledgerJson" class="ex-json">Loading ledger verification...</pre>
+        </section>
+      </div>
+    </section>
   </main>
   <script>
     (function () {
@@ -85,15 +89,6 @@
         .catch(function (e) { el.textContent = e.message || "Verification request failed."; });
     })();
   </script>
-  <script src="/components/executia-governance-core.js"></script>
   <script src="/components/engine-shell.js"></script>
-  <script src="/components/executia-operational-shell.js"></script>
-      const T = window.EXECUTIA_GOVERNANCE_LANGUAGE?.TERMS || {};
-      if (window.EXECUTIA_OPERATIONAL_SHELL?.setAuthorityState) {
-        window.EXECUTIA_OPERATIONAL_SHELL.setAuthorityState(
-          `${T.GOVERNED || "Governed"} operations`,
-          `${T.DETERMINISTIC || "Deterministic"} runtime`
-        );
-      }
 </body>
 </html>

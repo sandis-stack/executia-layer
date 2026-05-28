@@ -228,24 +228,39 @@ button{
 }
 
 </style>
-  <link rel="stylesheet" href="/components/executia-design-system.css" />
-  <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
 </head>
 
-<body class="ex-institutional-env" data-ex-env-page="governance">
+<body>
   <div class="reg-shell">
-    <header data-ex-env-header></header>
+    <header class="reg-header">
+      <a class="reg-brand" href="https://executia.io">
+        <strong>EXECUTIA™</strong>
+        <span>Execution Control Standard</span>
+      </a>
+
+      <nav class="system-layer" aria-label="System layers">
+        <a href="https://executia.io">Entry</a>
+        <a href="/execution-test/">Execution Test</a>
+        <a href="/dashboard">Engine</a>
+      </nav>
+
+      <nav class="reg-nav" aria-label="Regulator actions">
+        <a href="/public-proof/">Proof</a>
+        <a class="active" href="/regulator/">Regulator</a>
+        <a class="primary" href="/request-pilot/">Request Pilot</a>
+      </nav>
+    </header>
 
 
 <main>
 
 <section class="card">
   <div class="kicker">
-    Regulator · execution integrity standard
+    EXECUTIA · REGULATOR MODE
   </div>
 
   <h1>
-    Oversight under deterministic governance.
+    Execution integrity oversight layer.
   </h1>
 
   <p>
@@ -498,8 +513,6 @@ async function verifyProof(){
 }
 </script>
 
-    <footer data-ex-env-footer></footer>
   </div>
-  <script src="/components/executia-institutional-environment.js"></script>
 </body>
 </html>

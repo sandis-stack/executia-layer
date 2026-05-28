@@ -3,129 +3,801 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Execution Authority — EXECUTIA™</title>
-  <meta name="description" content="EXECUTIA execution authority — canonical truth, governed consequence, deterministic integrity." />
+  <title>Engineering — EXECUTIA™</title>
+  <meta name="description" content="EXECUTIA governed engineering intelligence console." />
   <link rel="stylesheet" href="/enterprise.css" />
   <link rel="stylesheet" href="/components/engine-shell.css" />
-  <link rel="stylesheet" href="/components/executia-governed-presentation.css" />
-  <script src="/components/executia-governance-core.js"></script>
-  <script src="/components/executia-execution-rhythm.js"></script>
-  <script src="/components/executia-execution-consequence.js"></script>
-  <script src="/components/executia-execution-memory.js"></script>
-  <script src="/components/executia-execution-intent.js"></script>
-  <script src="/components/executia-execution-trust.js"></script>
-  <script src="/components/executia-execution-sovereignty.js"></script>
-  <script src="/components/executia-canonical-compression.js"></script>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --line: #d8dee8;
+      --text: #162232;
+      --muted: #5c6b7a;
+      --blue: #1e3a5f;
+      --graphite: #475569;
+      --soft: #eef3f8;
+      --ok: #1f6b47;
+      --warn: #8a6a12;
+      --bad: #8f2f2f;
+      --canonical: #5b2d82;
+    }
+    * { box-sizing: border-box; }
+    body.eng-console {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    .engine-nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    .engine-nav a {
+      text-decoration: none;
+      color: #183a5b;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid #d8e1ec;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #f7fbff;
+    }
+    .engine-nav a.active {
+      background: #183a5b;
+      color: #fff;
+      border-color: #183a5b;
+    }
+    .eng-subnav {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 24px;
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--line);
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    .eng-subnav a {
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--graphite);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+    }
+    .eng-subnav a:hover,
+    .eng-subnav a:focus {
+      color: var(--blue);
+      border-color: #b8c8dc;
+    }
+    .eng-main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 24px 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .page-hero {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px 22px;
+      scroll-margin-top: 120px;
+    }
+    .page-hero h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--blue);
+    }
+    .page-hero .lead {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+    .page-hero .meta {
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--blue);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .pill.stable { background: #e8f5ee; border-color: #b8dcc8; color: var(--ok); }
+    .pill.review { background: #fff8e8; border-color: #e8d9a8; color: var(--warn); }
+    .pill.high { background: #fdeeee; border-color: #e8bcbc; color: var(--bad); }
+    .pill.canonical { background: #f3eef8; border-color: #d4c4e4; color: var(--canonical); }
+    .pill.tag { background: #fff; color: var(--graphite); font-weight: 700; }
+    .eng-section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 20px;
+      scroll-margin-top: 120px;
+      box-shadow: 0 1px 2px rgba(22, 34, 50, 0.04);
+    }
+    .eng-section h2 {
+      margin: 0 0 14px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 800;
+    }
+    .eng-section h3 {
+      margin: 0 0 10px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .grid { display: grid; gap: 12px; }
+    .grid-6 {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+    }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .metric-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fafbfd;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .metric-card .label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .metric-card .value {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1.2;
+      word-break: break-word;
+    }
+    .metric-card .value.value--compact {
+      font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+    .authority-card {
+      border-left: 3px solid var(--blue);
+      padding: 12px 14px;
+      background: var(--soft);
+      border-radius: 0 10px 10px 0;
+      font-size: 13px;
+    }
+    .authority-card .path {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-top: 6px;
+      font-weight: 700;
+    }
+    .authority-card .node {
+      display: block;
+      font-size: 10px;
+      color: var(--graphite);
+      margin-top: 4px;
+      font-family: ui-monospace, monospace;
+    }
+    .auth-status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    .auth-status-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fafbfd;
+      text-align: center;
+    }
+    .auth-status-item .k {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .auth-status-item .v {
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--blue);
+    }
+    .auth-status-item.on .v { color: var(--ok); }
+    .graph-panel {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--soft);
+      padding: 10px;
+      max-height: 220px;
+    }
+    .graph-panel svg {
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+      display: block;
+    }
+    .deploy-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      background: #fafbfd;
+      min-height: 100px;
+    }
+    .deploy-card h3 {
+      margin: 0 0 10px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--blue);
+    }
+    .deploy-card ul {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 12px;
+      color: var(--graphite);
+    }
+    .deploy-card li { margin: 4px 0; word-break: break-all; }
+    .deploy-card .none {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .timeline-head,
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 1.4fr 72px 64px 72px;
+      gap: 10px;
+      align-items: center;
+      font-size: 11px;
+    }
+    .timeline-head {
+      padding: 0 12px 8px;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .timeline-row {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafbfd;
+    }
+    .timeline-row .ts {
+      color: var(--muted);
+      font-size: 10px;
+      word-break: break-all;
+    }
+    .item-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #fafbfd;
+      font-size: 13px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .item-card .body { flex: 1; min-width: 0; }
+    .item-card .code {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin-top: 4px;
+    }
+    .sev-pill {
+      flex-shrink: 0;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      text-transform: uppercase;
+    }
+    .sev-low { background: #eef3f8; color: var(--graphite); }
+    .sev-medium { background: #fff8e8; color: var(--warn); border-color: #e8d9a8; }
+    .sev-high { background: #fdeeee; color: var(--bad); border-color: #e8bcbc; }
+    .sev-canonical { background: #f3eef8; color: var(--canonical); border-color: #d4c4e4; }
+    .section-tags {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+    .err {
+      border: 1px solid #e8bcbc;
+      background: #fff5f5;
+      color: var(--bad);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    @media (max-width: 720px) {
+      .timeline-head { display: none; }
+      .timeline-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body class="ex-engine-shell ex-ds-governance-shell ex-op-shell ex-operational-surface ex-ds-surface ex-gov-core-enabled ex-rhythm-enabled ex-consequence-enabled ex-memory-enabled ex-intent-enabled ex-trust-enabled ex-sovereignty-enabled ex-compression-enabled ex-gov-modes-enabled" data-op-page="engineering">
-  <main class="ex-op-main ex-ds-atmosphere">
-    <div class="ex-gov-surface-root" id="govSurfaceRoot">
-      <article class="ex-gov-mode-panel" data-mode-panel="executive" hidden></article>
-      <article class="ex-gov-mode-panel" data-mode-panel="operational" hidden></article>
-      <article class="ex-gov-mode-panel" data-mode-panel="engineering" hidden></article>
-      <article class="ex-gov-mode-panel" data-mode-panel="audit" hidden></article>
-      <article class="ex-gov-mode-panel" data-mode-panel="public-verify" hidden></article>
+<body class="eng-console ex-engine-shell">
+  <header class="ex-engine-header">
+    <div class="ex-engine-header-inner">
+      <div class="ex-engine-brand">
+        <a class="ex-engine-brand-main" href="https://executia.io/">EXECUTIA™</a>
+        <span class="ex-engine-brand-sub">Execution Engine</span>
+      </div>
+      <nav class="ex-engine-nav" aria-label="EXECUTIA console">
+        <a href="/dashboard">Control</a>
+        <a href="/console/governance.html">Governance</a>
+        <a href="/console/ledger.html">Ledger</a>
+        <a href="/console/audit.html">Audit</a>
+        <a href="/console/audit-ledger.html">Audit Ledger</a>
+        <a href="/console/operations.html">Operations</a>
+        <a href="/console/proofs.html">Proofs</a>
+        <a href="/api/v1/health" target="_blank" rel="noopener">Health</a>
+        <a href="/console/engineering.html" class="active">Engineering</a>
+      </nav>
+      <a class="ex-engine-entry" href="https://executia.io/">Entry ↗</a>
     </div>
-  </main>
+  </header>
 
-  <script src="/components/engine-shell.js"></script>
-  <script src="/components/executia-operational-shell.js"></script>
-  <script src="/components/executia-governance-modes.js"></script>
-  <script src="/components/engineering-governance-surfaces.js"></script>
+  <nav class="engine-nav" aria-label="Console shortcuts">
+    <a href="/dashboard">Control</a>
+    <a href="/console/governance.html">Governance</a>
+    <a href="/console/ledger.html">Ledger</a>
+    <a href="/console/audit.html">Audit</a>
+    <a href="/console/audit-ledger.html">Audit Ledger</a>
+    <a href="/console/operations.html">Operations</a>
+    <a href="/console/proofs.html">Proofs</a>
+    <a href="/api/v1/health" target="_blank" rel="noopener">Health</a>
+    <a href="/console/engineering.html" class="active">Engineering</a>
+  </nav>
+
+  <nav class="eng-subnav" aria-label="Engineering sections">
+    <a href="#intelligence">Intelligence</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#deploy">Deploy</a>
+    <a href="#replay">Replay</a>
+    <a href="#ledger">Ledger</a>
+    <a href="#findings">Findings</a>
+  </nav>
+
+  <div class="eng-main">
+    <section class="page-hero" id="intelligence">
+      <h1>EXECUTIA Engineering Console</h1>
+      <p class="lead">Governed Engineering Intelligence Layer</p>
+      <p class="meta" id="headerMeta">Loading intelligence…</p>
+      <div class="pill-row" id="statusPills">
+        <span class="pill tag">READ ONLY</span>
+        <span class="pill tag">DETERMINISTIC</span>
+        <span class="pill tag">GOVERNED</span>
+        <span class="pill" id="engStatusPill">—</span>
+      </div>
+    </section>
+
+    <section class="eng-section" aria-labelledby="stabilityTitle">
+      <h2 id="stabilityTitle">Stability Overview</h2>
+      <div class="grid grid-6" id="stabilityCards"></div>
+    </section>
+
+    <section class="eng-section" aria-labelledby="authorityTitle">
+      <h2 id="authorityTitle">Engineering Console Authority</h2>
+      <div class="auth-status-grid" id="consoleAuthority"></div>
+    </section>
+
+    <section class="eng-section" id="architecture" aria-labelledby="archTitle">
+      <div class="section-tags">
+        <span class="pill tag">READ ONLY</span>
+        <span class="pill tag">GOVERNED</span>
+      </div>
+      <h2 id="archTitle">Canonical Authority</h2>
+      <div class="grid grid-2" id="canonicalGrid"></div>
+      <h3 style="margin-top:18px">Architecture Graph</h3>
+      <div class="grid grid-4" id="graphStats" style="margin-bottom:12px"></div>
+      <div class="graph-panel">
+        <svg id="archSvg" viewBox="0 0 520 200" role="img" aria-label="Institutional architecture map"></svg>
+      </div>
+    </section>
+
+    <section class="eng-section" id="replay" aria-labelledby="replayTitle">
+      <div class="section-tags">
+        <span class="pill tag">READ ONLY</span>
+        <span class="pill tag">DETERMINISTIC</span>
+        <span class="pill tag">GOVERNED</span>
+      </div>
+      <h2 id="replayTitle">Replay Layer</h2>
+      <div class="grid grid-2" id="replayGrid"></div>
+    </section>
+
+    <section class="eng-section" id="deploy" aria-labelledby="deployTitle">
+      <div class="section-tags">
+        <span class="pill tag">DETERMINISTIC</span>
+        <span class="pill tag">GOVERNED</span>
+      </div>
+      <h2 id="deployTitle">Deploy Intelligence</h2>
+      <div class="grid grid-2" id="deployBody"></div>
+    </section>
+
+    <section class="eng-section" id="ledger" aria-labelledby="ledgerTitle">
+      <div class="section-tags">
+        <span class="pill tag">READ ONLY</span>
+        <span class="pill tag">DETERMINISTIC</span>
+      </div>
+      <h2 id="ledgerTitle">Replayable Engineering Timeline</h2>
+      <p class="meta" style="margin:-8px 0 12px;font-size:11px">Latest 8 engineering ledger snapshots</p>
+      <div class="timeline-head">
+        <span>Timestamp</span><span>Risk</span><span>Stability</span><span>Findings</span>
+      </div>
+      <div id="timelineBody"></div>
+    </section>
+
+    <section class="eng-section" id="findings" aria-labelledby="recTitle">
+      <h2 id="recTitle">Recommendations</h2>
+      <div id="recBody"></div>
+      <h2 style="margin-top:20px" id="findingsTitle">Findings</h2>
+      <div id="findingsBody"></div>
+    </section>
+  </div>
+
   <script>
     const API = "/api/v1/engineering/intelligence";
-    const LANG = window.EXECUTIA_GOVERNANCE_CORE?.LANGUAGE || window.EXECUTIA_GOVERNANCE_LANGUAGE || {};
-    const T = LANG.TERMS || {};
-    const P = LANG.PHRASES || {};
-    const CORE = () => window.EXECUTIA_GOVERNANCE_CORE;
-    const RHYTHM = () => window.EXECUTIA_EXECUTION_RHYTHM;
-    const CONSEQUENCE = () => window.EXECUTIA_EXECUTION_CONSEQUENCE;
-    const MEMORY = () => window.EXECUTIA_EXECUTION_MEMORY;
-    const INTENT = () => window.EXECUTIA_EXECUTION_INTENT;
-    const TRUST = () => window.EXECUTIA_EXECUTION_TRUST;
-    const SOVEREIGNTY = () => window.EXECUTIA_EXECUTION_SOVEREIGNTY;
-    const COMPRESSION = () => window.EXECUTIA_CANONICAL_COMPRESSION;
-    const GM = () => window.EXECUTIA_GOVERNANCE_MODES;
-    const GS = () => window.EXECUTIA_GOVERNANCE_SURFACES;
-    let rhythmController = null;
-    let lastPayload = null;
+    let refreshTimer = null;
+
+    function esc(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function engineeringStatus(intel) {
+      const risk = intel?.risk?.overall || "LOW";
+      const readiness = intel?.deploy_readiness || "READY";
+      if (risk === "CANONICAL" || intel?.risk?.canonical_risk === "CANONICAL") {
+        return { label: "CANONICAL_ALERT", cls: "canonical" };
+      }
+      if (risk === "HIGH" || intel?.risk?.orphan_risk === "HIGH") {
+        return { label: "HIGH_RISK", cls: "high" };
+      }
+      if (readiness === "REVIEW_REQUIRED" || readiness === "CAUTION" || readiness === "BLOCKED") {
+        return { label: "REVIEW_REQUIRED", cls: "review" };
+      }
+      return { label: "STABLE", cls: "stable" };
+    }
+
+    function severityPill(level) {
+      const l = String(level || "LOW").toUpperCase();
+      const map = {
+        LOW: "sev-low",
+        MEDIUM: "sev-medium",
+        HIGH: "sev-high",
+        CANONICAL: "sev-canonical"
+      };
+      return `<span class="sev-pill ${map[l] || "sev-low"}">${esc(l)}</span>`;
+    }
 
     function formatTs(iso) {
       if (!iso) return "—";
       try {
-        return new Date(iso).toLocaleString(undefined, {
+        const d = new Date(iso);
+        return d.toLocaleString(undefined, {
           month: "short",
           day: "2-digit",
           hour: "2-digit",
           minute: "2-digit"
         });
       } catch {
-        return String(iso ?? "—");
+        return esc(iso);
       }
     }
 
-    function buildContext(data) {
-      return {
-        data,
-        ag: data.architecture_graph,
-        intel: data.execution_intelligence,
-        ledger: data.engineering_ledger || [],
-        T,
-        P,
-        formatTs
-      };
+    function renderStability(ag, intel) {
+      const sc = intel?.stability;
+      const readiness = intel?.deploy_readiness ?? "—";
+      const readinessCompact = String(readiness).length > 12;
+      const cards = [
+        { label: "Stability Score", value: sc?.overall_score ?? "—", compact: false },
+        { label: "Risk Level", value: intel?.risk?.overall ?? "—", compact: false },
+        {
+          label: "Deploy Readiness",
+          value: readiness,
+          compact: readinessCompact
+        },
+        { label: "Architecture Nodes", value: ag?.nodes ?? "—", compact: false },
+        { label: "Shadow Flows", value: ag?.shadow_flows ?? "—", compact: false },
+        { label: "Orphans", value: ag?.orphans ?? "—", compact: false }
+      ];
+      document.getElementById("stabilityCards").innerHTML = cards
+        .map(
+          (c) =>
+            `<article class="metric-card"><div class="label">${esc(c.label)}</div><div class="value${c.compact ? " value--compact" : ""}">${esc(c.value)}</div></article>`
+        )
+        .join("");
     }
 
-    function rhythmContext() {
-      return lastPayload ? buildContext(lastPayload) : { data: {}, ag: {}, intel: {}, T, P, formatTs };
+    function renderConsoleAuthority(data) {
+      const auth = data.engineering_console_authority || {};
+      const status = data.engineering_console_status || {};
+      const items = [
+        { key: "ACTIVE", on: auth.ACTIVE || status.DETECTED },
+        { key: "GOVERNED", on: auth.GOVERNED !== false },
+        { key: "DETECTED", on: auth.DETECTED || status.DETECTED },
+        { key: "READ ONLY", on: status.READ_ONLY !== false },
+        { key: "LIVE REFRESH", on: status.LIVE_REFRESH_ENABLED !== false }
+      ];
+      document.getElementById("consoleAuthority").innerHTML = items
+        .map(
+          (it) =>
+            `<div class="auth-status-item${it.on ? " on" : ""}"><div class="k">${esc(it.key)}</div><div class="v">${it.on ? "YES" : "NO"}</div></div>`
+        )
+        .join("");
     }
 
-    function applyGovernedPresentation(ctx) {
-      if (COMPRESSION()?.applyCompression) {
-        COMPRESSION().applyCompression(ctx);
+    function renderCanonical(ag) {
+      const items = [
+        {
+          title: "Audit verify authority",
+          nodes: ag?.canonical_authority || [],
+          path: "GET /api/v1/audit/verify"
+        },
+        {
+          title: "Public verify authority",
+          nodes: ag?.public_verification || [],
+          path: "GET /api/v1/verify/:execution_id"
+        }
+      ];
+      document.getElementById("canonicalGrid").innerHTML = items
+        .map(
+          (it) =>
+            `<div class="authority-card"><strong>${esc(it.title)}</strong><span class="path">${esc(it.path)}</span>${(it.nodes || [])
+              .map((n) => `<span class="node">${esc(n)}</span>`)
+              .join("")}</div>`
+        )
+        .join("");
+    }
+
+    function renderReplay(ag, intel) {
+      const items = [
+        {
+          title: "Execution replay",
+          path: "GET /api/v1/execution/replay",
+          nodes: ag?.replay_layer || [],
+          note: intel?.risk?.replay_risk ? `Risk: ${intel.risk.replay_risk}` : "Risk: LOW"
+        },
+        {
+          title: "Replay mode",
+          path: "READ_ONLY_DETERMINISTIC_REVALIDATION",
+          nodes: [],
+          note: "Governed read-only replay; canonical truth via audit verify"
+        }
+      ];
+      document.getElementById("replayGrid").innerHTML = items
+        .map(
+          (it) =>
+            `<div class="authority-card"><strong>${esc(it.title)}</strong><span class="path">${esc(it.path)}</span><span class="node">${esc(it.note)}</span>${(it.nodes || [])
+              .map((n) => `<span class="node">${esc(n)}</span>`)
+              .join("")}</div>`
+        )
+        .join("");
+    }
+
+    function renderGraphStats(ag) {
+      const stats = [
+        { label: "Nodes", value: ag?.nodes },
+        { label: "Edges", value: ag?.edges },
+        { label: "Orphans", value: ag?.orphans },
+        { label: "Shadow flows", value: ag?.shadow_flows }
+      ];
+      document.getElementById("graphStats").innerHTML = stats
+        .map(
+          (s) =>
+            `<article class="metric-card"><div class="label">${esc(s.label)}</div><div class="value">${esc(s.value ?? "—")}</div></article>`
+        )
+        .join("");
+    }
+
+    function renderArchSvg(ag) {
+      const nodes = ag?.nodes || 0;
+      const edges = ag?.edges || 0;
+      const orphans = ag?.orphans || 0;
+      const detected = ag?.engineering_console_detected;
+      document.getElementById("archSvg").innerHTML = `
+        <rect width="520" height="200" fill="#eef3f8" rx="6"/>
+        <circle cx="260" cy="72" r="34" fill="#fff" stroke="#1e3a5f" stroke-width="2"/>
+        <text x="260" y="68" text-anchor="middle" font-size="9" fill="#1e3a5f" font-weight="700">AUDIT VERIFY</text>
+        <text x="260" y="80" text-anchor="middle" font-size="8" fill="#5c6b7a">canonical</text>
+        <circle cx="100" cy="130" r="26" fill="#fff" stroke="#475569" stroke-width="1.5"/>
+        <text x="100" y="128" text-anchor="middle" font-size="8" fill="#1e3a5f" font-weight="700">REPLAY</text>
+        <circle cx="420" cy="130" r="26" fill="#fff" stroke="#475569" stroke-width="1.5"/>
+        <text x="420" y="128" text-anchor="middle" font-size="8" fill="#1e3a5f" font-weight="700">PUBLIC</text>
+        <circle cx="260" cy="158" r="24" fill="#fff" stroke="#475569" stroke-width="1.5"/>
+        <text x="260" y="156" text-anchor="middle" font-size="8" fill="#1e3a5f" font-weight="700">GOVERNANCE</text>
+        <circle cx="130" cy="178" r="20" fill="#fff" stroke="#1e3a5f" stroke-width="1.5"/>
+        <text x="130" y="176" text-anchor="middle" font-size="7" fill="#1e3a5f" font-weight="700">ENG CONSOLE</text>
+        <circle cx="390" cy="178" r="20" fill="#fff" stroke="#1e3a5f" stroke-width="1.5"/>
+        <text x="390" y="176" text-anchor="middle" font-size="7" fill="#1e3a5f" font-weight="700">INTELLIGENCE</text>
+        <line x1="260" y1="106" x2="100" y2="104" stroke="#1e3a5f" stroke-width="1.2"/>
+        <line x1="260" y1="106" x2="420" y2="104" stroke="#1e3a5f" stroke-width="1.2"/>
+        <line x1="260" y1="106" x2="260" y2="134" stroke="#475569" stroke-width="1.2"/>
+        <line x1="130" y1="158" x2="200" y2="88" stroke="#475569" stroke-width="1" stroke-dasharray="3"/>
+        <line x1="390" y1="158" x2="320" y2="88" stroke="#475569" stroke-width="1" stroke-dasharray="3"/>
+        <line x1="130" y1="168" x2="260" y2="182" stroke="#1e3a5f" stroke-width="1"/>
+        <line x1="390" y1="168" x2="280" y2="182" stroke="#1e3a5f" stroke-width="1"/>
+        <text x="12" y="16" font-size="9" fill="#5c6b7a">nodes ${nodes} · edges ${edges} · orphans ${orphans}</text>
+        <text x="12" y="28" font-size="8" fill="#5c6b7a">console ${detected ? "detected" : "pending"}</text>
+      `;
+    }
+
+    function renderDeploy(di) {
+      const el = document.getElementById("deployBody");
+      if (!di) {
+        el.innerHTML = '<p class="empty">No deploy intelligence available.</p>';
         return;
       }
-      if (CORE()?.applyPresentation) CORE().applyPresentation(ctx);
-      if (RHYTHM()?.applyRhythm) RHYTHM().applyRhythm(ctx, { syncing: false });
-      if (CONSEQUENCE()?.applyConsequence) CONSEQUENCE().applyConsequence(ctx);
-      if (MEMORY()?.applyMemory) MEMORY().applyMemory(ctx);
-      if (INTENT()?.applyIntent) INTENT().applyIntent(ctx);
-      if (TRUST()?.applyTrust) TRUST().applyTrust(ctx);
-      if (SOVEREIGNTY()?.applySovereignty) SOVEREIGNTY().applySovereignty(ctx);
+      const blocks = [
+        { title: "Protected files touched", items: (di.protected_files_touched || []).map((p) => p.file) },
+        { title: "Governance affected", items: di.governance_layer_affected || [] },
+        { title: "Canonical authority affected", items: di.canonical_authority_affected || [] },
+        { title: "Replay affected", items: di.replay_layer_affected || [] }
+      ];
+      el.innerHTML = blocks
+        .map((b) => {
+          const inner = b.items.length
+            ? `<ul>${b.items.map((i) => `<li><code>${esc(i)}</code></li>`).join("")}</ul>`
+            : '<p class="none">None in current scope.</p>';
+          return `<article class="deploy-card"><h3>${esc(b.title)}</h3>${inner}</article>`;
+        })
+        .join("");
     }
 
-    function renderCurrentMode() {
-      if (!lastPayload || !GS()) return;
-      const mode = GM()?.readStoredMode?.() || document.body.dataset.governanceMode || "engineering";
-      const ctx = buildContext(lastPayload);
-      applyGovernedPresentation(ctx);
-      GS().renderActiveMode(mode, ctx);
+    function renderTimeline(ledger) {
+      const el = document.getElementById("timelineBody");
+      const rows = (ledger || []).slice(0, 8);
+      if (!rows.length) {
+        el.innerHTML = '<p class="empty">No engineering ledger snapshots. Run pre-deploy chain (3B6).</p>';
+        return;
+      }
+      el.innerHTML = rows
+        .map(
+          (row) => `
+        <div class="timeline-row">
+          <span class="ts">${esc(formatTs(row.generated_at))}</span>
+          <span>${severityPill(row.risk)}</span>
+          <span>${row.stability != null ? esc(row.stability) : "—"}</span>
+          <span>${esc(row.findings_count)}</span>
+        </div>`
+        )
+        .join("");
     }
 
-    async function synchronizeGovernance() {
-      const res = await fetch(API, { cache: "no-store" });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error?.message || P.OPERATIONAL_UNAVAILABLE);
-      lastPayload = data;
-      renderCurrentMode();
+    function renderRecommendations(intel) {
+      const el = document.getElementById("recBody");
+      const recs = intel?.recommendations || [];
+      el.innerHTML = recs.length
+        ? recs.map((r) => `<div class="item-card"><div class="body">${esc(r)}</div></div>`).join("")
+        : '<p class="empty">No recommendations.</p>';
     }
 
-    document.addEventListener("executia:governance-mode-change", () => {
-      if (lastPayload) renderCurrentMode();
-    });
+    function renderFindings(intel) {
+      const el = document.getElementById("findingsBody");
+      const findings = intel?.findings || [];
+      el.innerHTML = findings.length
+        ? findings
+            .map(
+              (f) =>
+                `<div class="item-card">${severityPill(f.level)}<div class="body">${esc(f.message)}<div class="code">${esc(f.code)}</div></div></div>`
+            )
+            .join("")
+        : '<p class="empty">No findings.</p>';
+    }
 
-    window.addEventListener("beforeunload", () => rhythmController?.stop?.());
-
-    if (RHYTHM()?.runGovernedRefresh) {
-      rhythmController = RHYTHM().runGovernedRefresh(synchronizeGovernance, {
-        cadenceMs: RHYTHM().DEFAULT_CADENCE_MS,
-        context: rhythmContext
+    function bindSubnav() {
+      document.querySelectorAll(".eng-subnav a[href^='#']").forEach((link) => {
+        link.addEventListener("click", (e) => {
+          const id = link.getAttribute("href");
+          const target = document.querySelector(id);
+          if (!target) return;
+          e.preventDefault();
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
       });
-    } else {
-      synchronizeGovernance().catch(() => {
-        CORE()?.setAuthorityState?.(P.OPERATIONAL_UNAVAILABLE, "—");
-      });
     }
+
+    async function load() {
+      try {
+        const res = await fetch(API, { cache: "no-store" });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error?.message || "Intelligence request failed");
+
+        const ag = data.architecture_graph;
+        const intel = data.execution_intelligence;
+        const status = engineeringStatus(intel);
+
+        document.getElementById("engStatusPill").textContent = status.label;
+        document.getElementById("engStatusPill").className = `pill ${status.cls}`;
+
+        const parts = [];
+        if (ag?.branch) parts.push(`Branch: ${ag.branch}`);
+        if (data.engineering_console_detected) parts.push("Console: detected");
+        parts.push(`Refreshed: ${formatTs(new Date().toISOString())}`);
+        if (data.missing_sources?.length) {
+          parts.push(`Missing: ${data.missing_sources.join(", ")}`);
+        }
+        document.getElementById("headerMeta").textContent = parts.join(" · ");
+
+        renderStability(ag, intel);
+        renderConsoleAuthority(data);
+        renderCanonical(ag);
+        renderReplay(ag, intel);
+        renderGraphStats(ag);
+        renderArchSvg(ag);
+        renderDeploy(intel?.deploy_intelligence);
+        renderTimeline(data.engineering_ledger);
+        renderRecommendations(intel);
+        renderFindings(intel);
+      } catch (err) {
+        document.getElementById("headerMeta").textContent = `Error: ${err.message}`;
+        document.getElementById("stabilityCards").innerHTML =
+          `<div class="err">Unable to load engineering intelligence. Run the pre-deploy chain to generate local artifacts.</div>`;
+      }
+    }
+
+    bindSubnav();
+    load();
+    refreshTimer = setInterval(load, 30000);
+    window.addEventListener("beforeunload", () => clearInterval(refreshTimer));
   </script>
 </body>
 </html>

@@ -5,8 +5,6 @@
   --ex-line:#e4ebf3;
   --ex-soft:#f5f8fc;
   --ex-card:#ffffff;
-  --ex-inst-radius:18px;
-  --ex-inst-shadow:0 10px 28px rgba(15, 53, 93, 0.055);
 }
 
 .ex-engine-shell{
@@ -139,8 +137,7 @@
 
 .ex-protected-state{
   border:1px solid #d9e2ec;
-  border-radius:var(--ex-inst-radius, 18px);
-  box-shadow:var(--ex-inst-shadow, 0 10px 28px rgba(15, 53, 93, 0.055));
+  border-radius:18px;
   background:#eef5fc;
   padding:22px;
   color:var(--ex-ink);

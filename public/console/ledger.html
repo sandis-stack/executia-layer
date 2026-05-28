@@ -47,24 +47,47 @@
   border-radius:999px;
   padding:8px 12px;
   background:#f7fbff;
+}
+
 .engine-nav a.active{
   background:#183a5b;
   color:#fff;
   border-color:#183a5b;
+}
 </style>
-  <link rel="stylesheet" href="/components/engine-shell.css" />
-  <link rel="stylesheet" href="/components/executia-design-system.css" />
-  <link rel="stylesheet" href="/components/executia-governance-shell.css" />
-  <link rel="stylesheet" href="/components/executia-governance-core.css" />
-  <link rel="stylesheet" href="/components/executia-operational-shell.css" />
+  <link rel="stylesheet" href="/components/engine-shell.css">
 </head>
-<body class="ex-engine-shell ex-ds-governance-shell ex-op-shell ex-gov-core-enabled ex-operational-surface ex-ds-surface" data-op-page="ledger">
-  <main class="ex-op-main ex-main">
+<body>
+  <div class="ex-header-shell" data-ex-header>
+    <header class="ex-header">
+      <a class="ex-brand" href="https://executia.io" aria-label="EXECUTIA entry">
+        <span class="ex-brand-name">EXECUTIA™</span>
+        <span class="ex-brand-context">CORE LEDGER</span>
+      </a>
+      <nav class="ex-nav" aria-label="Engine navigation">
+        <a href="/dashboard">LIVE</a>
+        <a href="/control">CONTROL</a>
+        <a href="/history">HISTORY</a>
+        <a href="/operations">OPS</a>
+        <a href="/demo">DEMO</a>
+        <a class="active" aria-current="page" href="/console/ledger.html">LEDGER</a>
+      </nav>
+    </header>
+    <div class="ex-statusbar" aria-label="Engine status">
+      <span class="ex-status-item"><span class="ex-dot"></span>Validation Active</span>
+      <span class="ex-status-item">Registry Locked</span>
+      <span class="ex-status-item">Ledger Verified</span>
+      <span class="ex-status-item">Audit Recording</span>
+    </div>
+  </div>
+
+  <main class="ex-main">
     <section class="ex-section-tight">
       <p class="ex-kicker">Immutable truth layer</p>
       <h1 class="ex-title">Core Ledger</h1>
       <p class="ex-lead">Every committed execution — as a permanent, hashed, auditable record.</p>
     </section>
+
     <section class="ex-section">
       <!-- Integrity status banner -->
       <div class="ex-grid ex-grid-3" style="margin-bottom:22px">
@@ -77,19 +100,32 @@
           <h2 class="ex-card-title">Ledger Entries</h2>
           <p class="ex-card-subtitle">Material truth records in ledger_entries</p>
           <span class="ex-pill ok" id="entryCount">—</span>
+        </article>
+        <article class="ex-card">
           <h2 class="ex-card-title">Audit Height</h2>
           <p class="ex-card-subtitle">Supplemental global audit chain</p>
           <span class="ex-pill ok" id="auditHeight">—</span>
+        </article>
       </div>
+
+      <div class="ex-grid ex-grid-3" style="margin-bottom:22px">
+        <article class="ex-card">
           <h2 class="ex-card-title">Chain Era</h2>
           <p class="ex-card-subtitle">Phase 3B3 · canonical verification</p>
           <span class="ex-pill ok" id="chainEra">3B3</span>
+        </article>
+        <article class="ex-card">
           <h2 class="ex-card-title">Authority</h2>
           <p class="ex-card-subtitle">Audit chain + ledger_entries</p>
           <span class="ex-pill ok" id="authorityPill">CANONICAL</span>
+        </article>
+        <article class="ex-card">
           <h2 class="ex-card-title">Hash Authority</h2>
           <p class="ex-card-subtitle">SQL audit hash authority · SHA-256</p>
           <span class="ex-pill ok">ACTIVE</span>
+        </article>
+      </div>
+
       <!-- Live execution stream -->
       <section class="ex-card" style="margin-bottom:22px">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
@@ -101,34 +137,46 @@
         </div>
         <p class="ex-muted" id="lastRefresh" style="margin-top:12px;font-size:12px">Last refresh: —</p>
       </section>
+
       <!-- Proof graph -->
+      <section class="ex-card" style="margin-bottom:22px">
         <h2 class="ex-card-title" style="margin-bottom:8px">Proof Graph</h2>
         <p class="ex-card-subtitle" style="margin-bottom:14px">
           Canonical lineage view · previous hash → execution hash
         </p>
         <div id="proofGraph" class="ex-stack">Loading proof graph...</div>
+      </section>
+
       <!-- Ledger entries -->
       <section class="ex-card">
         <h2 class="ex-card-title" style="margin-bottom:14px">Ledger Entries</h2>
         <div id="ledgerList" class="ex-stack">Loading...</div>
+      </section>
+
       <!-- Raw JSON debug -->
       <details class="ex-card" style="margin-top:22px">
         <summary class="ex-card-title" style="cursor:pointer">Raw Chain Data</summary>
         <pre id="ledgerJson" class="ex-json" style="margin-top:14px">Loading...</pre>
       </details>
+    </section>
     <div id="proofModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.32);z-index:9998;align-items:center;justify-content:center;padding:24px">
       <section class="ex-card" style="width:min(920px,100%);max-height:86vh;overflow:auto">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px">
+          <div>
             <p class="ex-kicker">Execution proof</p>
             <h2 class="ex-card-title">Ledger Proof</h2>
+          </div>
           <button id="proofClose" class="ex-pill" style="border:1px solid #d8e1ec;cursor:pointer">CLOSE</button>
+        </div>
         <div id="proofStructured" class="ex-stack">No proof selected.</div>
         <details style="margin-top:16px">
           <summary class="ex-kicker" style="cursor:pointer">RAW PROOF JSON</summary>
           <pre id="proofJson" class="ex-json" style="margin-top:12px">No proof selected.</pre>
         </details>
+      </section>
     </div>
   </main>
+
   <script>
     const verifyStatus = document.getElementById("verifyStatus");
     const verifyPill   = document.getElementById("verifyPill");
@@ -143,21 +191,30 @@
     const proofJson    = document.getElementById("proofJson");
     const proofStructured = document.getElementById("proofStructured");
     const proofClose   = document.getElementById("proofClose");
+
     function formatAmount(net, tax, gross, currency = "EUR") {
       const fmt = (n) => Number(n || 0).toLocaleString("en-EU", { minimumFractionDigits: 2 });
       return `Net: ${fmt(net)} ${currency} · Tax: ${fmt(tax)} ${currency} · Gross: ${fmt(gross)} ${currency}`;
     }
+
     function statusPill(status) {
       const map = { COMMITTED: "ok", APPROVED: "ok", BLOCKED: "block", PENDING_REVIEW: "warn" };
       return map[status] || "warn";
+    }
+
     function proofRow(label, value) {
       return `
         <div style="display:grid;grid-template-columns:160px 1fr;gap:14px;border-bottom:1px solid #e6ecf2;padding:10px 0">
           <div class="ex-kicker">${label}</div>
           <div style="font-family:monospace;font-size:12px;word-break:break-all;color:#183a5b">${value || "—"}</div>
+        </div>
       `;
+    }
+
     function shortHash(value) {
       return value ? String(value).slice(0, 12) + "…" : "GENESIS";
+    }
+
     function replayTimelineCard(step) {
       if (step.layer === "EXECUTION_RESULT") {
         return `
@@ -174,48 +231,73 @@
           </article>
         `;
       }
+
       if (step.layer === "REPLAY_DECISION") {
         const safe = step.result === "REPLAY_SAFE";
+        return `
           <article class="ex-card" style="box-shadow:none;border-left:3px solid ${safe ? "#166534" : "#b45309"}">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+              <div>
+                <p class="ex-kicker">STEP ${step.step} · ${step.layer}</p>
                 <p class="ex-muted" style="font-size:12px;margin-top:6px">Deterministic replay outcome</p>
+              </div>
               <span class="ex-pill ${safe ? "ok" : "warn"}">${step.result}</span>
+            </div>
+          </article>
+        `;
+      }
+
+      return `
         <article class="ex-card" style="box-shadow:none;border-left:3px solid #475569">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
             <div>
               <p class="ex-kicker">STEP ${step.step} · ${step.layer}</p>
               <p class="ex-muted" style="font-size:12px;margin-top:6px">count: ${step.count ?? 0}</p>
+            </div>
             <span class="ex-pill ${step.verified_presence ? "ok" : "warn"}">${step.verified_presence ? "PRESENT" : "MISSING"}</span>
+          </div>
+        </article>
+      `;
+    }
+
     async function runReplayVerify(executionId) {
       const panel = document.getElementById("proofReplayPanel");
       const result = document.getElementById("proofReplayResult");
       const pill = document.getElementById("replayPill");
+
       if (!executionId || !panel || !result || !pill) return;
+
       panel.style.display = "block";
       result.textContent = "Loading replay…";
       pill.textContent = "…";
       pill.className = "ex-pill warn";
+
       try {
         const response = await fetch(
           `/api/v1/execution/replay?execution_id=${encodeURIComponent(executionId)}`,
           { headers: { "x-api-key": window.__EXECUTIA_KEY__ || "" } }
         );
         const data = await response.json();
+
         if (!data.ok) {
           result.textContent = data.error?.message || data.error?.code || "Replay failed.";
           pill.textContent = "REPLAY CHECK";
           pill.className = "ex-pill block";
           return;
         }
+
         const safe =
           data.deterministic_checks?.canonical_replay_safe === true ||
           data.canonical_replay_result === "REPLAY_SAFE";
         const replayResult = data.canonical_replay_result || (safe ? "REPLAY_SAFE" : "REPLAY_CHECK");
         pill.textContent = replayResult.replace(/_/g, " ");
         pill.className = safe ? "ex-pill ok" : "ex-pill warn";
+
         const checks = data.deterministic_checks || {};
         const timelineHtml = Array.isArray(data.timeline)
           ? data.timeline.map(replayTimelineCard).join("")
           : "";
+
         result.innerHTML = `
           <section class="ex-stack" style="margin-bottom:14px">
             <p class="ex-kicker">Replay Timeline</p>
@@ -232,10 +314,14 @@
           ${proofRow("PREV HASH PRESENT", String(checks.previous_hash_present))}
           ${proofRow("CANONICAL REPLAY SAFE", String(checks.canonical_replay_safe))}
           ${proofRow("NOTE", data.canonical_note)}
+        `;
       } catch (err) {
         result.textContent = err.message || "Replay request failed.";
         pill.textContent = "REPLAY CHECK";
         pill.className = "ex-pill block";
+      }
+    }
+
     function openProof(item) {
       const proof = {
         execution_id: item.execution_id || null,
@@ -249,19 +335,29 @@
         payload: item.payload || {},
         canonical_note: "Displayed record is a ledger projection. Canonical authority is Phase 3B3 audit verification + ledger_entries."
       };
+
       proofStructured.innerHTML = `
         <section class="ex-card" style="box-shadow:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div>
               <p class="ex-kicker">CANONICAL PROOF STATUS</p>
               <h3 class="ex-card-title" style="margin-top:4px">${proof.status || "UNKNOWN"}</h3>
               <p class="ex-card-subtitle">Phase 3B3 proof view · ledger projection under canonical audit authority</p>
+            </div>
             <span class="ex-pill ${statusPill(proof.status)}">${proof.status || "UNKNOWN"}</span>
+          </div>
         </section>
+
+        <section class="ex-card" style="box-shadow:none">
           <h3 class="ex-card-title" style="margin-bottom:8px">Execution Identity</h3>
           ${proofRow("EXECUTION ID", proof.execution_id)}
           ${proofRow("ACTOR", proof.actor)}
           ${proofRow("SUBJECT", proof.subject)}
           ${proofRow("DECISION", proof.decision)}
           ${proofRow("CREATED", proof.created_at)}
+        </section>
+
+        <section class="ex-card" style="box-shadow:none">
           <h3 class="ex-card-title" style="margin-bottom:8px">Hash Continuity</h3>
           ${proofRow("HASH", proof.hash)}
           ${proofRow("PREVIOUS HASH", proof.previous_hash)}
@@ -269,96 +365,161 @@
             <button type="button" class="ex-pill ok" onclick="navigator.clipboard.writeText('${proof.hash || ""}')">COPY HASH</button>
             <button type="button" class="ex-pill ok" onclick="navigator.clipboard.writeText('${proof.previous_hash || ""}')">COPY PREVIOUS</button>
             <button type="button" class="ex-pill ok" id="replayVerifyBtn">REPLAY VERIFY</button>
+          </div>
+        </section>
+
         <section class="ex-card" id="proofReplayPanel" style="box-shadow:none;display:none">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px">
             <h3 class="ex-card-title">Deterministic Replay</h3>
             <span class="ex-pill warn" id="replayPill">—</span>
+          </div>
           <div id="proofReplayResult" class="ex-stack">Run replay verify to inspect read-only revalidation.</div>
+        </section>
+
+        <section class="ex-card" style="box-shadow:none">
           <h3 class="ex-card-title" style="margin-bottom:8px">Canonical Authority</h3>
           ${proofRow("AUTHORITY", "SUPPLEMENTAL_AUDIT_GLOBAL_CHAIN + LEDGER_ENTRIES")}
           ${proofRow("CHAIN ERA", "3B3")}
           ${proofRow("NOTE", proof.canonical_note)}
+        </section>
+      `;
+
       proofJson.textContent = JSON.stringify(proof, null, 2);
+
       const replayPanel = document.getElementById("proofReplayPanel");
       if (replayPanel) replayPanel.style.display = "none";
+
       const replayBtn = document.getElementById("replayVerifyBtn");
       if (replayBtn) {
         replayBtn.addEventListener("click", () => runReplayVerify(proof.execution_id));
+      }
+
       proofModal.style.display = "flex";
+    }
+
     proofClose.addEventListener("click", () => {
       proofModal.style.display = "none";
+    });
+
     proofModal.addEventListener("click", (event) => {
       if (event.target === proofModal) {
         proofModal.style.display = "none";
+      }
+    });
+
     async function loadLedger() {
+      try {
         // 1. Verify chain integrity
         const verifyResponse = await fetch("/api/v1/audit/verify", {
           headers: {
             "x-api-key": window.__EXECUTIA_KEY__ || ""
           }
         });
+
         const verify = await verifyResponse.json();
+
         entryCount.textContent = verify.ledger?.entries ?? "—";
         auditHeight.textContent = verify.audit?.entries ?? "—";
+
         if (verify.verified) {
+
           if (verify.status === "VALID_WITH_LEGACY_DRIFT") {
             verifyStatus.textContent =
               "Canonical chain verified — legacy projection drift detected";
             verifyPill.textContent = "CANONICAL VERIFIED";
             verifyPill.className = "ex-pill ok";
           } else {
+            verifyStatus.textContent =
               "Canonical audit + ledger chain verified";
             verifyPill.textContent = "VERIFIED";
+            verifyPill.className = "ex-pill ok";
+          }
+
         } else {
+
           verifyStatus.textContent =
             verify.audit?.reason || "Canonical verification failed";
+
           verifyPill.textContent = "BROKEN";
           verifyPill.className = "ex-pill block";
+        }
+
         // 2. Load entries
         const historyResponse = await fetch("/api/v1/history", {
+          headers: {
+            "x-api-key": window.__EXECUTIA_KEY__ || ""
+          }
+        });
+
         const rows = await historyResponse.json();
+
         ledgerJson.textContent = JSON.stringify({ verify, history: rows }, null, 2);
+
         lastRefresh.textContent = "Last refresh: " + new Date().toLocaleTimeString("en-GB");
         liveRefreshPill.textContent = "LIVE";
         liveRefreshPill.className = "ex-pill ok";
+
         // 3. Render entry cards from history (execution_results)
         if (!rows.ok || !Array.isArray(rows.items) || rows.items.length === 0) {
           ledgerList.textContent = "No committed entries yet.";
+          return;
+        }
+
         ledgerList.innerHTML = "";
+
         proofGraph.innerHTML = rows.items.slice(0, 8).map((item, index) => `
           <div class="ex-card" style="box-shadow:none;border-left:3px solid #1e3a5f">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+              <div>
                 <p class="ex-kicker">CHAIN STEP ${index + 1}</p>
                 <p style="font-family:monospace;font-size:12px;color:#183a5b;margin:6px 0">
                   ${shortHash(item.prev_hash)} → ${shortHash(item.hash)}
                 </p>
                 <p class="ex-muted" style="font-size:12px">
                   ${item.execution_id || "—"}
+                </p>
+              </div>
               <span class="ex-pill ${statusPill(item.status)}">${item.status || "UNKNOWN"}</span>
+            </div>
+          </div>
         `).join("");
+
         rows.items.forEach((item) => {
           const card = document.createElement("div");
           card.className = "ex-card";
           card.style.marginTop = "10px";
           card.style.cursor = "pointer";
           card.title = "Open ledger proof";
+
           const ts = item.created_at
             ? new Date(item.created_at).toLocaleString("en-GB")
             : "—";
+
           card.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+              <div>
                 <p class="ex-kicker">${item.request_type || "UNKNOWN"}</p>
                 <p class="ex-muted" style="font-size:11px; margin:2px 0 6px; font-family:monospace">${item.execution_id || "—"}</p>
                 <p class="ex-muted"><strong>Actor:</strong> ${item.actor || "—"} &nbsp;·&nbsp; <strong>Subject:</strong> ${item.subject || "—"}</p>
                 <p class="ex-muted" style="font-size:11px; margin-top:4px; font-family:monospace">
                   hash: ${item.hash ? item.hash.slice(0, 16) + "…" : "—"}
+                </p>
                 <p class="ex-muted" style="font-size:11px; font-family:monospace">
                   prev: ${item.prev_hash ? item.prev_hash.slice(0, 16) + "…" : "GENESIS"}
+                </p>
+              </div>
               <div style="text-align:right">
                 <span class="ex-pill ${statusPill(item.status)}">${item.status || "—"}</span>
                 <p class="ex-muted" style="font-size:11px; margin-top:6px">${ts}</p>
+              </div>
+            </div>
           `;
+
           card.addEventListener("click", () => openProof(item));
           ledgerList.appendChild(card);
+        });
+
+      } catch (err) {
         verifyStatus.textContent = "Connection error";
         liveRefreshPill.textContent = "OFFLINE";
         liveRefreshPill.className = "ex-pill block";
@@ -366,20 +527,16 @@
         verifyPill.className     = "ex-pill block";
         ledgerList.textContent   = err.message || "Failed to load.";
         ledgerJson.textContent   = err.message || "Failed to load.";
+      }
+    }
+
     loadLedger();
+
     setInterval(() => {
       loadLedger();
     }, 30000);
   </script>
-  <script src="/components/executia-governance-core.js"></script>
+
   <script src="/components/engine-shell.js"></script>
-  <script src="/components/executia-operational-shell.js"></script>
-    (function () {
-      const T = window.EXECUTIA_GOVERNANCE_LANGUAGE?.TERMS || {};
-      if (window.EXECUTIA_OPERATIONAL_SHELL?.setAuthorityState) {
-        window.EXECUTIA_OPERATIONAL_SHELL.setAuthorityState(
-          `${T.GOVERNED || "Governed"} ledger`,
-          `${T.CANONICAL || "Canonical"} immutable record`
-    })();
 </body>
 </html>
