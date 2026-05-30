@@ -30,6 +30,13 @@
    */
   --ex-inst-radius: 18px;
   --ex-inst-shadow: 0 8px 22px rgba(15, 53, 93, 0.045);
+
+  /* Design Constitution v1 — canonical geometry roles */
+  --ex-const-radius-structure: 0;
+  --ex-const-radius-control: var(--ex-inst-radius);
+  --ex-const-doc-column: 720px;
+  --ex-const-editorial-measure: 40rem;
+  --ex-const-registry-index: 2.75rem;
 }
 
 /* —— Spacing utilities (canonical rhythm) —— */

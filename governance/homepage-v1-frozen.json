@@ -1,0 +1,107 @@
+{
+  "authority": "EXECUTIA_HOMEPAGE_V1",
+  "status": "FROZEN",
+  "issued": "2026-05-30",
+  "issuer": "CTO",
+  "summary": "Homepage is v1 authority. Hero, standard definition, What Changes, Why It Matters, navigation, and architecture are locked.",
+  "files": [
+    "public/index.html",
+    "public/components/executia-standard-homepage.js"
+  ],
+  "navigation_source": "public/components/executia-institutional-environment.js",
+  "public_product_flow": [
+    { "id": "homepage", "label": "Home", "href": "/" },
+    { "id": "demonstration", "label": "Demonstration", "href": "/demonstration/" },
+    { "id": "request", "label": "Request Pilot", "href": "/request-pilot/" }
+  ],
+  "section_order": [
+    "exStandardHero",
+    "exStandardStructure",
+    "exStandardLayers",
+    "exStandardAuthority",
+    "exStandardToday",
+    "exStandardWhatChanges",
+    "exStandardWhyMatters",
+    "exStandardCta"
+  ],
+  "standard_authority": {
+    "section_label": "Standard Authority",
+    "fields": [
+      { "label": "EXECUTIA STANDARD", "value": "The Execution Governance Standard" },
+      { "label": "Version", "value": "EXECUTIA-STANDARD-V1" },
+      { "label": "Status", "value": "Published" },
+      {
+        "label": "Purpose",
+        "value": "Execution governance infrastructure — validation, proof, and accountability before execution commits."
+      },
+      {
+        "label": "Defined for",
+        "value": "Government, enterprise, investors, and governed AI execution."
+      },
+      { "label": "Authority", "value": "EXECUTIA CTO" }
+    ]
+  },
+  "hero": [
+    "The Execution Governance Standard",
+    "EXECUTIA is execution governance infrastructure — the standard that requires validation, proof, and accountability before execution commits.",
+    "Most systems execute first. Governance comes after.",
+    "EXECUTIA prevents this.",
+    "See How It Works"
+  ],
+  "standard_definition": [
+    "Today",
+    "Execution first. Control and proof follow.",
+    "The EXECUTIA Standard",
+    "Standard Layers",
+    "Validation Layer",
+    "Control Layer",
+    "Proof Layer",
+    "Committed Layer",
+    "Governance first. Execution commits only after validation, control, proof, and commitment."
+  ],
+  "what_changes": {
+    "section_label": "What Changes",
+    "columns": ["Today", "EXECUTIA", "Institutional Impact"],
+    "today": [
+      "Execute first, validate later",
+      "Proof after the fact",
+      "No single truth source",
+      "Accountability fragmented"
+    ],
+    "executia": [
+      "Validate before execute",
+      "Proof at commitment",
+      "One authoritative truth",
+      "Unified accountability"
+    ],
+    "impact": [
+      "Reduced execution risk",
+      "Faster regulatory approval",
+      "Lower audit cost",
+      "Provable execution integrity"
+    ]
+  },
+  "why_it_matters": {
+    "section_label": "Why It Matters",
+    "items": [
+      { "title": "Government", "text": "Regulated decisions need proof before execution — not after audit." },
+      { "title": "Enterprise", "text": "Leaders need one execution truth, not controls rebuilt after failure." },
+      { "title": "Investors", "text": "Capital requires provable governance before operational commitment." },
+      { "title": "AI", "text": "Autonomous systems must not act without governed execution." }
+    ]
+  },
+  "cta": [
+    "Open Demonstration",
+    "Request Pilot"
+  ],
+  "forbidden_on_homepage": [
+    "exDemoControlMap",
+    "ex-arch-map-grid",
+    "exPilotRequestForm",
+    "<form",
+    "Generate EXECUTIA Assessment",
+    "/assessment/",
+    "executia-execution-demo.js",
+    "executia-homepage-ux.js"
+  ]
+}

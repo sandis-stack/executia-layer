@@ -10,6 +10,13 @@
     { id: "request", label: "Request", href: "/request-pilot/" }
   ]);
 
+  /** Public product surfaces — why, how, contact. Assessment is internal (not listed). */
+  const PUBLIC_PRODUCT_FLOW = Object.freeze([
+    { id: "homepage", label: "Home", href: "/" },
+    { id: "demonstration", label: "Demonstration", href: "/demonstration/" },
+    { id: "request", label: "Request Pilot", href: "/request-pilot/" }
+  ]);
+
   const FOOTER_LINKS = FLOW.map((f) => [f.label, f.href]);
 
   /** Global AI-semantic vocabulary — use exactly these phrases. */
@@ -186,13 +193,15 @@
     const attr = document.body?.getAttribute("data-ex-env-page");
     if (attr) return attr;
     const path = normalizePath(global.location?.pathname || "");
-    if (path === "/") return "entry";
+    if (path === "/") return "homepage";
+    if (path.includes("demonstration")) return "demonstration";
+    if (path.includes("assessment")) return "assessment";
     if (path.includes("execution-test")) return "execution";
     if (path.includes("execution-demo")) return "governance";
     if (path.includes("public-proof") || path.includes("proof-explorer")) return "proof";
     if (path.includes("request-pilot")) return "request";
     if (path.includes("regulator")) return "governance";
-    return "entry";
+    return "homepage";
   }
 
   function esc(s) {
@@ -203,15 +212,23 @@
   }
 
   function renderHeader(pageId) {
-    const flow = FLOW.map((item) => {
+    const isPublicProduct = ["homepage", "demonstration", "request", "assessment"].includes(pageId);
+    const navSource = isPublicProduct ? PUBLIC_PRODUCT_FLOW : FLOW;
+    const flow = navSource.map((item) => {
       const active = item.id === pageId ? " is-active" : "";
       return `<a href="${esc(item.href)}" class="${active.trim()}"${active ? ' aria-current="page"' : ""}>${esc(item.label)}</a>`;
     }).join("");
 
     const brandSub =
-      pageId === "entry"
-        ? "Operational governance continuity layer for critical institutional commitments"
-        : AI_CLARITY.INFRASTRUCTURE;
+      pageId === "homepage"
+        ? "Execution governance standard"
+        : pageId === "demonstration"
+          ? "How EXECUTIA works"
+          : pageId === "request"
+            ? "Start institutional discussion"
+            : pageId === "assessment"
+              ? "Internal evaluation"
+              : AI_CLARITY.INFRASTRUCTURE;
 
     return `
       <div class="ex-env-header" role="banner">
@@ -225,11 +242,16 @@
   }
 
   function renderFooter(pageId) {
-    const links = FOOTER_LINKS.map(([label, href]) => `<a href="${esc(href)}">${esc(label)}</a>`).join("");
-    const isEntry = pageId === "entry";
-    const footerPrimary = isEntry ? ENTRY_SEMANTICS.FOOTER_TRUST : AI_CLARITY.FOOTER_TRUST;
-    const footerMeta = isEntry
-      ? ENTRY_SEMANTICS.FOOTER_META
+    const isPublicProduct = ["homepage", "demonstration", "request", "assessment"].includes(pageId);
+    const links = (isPublicProduct ? PUBLIC_PRODUCT_FLOW : FLOW).map(
+      (item) => `<a href="${esc(item.href)}">${esc(item.label)}</a>`
+    ).join("");
+    const isHomepage = pageId === "homepage";
+    const footerPrimary = isHomepage
+      ? "EXECUTIA-STANDARD-V1 · Published · EXECUTIA CTO"
+      : AI_CLARITY.FOOTER_TRUST;
+    const footerMeta = isHomepage
+      ? "The Execution Governance Standard"
       : `${AI_CLARITY.INFRASTRUCTURE} · ${AI_CLARITY.DETERMINISTIC} · ${AI_CLARITY.INTEGRITY} · ${AI_CLARITY.REPLAY} · ${AI_CLARITY.TRUTH} · ${AI_CLARITY.CANONICAL}`;
     return `
       <footer class="ex-env-footer" role="contentinfo">
@@ -540,7 +562,7 @@
   }
 
   function renderConsequenceBand(pageId) {
-    if (pageId === "entry") {
+    if (pageId === "homepage") {
       return `
       <div class="ex-env-consequence-band" aria-label="Execution posture">
         <div><span>Commitment control</span><strong>Before commitment</strong></div>
@@ -595,9 +617,12 @@
   }
 
   function mountAiMeta() {
+    if (document.body.classList.contains("ex-standard-homepage")) return;
     if (document.getElementById("ex-env-jsonld")) return;
     const pageId = resolvePageId();
-    const isEntry = pageId === "entry" || document.body.getAttribute("data-ex-env-page") === "entry";
+    const isPublicProduct = PUBLIC_PRODUCT_FLOW.some((item) => item.id === pageId);
+    const isHomepage = pageId === "homepage";
+    const isEntry = isHomepage;
     const payload = isEntry
       ? {
           "@context": "https://schema.org",
@@ -754,7 +779,9 @@
   function mount() {
     if (!document.body.classList.contains("ex-institutional-env")) return;
     const pageId = resolvePageId();
-    if (pageId === "entry") document.body.classList.add("ex-env-entry");
+    if (pageId === "homepage" && !document.body.classList.contains("ex-standard-homepage")) {
+      document.body.classList.add("ex-env-entry");
+    }
     mountAiMeta();
     mountHeader(pageId);
     mountFooter(pageId);
@@ -768,6 +795,7 @@
 
   global.EXECUTIA_INSTITUTIONAL_ENV = Object.freeze({
     FLOW,
+    PUBLIC_PRODUCT_FLOW,
     FOOTER_LINKS,
     AI_CLARITY,
     ENTRY_SEMANTICS,
@@ -808,6 +836,8 @@
     renderOnboardingSteps,
     resolvePageId
   });
+
+  global.EXECUTIA_INSTITUTIONAL_ENVIRONMENT = global.EXECUTIA_INSTITUTIONAL_ENV;
 
   function init() {
     global.__EXECUTIA_PUBLIC_PAGE__ = true;
