@@ -3,44 +3,45 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>EXECUTIA — Administrative Annex B</title>
-  <meta name="description" content="Administrative Annex B: pilot request publication reference for EXECUTIA-STANDARD-V1." />
+  <title>EXECUTIA — Evidence Annex A</title>
+  <meta name="description" content="Evidence Annex A: execution control map reference for EXECUTIA-STANDARD-V1." />
   <link rel="stylesheet" href="/components/executia-design-system.css" />
   <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
   <script src="/components/executia-institutional-surfaces.js"></script>
-  <script src="/components/executia-request-pilot-ux.js"></script>
+  <script src="/components/executia-execution-demo.js"></script>
+  <script src="/components/executia-demonstration-ux.js"></script>
   <script src="/components/executia-institutional-environment.js"></script>
 </head>
-<body class="ex-institutional-env ex-request-pilot-page ex-institutional-publication" data-ex-env-page="request">
+<body class="ex-institutional-env ex-demonstration-page ex-institutional-publication" data-ex-env-page="demonstration">
   <main class="ex-inst-shell ex-standard-shell" id="main-content">
 
-    <article class="ex-standard-publication-document" aria-label="EXECUTIA Administrative Annex B">
-      <h1 class="ex-publication-sr-only">Administrative Annex B · Pilot Request Publication</h1>
+    <article class="ex-standard-publication-document" aria-label="EXECUTIA Evidence Annex A">
+      <h1 class="ex-publication-sr-only">Evidence Annex A · Execution Control Map</h1>
 
-      <header class="ex-publication-header ex-pilot-publication-header" id="exPilotHeroSection" aria-labelledby="exPilotAdminLabel">
-        <p class="ex-inst-label" id="exPilotAdminLabel">Administrative Annex</p>
+      <header class="ex-publication-header ex-demo-publication-header" id="exDemoHeroSection" aria-labelledby="exDemoEvidenceLabel">
+        <p class="ex-inst-label" id="exDemoEvidenceLabel">Evidence Annex</p>
         <div class="ex-standard-authority ex-standard-registry">
           <div class="ex-standard-authority-item ex-standard-registry-row">
             <h4>Annex</h4>
-            <p>B · Pilot Request Publication</p>
+            <p>A · Execution Control Map</p>
           </div>
           <div class="ex-standard-authority-item ex-standard-registry-row">
             <h4>Standard</h4>
             <p>EXECUTIA-STANDARD-V1</p>
           </div>
           <div class="ex-standard-authority-item ex-standard-registry-row">
-            <h4>Reference</h4>
-            <p>Administrative request fields for institutional pilot evaluation.</p>
+            <h4>Exhibit</h4>
+            <p>Energy · Supplier Payment</p>
           </div>
           <div class="ex-standard-authority-item ex-standard-registry-row">
-            <h4>Purpose</h4>
-            <p>Record administrative scope, outcome, and request fields under governance review.</p>
+            <h4>Reference</h4>
+            <p>Control map evidence by sector and scenario.</p>
           </div>
         </div>
       </header>
 
-      <section class="ex-inst-block ex-standard-block ex-publication-metadata ex-pilot-publication-metadata" id="exPilotPublicationSequence" aria-labelledby="exPilotSequenceLabel">
-        <p class="ex-inst-label" id="exPilotSequenceLabel">Publication Sequence</p>
+      <section class="ex-inst-block ex-standard-block ex-publication-metadata ex-demo-publication-metadata" id="exDemoPublicationSequence" aria-labelledby="exDemoSequenceLabel">
+        <p class="ex-inst-label" id="exDemoSequenceLabel">Publication Sequence</p>
         <div class="ex-standard-authority ex-standard-registry">
           <div class="ex-standard-authority-item ex-standard-registry-row">
             <h4>Standard</h4>
@@ -57,23 +58,23 @@
         </div>
       </section>
 
-      <section class="ex-inst-block ex-standard-block ex-publication-catalog ex-pilot-admin-catalog" id="exPilotScopeSection" aria-labelledby="exPilotScopeLabel">
-        <p class="ex-inst-label" id="exPilotScopeLabel">Administrative Scope</p>
-        <div class="ex-standard-registry ex-pilot-admin-registry" id="exPilotScopeRecords"></div>
+      <section class="ex-inst-block ex-standard-block" id="exDemoControlMapSection" aria-labelledby="exControlMapLabel">
+        <p class="ex-inst-label" id="exControlMapLabel">Control Map Evidence</p>
+        <div id="exDemoControlMap"></div>
       </section>
 
-      <section class="ex-inst-block ex-standard-block ex-publication-catalog ex-pilot-admin-catalog" id="exPilotOutcomeSection" aria-labelledby="exPilotOutcomeLabel">
-        <p class="ex-inst-label" id="exPilotOutcomeLabel">Administrative Outcome</p>
-        <div class="ex-standard-registry ex-pilot-admin-registry" id="exPilotOutcomeRecords"></div>
+      <section class="ex-inst-block ex-standard-block ex-publication-catalog ex-demo-evidence-catalog" id="exDemoSectorSection" aria-labelledby="exDemoSectorLabel">
+        <p class="ex-inst-label" id="exDemoSectorLabel">Evidence Sectors</p>
+        <div class="ex-standard-registry ex-demo-evidence-registry" id="exDemoSectorRecords"></div>
       </section>
 
-      <section class="ex-inst-block ex-standard-block ex-publication-catalog ex-pilot-admin-catalog" id="exPilotRequestSection" aria-labelledby="exPilotRequestLabel">
-        <p class="ex-inst-label" id="exPilotRequestLabel">Administrative Request Fields</p>
-        <div class="ex-standard-registry ex-pilot-admin-registry" id="exPilotFieldRecords"></div>
+      <section class="ex-inst-block ex-standard-block ex-publication-catalog ex-demo-evidence-catalog" id="exDemoScenarioSection" aria-labelledby="exDemoScenarioLabel">
+        <p class="ex-inst-label" id="exDemoScenarioLabel">Evidence Scenarios</p>
+        <div class="ex-standard-registry ex-demo-evidence-registry" id="exDemoScenarioRecords"></div>
       </section>
 
-      <section class="ex-inst-block ex-standard-block ex-publication-metadata ex-pilot-publication-metadata" id="exPilotPublicationNav" aria-labelledby="exPilotNavLabel">
-        <p class="ex-inst-label" id="exPilotNavLabel">Publication Navigation</p>
+      <section class="ex-inst-block ex-standard-block ex-publication-metadata ex-demo-publication-metadata" id="exDemoPublicationNav" aria-labelledby="exDemoNavLabel">
+        <p class="ex-inst-label" id="exDemoNavLabel">Publication Navigation</p>
         <div class="ex-standard-authority ex-standard-registry">
           <div class="ex-standard-authority-item ex-standard-registry-row">
             <h4>Standard</h4>
@@ -97,10 +98,10 @@
   </main>
 
   <script>
-    (function bootRequestPilot() {
+    (function bootDemonstration() {
       function initPage() {
         window.EXECUTIA_INSTITUTIONAL_ENVIRONMENT?.mount();
-        window.EXECUTIA_REQUEST_PILOT_UX?.init();
+        window.EXECUTIA_DEMONSTRATION_UX?.init();
       }
 
       if (document.readyState === "loading") {

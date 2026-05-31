@@ -1,0 +1,66 @@
+---
+description: EXECUTIA Homepage v1 publication system — FROZEN FOR REVIEW; refinement-only changes without CTO unlock
+alwaysApply: true
+---
+
+# Homepage v1 — FROZEN FOR REVIEW
+
+**Authority:** EXECUTIA CTO · **Status:** FROZEN_FOR_REVIEW · **Review:** READY_FOR_CTO_REVIEW · **Next:** CTO final visual review
+
+Homepage is the **canonical reference**. No page may exceed homepage authority level.
+
+## Protected structure (do not add, remove, or reorder)
+
+1. Hero (`#exStandardHero`)
+2. EXECUTIA Standard (`#exStandardStructure`)
+3. Standard Layers (`#exStandardLayers`)
+4. Standard Authority (`#exStandardAuthority`)
+5. Today (`#exStandardToday`)
+6. What Changes (`#exStandardWhatChanges`)
+7. Why It Matters (`#exStandardWhyMatters`)
+8. Next Action (`#exStandardCta`)
+9. Publication Metadata (`[data-ex-env-footer]` inside `.ex-standard-publication-document`)
+
+## Frozen surface
+
+- One publication system (`.ex-standard-publication-document`)
+- One authority system (registry label / value rows)
+- One registry language (no cards, nav, CTA, or website footer)
+
+## Do not modify (without explicit CTO approval)
+
+- Section order or new sections
+- Copy in hero, standard, authority, today, what changes, why it matters, next action, publication metadata
+- New design language, CTA concepts, navigation, or product footer
+- `PUBLIC_PRODUCT_FLOW` on other surfaces (Demonstration / Request Pilot phase is separate)
+
+## Allowed without unlock
+
+- Typo corrections
+- Accessibility fixes
+- Responsive fixes
+- Legal/compliance corrections
+
+Must preserve manifest parity and pass frozen verify.
+
+## Frozen files
+
+- `public/index.html`
+- `public/components/executia-standard-homepage.js`
+- `public/components/executia-institutional-environment.css` (homepage publication scope)
+- `public/components/executia-institutional-environment.js` (homepage publication footer mount only)
+
+## Before touching homepage files
+
+Run: `node scripts/executia-homepage-v1-frozen-verify.cjs`
+
+If the task requires structural, copy, or design-language changes, **stop** and request CTO unlock unless approval is in the user query.
+
+## Next
+
+CTO final visual review (Publication System v1)
+
+## Reference
+
+- `docs/governance/homepage-v1-authority.md`
+- `.cursor/context/homepage-v1-authority.md`

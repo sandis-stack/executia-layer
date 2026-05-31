@@ -1,0 +1,34 @@
+---
+description: Institutional publication program — READY_FOR_CTO_REVIEW; system FROZEN_FOR_REVIEW
+alwaysApply: true
+---
+
+# Institutional Publication Program
+
+**Status:** `FROZEN_FOR_REVIEW` · **Review:** `READY_FOR_CTO_REVIEW` · **Next:** CTO final visual review
+
+**Manifest:** `governance/publication-system-v1-frozen.json`
+
+## Phase status
+
+| Phase | Status |
+|-------|--------|
+| Cross-page consistency | COMPLETE |
+| Mobile validation | COMPLETE |
+| Accessibility validation | COMPLETE |
+| Final review package | COMPLETE |
+| CTO final visual review | PENDING |
+
+## Allowed without unlock
+
+Typo · accessibility · responsive · legal/compliance corrections only
+
+## Forbidden without unlock
+
+New sections · new hierarchy · new navigation · new CTA · new visual systems · structural modifications
+
+## Verify
+
+```bash
+node scripts/executia-publication-system-v1-frozen-verify.cjs
+```

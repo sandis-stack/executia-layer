@@ -89,31 +89,71 @@ check("homepage", home, [
 
 check("demonstration", demoPage, [
   "exDemoControlMap",
-  "Sector Examples",
-  "Prove the Standard"
+  "Evidence Annex",
+  "Evidence Scenarios",
+  "Evidence Sectors",
+  "Publication Sequence",
+  "Publication Navigation",
+  "Evidence Annex",
+  "Administrative Annex",
+  "ex-publication-header",
+  "exDemoScenarioRecords",
+  "ex-standard-publication-document",
+  "ex-institutional-publication",
+  "ex-standard-publication-end",
+  "EXECUTIA-STANDARD-V1"
 ], [
   "exPilotRequestForm",
   "<form",
   "Generate EXECUTIA Assessment",
   "/assessment/",
-  "Request Pilot"
+  "Request Pilot",
+  "ex-inst-hero-cta",
+  "ex-env-footer-flow",
+  "Prove the Standard",
+  "Sector Examples",
+  "ex-inst-card-grid",
+  "executia-assessment-demo.css",
+  "ex-proof-map",
+  "ex-arch-infra-stack"
 ]);
 
 check("request-pilot", pilot, [
+  "Administrative Annex",
+  "Administrative Scope",
+  "Administrative Outcome",
+  "Administrative Request Fields",
+  "Publication Sequence",
+  "Publication Navigation",
+  "Evidence Annex",
+  "ex-publication-header",
+  "exPilotScopeRecords",
+  "exPilotFieldRecords",
+  "ex-standard-publication-document",
+  "ex-institutional-publication",
+  "ex-standard-publication-end",
+  "EXECUTIA-STANDARD-V1",
+  "Pilot Request Publication"
+], [
+  "exPilotRequestForm",
+  "<form",
+  "<button",
   "Request Pilot Project",
   "Why Pilot",
-  "Pilot Scope",
-  "Expected Outcome",
   "Request Pilot Form",
-  "exPilotRequestForm",
-  "exPilotRequestName",
-  "exPilotRequestOrg",
-  "exPilotRequestPosition",
-  "exPilotRequestEmail",
-  "exPilotRequestProcess",
-  "exPilotRequestMessage",
-  "Request Pilot Discussion"
-], ["/assessment/", "Generate EXECUTIA Assessment", "consulting", "questionnaire"]);
+  "Request Pilot Discussion",
+  "Prove EXECUTIA",
+  "Expected Outcome",
+  "Pilot Scope",
+  "Generate EXECUTIA Assessment",
+  "/assessment/",
+  "consulting",
+  "questionnaire",
+  "ex-env-footer-flow",
+  "executia-assessment-demo.css",
+  "ex-inst-hero-cta",
+  "ex-inst-generate-btn"
+]);
 
 if (!standardJs.includes("Institutional Impact")) {
   console.error("FAIL: homepage what changes must include Institutional Impact");

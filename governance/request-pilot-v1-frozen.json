@@ -1,0 +1,79 @@
+{
+  "authority": "EXECUTIA_REQUEST_PILOT_V1",
+  "status": "SUPERSEDED_BY_PUBLICATION",
+  "superseded_by": "governance/request-pilot-v1-publication.json",
+  "publication_status": "ADMINISTRATIVE_ANNEX_REVIEW",
+  "issued": "2026-05-30",
+  "issuer": "CTO",
+  "summary": "Request Pilot page is v1 authority. Hero, Why Pilot, Pilot Scope, Expected Outcome, form fields, CTA, and architecture are locked.",
+  "files": [
+    "public/request-pilot/index.html",
+    "public/components/executia-request-pilot-ux.js"
+  ],
+  "section_order": [
+    "exPilotHeroSection",
+    "exPilotWhySection",
+    "exPilotScopeSection",
+    "exPilotOutcomeSection",
+    "exPilotRequestSection"
+  ],
+  "hero": [
+    "Request Pilot Project"
+  ],
+  "why_pilot": [
+    "Why Pilot",
+    "Prove EXECUTIA on one real process."
+  ],
+  "pilot_scope": {
+    "label": "Pilot Scope",
+    "items": [
+      "Process selection",
+      "Governance audit",
+      "Gap identification",
+      "Pilot implementation"
+    ]
+  },
+  "expected_outcome": {
+    "label": "Expected Outcome",
+    "items": [
+      "Reduced execution risk",
+      "Execution governance visibility",
+      "Pilot case study"
+    ]
+  },
+  "form": {
+    "section_label": "Request Pilot Form",
+    "form_id": "exPilotRequestForm",
+    "fields": [
+      { "id": "exPilotRequestName", "label": "Name" },
+      { "id": "exPilotRequestOrg", "label": "Organization" },
+      { "id": "exPilotRequestPosition", "label": "Position" },
+      { "id": "exPilotRequestEmail", "label": "Email" },
+      { "id": "exPilotRequestProcess", "label": "Process To Evaluate" },
+      { "id": "exPilotRequestMessage", "label": "Message" }
+    ],
+    "cta": "Request Pilot Discussion",
+    "source": "EXECUTIA_REQUEST_PILOT_PUBLIC",
+    "submit_keys": [
+      "contact",
+      "organization",
+      "position",
+      "email",
+      "process_to_evaluate",
+      "problem",
+      "source"
+    ]
+  },
+  "forbidden_in_main": [
+    "assessment",
+    "Assessment",
+    "consulting",
+    "Consulting",
+    "questionnaire",
+    "Generate EXECUTIA",
+    "Country",
+    "Estimated Yearly Risk",
+    "execution_critical_process",
+    "/assessment/"
+  ]
+}

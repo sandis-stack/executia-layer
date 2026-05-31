@@ -232,8 +232,12 @@
 
     const isStandardHomepage =
       pageId === "homepage" && document.body.classList.contains("ex-standard-homepage");
+    const isPublicationDemonstration =
+      pageId === "demonstration" && document.body.classList.contains("ex-institutional-publication");
+    const isPublicationRequestPilot =
+      pageId === "request" && document.body.classList.contains("ex-institutional-publication");
     const brandInner = `<strong>${esc(AI_CLARITY.PRODUCT)}™</strong><span>${esc(brandSub)}</span>`;
-    const brand = isStandardHomepage
+    const brand = isStandardHomepage || isPublicationDemonstration || isPublicationRequestPilot
       ? `<span class="ex-env-brand">${brandInner}</span>`
       : `<a class="ex-env-brand" href="/">${brandInner}</a>`;
 
@@ -245,22 +249,8 @@
     `;
   }
 
-  function renderFooter(pageId) {
-    const isPublicProduct = ["homepage", "demonstration", "request", "assessment"].includes(pageId);
-    const links = (isPublicProduct ? PUBLIC_PRODUCT_FLOW : FLOW).map(
-      (item) => `<a href="${esc(item.href)}">${esc(item.label)}</a>`
-    ).join("");
-    const isHomepage = pageId === "homepage";
-    const isStandardPublicationHomepage =
-      isHomepage && document.body.classList.contains("ex-standard-homepage");
-    const footerPrimary = isHomepage
-      ? "EXECUTIA-STANDARD-V1 · Published · EXECUTIA CTO"
-      : AI_CLARITY.FOOTER_TRUST;
-    const footerMeta = isHomepage
-      ? "The Execution Governance Standard"
-      : `${AI_CLARITY.INFRASTRUCTURE} · ${AI_CLARITY.DETERMINISTIC} · ${AI_CLARITY.INTEGRITY} · ${AI_CLARITY.REPLAY} · ${AI_CLARITY.TRUTH} · ${AI_CLARITY.CANONICAL}`;
-    if (isStandardPublicationHomepage) {
-      return `
+  function renderPublicationMetadataFooter(documentLabel) {
+    return `
       <footer class="ex-env-footer ex-standard-registry ex-standard-publication-footer" role="contentinfo">
         <div class="ex-standard-authority-item ex-standard-registry-row">
           <h4>Standard</h4>
@@ -276,10 +266,40 @@
         </div>
         <div class="ex-standard-authority-item ex-standard-registry-row">
           <h4>Document</h4>
-          <p>Execution Governance Standard</p>
+          <p>${esc(documentLabel)}</p>
         </div>
       </footer>
     `;
+  }
+
+  function resolvePublicationSurface(pageId) {
+    if (pageId === "homepage" && document.body.classList.contains("ex-standard-homepage")) {
+      return { document: "Execution Governance Standard" };
+    }
+    if (pageId === "demonstration" && document.body.classList.contains("ex-institutional-publication")) {
+      return { document: "Evidence Annex A · Execution Control Map" };
+    }
+    if (pageId === "request" && document.body.classList.contains("ex-institutional-publication")) {
+      return { document: "Pilot Request Publication" };
+    }
+    return null;
+  }
+
+  function renderFooter(pageId) {
+    const isPublicProduct = ["homepage", "demonstration", "request", "assessment"].includes(pageId);
+    const links = (isPublicProduct ? PUBLIC_PRODUCT_FLOW : FLOW).map(
+      (item) => `<a href="${esc(item.href)}">${esc(item.label)}</a>`
+    ).join("");
+    const isHomepage = pageId === "homepage";
+    const publicationSurface = resolvePublicationSurface(pageId);
+    const footerPrimary = isHomepage
+      ? "EXECUTIA-STANDARD-V1 · Published · EXECUTIA CTO"
+      : AI_CLARITY.FOOTER_TRUST;
+    const footerMeta = isHomepage
+      ? "The Execution Governance Standard"
+      : `${AI_CLARITY.INFRASTRUCTURE} · ${AI_CLARITY.DETERMINISTIC} · ${AI_CLARITY.INTEGRITY} · ${AI_CLARITY.REPLAY} · ${AI_CLARITY.TRUTH} · ${AI_CLARITY.CANONICAL}`;
+    if (publicationSurface) {
+      return renderPublicationMetadataFooter(publicationSurface.document);
     }
     return `
       <footer class="ex-env-footer" role="contentinfo">
@@ -804,6 +824,13 @@
     if (host) host.innerHTML = renderOnboardingSteps();
   }
 
+  function isPublicationAnnexPage(pageId) {
+    return (
+      (pageId === "demonstration" || pageId === "request") &&
+      document.body.classList.contains("ex-institutional-publication")
+    );
+  }
+
   function mount() {
     if (!document.body.classList.contains("ex-institutional-env")) return;
     const pageId = resolvePageId();
@@ -811,13 +838,17 @@
       document.body.classList.add("ex-env-entry");
     }
     mountAiMeta();
-    mountHeader(pageId);
+    if (!isPublicationAnnexPage(pageId)) {
+      mountHeader(pageId);
+    }
     mountFooter(pageId);
-    mountHomeHero();
-    mountConsequenceBand(pageId);
-    mountDemoFlowLadder(-1);
-    mountProofIntro();
-    mountOnboardingSteps();
+    if (!isPublicationAnnexPage(pageId)) {
+      mountHomeHero();
+      mountConsequenceBand(pageId);
+      mountDemoFlowLadder(-1);
+      mountProofIntro();
+      mountOnboardingSteps();
+    }
     document.dispatchEvent(new CustomEvent("executia:institutional-env:refresh"));
   }
 

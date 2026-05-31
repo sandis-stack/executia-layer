@@ -1,18 +1,41 @@
 {
   "authority": "EXECUTIA_HOMEPAGE_V1",
-  "status": "FROZEN",
+  "status": "LOCKED",
+  "review_status": "READY_FOR_GOVERNMENT_REVIEW",
+  "cto_verdict": "CONDITIONALLY_APPROVED",
+  "review_baseline": true,
+  "reference_standard": true,
   "issued": "2026-05-30",
+  "accepted": "2026-05-30",
   "issuer": "CTO",
-  "summary": "Homepage is v1 authority. Hero, standard definition, What Changes, Why It Matters, navigation, and architecture are locked.",
+  "summary": "Homepage v1 publication system is frozen for review and serves as the institutional reference standard. No page may exceed homepage authority level.",
   "files": [
     "public/index.html",
-    "public/components/executia-standard-homepage.js"
+    "public/components/executia-standard-homepage.js",
+    "public/components/executia-institutional-environment.css",
+    "public/components/executia-institutional-environment.js"
   ],
-  "navigation_source": "public/components/executia-institutional-environment.js",
-  "public_product_flow": [
-    { "id": "homepage", "label": "Home", "href": "/" },
-    { "id": "demonstration", "label": "Demonstration", "href": "/demonstration/" },
-    { "id": "request", "label": "Request Pilot", "href": "/request-pilot/" }
+  "publication_system": {
+    "envelope": "ex-standard-publication-document",
+    "registry_language": true,
+    "homepage_body_class": "ex-standard-homepage",
+    "forbidden_surface_patterns": [
+      "navigation",
+      "cta",
+      "website_footer",
+      "product_menu"
+    ]
+  },
+  "protected_structure": [
+    { "id": "exStandardHero", "label": "Hero" },
+    { "id": "exStandardStructure", "label": "EXECUTIA Standard" },
+    { "id": "exStandardLayers", "label": "Standard Layers" },
+    { "id": "exStandardAuthority", "label": "Standard Authority" },
+    { "id": "exStandardToday", "label": "Today" },
+    { "id": "exStandardWhatChanges", "label": "What Changes" },
+    { "id": "exStandardWhyMatters", "label": "Why It Matters" },
+    { "id": "exStandardCta", "label": "Next Action" },
+    { "mount": "data-ex-env-footer", "label": "Publication Metadata" }
   ],
   "section_order": [
     "exStandardHero",
@@ -23,6 +46,58 @@
     "exStandardWhatChanges",
     "exStandardWhyMatters",
     "exStandardCta"
+  ],
+  "publication_metadata": {
+    "mount": "data-ex-env-footer",
+    "footer_class": "ex-standard-publication-footer",
+    "fields": [
+      { "label": "Standard", "value": "EXECUTIA-STANDARD-V1" },
+      { "label": "Status", "value": "Published" },
+      { "label": "Authority", "value": "EXECUTIA CTO" },
+      { "label": "Document", "value": "Execution Governance Standard" }
+    ]
+  },
+  "next_action": {
+    "section_label": "Next action",
+    "registry_class": "ex-standard-registry--directive",
+    "rows": [
+      "Evaluate the EXECUTIA Standard",
+      "Review execution governance applicability",
+      "Request pilot evaluation"
+    ]
+  },
+  "allowed_without_unlock": [
+    "typo_corrections",
+    "accessibility_fixes",
+    "responsive_fixes",
+    "legal_compliance_corrections"
+  ],
+  "forbidden_without_unlock": [
+    "new_sections",
+    "new_hierarchy",
+    "new_navigation_concepts",
+    "new_cta_concepts",
+    "new_visual_systems",
+    "new_copy",
+    "new_design_language",
+    "navigation",
+    "website_footer",
+    "homepage_redesign",
+    "section_reorder"
+  ],
+  "next_phase": [
+    "demonstration_page",
+    "request_pilot_page",
+    "cross_page_publication_consistency",
+    "mobile_review",
+    "accessibility_review"
+  ],
+  "authority_ceiling_rule": "No public page may exceed homepage publication authority. Homepage remains reference standard.",
+  "navigation_source": "public/components/executia-institutional-environment.js",
+  "public_product_flow": [
+    { "id": "homepage", "label": "Home", "href": "/" },
+    { "id": "demonstration", "label": "Demonstration", "href": "/demonstration/" },
+    { "id": "request", "label": "Request Pilot", "href": "/request-pilot/" }
   ],
   "standard_authority": {
     "section_label": "Standard Authority",

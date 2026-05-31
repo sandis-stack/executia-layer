@@ -1,0 +1,39 @@
+---
+description: EXECUTIA Request Pilot v1 is ADMINISTRATIVE_ANNEX_REVIEW — publication annex only, not lead-generation
+alwaysApply: true
+---
+
+# Request Pilot v1 — ADMINISTRATIVE ANNEX REVIEW
+
+**Authority:** CTO · **Manifest:** `governance/request-pilot-v1-publication.json`
+
+## State
+
+`ADMINISTRATIVE_ANNEX_REVIEW` — frozen direction; typography, spacing, alignment, administrative formatting, responsive only.
+
+## Do not modify (without explicit CTO approval)
+
+- Administrative annex header metadata
+- Publication Sequence and Publication Navigation
+- Administrative Scope, Outcome, and Request Fields registry structure
+- Section order or new sections
+- Form, CTA, or application UI reintroduction
+
+## Forbidden
+
+- Hero marketing, CTA hierarchy, application UI, product UI, demo UI, sales language
+- Visual authority above Homepage
+
+## Frozen files
+
+- `public/request-pilot/index.html`
+- `public/components/executia-request-pilot-ux.js`
+
+## Before touching request pilot files
+
+Run: `node scripts/executia-request-pilot-v1-publication-verify.cjs`
+
+## Reference
+
+- `governance/request-pilot-v1-publication.json`
+- `governance/institutional-publication-program.json`

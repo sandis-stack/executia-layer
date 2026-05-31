@@ -10,6 +10,8 @@ const root = path.join(__dirname, "..");
 const manifestPath = path.join(root, "governance", "homepage-v1-frozen.json");
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 
+const FROZEN_STATUSES = new Set(["FROZEN", "FROZEN_FOR_REVIEW", "LOCKED"]);
+
 let failed = 0;
 
 function fail(msg) {
@@ -24,14 +26,81 @@ function read(rel) {
 const home = read("public/index.html");
 const standardJs = read("public/components/executia-standard-homepage.js");
 const envJs = read("public/components/executia-institutional-environment.js");
+const envCss = read("public/components/executia-institutional-environment.css");
 
-if (manifest.status !== "FROZEN") {
-  fail("homepage manifest status must be FROZEN");
+if (!FROZEN_STATUSES.has(manifest.status)) {
+  fail(`homepage manifest status must be FROZEN, FROZEN_FOR_REVIEW, or LOCKED (got ${manifest.status})`);
+}
+
+if (!manifest.review_baseline || !manifest.reference_standard) {
+  fail("homepage must be review_baseline and reference_standard");
 }
 
 for (const file of manifest.files) {
   if (!fs.existsSync(path.join(root, file))) {
     fail(`missing frozen file: ${file}`);
+  }
+}
+
+if (manifest.publication_system) {
+  const pub = manifest.publication_system;
+  if (pub.envelope && !home.includes(pub.envelope)) {
+    fail(`publication envelope drift — missing: ${pub.envelope}`);
+  }
+  if (pub.homepage_body_class && !home.includes(pub.homepage_body_class)) {
+    fail(`homepage body class drift — missing: ${pub.homepage_body_class}`);
+  }
+  if (!envCss.includes("body.ex-standard-homepage")) {
+    fail("homepage publication styles missing from executia-institutional-environment.css");
+  }
+}
+
+if (Array.isArray(manifest.protected_structure)) {
+  for (const section of manifest.protected_structure) {
+    if (section.id && !home.includes(`id="${section.id}"`)) {
+      fail(`protected structure drift — missing section: ${section.label || section.id}`);
+    }
+    if (section.mount && !home.includes(section.mount)) {
+      fail(`protected structure drift — missing mount: ${section.label || section.mount}`);
+    }
+  }
+}
+
+if (manifest.publication_metadata) {
+  const meta = manifest.publication_metadata;
+  if (meta.mount && !home.includes(meta.mount)) {
+    fail("publication metadata mount missing from homepage");
+  }
+  if (meta.footer_class && !envJs.includes(meta.footer_class)) {
+    fail(`publication metadata footer class missing: ${meta.footer_class}`);
+  }
+  for (const field of meta.fields || []) {
+    if (!envJs.includes(`<h4>${field.label}</h4>`)) {
+      fail(`publication metadata label drift — missing: ${field.label}`);
+    }
+    if (field.label === "Document") {
+      if (!envJs.includes("Execution Governance Standard")) {
+        fail(`publication metadata value drift — missing: ${field.value}`);
+      }
+    } else if (!envJs.includes(field.value)) {
+      fail(`publication metadata value drift — missing: ${field.value}`);
+    }
+  }
+  if (!home.includes("ex-standard-publication-end")) {
+    fail("publication metadata must mount inside publication envelope");
+  }
+}
+
+if (manifest.next_action) {
+  const action = manifest.next_action;
+  if (action.registry_class && !home.includes(action.registry_class)) {
+    fail(`next action registry drift — missing: ${action.registry_class}`);
+  }
+  if (!home.includes("ex-standard-registry-row--indexed")) {
+    fail("next action must use indexed registry rows");
+  }
+  for (const row of action.rows || manifest.cta || []) {
+    if (!home.includes(row)) fail(`next action drift — missing: ${row}`);
   }
 }
 
@@ -125,4 +194,4 @@ if (!home.includes("executia-institutional-environment.css")) {
 }
 
 if (failed) process.exit(1);
-console.log("EXECUTIA Homepage v1 frozen authority verification passed.");
+console.log(`EXECUTIA Homepage v1 frozen authority verification passed (${manifest.status}).`);

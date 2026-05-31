@@ -1,0 +1,23 @@
+---
+description: EXECUTIA Publication System v1 — LOCKED, READY_FOR_GOVERNMENT_REVIEW
+alwaysApply: true
+---
+
+# Publication System v1 — LOCKED
+
+**Status:** `LOCKED` · **Review:** `READY_FOR_GOVERNMENT_REVIEW` · **CTO:** `CONDITIONALLY_APPROVED`  
+**Phase:** Review · **Structural phase:** COMPLETE · **Tag:** `publication-system-v1`
+
+## Allowed without unlock
+
+Typo · accessibility · responsive · legal/compliance corrections only
+
+## Forbidden without unlock
+
+New sections · hierarchy · navigation · CTA · visual systems · structural modifications · new features
+
+## Verify
+
+```bash
+node scripts/executia-publication-system-v1-frozen-verify.cjs
+```

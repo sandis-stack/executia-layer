@@ -14,7 +14,8 @@
 
     { "src": "^/components/(.*)$", "dest": "/public/components/$1" },
 
-    { "src": "^/dashboard/?$", "dest": "/public/dashboard/index.html" },
+    { "src": "^/demonstration/?$", "dest": "/public/demonstration/index.html" },
+
     { "src": "^/live/?$", "dest": "/public/dashboard/index.html" },
 
     { "src": "^/demo/?$", "dest": "/public/demo/index.html" },

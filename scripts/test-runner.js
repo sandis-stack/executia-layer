@@ -1607,7 +1607,6 @@ if (!entryHtml.includes("ex-institutional-env") || !entryHtml.includes("executia
 
 for (const publicPage of [
   "public/execution-test/index.html",
-  "public/request-pilot/index.html",
   "public/public-proof/index.html",
   "public/execution-demo.html",
   "public/proof-explorer/index.html",
@@ -1619,6 +1618,22 @@ for (const publicPage of [
   }
   if (!html.includes("executia-institutional-surfaces.js")) {
     throw new Error(`${publicPage} must load canonical institutional surfaces registry`);
+  }
+}
+
+for (const publicationPage of [
+  "public/demonstration/index.html",
+  "public/request-pilot/index.html"
+]) {
+  const html = readFileSync(join(__test_dir, "..", publicationPage), "utf8");
+  if (!html.includes("ex-institutional-env") || !html.includes("ex-institutional-publication")) {
+    throw new Error(`${publicationPage} must use institutional publication envelope`);
+  }
+  if (html.includes("data-ex-env-header")) {
+    throw new Error(`${publicationPage} must not mount website header on publication annex`);
+  }
+  if (!html.includes("executia-institutional-surfaces.js")) {
+    throw new Error(`${publicationPage} must load canonical institutional surfaces registry`);
   }
 }
 
@@ -1663,12 +1678,15 @@ if (!proofHtml.includes("data-ex-env-proof-intro")) {
   throw new Error("Public proof must mount proof intro band");
 }
 
-const onboardingHtml = readFileSync(join(__test_dir, "..", "public/request-pilot/index.html"), "utf8");
-if (!onboardingHtml.includes("data-ex-env-onboarding-steps")) {
-  throw new Error("Request pilot must mount onboarding steps");
+const requestPilotHtml = readFileSync(join(__test_dir, "..", "public/request-pilot/index.html"), "utf8");
+if (!requestPilotHtml.includes("Administrative Annex") || !requestPilotHtml.includes("Administrative Request Fields")) {
+  throw new Error("Request pilot must present administrative annex publication structure");
 }
-if (!onboardingHtml.includes("execution_critical_process") || !onboardingHtml.includes("proof_requirement")) {
-  throw new Error("Request pilot must include execution-critical process and proof requirement fields");
+if (requestPilotHtml.includes("<form") || requestPilotHtml.includes("<button")) {
+  throw new Error("Request pilot must not use lead-generation form UI");
+}
+if (requestPilotHtml.includes("executia-assessment-demo.css")) {
+  throw new Error("Request pilot must not load assessment demo stylesheet");
 }
 
 const finalRefinementFiles = [
@@ -1721,14 +1739,6 @@ if (!pilotJs.includes("Procurement Governance") || !pilotJs.includes("Payment Ap
 }
 if (!pilotJs.includes("Replay-Safe Verification") || !pilotJs.includes("STATE_LABELS")) {
   throw new Error("Pilot readiness must define replay semantics and state labels");
-}
-
-const requestHtmlPilot = readFileSync(join(__test_dir, "..", "public/request-pilot/index.html"), "utf8");
-if (!requestHtmlPilot.includes("data-ex-env-pilot-examples") || !requestHtmlPilot.includes("proof_requirement")) {
-  throw new Error("Request pilot must include pilot examples and proof requirement");
-}
-if (!requestHtmlPilot.includes("execution_critical_process") || !requestHtmlPilot.includes("deterministic_execution_objective")) {
-  throw new Error("Request pilot must use institutional pilot field names");
 }
 
 const proofHtmlPilot = readFileSync(join(__test_dir, "..", "public/public-proof/index.html"), "utf8");

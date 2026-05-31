@@ -1,0 +1,99 @@
+{
+  "authority": "EXECUTIA_REQUEST_PILOT_V1_PUBLICATION",
+  "status": "LOCKED",
+  "review_status": "READY_FOR_GOVERNMENT_REVIEW",
+  "cto_verdict": "CONDITIONALLY_APPROVED",
+  "issued": "2026-05-30",
+  "issuer": "CTO",
+  "reference_standard": "governance/homepage-v1-frozen.json",
+  "authority_rule": "Request Pilot must not exceed homepage authority. Administrative annex only — not lead-generation or product UI.",
+  "hierarchy": "Homepage (Standard) → Demonstration (Evidence Annex) → Request Pilot (Administrative Annex)",
+  "url": "/request-pilot/",
+  "files": [
+    "public/request-pilot/index.html",
+    "public/components/executia-request-pilot-ux.js"
+  ],
+  "allowed_stylesheets": [
+    "/components/executia-design-system.css",
+    "/components/executia-institutional-environment.css"
+  ],
+  "forbidden_stylesheets": [
+    "executia-assessment-demo.css",
+    "executia-operational-shell.css",
+    "enterprise.css"
+  ],
+  "publication_system": {
+    "body_class": "ex-institutional-publication",
+    "envelope": "ex-standard-publication-document",
+    "metadata_document": "Pilot Request Publication"
+  },
+  "protected_structure": [
+    { "id": "exPilotHeroSection", "label": "Administrative Annex Header" },
+    { "id": "exPilotPublicationSequence", "label": "Publication Sequence" },
+    { "id": "exPilotScopeSection", "label": "Administrative Scope" },
+    { "id": "exPilotOutcomeSection", "label": "Administrative Outcome" },
+    { "id": "exPilotRequestSection", "label": "Administrative Request Fields" },
+    { "id": "exPilotPublicationNav", "label": "Publication Navigation" },
+    { "mount": "data-ex-env-footer", "label": "Publication Metadata" }
+  ],
+  "administrative_scope": [
+    "Process selection",
+    "Governance audit",
+    "Gap identification",
+    "Pilot implementation"
+  ],
+  "administrative_outcome": [
+    "Reduced execution risk",
+    "Execution governance visibility",
+    "Pilot case study"
+  ],
+  "administrative_fields": [
+    { "label": "Name", "value": "Contact field" },
+    { "label": "Organization", "value": "Institution field" },
+    { "label": "Position", "value": "Role field" },
+    { "label": "Email", "value": "Contact channel" },
+    { "label": "Process To Evaluate", "value": "Subject field" },
+    { "label": "Message", "value": "Administrative note field" }
+  ],
+  "review_allowed": [
+    "typo_corrections",
+    "accessibility_fixes",
+    "responsive_fixes",
+    "legal_compliance_corrections"
+  ],
+  "review_forbidden": [
+    "new_sections",
+    "new_hierarchy",
+    "new_navigation_concepts",
+    "new_cta_concepts",
+    "new_visual_systems",
+    "hero_marketing",
+    "application_ui",
+    "product_ui",
+    "demo_ui",
+    "sales_language",
+    "lead_generation"
+  ],
+  "forbidden_on_surface": [
+    "executia-assessment-demo.css",
+    "data-ex-env-header",
+    "ex-inst-hero-cta",
+    "ex-env-footer-flow",
+    "ex-inst-request-form",
+    "ex-inst-generate-btn",
+    "ex-home-pilot-lead",
+    "<form",
+    "<button",
+    "Why Pilot",
+    "Request Pilot Project",
+    "Request Pilot Form",
+    "Request Pilot Discussion",
+    "Prove EXECUTIA",
+    "Expected Outcome",
+    "Pilot Scope",
+    "See How It Works",
+    "Open Demonstration",
+    "Request Pilot",
+    "/api/v1/pilot/request"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "authority": "EXECUTIA_PUBLICATION_SYSTEM_V1",
+  "status": "LOCKED",
+  "review_status": "READY_FOR_GOVERNMENT_REVIEW",
+  "cto_verdict": "CONDITIONALLY_APPROVED",
+  "program_status": "REVIEW_PHASE",
+  "structural_phase": "COMPLETE",
+  "issued": "2026-05-30",
+  "accepted": "2026-05-30",
+  "cto_approved": "2026-05-30",
+  "issuer": "CTO",
+  "release_tag": "publication-system-v1",
+  "next_action": "Government review",
+  "summary": "EXECUTIA Publication System v1 — locked after CTO conditional approval. Standard → Evidence Annex → Administrative Annex. Ready for government review.",
+  "hierarchy": [
+    { "order": 1, "id": "standard", "label": "Standard", "url": "/", "manifest": "governance/homepage-v1-frozen.json" },
+    { "order": 2, "id": "evidence_annex", "label": "Evidence Annex", "url": "/demonstration/", "manifest": "governance/demonstration-v1-publication.json" },
+    { "order": 3, "id": "administrative_annex", "label": "Administrative Annex", "url": "/request-pilot/", "manifest": "governance/request-pilot-v1-publication.json" }
+  ],
+  "authority_levels": {
+    "homepage": 100,
+    "demonstration": "below_homepage",
+    "request_pilot": "below_demonstration"
+  },
+  "cto_visual_review": {
+    "verdict": "CONDITIONALLY_APPROVED",
+    "approved": [
+      "homepage_authority_preserved",
+      "standard_evidence_administrative_hierarchy_preserved",
+      "cross_page_consistency_established",
+      "publication_system_unified",
+      "authority_language_unified",
+      "footer_language_unified",
+      "mobile_validation_completed",
+      "accessibility_validation_completed"
+    ],
+    "pre_release_checks": [
+      "typography_rhythm",
+      "vertical_spacing_consistency",
+      "footer_visual_balance",
+      "mobile_screenshots",
+      "real_device_rendering",
+      "browser_rendering",
+      "copy_proofreading"
+    ],
+    "visual_defects_found": false
+  },
+  "shared_system": {
+    "program": "governance/institutional-publication-program.json",
+    "envelope": "ex-standard-publication-document",
+    "stylesheets": [
+      "/components/executia-design-system.css",
+      "/components/executia-institutional-environment.css"
+    ],
+    "shared_classes": [
+      "ex-publication-header",
+      "ex-publication-metadata",
+      "ex-publication-catalog",
+      "ex-publication-registry-row"
+    ],
+    "footer_fields": ["Standard", "Status", "Authority", "Document"]
+  },
+  "frozen_surfaces": [
+    "public/index.html",
+    "public/demonstration/index.html",
+    "public/request-pilot/index.html",
+    "public/components/executia-standard-homepage.js",
+    "public/components/executia-demonstration-ux.js",
+    "public/components/executia-request-pilot-ux.js",
+    "public/components/executia-institutional-environment.css",
+    "public/components/executia-institutional-environment.js"
+  ],
+  "allowed_without_unlock": [
+    "typo_corrections",
+    "accessibility_fixes",
+    "responsive_fixes",
+    "legal_compliance_corrections"
+  ],
+  "forbidden_without_unlock": [
+    "new_sections",
+    "new_hierarchy",
+    "new_navigation_concepts",
+    "new_cta_concepts",
+    "new_visual_systems",
+    "new_design_systems",
+    "new_visual_hierarchies",
+    "structural_modifications",
+    "new_features",
+    "hero_marketing",
+    "lead_generation",
+    "application_ui",
+    "product_ui",
+    "demo_ui",
+    "sales_language"
+  ],
+  "validation_phases": [
+    { "id": "cross_page_consistency", "status": "COMPLETE" },
+    { "id": "mobile_validation", "status": "COMPLETE" },
+    { "id": "accessibility_validation", "status": "COMPLETE" },
+    { "id": "final_review_package", "status": "COMPLETE" },
+    { "id": "cto_final_visual_review", "status": "COMPLETE" },
+    { "id": "government_review", "status": "PENDING" }
+  ],
+  "verification": [
+    "node scripts/executia-publication-system-v1-frozen-verify.cjs",
+    "node scripts/executia-publication-mobile-verify.cjs",
+    "node scripts/executia-publication-accessibility-verify.cjs",
+    "node scripts/executia-publication-consistency-verify.cjs",
+    "node scripts/executia-homepage-v1-frozen-verify.cjs",
+    "node scripts/executia-demonstration-v1-publication-verify.cjs",
+    "node scripts/executia-request-pilot-v1-publication-verify.cjs",
+    "node scripts/executia-institutional-publication-verify.cjs",
+    "node scripts/executia-standard-v1-verify.cjs"
+  ]
+}

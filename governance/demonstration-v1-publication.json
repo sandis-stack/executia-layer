@@ -1,0 +1,78 @@
+{
+  "authority": "EXECUTIA_DEMONSTRATION_V1_PUBLICATION",
+  "status": "LOCKED",
+  "review_status": "READY_FOR_GOVERNMENT_REVIEW",
+  "cto_verdict": "CONDITIONALLY_APPROVED",
+  "issued": "2026-05-30",
+  "issuer": "CTO",
+  "reference_standard": "governance/homepage-v1-frozen.json",
+  "authority_rule": "Demonstration must not exceed homepage authority. Evidence annex only — not marketing or product demo.",
+  "hierarchy": "Homepage (Standard) → Demonstration (Evidence Annex) → Request Pilot (Administrative Annex)",
+  "url": "/demonstration/",
+  "files": [
+    "public/demonstration/index.html",
+    "public/components/executia-demonstration-ux.js",
+    "public/components/executia-execution-demo.js"
+  ],
+  "allowed_stylesheets": [
+    "/components/executia-design-system.css",
+    "/components/executia-institutional-environment.css"
+  ],
+  "forbidden_stylesheets": [
+    "executia-assessment-demo.css",
+    "executia-operational-shell.css",
+    "enterprise.css"
+  ],
+  "publication_system": {
+    "body_class": "ex-institutional-publication",
+    "envelope": "ex-standard-publication-document",
+    "metadata_document": "Execution Governance Standard",
+    "renderer": "renderEvidenceAnnexHtml"
+  },
+  "protected_structure": [
+    { "id": "exDemoHeroSection", "label": "Evidence Annex Header" },
+    { "id": "exDemoControlMapSection", "label": "Control Map Evidence" },
+    { "id": "exDemoSectorSection", "label": "Sector Reference" },
+    { "id": "exDemoScenarioSection", "label": "Scenario Reference" },
+    { "mount": "data-ex-env-footer", "label": "Publication Metadata" }
+  ],
+  "review_allowed": [
+    "typo_corrections",
+    "accessibility_fixes",
+    "responsive_fixes",
+    "legal_compliance_corrections"
+  ],
+  "review_forbidden": [
+    "new_sections",
+    "new_hierarchy",
+    "new_navigation_concepts",
+    "new_cta_concepts",
+    "new_visual_systems",
+    "hero_marketing",
+    "application_ui",
+    "product_ui",
+    "demo_ui",
+    "sales_language",
+    "visual_authority_above_homepage"
+  ],
+  "forbidden_on_surface": [
+    "executia-assessment-demo.css",
+    "data-ex-env-header",
+    "ex-inst-hero-cta",
+    "ex-env-footer-flow",
+    "ex-inst-card-grid",
+    "ex-proof-map",
+    "ex-arch-infra-stack",
+    "role=\"listbox\"",
+    "<button",
+    "Sector Reference",
+    "Scenario Reference",
+    "Select Scenario",
+    "Prove the Standard",
+    "Request Pilot",
+    "See How It Works",
+    "Open Demonstration",
+    "Sector Examples",
+    "View Control Map"
+  ]
+}
