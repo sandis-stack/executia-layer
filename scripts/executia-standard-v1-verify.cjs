@@ -57,12 +57,12 @@ check("homepage", home, [
   "EXECUTIA-STANDARD-V1",
   "Publication Identity",
   "Standard Layers",
-  "exStandardToday",
-  "Execution first. Control and proof follow",
-  "The EXECUTIA Standard",
+  "Standard Principle",
+  "Governance First",
+  "Execution Order",
   "Validation Layer",
   "Committed Layer",
-  "Governance first. Execution commits only after",
+  "exStandardToday",
   "What Changes",
   "Why It Matters",
   "Evaluate the EXECUTIA Standard",
@@ -91,7 +91,11 @@ check("homepage", home, [
   "ex-standard-hero-statement",
   "ex-standard-headline",
   "EXECUTIA is execution governance infrastructure",
-  "the standard that requires validation"
+  "the standard that requires validation",
+  "The EXECUTIA Standard",
+  "Governance first.",
+  "Execution commits only after",
+  "ex-standard-structure-statement"
 ]);
 
 check("demonstration", demoPage, [

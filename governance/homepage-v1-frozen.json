@@ -28,7 +28,7 @@
   },
   "protected_structure": [
     { "id": "exStandardHero", "label": "Hero" },
-    { "id": "exStandardStructure", "label": "EXECUTIA Standard" },
+    { "id": "exStandardStructure", "label": "Standard Doctrine" },
     { "id": "exStandardLayers", "label": "Standard Layers" },
     { "id": "exStandardAuthority", "label": "Publication Identity" },
     { "id": "exStandardToday", "label": "Today" },
@@ -121,15 +121,19 @@
     "Published"
   ],
   "standard_definition": [
-    "Today",
-    "Execution first. Control and proof follow.",
-    "The EXECUTIA Standard",
+    "Standard Principle",
+    "Governance First",
+    "Execution Order",
+    "Validation",
+    "Control",
+    "Proof",
+    "Commitment",
+    "Execution",
     "Standard Layers",
     "Validation Layer",
     "Control Layer",
     "Proof Layer",
-    "Committed Layer",
-    "Governance first. Execution commits only after validation, control, proof, and commitment."
+    "Committed Layer"
   ],
   "what_changes": {
     "section_label": "What Changes",
