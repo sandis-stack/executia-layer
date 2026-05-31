@@ -101,19 +101,15 @@
   ],
   "standard_authority": {
     "section_label": "Publication Identity",
+    "registry_class": "ex-publication-identity-registry",
     "fields": [
       { "label": "Document", "value": "The Execution Governance Standard" },
       { "label": "Standard", "value": "EXECUTIA-STANDARD-V1" },
+      { "label": "Version", "value": "V1" },
       { "label": "Status", "value": "Published" },
-      {
-        "label": "Purpose",
-        "value": "Execution governance infrastructure — validation, proof, and accountability before execution commits."
-      },
-      {
-        "label": "Defined for",
-        "value": "Government, enterprise, investors, and governed AI execution."
-      },
-      { "label": "Authority", "value": "EXECUTIA CTO" }
+      { "label": "Authority", "value": "EXECUTIA CTO" },
+      { "label": "Purpose", "value": "Execution Governance" },
+      { "label": "Defined for", "value": "Government / Enterprise / AI" }
     ]
   },
   "hero": [
