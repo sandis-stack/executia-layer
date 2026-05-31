@@ -27,7 +27,7 @@
 
   <main class="ex-inst-shell ex-standard-shell">
 
-    <div class="ex-standard-publication-front">
+    <article class="ex-standard-publication-document" aria-label="EXECUTIA Standard Publication">
 
       <!-- 1. HERO -->
       <header class="ex-standard-hero" id="exStandardHero" aria-labelledby="exStandardHeadline">
@@ -61,10 +61,8 @@
         </div>
       </section>
 
-    </div>
-
-    <!-- 4. AUTHORITY METADATA -->
-    <section class="ex-inst-block ex-standard-block" id="exStandardAuthority" aria-labelledby="exStandardAuthorityLabel">
+      <!-- 4. AUTHORITY METADATA -->
+      <section class="ex-inst-block ex-standard-block ex-standard-block--reference" id="exStandardAuthority" aria-labelledby="exStandardAuthorityLabel">
       <p class="ex-inst-label" id="exStandardAuthorityLabel">Standard Authority</p>
       <div class="ex-standard-authority">
         <div class="ex-standard-authority-item">
@@ -150,20 +148,20 @@
     <!-- 7. WHY IT MATTERS -->
     <section class="ex-inst-block ex-standard-block" id="exStandardWhyMatters" aria-labelledby="exStandardWhyMattersLabel">
       <p class="ex-inst-label" id="exStandardWhyMattersLabel">Why It Matters</p>
-      <div class="ex-why-matters">
-        <div class="ex-why-matters-item">
+        <div class="ex-why-matters ex-standard-registry">
+        <div class="ex-why-matters-item ex-standard-registry-row">
           <h4>Government</h4>
           <p>Regulated decisions need proof before execution — not after audit.</p>
         </div>
-        <div class="ex-why-matters-item">
+        <div class="ex-why-matters-item ex-standard-registry-row">
           <h4>Enterprise</h4>
           <p>Leaders need one execution truth, not controls rebuilt after failure.</p>
         </div>
-        <div class="ex-why-matters-item">
+        <div class="ex-why-matters-item ex-standard-registry-row">
           <h4>Investors</h4>
           <p>Capital requires provable governance before operational commitment.</p>
         </div>
-        <div class="ex-why-matters-item">
+        <div class="ex-why-matters-item ex-standard-registry-row">
           <h4>AI</h4>
           <p>Autonomous systems must not act without governed execution.</p>
         </div>
@@ -173,16 +171,18 @@
     <!-- 8. CTA -->
     <section class="ex-inst-block ex-standard-cta" id="exStandardCta" aria-labelledby="exStandardCtaLabel">
       <p class="ex-inst-label" id="exStandardCtaLabel">Next action</p>
-      <div class="ex-standard-action-block">
-        <a class="ex-standard-action-row ex-standard-action-row--primary" href="/request-pilot/">Request Pilot</a>
-        <a class="ex-standard-action-row" href="/demonstration/">See How It Works</a>
-        <a class="ex-standard-action-row" href="/demonstration/">Open Demonstration</a>
+      <div class="ex-standard-action-block ex-standard-registry ex-standard-registry--directive">
+        <div class="ex-standard-action-row ex-standard-registry-row">Request Pilot</div>
+        <div class="ex-standard-action-row ex-standard-registry-row">See How It Works</div>
+        <div class="ex-standard-action-row ex-standard-registry-row">Open Demonstration</div>
       </div>
     </section>
 
-  </main>
+      <div class="ex-standard-publication-end" data-ex-env-footer></div>
 
-  <div data-ex-env-footer></div>
+    </article>
+
+  </main>
 
   <script>
     (function bootStandardHomepage() {

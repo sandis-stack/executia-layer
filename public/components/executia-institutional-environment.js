@@ -230,12 +230,16 @@
               ? "Internal evaluation"
               : AI_CLARITY.INFRASTRUCTURE;
 
+    const isStandardHomepage =
+      pageId === "homepage" && document.body.classList.contains("ex-standard-homepage");
+    const brandInner = `<strong>${esc(AI_CLARITY.PRODUCT)}™</strong><span>${esc(brandSub)}</span>`;
+    const brand = isStandardHomepage
+      ? `<span class="ex-env-brand">${brandInner}</span>`
+      : `<a class="ex-env-brand" href="/">${brandInner}</a>`;
+
     return `
       <div class="ex-env-header" role="banner">
-        <a class="ex-env-brand" href="/">
-          <strong>${esc(AI_CLARITY.PRODUCT)}™</strong>
-          <span>${esc(brandSub)}</span>
-        </a>
+        ${brand}
         <nav class="ex-env-flow" aria-label="Primary navigation">${flow}</nav>
       </div>
     `;
@@ -253,6 +257,14 @@
     const footerMeta = isHomepage
       ? "The Execution Governance Standard"
       : `${AI_CLARITY.INFRASTRUCTURE} · ${AI_CLARITY.DETERMINISTIC} · ${AI_CLARITY.INTEGRITY} · ${AI_CLARITY.REPLAY} · ${AI_CLARITY.TRUTH} · ${AI_CLARITY.CANONICAL}`;
+    if (isHomepage) {
+      return `
+      <footer class="ex-env-footer ex-standard-registry ex-standard-publication-footer" role="contentinfo">
+        <div class="ex-env-footer-primary ex-standard-registry-row">${esc(footerPrimary)}</div>
+        <p class="ex-env-footer-meta ex-standard-registry-row">${esc(footerMeta)}</p>
+      </footer>
+    `;
+    }
     return `
       <footer class="ex-env-footer" role="contentinfo">
         <div class="ex-env-footer-primary">${esc(footerPrimary)}</div>
