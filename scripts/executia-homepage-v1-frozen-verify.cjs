@@ -91,16 +91,32 @@ if (manifest.publication_metadata) {
   }
 }
 
-if (manifest.next_action) {
-  const action = manifest.next_action;
-  if (action.registry_class && !home.includes(action.registry_class)) {
-    fail(`next action registry drift — missing: ${action.registry_class}`);
+if (manifest.standard_applicability) {
+  const applicability = manifest.standard_applicability;
+  if (!home.includes(applicability.section_label)) {
+    fail("Standard Applicability section label missing");
   }
-  if (!home.includes("ex-standard-registry-row--indexed")) {
-    fail("next action must use indexed registry rows");
+  if (applicability.registry_class && !home.includes(applicability.registry_class)) {
+    fail(`standard applicability registry drift — missing: ${applicability.registry_class}`);
   }
-  for (const row of action.rows || manifest.cta || []) {
-    if (!home.includes(row)) fail(`next action drift — missing: ${row}`);
+  for (const item of applicability.items || []) {
+    if (!home.includes(item)) fail(`standard applicability drift — missing: ${item}`);
+    if (!standardJs.includes(item)) fail(`standard applicability JS drift — missing: ${item}`);
+  }
+}
+
+if (manifest.publication_sequence) {
+  const sequence = manifest.publication_sequence;
+  if (!home.includes(sequence.section_label)) {
+    fail("Publication Sequence section label missing");
+  }
+  if (sequence.registry_class && !home.includes(sequence.registry_class)) {
+    fail(`publication sequence registry drift — missing: ${sequence.registry_class}`);
+  }
+  for (const row of sequence.rows || []) {
+    if (!home.includes(`<h4>${row.index}</h4>`)) fail(`publication sequence index drift — missing: ${row.index}`);
+    if (!home.includes(row.label)) fail(`publication sequence label drift — missing: ${row.label}`);
+    if (!standardJs.includes(row.label)) fail(`publication sequence JS drift — missing: ${row.label}`);
   }
 }
 
@@ -120,30 +136,6 @@ if (manifest.standard_authority) {
     if (!home.includes(field.label)) fail(`Standard Authority label drift — missing: ${field.label}`);
     if (!home.includes(field.value)) fail(`Standard Authority value drift — missing: ${field.value}`);
   }
-}
-
-if (!home.includes(manifest.what_changes.section_label)) {
-  fail("What Changes section label missing");
-}
-for (const col of manifest.what_changes.columns) {
-  if (!standardJs.includes(col)) fail(`What Changes column drift — missing: ${col}`);
-}
-for (const list of ["today", "executia", "impact"]) {
-  for (const item of manifest.what_changes[list]) {
-    if (!standardJs.includes(item)) fail(`What Changes ${list} drift — missing: ${item}`);
-  }
-}
-
-if (!home.includes(manifest.why_it_matters.section_label)) {
-  fail("Why It Matters section label missing");
-}
-for (const item of manifest.why_it_matters.items) {
-  if (!standardJs.includes(item.title)) fail(`Why It Matters title drift — missing: ${item.title}`);
-  if (!standardJs.includes(item.text)) fail(`Why It Matters text drift — missing: ${item.text}`);
-}
-
-for (const cta of manifest.cta) {
-  if (!home.includes(cta)) fail(`CTA drift — missing: ${cta}`);
 }
 
 for (const id of manifest.section_order) {

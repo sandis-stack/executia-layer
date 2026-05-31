@@ -27,25 +27,21 @@
     ]
   },
   "protected_structure": [
-    { "id": "exStandardHero", "label": "Hero" },
+    { "id": "exStandardHero", "label": "Document" },
     { "id": "exStandardStructure", "label": "Standard Doctrine" },
     { "id": "exStandardLayers", "label": "Standard Layers" },
+    { "id": "exStandardApplicability", "label": "Standard Applicability" },
+    { "id": "exStandardPublicationSequence", "label": "Publication Sequence" },
     { "id": "exStandardAuthority", "label": "Publication Identity" },
-    { "id": "exStandardToday", "label": "Today" },
-    { "id": "exStandardWhatChanges", "label": "What Changes" },
-    { "id": "exStandardWhyMatters", "label": "Why It Matters" },
-    { "id": "exStandardCta", "label": "Next Action" },
     { "mount": "data-ex-env-footer", "label": "Publication Metadata" }
   ],
   "section_order": [
     "exStandardHero",
     "exStandardStructure",
     "exStandardLayers",
-    "exStandardAuthority",
-    "exStandardToday",
-    "exStandardWhatChanges",
-    "exStandardWhyMatters",
-    "exStandardCta"
+    "exStandardApplicability",
+    "exStandardPublicationSequence",
+    "exStandardAuthority"
   ],
   "publication_metadata": {
     "mount": "data-ex-env-footer",
@@ -57,13 +53,23 @@
       { "label": "Document", "value": "Execution Governance Standard" }
     ]
   },
-  "next_action": {
-    "section_label": "Next action",
-    "registry_class": "ex-standard-registry--directive",
+  "standard_applicability": {
+    "section_label": "Standard Applicability",
+    "registry_class": "ex-publication-applicability-registry",
+    "items": [
+      "Government",
+      "Enterprise",
+      "Investors",
+      "Governed AI"
+    ]
+  },
+  "publication_sequence": {
+    "section_label": "Publication Sequence",
+    "registry_class": "ex-publication-sequence-registry",
     "rows": [
-      "Evaluate the EXECUTIA Standard",
-      "Review execution governance applicability",
-      "Request pilot evaluation"
+      { "index": "01", "label": "Standard" },
+      { "index": "02", "label": "Evidence Annex" },
+      { "index": "03", "label": "Administrative Annex" }
     ]
   },
   "allowed_without_unlock": [
@@ -135,42 +141,6 @@
     "Proof Layer",
     "Committed Layer"
   ],
-  "what_changes": {
-    "section_label": "What Changes",
-    "columns": ["Today", "EXECUTIA", "Institutional Impact"],
-    "today": [
-      "Execute first, validate later",
-      "Proof after the fact",
-      "No single truth source",
-      "Accountability fragmented"
-    ],
-    "executia": [
-      "Validate before execute",
-      "Proof at commitment",
-      "One authoritative truth",
-      "Unified accountability"
-    ],
-    "impact": [
-      "Reduced execution risk",
-      "Faster regulatory approval",
-      "Lower audit cost",
-      "Provable execution integrity"
-    ]
-  },
-  "why_it_matters": {
-    "section_label": "Why It Matters",
-    "items": [
-      { "title": "Government", "text": "Regulated decisions need proof before execution — not after audit." },
-      { "title": "Enterprise", "text": "Leaders need one execution truth, not controls rebuilt after failure." },
-      { "title": "Investors", "text": "Capital requires provable governance before operational commitment." },
-      { "title": "AI", "text": "Autonomous systems must not act without governed execution." }
-    ]
-  },
-  "cta": [
-    "Evaluate the EXECUTIA Standard",
-    "Review execution governance applicability",
-    "Request pilot evaluation"
-  ],
   "forbidden_on_homepage": [
     "exDemoControlMap",
     "ex-arch-map-grid",
@@ -184,6 +154,19 @@
     "See How It Works",
     "Open Demonstration",
     "ex-standard-action-row",
-    "ex-env-footer-flow"
+    "ex-env-footer-flow",
+    "Why It Matters",
+    "Next action",
+    "Next Action",
+    "Evaluate the EXECUTIA Standard",
+    "Review execution governance applicability",
+    "Request pilot evaluation",
+    "EXECUTIA prevents this",
+    "Most systems execute first",
+    "What Changes",
+    "exStandardToday",
+    "exStandardWhatChanges",
+    "exStandardWhyMatters",
+    "exStandardCta"
   ]
 }

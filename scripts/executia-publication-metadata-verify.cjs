@@ -52,14 +52,27 @@ const FORBIDDEN_MARKETING = [
 const FORBIDDEN_IDENTITY_LABELS = ["Reference", "Exhibit"];
 
 function extractIdentityValues(html) {
-  const start = html.indexOf("ex-publication-identity-registry");
-  if (start < 0) return [];
-  const block = html.slice(start, start + 4000);
+  const blocks = [];
+  const headerStart = html.indexOf('class="ex-publication-header');
+  if (headerStart >= 0) {
+    const headerEnd = html.indexOf("</header>", headerStart);
+    if (headerEnd > headerStart) blocks.push(html.slice(headerStart, headerEnd));
+  }
+  const authorityStart = html.indexOf('id="exStandardAuthority"');
+  if (authorityStart >= 0) {
+    const sectionEnd = html.indexOf("</section>", authorityStart);
+    if (sectionEnd > authorityStart) blocks.push(html.slice(authorityStart, sectionEnd));
+  }
   const values = [];
-  const pattern = /<h4>[^<]+<\/h4>\s*<p>([^<]*)<\/p>/g;
-  let match;
-  while ((match = pattern.exec(block))) {
-    values.push(match[1].trim());
+  for (const block of blocks) {
+    const registryStart = block.indexOf("ex-publication-identity-registry");
+    if (registryStart < 0) continue;
+    const slice = block.slice(registryStart);
+    const pattern = /<h4>[^<]+<\/h4>\s*<p>([^<]*)<\/p>/g;
+    let match;
+    while ((match = pattern.exec(slice))) {
+      values.push(match[1].trim());
+    }
   }
   return values;
 }

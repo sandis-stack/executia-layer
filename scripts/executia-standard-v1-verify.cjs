@@ -50,10 +50,11 @@ function check(label, html, required, forbidden) {
 
 check("homepage", home, [
   "The Execution Governance Standard",
-  "EXECUTIA prevents this",
   "exStandardAuthority",
   "exStandardStructure",
   "exStandardLayers",
+  "exStandardApplicability",
+  "exStandardPublicationSequence",
   "EXECUTIA-STANDARD-V1",
   "Publication Identity",
   "Standard Layers",
@@ -62,12 +63,11 @@ check("homepage", home, [
   "Execution Order",
   "Validation Layer",
   "Committed Layer",
-  "exStandardToday",
-  "What Changes",
-  "Why It Matters",
-  "Evaluate the EXECUTIA Standard",
-  "Review execution governance applicability",
-  "Request pilot evaluation",
+  "Standard Applicability",
+  "Publication Sequence",
+  "Governed AI",
+  "Evidence Annex",
+  "Administrative Annex",
   "Execution Governance Standard",
   "executia-standard-homepage.js",
   "ex-institutional-publication"
@@ -95,7 +95,21 @@ check("homepage", home, [
   "The EXECUTIA Standard",
   "Governance first.",
   "Execution commits only after",
-  "ex-standard-structure-statement"
+  "ex-standard-structure-statement",
+  "Why It Matters",
+  "Next action",
+  "Next Action",
+  "Evaluate the EXECUTIA Standard",
+  "Review execution governance applicability",
+  "Request pilot evaluation",
+  "Evaluate",
+  "Request pilot",
+  "EXECUTIA prevents this",
+  "What Changes",
+  "exStandardToday",
+  "exStandardWhatChanges",
+  "exStandardWhyMatters",
+  "exStandardCta"
 ]);
 
 check("demonstration", demoPage, [
@@ -183,23 +197,18 @@ check("request-pilot", pilot, [
   "ex-inst-generate-btn"
 ]);
 
-if (!standardJs.includes("Institutional Impact")) {
-  console.error("FAIL: homepage what changes must include Institutional Impact");
+if (!standardJs.includes("STANDARD_APPLICABILITY")) {
+  console.error("FAIL: homepage must export STANDARD_APPLICABILITY");
   failed += 1;
 }
 
-if (!standardJs.includes("Enterprise")) {
-  console.error("FAIL: homepage why-it-matters must include Enterprise");
+if (!standardJs.includes("PUBLICATION_SEQUENCE")) {
+  console.error("FAIL: homepage must export PUBLICATION_SEQUENCE");
   failed += 1;
 }
 
-if (!standardJs.includes('"AI"')) {
-  console.error("FAIL: homepage why-it-matters must include AI audience");
-  failed += 1;
-}
-
-if (!standardJs.includes("Investors")) {
-  console.error("FAIL: homepage why-it-matters must include Investors audience");
+if (!standardJs.includes("Governed AI")) {
+  console.error("FAIL: homepage standard applicability must include Governed AI");
   failed += 1;
 }
 
@@ -217,11 +226,9 @@ const order = [
   "exStandardHero",
   "exStandardStructure",
   "exStandardLayers",
-  "exStandardAuthority",
-  "exStandardToday",
-  "exStandardWhatChanges",
-  "exStandardWhyMatters",
-  "exStandardCta"
+  "exStandardApplicability",
+  "exStandardPublicationSequence",
+  "exStandardAuthority"
 ];
 let last = -1;
 for (const id of order) {
