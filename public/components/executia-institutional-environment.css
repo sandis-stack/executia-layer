@@ -2145,6 +2145,77 @@ body.ex-standard-homepage .ex-standard-publication-document .ex-env-footer {
   margin: 0;
 }
 
+body.ex-standard-homepage [data-ex-env-header] {
+  display: none;
+}
+
+body.ex-standard-homepage .ex-standard-hero::before {
+  content: "EXECUTIA™";
+  display: block;
+  margin: 0 0 var(--ex-ds-s8, 8px);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ex-ds-muted, #7a8da3);
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-inst-block.ex-standard-block,
+body.ex-standard-homepage .ex-standard-publication-document .ex-standard-cta {
+  padding: var(--ex-ds-s16, 16px) 0 0 !important;
+  border-top: none !important;
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-why-matters,
+body.ex-standard-homepage .ex-standard-publication-document .ex-standard-action-block,
+body.ex-standard-homepage .ex-standard-publication-document .ex-standard-authority,
+body.ex-standard-homepage .ex-standard-publication-document .ex-arch-exec-flow {
+  border: none !important;
+  background: transparent !important;
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-why-matters-item,
+body.ex-standard-homepage .ex-standard-publication-document .ex-standard-authority-item {
+  border-bottom: none;
+}
+
+body.ex-standard-homepage .ex-standard-registry-row--prose {
+  display: block;
+  grid-template-columns: none;
+}
+
+body.ex-standard-homepage .ex-standard-block--reference {
+  padding-top: var(--ex-ds-s8, 8px) !important;
+  opacity: 0.92;
+}
+
+body.ex-standard-homepage .ex-standard-block--reference .ex-inst-label {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: rgba(122, 141, 163, 0.68);
+  margin-bottom: var(--ex-ds-s8, 8px);
+}
+
+body.ex-standard-homepage .ex-standard-block--reference .ex-standard-registry-row p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ex-ds-muted, #7a8da3);
+}
+
+body.ex-standard-homepage .ex-standard-block--reference .ex-standard-registry-row h4 {
+  font-size: 8px;
+  color: rgba(122, 141, 163, 0.68);
+}
+
+body.ex-standard-homepage .ex-standard-publication-footer .ex-env-footer-primary,
+body.ex-standard-homepage .ex-standard-publication-footer .ex-env-footer-meta {
+  display: block;
+  grid-template-columns: none;
+}
+
+body.ex-standard-homepage .ex-standard-publication-end {
+  padding-top: 0;
+}
+
 body.ex-standard-homepage .ex-env-header {
   margin-bottom: var(--ex-ds-s8, 8px);
 }
