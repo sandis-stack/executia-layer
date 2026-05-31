@@ -55,8 +55,8 @@ if (program.structural_phase !== "COMPLETE") {
   fail("structural phase must be COMPLETE");
 }
 
-if (program.next_action !== "Government review") {
-  fail("institutional publication program next action must be Government review");
+if (program.next_action !== "Begin external review (government review)") {
+  fail("institutional publication program next action must be Begin external review (government review)");
 }
 
 if (homepage.status !== "LOCKED") {

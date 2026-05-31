@@ -3,7 +3,7 @@
 **Authority:** EXECUTIA CTO  
 **Status:** `LOCKED`  
 **Review status:** `READY_FOR_GOVERNMENT_REVIEW`  
-**CTO verdict:** `CONDITIONALLY_APPROVED`  
+**CTO verdict:** `ACCEPTED` · **Freeze:** `ACTIVE`  
 **Phase:** Review (structural phase complete)  
 **Release tag:** `publication-system-v1`  
 **Issued:** 2026-05-30
