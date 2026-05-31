@@ -66,21 +66,6 @@ if (Array.isArray(manifest.protected_structure)) {
   }
 }
 
-if (manifest.end_of_document) {
-  const terminal = manifest.end_of_document;
-  if (!home.includes(terminal.section_label)) {
-    fail("End of Document section label missing");
-  }
-  if (terminal.registry_class && !home.includes(terminal.registry_class)) {
-    fail(`end of document registry drift — missing: ${terminal.registry_class}`);
-  }
-  for (const field of terminal.fields || []) {
-    if (!home.includes(field.label)) fail(`End of Document label drift — missing: ${field.label}`);
-    if (!home.includes(field.value)) fail(`End of Document value drift — missing: ${field.value}`);
-    if (!standardJs.includes(field.value)) fail(`End of Document JS drift — missing: ${field.value}`);
-  }
-}
-
 if (manifest.standard_applicability) {
   const applicability = manifest.standard_applicability;
   if (!home.includes(applicability.section_label)) {
@@ -125,6 +110,7 @@ if (manifest.standard_authority) {
   for (const field of manifest.standard_authority.fields) {
     if (!home.includes(field.label)) fail(`Standard Authority label drift — missing: ${field.label}`);
     if (!home.includes(field.value)) fail(`Standard Authority value drift — missing: ${field.value}`);
+    if (!standardJs.includes(field.value)) fail(`Standard Authority JS drift — missing: ${field.value}`);
   }
 }
 

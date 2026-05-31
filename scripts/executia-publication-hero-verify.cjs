@@ -30,8 +30,8 @@ const hero = extractHeroBlock(home);
 if (!hero) fail("homepage missing exStandardHero header");
 
 const REQUIRED_HERO = [
-  { label: "Document", value: "The Execution Governance Standard" },
-  { label: "Classification", value: "Execution Governance Standard" },
+  { label: "Document", value: "The Governance Standard" },
+  { label: "Classification", value: "Governance Standard" },
   { label: "Status", value: "Published" }
 ];
 

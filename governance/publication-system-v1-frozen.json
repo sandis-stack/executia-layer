@@ -138,6 +138,7 @@
     "node scripts/executia-publication-doctrine-verify.cjs",
     "node scripts/executia-publication-final-normalization-verify.cjs",
     "node scripts/executia-publication-registry-consolidation-verify.cjs",
+    "node scripts/executia-government-standard-pass-verify.cjs",
     "node scripts/executia-homepage-v1-frozen-verify.cjs",
     "node scripts/executia-demonstration-v1-publication-verify.cjs",
     "node scripts/executia-request-pilot-v1-publication-verify.cjs",

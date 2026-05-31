@@ -33,8 +33,8 @@ function checkPublicationSurface(label, html, options) {
     fail(`[${label}] missing publication body class`);
   }
   if (options?.bodyClasses?.includes("ex-standard-homepage")) {
-    if (!html.includes('id="exStandardEndOfDocument"')) {
-      fail(`[${label}] end of document must close publication envelope`);
+    if (!html.includes('id="exStandardAuthority"') || !html.includes("<h4>Document State</h4>")) {
+      fail(`[${label}] publication identity must close document with Document State FINAL`);
     }
   } else if (!html.includes("ex-standard-publication-end")) {
     fail(`[${label}] publication metadata must mount inside envelope`);

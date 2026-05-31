@@ -1,9 +1,26 @@
 (function registerExecutiaStandardHomepage(global) {
+  const STANDARD_PRINCIPLE = "Governance Precedes Execution";
+
+  const EXECUTION_ORDER = [
+    { index: "01", label: "Validation" },
+    { index: "02", label: "Control" },
+    { index: "03", label: "Proof" },
+    { index: "04", label: "Commitment" },
+    { index: "05", label: "Execution" }
+  ];
+
+  const STANDARD_LAYERS = [
+    "Validation Layer",
+    "Control Layer",
+    "Proof Layer",
+    "Committed Layer"
+  ];
+
   const STANDARD_APPLICABILITY = [
-    "Government",
+    "Public Administration",
     "Enterprise",
-    "Investors",
-    "Governed AI"
+    "Regulated Capital",
+    "Governed Systems"
   ];
 
   const PUBLICATION_SEQUENCE = [
@@ -16,10 +33,7 @@
     { label: "Document Status", value: "Published" },
     { label: "Revision", value: "V1" },
     { label: "Authority", value: "EXECUTIA CTO" },
-    { label: "Release", value: "EXECUTIA-STANDARD-V1" }
-  ];
-
-  const END_OF_DOCUMENT = [
+    { label: "Release", value: "EXECUTIA-STANDARD-V1" },
     { label: "Document State", value: "FINAL" }
   ];
 
@@ -29,8 +43,8 @@
       "@context": "https://schema.org",
       "@type": "DefinedTerm",
       name: "EXECUTIA",
-      alternateName: "Execution Governance Standard",
-      description: "Execution Governance Standard",
+      alternateName: "Governance Standard",
+      description: "Governance Standard",
       termCode: "EXECUTIA-STANDARD-V1"
     };
     const script = global.document.createElement("script");
@@ -45,10 +59,12 @@
   }
 
   global.EXECUTIA_STANDARD_HOMEPAGE = {
+    STANDARD_PRINCIPLE,
+    EXECUTION_ORDER,
+    STANDARD_LAYERS,
     STANDARD_APPLICABILITY,
     PUBLICATION_SEQUENCE,
     PUBLICATION_IDENTITY,
-    END_OF_DOCUMENT,
     init
   };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -62,7 +62,7 @@ if (!sequence) fail("homepage missing exStandardPublicationSequence section");
 if (!home.includes("Standard Applicability")) fail("homepage missing Standard Applicability section label");
 if (!home.includes("Publication Sequence")) fail("homepage missing Publication Sequence section label");
 
-const APPLICABILITY = ["Government", "Enterprise", "Investors", "Governed AI"];
+const APPLICABILITY = ["Public Administration", "Enterprise", "Regulated Capital", "Governed Systems"];
 for (const item of APPLICABILITY) {
   const pattern = new RegExp(`<h4>${item}</h4>\\s*<p>${item}</p>`);
   if (!pattern.test(applicability)) fail(`standard applicability missing registry row: ${item}`);
@@ -91,8 +91,7 @@ const ORDER = [
   "exStandardLayers",
   "exStandardApplicability",
   "exStandardPublicationSequence",
-  "exStandardAuthority",
-  "exStandardEndOfDocument"
+  "exStandardAuthority"
 ];
 let last = -1;
 for (const id of ORDER) {

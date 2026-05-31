@@ -57,7 +57,8 @@ const REQUIRED_IDENTITY = [
   { label: "Document Status", value: "Published" },
   { label: "Revision", value: "V1" },
   { label: "Authority", value: "EXECUTIA CTO" },
-  { label: "Release", value: "EXECUTIA-STANDARD-V1" }
+  { label: "Release", value: "EXECUTIA-STANDARD-V1" },
+  { label: "Document State", value: "FINAL" }
 ];
 
 for (const item of REQUIRED_IDENTITY) {
@@ -67,11 +68,8 @@ for (const item of REQUIRED_IDENTITY) {
   if (!pattern.test(identity)) fail(`publication identity missing registry pair: ${item.label} → ${item.value}`);
 }
 
-const endOfDocument = extractSection(home, "exStandardEndOfDocument");
-if (!endOfDocument) fail("homepage missing exStandardEndOfDocument section");
-if (!endOfDocument.includes("End of Document")) fail("homepage missing End of Document section label");
-if (!/<h4>Document State<\/h4>\s*<p>FINAL<\/p>/.test(endOfDocument)) {
-  fail("end of document missing registry pair: Document State → FINAL");
+if (home.includes("exStandardEndOfDocument")) {
+  fail("homepage must not contain separate end of document section");
 }
 
 const ORDER = [
@@ -80,8 +78,7 @@ const ORDER = [
   "exStandardLayers",
   "exStandardApplicability",
   "exStandardPublicationSequence",
-  "exStandardAuthority",
-  "exStandardEndOfDocument"
+  "exStandardAuthority"
 ];
 let last = -1;
 for (const id of ORDER) {

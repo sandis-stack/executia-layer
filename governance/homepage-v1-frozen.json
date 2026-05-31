@@ -32,8 +32,7 @@
     { "id": "exStandardLayers", "label": "Standard Layers" },
     { "id": "exStandardApplicability", "label": "Standard Applicability" },
     { "id": "exStandardPublicationSequence", "label": "Publication Sequence" },
-    { "id": "exStandardAuthority", "label": "Publication Identity" },
-    { "id": "exStandardEndOfDocument", "label": "End of Document" }
+    { "id": "exStandardAuthority", "label": "Publication Identity" }
   ],
   "section_order": [
     "exStandardHero",
@@ -41,24 +40,16 @@
     "exStandardLayers",
     "exStandardApplicability",
     "exStandardPublicationSequence",
-    "exStandardAuthority",
-    "exStandardEndOfDocument"
+    "exStandardAuthority"
   ],
-  "end_of_document": {
-    "section_label": "End of Document",
-    "registry_class": "ex-publication-terminal-registry",
-    "fields": [
-      { "label": "Document State", "value": "FINAL" }
-    ]
-  },
   "standard_applicability": {
     "section_label": "Standard Applicability",
     "registry_class": "ex-publication-applicability-registry",
     "items": [
-      "Government",
+      "Public Administration",
       "Enterprise",
-      "Investors",
-      "Governed AI"
+      "Regulated Capital",
+      "Governed Systems"
     ]
   },
   "publication_sequence": {
@@ -110,20 +101,21 @@
       { "label": "Document Status", "value": "Published" },
       { "label": "Revision", "value": "V1" },
       { "label": "Authority", "value": "EXECUTIA CTO" },
-      { "label": "Release", "value": "EXECUTIA-STANDARD-V1" }
+      { "label": "Release", "value": "EXECUTIA-STANDARD-V1" },
+      { "label": "Document State", "value": "FINAL" }
     ]
   },
   "hero": [
     "Document",
-    "The Execution Governance Standard",
+    "The Governance Standard",
     "Classification",
-    "Execution Governance Standard",
+    "Governance Standard",
     "Status",
     "Published"
   ],
   "standard_definition": [
     "Standard Principle",
-    "Governance First",
+    "Governance Precedes Execution",
     "Execution Order",
     "Validation",
     "Control",
@@ -152,6 +144,13 @@
     "ex-env-footer-flow",
     "data-ex-env-footer",
     "ex-standard-publication-footer",
+    "EXECUTIA™",
+    "Execution Governance Standard",
+    "Governance First",
+    "Governed AI",
+    "Investors",
+    "exStandardEndOfDocument",
+    "End of Document",
     "Why It Matters",
     "Next action",
     "Next Action",
@@ -166,6 +165,7 @@
     "exStandardWhyMatters",
     "exStandardCta",
     "Purpose",
-    "Defined for"
+    "Defined for",
+    "ex-arch-infra-stack"
   ]
 }

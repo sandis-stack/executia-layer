@@ -32,7 +32,8 @@ const REQUIRED = [
   { label: "Document", value: "Execution Control Map", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Annex Identifier", value: "Annex B", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Document", value: "Pilot Request Publication", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
-  { label: "Document", value: "The Execution Governance Standard", pages: PUBLICATION_PAGES }
+  { label: "Document", value: "The Governance Standard", pages: ["public/index.html"] },
+  { label: "Document", value: "The Execution Governance Standard", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] }
 ];
 
 for (const rel of PUBLICATION_PAGES) {
@@ -70,7 +71,7 @@ if (!envJs.includes('document: "Pilot Request Publication"')) {
 }
 
 if (!envJs.includes('document: "Execution Governance Standard"')) {
-  fail("homepage footer document must be Execution Governance Standard");
+  fail("standard publication resolver document label missing from institutional environment");
 }
 
 if (envJs.includes("Evidence Annex A ·")) {

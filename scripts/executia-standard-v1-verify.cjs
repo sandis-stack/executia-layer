@@ -49,7 +49,8 @@ function check(label, html, required, forbidden) {
 }
 
 check("homepage", home, [
-  "The Execution Governance Standard",
+  "The Governance Standard",
+  "Governance Standard",
   "exStandardAuthority",
   "exStandardStructure",
   "exStandardLayers",
@@ -60,23 +61,22 @@ check("homepage", home, [
   "Document Status",
   "Revision",
   "Release",
-  "End of Document",
   "Document State",
   "FINAL",
-  "exStandardEndOfDocument",
   "ex-publication-document-registry",
   "Standard Layers",
   "Standard Principle",
-  "Governance First",
+  "Governance Precedes Execution",
   "Execution Order",
   "Validation Layer",
   "Committed Layer",
   "Standard Applicability",
   "Publication Sequence",
-  "Governed AI",
+  "Public Administration",
+  "Regulated Capital",
+  "Governed Systems",
   "Evidence Annex",
   "Administrative Annex",
-  "Execution Governance Standard",
   "executia-standard-homepage.js",
   "ex-institutional-publication"
 ], [
@@ -122,7 +122,14 @@ check("homepage", home, [
   "ex-standard-publication-footer",
   "Purpose",
   "Defined for",
-  "<h4>Version</h4>"
+  "<h4>Version</h4>",
+  "EXECUTIA™",
+  "Execution Governance Standard",
+  "Governance First",
+  "Governed AI",
+  "Investors",
+  "exStandardEndOfDocument",
+  "ex-arch-infra-stack"
 ]);
 
 check("demonstration", demoPage, [
@@ -220,13 +227,18 @@ if (!standardJs.includes("PUBLICATION_IDENTITY")) {
   failed += 1;
 }
 
-if (!standardJs.includes("END_OF_DOCUMENT")) {
-  console.error("FAIL: homepage must export END_OF_DOCUMENT");
+if (!standardJs.includes("EXECUTION_ORDER")) {
+  console.error("FAIL: homepage must export EXECUTION_ORDER");
   failed += 1;
 }
 
-if (!standardJs.includes("Governed AI")) {
-  console.error("FAIL: homepage standard applicability must include Governed AI");
+if (!standardJs.includes("STANDARD_LAYERS")) {
+  console.error("FAIL: homepage must export STANDARD_LAYERS");
+  failed += 1;
+}
+
+if (!standardJs.includes("Governed Systems")) {
+  console.error("FAIL: homepage standard applicability must include Governed Systems");
   failed += 1;
 }
 
@@ -246,8 +258,7 @@ const order = [
   "exStandardLayers",
   "exStandardApplicability",
   "exStandardPublicationSequence",
-  "exStandardAuthority",
-  "exStandardEndOfDocument"
+  "exStandardAuthority"
 ];
 let last = -1;
 for (const id of order) {

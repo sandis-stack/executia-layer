@@ -32,31 +32,38 @@ if (!doctrine) fail("homepage missing exStandardStructure doctrine section");
 for (const forbidden of [
   "The EXECUTIA Standard",
   "Governance first.",
+  "Governance First",
   "Execution commits only after",
   "ex-standard-structure-statement",
-  "exStandardStructureLabel"
+  "exStandardStructureLabel",
+  "<h4>↓</h4>"
 ]) {
   if (home.includes(forbidden)) fail(`homepage must not contain slogan doctrine residue: ${forbidden}`);
 }
 
-const REQUIRED = [
-  { label: "Standard Principle", value: "Governance First" },
-  { label: "Execution Order", value: "Validation" },
-  { label: "↓", value: "Control" },
-  { label: "↓", value: "Proof" },
-  { label: "↓", value: "Commitment" },
-  { label: "↓", value: "Execution" }
-];
+if (!/<h4>Standard Principle<\/h4>\s*<p>Governance Precedes Execution<\/p>/.test(doctrine)) {
+  fail("standard doctrine missing registry pair: Standard Principle → Governance Precedes Execution");
+}
 
-for (const item of REQUIRED) {
-  const pattern = new RegExp(
-    `<h4>${item.label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</h4>\\s*<p>${item.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`
-  );
-  if (!pattern.test(doctrine)) fail(`standard doctrine missing registry pair: ${item.label} → ${item.value}`);
+if (!doctrine.includes("Execution Order")) fail("standard doctrine missing Execution Order section label");
+
+for (const row of [
+  { index: "01", label: "Validation" },
+  { index: "02", label: "Control" },
+  { index: "03", label: "Proof" },
+  { index: "04", label: "Commitment" },
+  { index: "05", label: "Execution" }
+]) {
+  const pattern = new RegExp(`<h4>${row.index}</h4>\\s*<p>${row.label}</p>`);
+  if (!pattern.test(doctrine)) fail(`execution order missing registry row: ${row.index} ${row.label}`);
 }
 
 if (!doctrine.includes("ex-publication-doctrine-registry")) {
   fail("standard doctrine must use publication doctrine registry styling");
+}
+
+if (!doctrine.includes("ex-publication-execution-order-registry")) {
+  fail("execution order must use publication execution order registry styling");
 }
 
 if (failed) process.exit(1);

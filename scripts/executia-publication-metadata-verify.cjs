@@ -29,6 +29,7 @@ const REQUIRED_IDENTITY = [
   { label: "Document Status", value: "Published", pages: ["public/index.html"] },
   { label: "Revision", value: "V1", pages: ["public/index.html"] },
   { label: "Release", value: "EXECUTIA-STANDARD-V1", pages: ["public/index.html"] },
+  { label: "Document State", value: "FINAL", pages: ["public/index.html"] },
   { label: "Standard", value: "EXECUTIA-STANDARD-V1", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Version", value: "V1", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Status", value: "Published", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },

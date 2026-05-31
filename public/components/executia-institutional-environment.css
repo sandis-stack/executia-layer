@@ -1196,14 +1196,15 @@ body.ex-standard-homepage {
   font-family: Inter, "Segoe UI", system-ui, sans-serif;
   color: var(--ex-ds-ink, #1a2d42);
   background: var(--ex-ds-bg, #f4f6f9);
-  line-height: 1.55;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   --ex-pub-body: 13px;
   --ex-pub-label: 9px;
-  --ex-pub-line: 1.55;
+  --ex-pub-line: 1.45;
   --ex-pub-border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
-  --ex-pub-row-pad: var(--ex-ds-s8, 8px) var(--ex-ds-s16, 16px);
+  --ex-pub-row-pad: 5px 12px;
   --ex-pub-label-col: 6.5rem;
+  --ex-pub-gutter: 22px;
 }
 
 body.ex-standard-homepage h1.ex-standard-headline {
@@ -1221,14 +1222,14 @@ body.ex-standard-homepage .ex-env-footer {
   max-width: var(--ex-const-doc-column, 720px);
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--ex-ds-s24, 24px);
-  padding-right: var(--ex-ds-s24, 24px);
+  padding-left: var(--ex-pub-gutter, 22px);
+  padding-right: var(--ex-pub-gutter, 22px);
 }
 
 body.ex-standard-homepage .ex-inst-shell {
   max-width: var(--ex-const-doc-column, 720px);
   margin: 0 auto;
-  padding: 0 var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
+  padding: 0 var(--ex-pub-gutter, 22px) var(--ex-pub-gutter, 22px);
 }
 
 body.ex-standard-homepage .ex-standard-hero {
@@ -1682,20 +1683,29 @@ body.ex-standard-homepage #exStandardWhyMatters .ex-standard-authority-item:last
   border-bottom: none;
 }
 
-body.ex-standard-homepage .ex-arch-infra-layer:nth-child(1)::before {
-  content: "L1";
-}
-
-body.ex-standard-homepage .ex-arch-infra-layer:nth-child(3)::before {
-  content: "L2";
-}
-
-body.ex-standard-homepage .ex-arch-infra-layer:nth-child(5)::before {
-  content: "L3";
-}
-
+body.ex-standard-homepage .ex-arch-infra-layer:nth-child(1)::before,
+body.ex-standard-homepage .ex-arch-infra-layer:nth-child(3)::before,
+body.ex-standard-homepage .ex-arch-infra-layer:nth-child(5)::before,
 body.ex-standard-homepage .ex-arch-infra-layer:nth-child(7)::before {
-  content: "L4";
+  content: none;
+}
+
+body.ex-standard-homepage #exStandardLayers .ex-publication-layers-registry .ex-standard-authority-item {
+  grid-template-columns: var(--ex-pub-label-col, 6.5rem) 1fr;
+  padding: var(--ex-pub-row-pad);
+  border-bottom: var(--ex-pub-border);
+}
+
+body.ex-standard-homepage #exStandardLayers .ex-publication-layers-registry .ex-standard-authority-item:last-child {
+  border-bottom: none;
+}
+
+body.ex-standard-homepage #exStandardStructure .ex-publication-execution-order-registry {
+  margin-top: 0;
+}
+
+body.ex-standard-homepage #exStandardStructure #exStandardExecutionOrderLabel {
+  margin-top: var(--ex-ds-s8, 8px);
 }
 
 body.ex-standard-homepage .ex-arch-infra-layer::before {
@@ -2328,7 +2338,7 @@ body.ex-standard-homepage [data-ex-env-header] {
 }
 
 body.ex-standard-homepage .ex-standard-hero::before {
-  content: "EXECUTIA™";
+  content: "EXECUTIA";
   display: block;
   margin: 0 0 var(--ex-ds-s8, 8px);
   font-size: 12px;
@@ -2501,7 +2511,7 @@ body.ex-institutional-publication .ex-publication-header {
 }
 
 body.ex-institutional-publication .ex-publication-header::before {
-  content: "EXECUTIA™";
+  content: "EXECUTIA";
   display: block;
   margin: 0 0 var(--ex-ds-s8, 8px);
   font-size: 12px;
@@ -2608,7 +2618,7 @@ body.ex-request-pilot-page.ex-institutional-publication .ex-standard-hero {
 
 body.ex-demonstration-page.ex-institutional-publication .ex-standard-hero::before,
 body.ex-request-pilot-page.ex-institutional-publication .ex-standard-hero::before {
-  content: "EXECUTIA™";
+  content: "EXECUTIA";
   display: block;
   margin: 0 0 var(--ex-ds-s8, 8px);
   font-size: 12px;
