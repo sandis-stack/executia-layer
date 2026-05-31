@@ -43,15 +43,6 @@ const PUBLICATION_SEQUENCE = [
   "<p>Annex B · Pilot Request Publication</p>"
 ];
 
-const PUBLICATION_NAV = [
-  "<h4>Standard</h4>",
-  "<p>Homepage · EXECUTIA-STANDARD-V1</p>",
-  "<h4>Evidence Annex</h4>",
-  "<p>Annex A · Execution Control Map</p>",
-  "<h4>Administrative Annex</h4>",
-  "<p>Annex B · Pilot Request Publication</p>"
-];
-
 const FOOTER_LABELS = ["Standard", "Status", "Published", "Authority", "EXECUTIA CTO", "Document"];
 
 const PUB_TOKENS = [
@@ -83,13 +74,18 @@ if (!home.includes("ex-standard-publication-end")) {
   fail("homepage missing publication metadata mount");
 }
 
+for (const page of [home, demo, pilot]) {
+  if (page.includes("data-ex-env-header")) fail("publication surface must not mount website header");
+  if (page.includes("Publication Navigation")) fail("publication surface must not expose publication navigation section");
+  if (page.includes("ex-env-footer-flow")) fail("publication surface must not expose website footer navigation");
+}
+
 for (const page of [demo, pilot]) {
   if (!page.includes("ex-standard-publication-document")) fail("annex missing publication envelope");
   if (!page.includes("ex-institutional-publication")) fail("annex missing publication body class");
   if (!page.includes("ex-publication-header")) fail("annex missing shared publication header class");
   if (!page.includes("ex-publication-metadata")) fail("annex missing shared publication metadata class");
   if (!page.includes("ex-publication-catalog")) fail("annex missing shared publication catalog class");
-  if (page.includes("data-ex-env-header")) fail("annex must not mount website header");
   if (page.includes("executia-assessment-demo.css")) fail("annex must not load assessment demo stylesheet");
 }
 
@@ -117,23 +113,13 @@ function extractRegistryBlock(html, sectionId) {
 
 const demoSequence = extractRegistryBlock(demo, "exDemoPublicationSequence");
 const pilotSequence = extractRegistryBlock(pilot, "exPilotPublicationSequence");
-const demoNav = extractRegistryBlock(demo, "exDemoPublicationNav");
-const pilotNav = extractRegistryBlock(pilot, "exPilotPublicationNav");
 
 if (demoSequence !== pilotSequence) {
   fail("publication sequence must match between demonstration and request pilot");
 }
 
-if (demoNav !== pilotNav) {
-  fail("publication navigation must match between demonstration and request pilot");
-}
-
 for (const fragment of PUBLICATION_SEQUENCE) {
   if (!demoSequence.includes(fragment)) fail(`publication sequence missing: ${fragment}`);
-}
-
-for (const fragment of PUBLICATION_NAV) {
-  if (!demoNav.includes(fragment)) fail(`publication navigation missing: ${fragment}`);
 }
 
 for (const label of FOOTER_LABELS) {
@@ -152,8 +138,12 @@ if (!envJs.includes("Execution Governance Standard")) {
   fail("homepage footer document label missing from institutional environment");
 }
 
+if (!envJs.includes("isPublicationSurface")) {
+  fail("institutional environment must define publication surface guard");
+}
+
 for (const page of [demo, pilot]) {
-  for (const forbidden of ["<button", "<form", "ex-env-footer-flow", "ex-inst-hero-cta"]) {
+  for (const forbidden of ["<button", "<form", "ex-inst-hero-cta"]) {
     if (page.includes(forbidden)) fail(`annex forbidden surface pattern: ${forbidden}`);
   }
 }

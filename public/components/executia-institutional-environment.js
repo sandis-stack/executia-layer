@@ -824,11 +824,18 @@
     if (host) host.innerHTML = renderOnboardingSteps();
   }
 
-  function isPublicationAnnexPage(pageId) {
+  function isPublicationSurface(pageId) {
+    if (pageId === "homepage" && document.body.classList.contains("ex-standard-homepage")) {
+      return true;
+    }
     return (
       (pageId === "demonstration" || pageId === "request") &&
       document.body.classList.contains("ex-institutional-publication")
     );
+  }
+
+  function isPublicationAnnexPage(pageId) {
+    return isPublicationSurface(pageId) && pageId !== "homepage";
   }
 
   function mount() {
@@ -838,11 +845,11 @@
       document.body.classList.add("ex-env-entry");
     }
     mountAiMeta();
-    if (!isPublicationAnnexPage(pageId)) {
+    if (!isPublicationSurface(pageId)) {
       mountHeader(pageId);
     }
     mountFooter(pageId);
-    if (!isPublicationAnnexPage(pageId)) {
+    if (!isPublicationSurface(pageId)) {
       mountHomeHero();
       mountConsequenceBand(pageId);
       mountDemoFlowLadder(-1);

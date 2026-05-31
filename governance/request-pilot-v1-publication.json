@@ -33,7 +33,6 @@
     { "id": "exPilotScopeSection", "label": "Administrative Scope" },
     { "id": "exPilotOutcomeSection", "label": "Administrative Outcome" },
     { "id": "exPilotRequestSection", "label": "Administrative Request Fields" },
-    { "id": "exPilotPublicationNav", "label": "Publication Navigation" },
     { "mount": "data-ex-env-footer", "label": "Publication Metadata" }
   ],
   "administrative_scope": [
@@ -93,6 +92,8 @@
     "Pilot Scope",
     "See How It Works",
     "Open Demonstration",
+    "Publication Navigation",
+    "SELECT SCENARIO",
     "Request Pilot",
     "/api/v1/pilot/request"
   ]

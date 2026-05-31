@@ -69,7 +69,8 @@ check("homepage", home, [
   "Review execution governance applicability",
   "Request pilot evaluation",
   "Execution Governance Standard",
-  "executia-standard-homepage.js"
+  "executia-standard-homepage.js",
+  "ex-institutional-publication"
 ], [
   "exDemoControlMap",
   "ex-arch-map-grid",
@@ -84,7 +85,9 @@ check("homepage", home, [
   "See How It Works",
   "Open Demonstration",
   "ex-standard-action-row",
-  "ex-env-footer-flow"
+  "ex-env-footer-flow",
+  "data-ex-env-header",
+  "Publication Navigation"
 ]);
 
 check("demonstration", demoPage, [
@@ -93,7 +96,6 @@ check("demonstration", demoPage, [
   "Evidence Scenarios",
   "Evidence Sectors",
   "Publication Sequence",
-  "Publication Navigation",
   "Evidence Annex",
   "Administrative Annex",
   "ex-publication-header",
@@ -115,7 +117,11 @@ check("demonstration", demoPage, [
   "ex-inst-card-grid",
   "executia-assessment-demo.css",
   "ex-proof-map",
-  "ex-arch-infra-stack"
+  "ex-arch-infra-stack",
+  "Publication Navigation",
+  "SELECT SCENARIO",
+  "Select Scenario",
+  "data-ex-env-header"
 ]);
 
 check("request-pilot", pilot, [
@@ -124,7 +130,6 @@ check("request-pilot", pilot, [
   "Administrative Outcome",
   "Administrative Request Fields",
   "Publication Sequence",
-  "Publication Navigation",
   "Evidence Annex",
   "ex-publication-header",
   "exPilotScopeRecords",
@@ -148,6 +153,8 @@ check("request-pilot", pilot, [
   "Generate EXECUTIA Assessment",
   "/assessment/",
   "consulting",
+  "Publication Navigation",
+  "data-ex-env-header",
   "questionnaire",
   "ex-env-footer-flow",
   "executia-assessment-demo.css",

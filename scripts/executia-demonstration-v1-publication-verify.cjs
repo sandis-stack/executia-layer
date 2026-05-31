@@ -63,7 +63,10 @@ if (demo.includes('role="listbox"') || demo.includes("<button")) {
 
 if (!demo.includes("Evidence Scenarios")) fail("demonstration must label Evidence Scenarios");
 if (!demo.includes("Evidence Sectors")) fail("demonstration must label Evidence Sectors");
-if (!demo.includes("Publication Navigation")) fail("demonstration must include publication navigation metadata");
+
+if (demo.includes("Publication Navigation")) {
+  fail("demonstration must not include website publication navigation section");
+}
 
 if (!demo.includes(manifest.publication_system.envelope)) {
   fail("demonstration missing publication envelope");

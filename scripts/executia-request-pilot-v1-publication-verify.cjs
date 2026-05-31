@@ -65,7 +65,9 @@ if (!pilot.includes("Administrative Request Fields")) {
   fail("request pilot must label Administrative Request Fields");
 }
 if (!pilot.includes("Publication Sequence")) fail("request pilot must include publication sequence metadata");
-if (!pilot.includes("Publication Navigation")) fail("request pilot must include publication navigation metadata");
+if (pilot.includes("Publication Navigation")) {
+  fail("request pilot must not include website publication navigation section");
+}
 
 if (!pilot.includes(manifest.publication_system.envelope)) {
   fail("request pilot missing publication envelope");

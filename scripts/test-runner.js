@@ -1622,6 +1622,7 @@ for (const publicPage of [
 }
 
 for (const publicationPage of [
+  "public/index.html",
   "public/demonstration/index.html",
   "public/request-pilot/index.html"
 ]) {
@@ -1630,7 +1631,10 @@ for (const publicationPage of [
     throw new Error(`${publicationPage} must use institutional publication envelope`);
   }
   if (html.includes("data-ex-env-header")) {
-    throw new Error(`${publicationPage} must not mount website header on publication annex`);
+    throw new Error(`${publicationPage} must not mount website header on publication surface`);
+  }
+  if (html.includes("Publication Navigation")) {
+    throw new Error(`${publicationPage} must not expose website publication navigation`);
   }
   if (!html.includes("executia-institutional-surfaces.js")) {
     throw new Error(`${publicationPage} must load canonical institutional surfaces registry`);
@@ -1658,11 +1662,11 @@ if (!envJs.includes("ex-env-flow-institutional") || !envJs.includes("ex-env-flow
 }
 
 const entryHtmlProduct = readFileSync(join(__test_dir, "..", "public/index.html"), "utf8");
-if (!entryHtmlProduct.includes("data-ex-env-hero")) {
-  throw new Error("Homepage must mount canonical hero via data-ex-env-hero");
-}
 if (entryHtmlProduct.includes("data-ex-env-pillars")) {
   throw new Error("Homepage must use compressed hero not legacy pillars mount");
+}
+if (entryHtmlProduct.includes("data-ex-env-header")) {
+  throw new Error("Publication homepage must not mount website header");
 }
 
 const demoHtml = readFileSync(join(__test_dir, "..", "public/execution-demo.html"), "utf8");

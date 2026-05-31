@@ -131,6 +131,7 @@
     "node scripts/executia-publication-mobile-verify.cjs",
     "node scripts/executia-publication-accessibility-verify.cjs",
     "node scripts/executia-publication-consistency-verify.cjs",
+    "node scripts/executia-government-publication-cleanup-verify.cjs",
     "node scripts/executia-homepage-v1-frozen-verify.cjs",
     "node scripts/executia-demonstration-v1-publication-verify.cjs",
     "node scripts/executia-request-pilot-v1-publication-verify.cjs",

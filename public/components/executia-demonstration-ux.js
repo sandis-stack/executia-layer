@@ -2,6 +2,12 @@
   const DEFAULT_SECTOR = "Energy";
   const DEFAULT_OPERATION = "Supplier Payment";
 
+  const EVIDENCE_SCENARIOS = Object.freeze([
+    "Supplier Payment",
+    "Asset Maintenance",
+    "Production Reporting"
+  ]);
+
   function $(id) {
     return global.document.getElementById(id);
   }
@@ -37,14 +43,11 @@
 
   function renderScenarioRecords() {
     const container = $("exDemoScenarioRecords");
-    const api = demoApi();
-    if (!container || !api) return;
+    if (!container) return;
 
     container.innerHTML = "";
-    api.SECTORS.forEach((sector) => {
-      api.getOperationsForSector(sector).forEach((operation) => {
-        renderEvidenceRecord(container, operation, sector);
-      });
+    EVIDENCE_SCENARIOS.forEach((scenario) => {
+      renderEvidenceRecord(container, "Scenario", scenario);
     });
   }
 
