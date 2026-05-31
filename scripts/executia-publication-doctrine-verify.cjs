@@ -41,8 +41,9 @@ for (const forbidden of [
   if (home.includes(forbidden)) fail(`homepage must not contain slogan doctrine residue: ${forbidden}`);
 }
 
-if (!/<h4>Standard Principle<\/h4>\s*<p>Governance Precedes Execution<\/p>/.test(doctrine)) {
-  fail("standard doctrine missing registry pair: Standard Principle → Governance Precedes Execution");
+if (!doctrine.includes("Standard Principle")) fail("standard doctrine missing Standard Principle section label");
+if (!/<h4>Principle<\/h4>\s*<p>Governance Precedes Execution<\/p>/.test(doctrine)) {
+  fail("standard doctrine missing registry pair: Principle → Governance Precedes Execution");
 }
 
 if (!doctrine.includes("Execution Order")) fail("standard doctrine missing Execution Order section label");

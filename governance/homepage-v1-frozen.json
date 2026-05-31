@@ -32,7 +32,8 @@
     { "id": "exStandardLayers", "label": "Standard Layers" },
     { "id": "exStandardApplicability", "label": "Standard Applicability" },
     { "id": "exStandardPublicationSequence", "label": "Publication Sequence" },
-    { "id": "exStandardAuthority", "label": "Publication Identity" }
+    { "id": "exStandardAuthority", "label": "Publication Identity" },
+    { "id": "exStandardDocumentState", "label": "Document State" }
   ],
   "section_order": [
     "exStandardHero",
@@ -40,7 +41,8 @@
     "exStandardLayers",
     "exStandardApplicability",
     "exStandardPublicationSequence",
-    "exStandardAuthority"
+    "exStandardAuthority",
+    "exStandardDocumentState"
   ],
   "standard_applicability": {
     "section_label": "Standard Applicability",
@@ -101,13 +103,19 @@
       { "label": "Document Status", "value": "Published" },
       { "label": "Revision", "value": "V1" },
       { "label": "Authority", "value": "EXECUTIA CTO" },
-      { "label": "Release", "value": "EXECUTIA-STANDARD-V1" },
+      { "label": "Release", "value": "EXECUTIA-STANDARD-V1" }
+    ]
+  },
+  "document_state": {
+    "section_id": "exStandardDocumentState",
+    "registry_class": "ex-publication-terminal-registry",
+    "fields": [
       { "label": "Document State", "value": "FINAL" }
     ]
   },
   "hero": [
     "Document",
-    "The Governance Standard",
+    "EXECUTIA Governance Standard",
     "Classification",
     "Governance Standard",
     "Status",
@@ -115,6 +123,7 @@
   ],
   "standard_definition": [
     "Standard Principle",
+    "Principle",
     "Governance Precedes Execution",
     "Execution Order",
     "Validation",
@@ -142,6 +151,9 @@
     "Open Demonstration",
     "ex-standard-action-row",
     "ex-env-footer-flow",
+    "ex-standard-hero",
+    "ex-standard-headline",
+    "The Governance Standard",
     "data-ex-env-footer",
     "ex-standard-publication-footer",
     "EXECUTIA™",

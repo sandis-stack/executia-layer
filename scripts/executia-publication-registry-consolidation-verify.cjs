@@ -42,7 +42,7 @@ if (home.includes("data-ex-env-footer")) {
 const identity = extractSection(home, "exStandardAuthority");
 if (!identity) fail("homepage missing exStandardAuthority publication identity section");
 
-for (const forbidden of ["Purpose", "Defined for", "Defined For"]) {
+for (const forbidden of ["Purpose", "Defined for", "Defined For", "Document State"]) {
   if (identity.includes(`<h4>${forbidden}</h4>`)) {
     fail(`publication identity must not contain: ${forbidden}`);
   }
@@ -57,8 +57,7 @@ const REQUIRED_IDENTITY = [
   { label: "Document Status", value: "Published" },
   { label: "Revision", value: "V1" },
   { label: "Authority", value: "EXECUTIA CTO" },
-  { label: "Release", value: "EXECUTIA-STANDARD-V1" },
-  { label: "Document State", value: "FINAL" }
+  { label: "Release", value: "EXECUTIA-STANDARD-V1" }
 ];
 
 for (const item of REQUIRED_IDENTITY) {
@@ -68,8 +67,10 @@ for (const item of REQUIRED_IDENTITY) {
   if (!pattern.test(identity)) fail(`publication identity missing registry pair: ${item.label} → ${item.value}`);
 }
 
-if (home.includes("exStandardEndOfDocument")) {
-  fail("homepage must not contain separate end of document section");
+const terminal = extractSection(home, "exStandardDocumentState");
+if (!terminal) fail("homepage missing exStandardDocumentState terminal section");
+if (!/<h4>Document State<\/h4>\s*<p>FINAL<\/p>/.test(terminal)) {
+  fail("document state missing registry pair: Document State → FINAL");
 }
 
 const ORDER = [
@@ -78,7 +79,8 @@ const ORDER = [
   "exStandardLayers",
   "exStandardApplicability",
   "exStandardPublicationSequence",
-  "exStandardAuthority"
+  "exStandardAuthority",
+  "exStandardDocumentState"
 ];
 let last = -1;
 for (const id of ORDER) {

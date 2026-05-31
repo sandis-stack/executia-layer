@@ -49,7 +49,7 @@ function check(label, html, required, forbidden) {
 }
 
 check("homepage", home, [
-  "The Governance Standard",
+  "EXECUTIA Governance Standard",
   "Governance Standard",
   "exStandardAuthority",
   "exStandardStructure",
@@ -63,6 +63,8 @@ check("homepage", home, [
   "Release",
   "Document State",
   "FINAL",
+  "exStandardDocumentState",
+  "ex-publication-document-open",
   "ex-publication-document-registry",
   "Standard Layers",
   "Standard Principle",
@@ -129,7 +131,9 @@ check("homepage", home, [
   "Governed AI",
   "Investors",
   "exStandardEndOfDocument",
-  "ex-arch-infra-stack"
+  "ex-arch-infra-stack",
+  "ex-standard-hero",
+  "The Governance Standard"
 ]);
 
 check("demonstration", demoPage, [
@@ -232,6 +236,11 @@ if (!standardJs.includes("EXECUTION_ORDER")) {
   failed += 1;
 }
 
+if (!standardJs.includes("DOCUMENT_STATE")) {
+  console.error("FAIL: homepage must export DOCUMENT_STATE");
+  failed += 1;
+}
+
 if (!standardJs.includes("STANDARD_LAYERS")) {
   console.error("FAIL: homepage must export STANDARD_LAYERS");
   failed += 1;
@@ -258,7 +267,8 @@ const order = [
   "exStandardLayers",
   "exStandardApplicability",
   "exStandardPublicationSequence",
-  "exStandardAuthority"
+  "exStandardAuthority",
+  "exStandardDocumentState"
 ];
 let last = -1;
 for (const id of order) {

@@ -114,6 +114,21 @@ if (manifest.standard_authority) {
   }
 }
 
+if (manifest.document_state) {
+  const terminal = manifest.document_state;
+  if (!home.includes(`id="${terminal.section_id}"`)) {
+    fail("Document State section missing");
+  }
+  if (terminal.registry_class && !home.includes(terminal.registry_class)) {
+    fail(`document state registry drift — missing: ${terminal.registry_class}`);
+  }
+  for (const field of terminal.fields || []) {
+    if (!home.includes(field.label)) fail(`Document State label drift — missing: ${field.label}`);
+    if (!home.includes(field.value)) fail(`Document State value drift — missing: ${field.value}`);
+    if (!standardJs.includes(field.value)) fail(`Document State JS drift — missing: ${field.value}`);
+  }
+}
+
 for (const id of manifest.section_order) {
   if (!home.includes(`id="${id}"`)) fail(`architecture drift — missing section: ${id}`);
 }

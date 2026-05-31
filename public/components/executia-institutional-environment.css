@@ -1199,12 +1199,18 @@ body.ex-standard-homepage {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   --ex-pub-body: 13px;
-  --ex-pub-label: 9px;
-  --ex-pub-line: 1.45;
+  --ex-pub-label: 7px;
+  --ex-pub-label-weight: 400;
+  --ex-pub-label-color: rgba(122, 141, 163, 0.64);
+  --ex-pub-value-color: #1a2d42;
+  --ex-pub-line: 1.31;
   --ex-pub-border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
-  --ex-pub-row-pad: 5px 12px;
+  --ex-pub-row-pad: 4px 11px;
   --ex-pub-label-col: 6.5rem;
+  --ex-pub-index-col: 2.25rem;
   --ex-pub-gutter: 22px;
+  --ex-pub-section-gap: 13px;
+  --ex-pub-section-label-spacing: 0.102em;
 }
 
 body.ex-standard-homepage h1.ex-standard-headline {
@@ -1468,27 +1474,27 @@ body.ex-standard-homepage .ex-standard-authority-item:last-child {
 
 body.ex-standard-homepage .ex-standard-authority-item h4 {
   margin: 0;
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-size: var(--ex-pub-label, 7px);
+  font-weight: var(--ex-pub-label-weight, 400);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ex-ds-muted, #7a8da3);
+  color: var(--ex-pub-label-color, rgba(122, 141, 163, 0.64));
 }
 
 body.ex-standard-homepage .ex-standard-authority-item p {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--ex-ds-graphite, #4d6178);
+  font-size: var(--ex-pub-body, 13px);
+  line-height: var(--ex-pub-line, 1.31);
+  color: var(--ex-pub-value-color, #1a2d42);
 }
 
 body.ex-standard-homepage .ex-inst-label {
-  margin: 0 0 var(--ex-ds-s8, 8px);
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  margin: 0 0 6px;
+  font-size: var(--ex-pub-label, 7px);
+  font-weight: var(--ex-pub-label-weight, 400);
+  letter-spacing: var(--ex-pub-section-label-spacing, 0.102em);
   text-transform: uppercase;
-  color: var(--ex-ds-muted, #7a8da3);
+  color: var(--ex-pub-label-color, rgba(122, 141, 163, 0.64));
   text-align: left;
 }
 
@@ -1996,20 +2002,85 @@ body.ex-standard-homepage #exStandardCta .ex-inst-label {
 body.ex-standard-homepage .ex-standard-publication-document {
   border: var(--ex-pub-border);
   background: #fff;
-  padding: var(--ex-ds-s24, 24px);
+  padding: var(--ex-pub-gutter, 22px);
 }
 
 body.ex-standard-homepage .ex-standard-publication-document .ex-inst-block.ex-standard-block,
 body.ex-standard-homepage .ex-standard-publication-document .ex-standard-cta {
-  padding: var(--ex-ds-s16, 16px) 0 0;
+  padding: var(--ex-pub-section-gap, 13px) 0 0;
   margin: 0;
   border-top: none;
 }
 
-body.ex-standard-homepage .ex-standard-publication-document .ex-standard-hero {
-  padding: 0 0 var(--ex-ds-s16, 16px);
-  margin: 0 0 var(--ex-ds-s16, 16px);
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-document-open {
+  padding-top: 0;
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-document-open .ex-publication-document-registry .ex-standard-authority-item:first-child {
+  border-top: var(--ex-pub-border);
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-sequence-registry .ex-standard-authority-item,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-execution-order-registry .ex-standard-authority-item {
+  grid-template-columns: var(--ex-pub-index-col, 2.25rem) 1fr;
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-sequence-registry .ex-standard-authority-item h4,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-execution-order-registry .ex-standard-authority-item h4 {
+  font-size: var(--ex-pub-label, 7px);
+  font-weight: var(--ex-pub-label-weight, 400);
+  letter-spacing: 0.06em;
+  color: var(--ex-pub-label-color, rgba(122, 141, 163, 0.64));
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-applicability-registry .ex-standard-authority-item,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-layers-registry .ex-standard-authority-item,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-doctrine-registry .ex-standard-authority-item,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-identity-registry .ex-standard-authority-item,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-document-registry .ex-standard-authority-item,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-terminal-registry .ex-standard-authority-item {
+  grid-template-columns: var(--ex-pub-label-col, 6.5rem) 1fr;
+  padding: var(--ex-pub-row-pad);
   border-bottom: var(--ex-pub-border);
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-applicability-registry .ex-standard-authority-item:last-child,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-layers-registry .ex-standard-authority-item:last-child,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-doctrine-registry .ex-standard-authority-item:last-child,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-identity-registry .ex-standard-authority-item:last-child,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-document-registry .ex-standard-authority-item:last-child,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-sequence-registry .ex-standard-authority-item:last-child,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-execution-order-registry .ex-standard-authority-item:last-child,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-terminal-registry .ex-standard-authority-item:last-child {
+  border-bottom: none;
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-applicability-registry .ex-standard-authority-item p,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-layers-registry .ex-standard-authority-item p,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-doctrine-registry .ex-standard-authority-item p,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-identity-registry .ex-standard-authority-item p,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-document-registry .ex-standard-authority-item p,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-sequence-registry .ex-standard-authority-item p,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-execution-order-registry .ex-standard-authority-item p,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-terminal-registry .ex-standard-authority-item p {
+  font-size: var(--ex-pub-body, 13px);
+  line-height: var(--ex-pub-line, 1.31);
+  color: var(--ex-pub-value-color, #1a2d42);
+}
+
+body.ex-standard-homepage .ex-standard-block--terminal {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-standard-block--terminal .ex-publication-terminal-registry .ex-standard-authority-item:first-child {
+  border-top: var(--ex-pub-border);
+}
+
+body.ex-standard-homepage .ex-standard-hero::before,
+body.ex-standard-homepage .ex-publication-document-open::before {
+  content: none;
+  display: none;
 }
 
 body.ex-standard-homepage .ex-standard-hero .ex-publication-identity-registry,
@@ -2337,14 +2408,9 @@ body.ex-standard-homepage [data-ex-env-header] {
   display: none;
 }
 
-body.ex-standard-homepage .ex-standard-hero::before {
-  content: "EXECUTIA";
-  display: block;
-  margin: 0 0 var(--ex-ds-s8, 8px);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--ex-ds-muted, #7a8da3);
+body.ex-standard-homepage .ex-env-footer,
+body.ex-standard-homepage .ex-standard-publication-footer {
+  display: none !important;
 }
 
 body.ex-standard-homepage .ex-standard-publication-document .ex-inst-block.ex-standard-block,

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-/** EXECUTIA Publication Hero — registry-only standard hero verification. */
+/** EXECUTIA Publication Hero — registry-only standard document open verification. */
 
 const path = require("path");
 const fs = require("fs");
@@ -16,33 +16,37 @@ function fail(msg) {
   failed += 1;
 }
 
-function extractHeroBlock(html) {
+function extractDocumentBlock(html) {
   const start = html.indexOf('id="exStandardHero"');
   if (start < 0) return "";
-  const headerStart = html.lastIndexOf("<header", start);
-  const headerEnd = html.indexOf("</header>", start);
-  if (headerStart < 0 || headerEnd < 0) return "";
-  return html.slice(headerStart, headerEnd + "</header>".length);
+  const sectionStart = html.lastIndexOf("<section", start);
+  const sectionEnd = html.indexOf("</section>", start);
+  if (sectionStart < 0 || sectionEnd < 0) return "";
+  return html.slice(sectionStart, sectionEnd + "</section>".length);
 }
 
-const hero = extractHeroBlock(home);
+const documentOpen = extractDocumentBlock(home);
 
-if (!hero) fail("homepage missing exStandardHero header");
+if (!documentOpen) fail("homepage missing exStandardHero document section");
+if (!documentOpen.includes("ex-publication-document-open")) {
+  fail("homepage document open must use publication document open styling");
+}
 
-const REQUIRED_HERO = [
-  { label: "Document", value: "The Governance Standard" },
+const REQUIRED_DOCUMENT = [
+  { label: "Document", value: "EXECUTIA Governance Standard" },
   { label: "Classification", value: "Governance Standard" },
   { label: "Status", value: "Published" }
 ];
 
-for (const item of REQUIRED_HERO) {
+for (const item of REQUIRED_DOCUMENT) {
   const pattern = new RegExp(
     `<h4>${item.label}</h4>\\s*<p>${item.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`
   );
-  if (!pattern.test(hero)) fail(`homepage hero missing registry pair: ${item.label} → ${item.value}`);
+  if (!pattern.test(documentOpen)) fail(`homepage document missing registry pair: ${item.label} → ${item.value}`);
 }
 
 for (const forbidden of [
+  "ex-standard-hero",
   "ex-standard-hero-statement",
   "ex-standard-headline",
   "EXECUTIA is",
@@ -51,19 +55,20 @@ for (const forbidden of [
   "proof",
   "accountability",
   "infrastructure",
-  "execution governance infrastructure"
+  "execution governance infrastructure",
+  "The Governance Standard"
 ]) {
-  if (hero.toLowerCase().includes(forbidden.toLowerCase())) {
-    fail(`homepage hero contains forbidden brochure language: ${forbidden}`);
+  if (home.includes(forbidden)) {
+    fail(`homepage document contains forbidden brochure language: ${forbidden}`);
   }
 }
 
-if (!hero.includes("ex-publication-document-registry")) {
-  fail("homepage hero must use publication document registry styling");
+if (!documentOpen.includes("ex-publication-document-registry")) {
+  fail("homepage document must use publication document registry styling");
 }
 
-if (!hero.includes("ex-publication-sr-only")) {
-  fail("homepage hero must expose screen-reader document h1");
+if (!documentOpen.includes("ex-publication-sr-only")) {
+  fail("homepage document must expose screen-reader document h1");
 }
 
 if (failed) process.exit(1);

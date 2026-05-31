@@ -1,4 +1,6 @@
 (function registerExecutiaStandardHomepage(global) {
+  const DOCUMENT_TITLE = "EXECUTIA Governance Standard";
+
   const STANDARD_PRINCIPLE = "Governance Precedes Execution";
 
   const EXECUTION_ORDER = [
@@ -33,9 +35,10 @@
     { label: "Document Status", value: "Published" },
     { label: "Revision", value: "V1" },
     { label: "Authority", value: "EXECUTIA CTO" },
-    { label: "Release", value: "EXECUTIA-STANDARD-V1" },
-    { label: "Document State", value: "FINAL" }
+    { label: "Release", value: "EXECUTIA-STANDARD-V1" }
   ];
+
+  const DOCUMENT_STATE = { label: "Document State", value: "FINAL" };
 
   function mountAiJsonLd() {
     if (global.document.getElementById("ex-standard-jsonld")) return;
@@ -43,7 +46,7 @@
       "@context": "https://schema.org",
       "@type": "DefinedTerm",
       name: "EXECUTIA",
-      alternateName: "Governance Standard",
+      alternateName: DOCUMENT_TITLE,
       description: "Governance Standard",
       termCode: "EXECUTIA-STANDARD-V1"
     };
@@ -59,12 +62,14 @@
   }
 
   global.EXECUTIA_STANDARD_HOMEPAGE = {
+    DOCUMENT_TITLE,
     STANDARD_PRINCIPLE,
     EXECUTION_ORDER,
     STANDARD_LAYERS,
     STANDARD_APPLICABILITY,
     PUBLICATION_SEQUENCE,
     PUBLICATION_IDENTITY,
+    DOCUMENT_STATE,
     init
   };
 })(typeof window !== "undefined" ? window : globalThis);

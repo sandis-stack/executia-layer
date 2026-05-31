@@ -77,7 +77,10 @@ if (!home.includes("ex-standard-publication-document")) {
 }
 
 if (home.includes("exStandardEndOfDocument")) {
-  fail("homepage must not use separate end of document section");
+  fail("homepage must not use legacy end of document section id");
+}
+if (!home.includes("exStandardDocumentState")) {
+  fail("homepage must terminate with document state section");
 }
 
 for (const page of [home, demo, pilot]) {

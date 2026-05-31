@@ -40,7 +40,9 @@ const FORBIDDEN = [
   "<h4>Investors</h4>",
   "<p>Investors</p>",
   "exStandardEndOfDocument",
-  "End of Document"
+  "End of Document",
+  "ex-standard-hero",
+  "The Governance Standard"
 ];
 
 for (const phrase of FORBIDDEN) {
@@ -90,14 +92,18 @@ for (const row of [
   { label: "Document Status", value: "Published" },
   { label: "Revision", value: "V1" },
   { label: "Authority", value: "EXECUTIA CTO" },
-  { label: "Release", value: "EXECUTIA-STANDARD-V1" },
-  { label: "Document State", value: "FINAL" }
+  { label: "Release", value: "EXECUTIA-STANDARD-V1" }
 ]) {
   const pattern = new RegExp(`<h4>${row.label}</h4>\\s*<p>${row.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`);
   if (!pattern.test(identity)) fail(`publication identity missing registry row: ${row.label} → ${row.value}`);
 }
 
-if (!css.includes('content: "EXECUTIA"')) fail("publication brand must render EXECUTIA without trademark mark");
+const terminal = extractSection(home, "exStandardDocumentState");
+if (!/<h4>Document State<\/h4>\s*<p>FINAL<\/p>/.test(terminal)) {
+  fail("document state missing registry row: Document State → FINAL");
+}
+
+if (!home.includes("EXECUTIA Governance Standard")) fail("homepage missing document title EXECUTIA Governance Standard");
 
 const ORDER = [
   "exStandardHero",
@@ -105,7 +111,8 @@ const ORDER = [
   "exStandardLayers",
   "exStandardApplicability",
   "exStandardPublicationSequence",
-  "exStandardAuthority"
+  "exStandardAuthority",
+  "exStandardDocumentState"
 ];
 let last = -1;
 for (const id of ORDER) {

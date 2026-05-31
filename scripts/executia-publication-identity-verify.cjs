@@ -32,7 +32,7 @@ const REQUIRED = [
   { label: "Document", value: "Execution Control Map", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Annex Identifier", value: "Annex B", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Document", value: "Pilot Request Publication", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
-  { label: "Document", value: "The Governance Standard", pages: ["public/index.html"] },
+  { label: "Document", value: "EXECUTIA Governance Standard", pages: ["public/index.html"] },
   { label: "Document", value: "The Execution Governance Standard", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] }
 ];
 

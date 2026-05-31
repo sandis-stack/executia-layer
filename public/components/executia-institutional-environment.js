@@ -848,7 +848,9 @@
     if (!isPublicationSurface(pageId)) {
       mountHeader(pageId);
     }
-    mountFooter(pageId);
+    if (!(pageId === "homepage" && document.body.classList.contains("ex-standard-homepage"))) {
+      mountFooter(pageId);
+    }
     if (!isPublicationSurface(pageId)) {
       mountHomeHero();
       mountConsequenceBand(pageId);
