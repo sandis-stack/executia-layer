@@ -33,8 +33,12 @@ if (manifest.review_status !== "READY_FOR_GOVERNMENT_REVIEW") {
   fail("publication system review status must be READY_FOR_GOVERNMENT_REVIEW");
 }
 
-if (manifest.cto_verdict !== "CONDITIONALLY_APPROVED") {
-  fail("publication system CTO verdict must be CONDITIONALLY_APPROVED");
+if (manifest.cto_verdict !== "ACCEPTED") {
+  fail("publication system CTO verdict must be ACCEPTED");
+}
+
+if (manifest.freeze_status !== "ACTIVE") {
+  fail("publication system freeze status must be ACTIVE");
 }
 
 if (manifest.structural_phase !== "COMPLETE") {
