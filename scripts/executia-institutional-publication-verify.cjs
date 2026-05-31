@@ -51,12 +51,16 @@ if (program.review_status !== "READY_FOR_GOVERNMENT_REVIEW") {
   fail("institutional publication program review status must be READY_FOR_GOVERNMENT_REVIEW");
 }
 
-if (program.structural_phase !== "COMPLETE") {
-  fail("structural phase must be COMPLETE");
+if (program.structural_phase !== "CLOSED") {
+  fail("structural phase must be CLOSED");
 }
 
-if (program.next_action !== "Begin external review (government review)") {
-  fail("institutional publication program next action must be Begin external review (government review)");
+if (program.review_phase !== "ACTIVE") {
+  fail("review phase must be ACTIVE");
+}
+
+if (program.program_status !== "CLOSED") {
+  fail("institutional publication program must be CLOSED");
 }
 
 if (homepage.status !== "LOCKED") {

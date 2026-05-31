@@ -8,8 +8,11 @@
   "deployment_id": "dpl_AobaVzf4aoGoUWpZh7j16qu3xHpo",
   "deployed_at": "2026-05-31",
   "cto_verdict": "ACCEPTED",
-  "program_status": "REVIEW_PHASE",
-  "structural_phase": "COMPLETE",
+  "cto_final_sign_off": "2026-05-31",
+  "official_release": true,
+  "program_status": "CLOSED",
+  "structural_phase": "CLOSED",
+  "review_phase": "ACTIVE",
   "publication_phase": "COMPLETE",
   "consistency_phase": "COMPLETE",
   "mobile_validation": "COMPLETE",
@@ -19,8 +22,8 @@
   "cto_approved": "2026-05-30",
   "issuer": "CTO",
   "release_tag": "publication-system-v1",
-  "next_action": "Begin external review (government review)",
-  "summary": "EXECUTIA Publication System v1 — locked after CTO conditional approval. Standard → Evidence Annex → Administrative Annex. Ready for government review.",
+  "next_action": "Government review (external)",
+  "summary": "EXECUTIA Publication System v1 — officially released. Standard → Evidence Annex → Administrative Annex. Production live at execution.executia.io. End of program.",
   "hierarchy": [
     { "order": 1, "id": "standard", "label": "Standard", "url": "/", "manifest": "governance/homepage-v1-frozen.json" },
     { "order": 2, "id": "evidence_annex", "label": "Evidence Annex", "url": "/demonstration/", "manifest": "governance/demonstration-v1-publication.json" },
@@ -30,6 +33,18 @@
     "homepage": 100,
     "demonstration": "below_homepage",
     "request_pilot": "below_demonstration"
+  },
+  "cto_final_sign_off": {
+    "date": "2026-05-31",
+    "verdict": "FINAL_SIGN_OFF",
+    "verified": [
+      "homepage_live",
+      "demonstration_live",
+      "request_pilot_live",
+      "publication_hierarchy_verified",
+      "production_deployment_verified",
+      "release_tag_verified"
+    ]
   },
   "cto_visual_review": {
     "verdict": "CONDITIONALLY_APPROVED",

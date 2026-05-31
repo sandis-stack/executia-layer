@@ -41,12 +41,24 @@ if (manifest.freeze_status !== "ACTIVE") {
   fail("publication system freeze status must be ACTIVE");
 }
 
-if (manifest.structural_phase !== "COMPLETE") {
-  fail("structural phase must be COMPLETE");
+if (manifest.structural_phase !== "CLOSED") {
+  fail("structural phase must be CLOSED");
 }
 
-if (manifest.program_status !== "REVIEW_PHASE") {
-  fail("program status must be REVIEW_PHASE");
+if (manifest.review_phase !== "ACTIVE") {
+  fail("review phase must be ACTIVE");
+}
+
+if (manifest.program_status !== "CLOSED") {
+  fail("publication program must be CLOSED");
+}
+
+if (!manifest.official_release) {
+  fail("publication system must be officially released");
+}
+
+if (!manifest.cto_final_sign_off?.date) {
+  fail("CTO final sign-off must be recorded");
 }
 
 if (program.status !== "LOCKED") {
@@ -97,8 +109,8 @@ for (const m of [demoManifest, pilotManifest, homeManifest]) {
   }
 }
 
-if (!read("docs/governance/publication-system-v1-review-package.md").includes("READY_FOR_GOVERNMENT_REVIEW")) {
-  fail("final review package must document READY_FOR_GOVERNMENT_REVIEW");
+if (!read("docs/governance/publication-system-v1-final-sign-off.md").includes("OFFICIALLY RELEASED")) {
+  fail("final sign-off document must record official release");
 }
 
 if (failed) process.exit(1);

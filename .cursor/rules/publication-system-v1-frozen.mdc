@@ -1,23 +1,27 @@
 ---
-description: EXECUTIA Publication System v1 — LOCKED, READY_FOR_GOVERNMENT_REVIEW
+description: EXECUTIA Publication System v1 — OFFICIALLY RELEASED, END OF PROGRAM
 alwaysApply: true
 ---
 
-# Publication System v1 — LOCKED
+# Publication System v1 — OFFICIALLY RELEASED
 
-**Status:** `LOCKED` · **Review:** `READY_FOR_GOVERNMENT_REVIEW` · **CTO:** `CONDITIONALLY_APPROVED`  
-**Phase:** Review · **Structural phase:** COMPLETE · **Tag:** `publication-system-v1`
+**Status:** `PRODUCTION_RELEASED` · **Review:** `READY FOR GOVERNMENT REVIEW`  
+**System:** `LOCKED` · **Structural phase:** `CLOSED` · **Review phase:** `ACTIVE`  
+**Tag:** `publication-system-v1` · **END OF PROGRAM**
 
-## Allowed without unlock
+## Live surfaces
+
+- `https://execution.executia.io/` — Standard
+- `https://execution.executia.io/demonstration/` — Evidence Annex
+- `https://execution.executia.io/request-pilot/` — Administrative Annex
+
+## Permitted without unlock
 
 Typo · accessibility · responsive · legal/compliance corrections only
 
-## Forbidden without unlock
+## All other modifications require CTO unlock
 
-New sections · hierarchy · navigation · CTA · visual systems · structural modifications · new features
+## Reference
 
-## Verify
-
-```bash
-node scripts/executia-publication-system-v1-frozen-verify.cjs
-```
+- `docs/governance/publication-system-v1-final-sign-off.md`
+- `governance/publication-system-v1-frozen.json`
