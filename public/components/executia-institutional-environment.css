@@ -2002,14 +2002,16 @@ body.ex-standard-homepage .ex-standard-publication-document .ex-standard-hero {
   border-bottom: var(--ex-pub-border);
 }
 
-body.ex-standard-homepage .ex-standard-hero .ex-publication-identity-registry {
+body.ex-standard-homepage .ex-standard-hero .ex-publication-identity-registry,
+body.ex-standard-homepage .ex-standard-hero .ex-publication-document-registry {
   margin: 0;
   padding: 0;
   border: none;
   background: transparent;
 }
 
-body.ex-standard-homepage .ex-standard-hero .ex-publication-identity-registry .ex-standard-authority-item:first-child {
+body.ex-standard-homepage .ex-standard-hero .ex-publication-identity-registry .ex-standard-authority-item:first-child,
+body.ex-standard-homepage .ex-standard-hero .ex-publication-document-registry .ex-standard-authority-item:first-child {
   border-top: var(--ex-pub-border);
 }
 
@@ -2054,10 +2056,36 @@ body.ex-standard-homepage .ex-standard-publication-document .ex-publication-sequ
 }
 
 body.ex-standard-homepage .ex-standard-publication-document .ex-publication-applicability-registry .ex-standard-authority-item p,
-body.ex-standard-homepage .ex-standard-publication-document .ex-publication-sequence-registry .ex-standard-authority-item p {
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-sequence-registry .ex-standard-authority-item p,
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-terminal-registry .ex-standard-authority-item p {
   font-size: var(--ex-pub-body, 13px);
   line-height: var(--ex-pub-line, 1.55);
   color: var(--ex-ds-graphite, #4d6178);
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-terminal-registry {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-terminal-registry .ex-standard-authority-item {
+  grid-template-columns: var(--ex-pub-label-col, 6.5rem) 1fr;
+  padding: var(--ex-pub-row-pad);
+  border-bottom: none;
+}
+
+body.ex-standard-homepage .ex-standard-publication-document .ex-publication-terminal-registry .ex-standard-authority-item h4 {
+  font-size: var(--ex-pub-label, 9px);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ex-ds-muted, #7a8da3);
+}
+
+body.ex-standard-homepage #exStandardEndOfDocument {
+  padding-bottom: var(--ex-ds-s24, 24px);
 }
 
 body.ex-standard-homepage .ex-standard-publication-end {

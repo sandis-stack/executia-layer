@@ -76,8 +76,8 @@ if (!home.includes("ex-standard-publication-document")) {
   fail("homepage missing publication envelope");
 }
 
-if (!home.includes("ex-standard-publication-end")) {
-  fail("homepage missing publication metadata mount");
+if (!home.includes("exStandardEndOfDocument")) {
+  fail("homepage missing end of document section");
 }
 
 for (const page of [home, demo, pilot]) {

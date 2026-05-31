@@ -26,13 +26,15 @@ const IDENTITY_PAGES = [
 ];
 
 const REQUIRED_IDENTITY = [
-  { label: "Document", value: "The Execution Governance Standard", pages: ["public/index.html"] },
-  { label: "Standard", value: "EXECUTIA-STANDARD-V1", pages: IDENTITY_PAGES.map((p) => p.rel) },
-  { label: "Version", value: "V1", pages: IDENTITY_PAGES.map((p) => p.rel) },
-  { label: "Status", value: "Published", pages: IDENTITY_PAGES.map((p) => p.rel) },
+  { label: "Document Status", value: "Published", pages: ["public/index.html"] },
+  { label: "Revision", value: "V1", pages: ["public/index.html"] },
+  { label: "Release", value: "EXECUTIA-STANDARD-V1", pages: ["public/index.html"] },
+  { label: "Standard", value: "EXECUTIA-STANDARD-V1", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
+  { label: "Version", value: "V1", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
+  { label: "Status", value: "Published", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Authority", value: "EXECUTIA CTO", pages: IDENTITY_PAGES.map((p) => p.rel) },
-  { label: "Purpose", value: "Execution Governance", pages: IDENTITY_PAGES.map((p) => p.rel) },
-  { label: "Defined for", value: "Government / Enterprise / AI", pages: IDENTITY_PAGES.map((p) => p.rel) },
+  { label: "Purpose", value: "Execution Governance", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
+  { label: "Defined for", value: "Government / Enterprise / AI", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Annex Identifier", value: "Annex A", pages: ["public/demonstration/index.html"] },
   { label: "Document", value: "Execution Control Map", pages: ["public/demonstration/index.html"] },
   { label: "Annex Identifier", value: "Annex B", pages: ["public/request-pilot/index.html"] },
@@ -90,6 +92,22 @@ function hasRegistryPair(html, label, value) {
 
 for (const page of IDENTITY_PAGES) {
   const html = read(page.rel);
+  if (page.rel === "public/index.html") {
+    if (!html.includes("ex-publication-document-registry")) {
+      fail("standard page missing publication document registry class");
+    }
+    if (!html.includes("ex-publication-identity-registry")) {
+      fail("standard page missing publication identity registry class");
+    }
+    const identitySection = html.slice(html.indexOf('id="exStandardAuthority"'), html.indexOf("</section>", html.indexOf('id="exStandardAuthority"')));
+    for (const forbidden of ["Purpose", "Defined for"]) {
+      if (identitySection.includes(`<h4>${forbidden}</h4>`)) {
+        fail(`standard publication identity must not contain: ${forbidden}`);
+      }
+    }
+    continue;
+  }
+
   if (!html.includes("ex-publication-identity-registry")) {
     fail(`${page.label} missing publication identity registry class`);
     continue;

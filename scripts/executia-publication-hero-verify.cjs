@@ -58,8 +58,8 @@ for (const forbidden of [
   }
 }
 
-if (!hero.includes("ex-publication-identity-registry")) {
-  fail("homepage hero must use publication identity registry styling");
+if (!hero.includes("ex-publication-document-registry")) {
+  fail("homepage hero must use publication document registry styling");
 }
 
 if (!hero.includes("ex-publication-sr-only")) {

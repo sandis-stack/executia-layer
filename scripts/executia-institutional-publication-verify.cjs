@@ -32,7 +32,11 @@ function checkPublicationSurface(label, html, options) {
   if (!bodyClasses.some((cls) => html.includes(cls))) {
     fail(`[${label}] missing publication body class`);
   }
-  if (!html.includes("ex-standard-publication-end")) {
+  if (options?.bodyClasses?.includes("ex-standard-homepage")) {
+    if (!html.includes('id="exStandardEndOfDocument"')) {
+      fail(`[${label}] end of document must close publication envelope`);
+    }
+  } else if (!html.includes("ex-standard-publication-end")) {
     fail(`[${label}] publication metadata must mount inside envelope`);
   }
   if (html.includes("ex-inst-hero-cta")) fail(`[${label}] exceeds homepage authority — hero CTA present`);

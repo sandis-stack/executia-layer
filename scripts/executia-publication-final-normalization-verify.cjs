@@ -91,7 +91,8 @@ const ORDER = [
   "exStandardLayers",
   "exStandardApplicability",
   "exStandardPublicationSequence",
-  "exStandardAuthority"
+  "exStandardAuthority",
+  "exStandardEndOfDocument"
 ];
 let last = -1;
 for (const id of ORDER) {

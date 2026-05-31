@@ -12,6 +12,17 @@
     { index: "03", label: "Administrative Annex" }
   ];
 
+  const PUBLICATION_IDENTITY = [
+    { label: "Document Status", value: "Published" },
+    { label: "Revision", value: "V1" },
+    { label: "Authority", value: "EXECUTIA CTO" },
+    { label: "Release", value: "EXECUTIA-STANDARD-V1" }
+  ];
+
+  const END_OF_DOCUMENT = [
+    { label: "Document State", value: "FINAL" }
+  ];
+
   function mountAiJsonLd() {
     if (global.document.getElementById("ex-standard-jsonld")) return;
     const payload = {
@@ -36,6 +47,8 @@
   global.EXECUTIA_STANDARD_HOMEPAGE = {
     STANDARD_APPLICABILITY,
     PUBLICATION_SEQUENCE,
+    PUBLICATION_IDENTITY,
+    END_OF_DOCUMENT,
     init
   };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -33,7 +33,7 @@
     { "id": "exStandardApplicability", "label": "Standard Applicability" },
     { "id": "exStandardPublicationSequence", "label": "Publication Sequence" },
     { "id": "exStandardAuthority", "label": "Publication Identity" },
-    { "mount": "data-ex-env-footer", "label": "Publication Metadata" }
+    { "id": "exStandardEndOfDocument", "label": "End of Document" }
   ],
   "section_order": [
     "exStandardHero",
@@ -41,16 +41,14 @@
     "exStandardLayers",
     "exStandardApplicability",
     "exStandardPublicationSequence",
-    "exStandardAuthority"
+    "exStandardAuthority",
+    "exStandardEndOfDocument"
   ],
-  "publication_metadata": {
-    "mount": "data-ex-env-footer",
-    "footer_class": "ex-standard-publication-footer",
+  "end_of_document": {
+    "section_label": "End of Document",
+    "registry_class": "ex-publication-terminal-registry",
     "fields": [
-      { "label": "Standard", "value": "EXECUTIA-STANDARD-V1" },
-      { "label": "Status", "value": "Published" },
-      { "label": "Authority", "value": "EXECUTIA CTO" },
-      { "label": "Document", "value": "Execution Governance Standard" }
+      { "label": "Document State", "value": "FINAL" }
     ]
   },
   "standard_applicability": {
@@ -109,13 +107,10 @@
     "section_label": "Publication Identity",
     "registry_class": "ex-publication-identity-registry",
     "fields": [
-      { "label": "Document", "value": "The Execution Governance Standard" },
-      { "label": "Standard", "value": "EXECUTIA-STANDARD-V1" },
-      { "label": "Version", "value": "V1" },
-      { "label": "Status", "value": "Published" },
+      { "label": "Document Status", "value": "Published" },
+      { "label": "Revision", "value": "V1" },
       { "label": "Authority", "value": "EXECUTIA CTO" },
-      { "label": "Purpose", "value": "Execution Governance" },
-      { "label": "Defined for", "value": "Government / Enterprise / AI" }
+      { "label": "Release", "value": "EXECUTIA-STANDARD-V1" }
     ]
   },
   "hero": [
@@ -155,6 +150,8 @@
     "Open Demonstration",
     "ex-standard-action-row",
     "ex-env-footer-flow",
+    "data-ex-env-footer",
+    "ex-standard-publication-footer",
     "Why It Matters",
     "Next action",
     "Next Action",
@@ -167,6 +164,8 @@
     "exStandardToday",
     "exStandardWhatChanges",
     "exStandardWhyMatters",
-    "exStandardCta"
+    "exStandardCta",
+    "Purpose",
+    "Defined for"
   ]
 }

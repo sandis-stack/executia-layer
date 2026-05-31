@@ -57,6 +57,14 @@ check("homepage", home, [
   "exStandardPublicationSequence",
   "EXECUTIA-STANDARD-V1",
   "Publication Identity",
+  "Document Status",
+  "Revision",
+  "Release",
+  "End of Document",
+  "Document State",
+  "FINAL",
+  "exStandardEndOfDocument",
+  "ex-publication-document-registry",
   "Standard Layers",
   "Standard Principle",
   "Governance First",
@@ -109,7 +117,12 @@ check("homepage", home, [
   "exStandardToday",
   "exStandardWhatChanges",
   "exStandardWhyMatters",
-  "exStandardCta"
+  "exStandardCta",
+  "data-ex-env-footer",
+  "ex-standard-publication-footer",
+  "Purpose",
+  "Defined for",
+  "<h4>Version</h4>"
 ]);
 
 check("demonstration", demoPage, [
@@ -202,8 +215,13 @@ if (!standardJs.includes("STANDARD_APPLICABILITY")) {
   failed += 1;
 }
 
-if (!standardJs.includes("PUBLICATION_SEQUENCE")) {
-  console.error("FAIL: homepage must export PUBLICATION_SEQUENCE");
+if (!standardJs.includes("PUBLICATION_IDENTITY")) {
+  console.error("FAIL: homepage must export PUBLICATION_IDENTITY");
+  failed += 1;
+}
+
+if (!standardJs.includes("END_OF_DOCUMENT")) {
+  console.error("FAIL: homepage must export END_OF_DOCUMENT");
   failed += 1;
 }
 
@@ -228,7 +246,8 @@ const order = [
   "exStandardLayers",
   "exStandardApplicability",
   "exStandardPublicationSequence",
-  "exStandardAuthority"
+  "exStandardAuthority",
+  "exStandardEndOfDocument"
 ];
 let last = -1;
 for (const id of order) {

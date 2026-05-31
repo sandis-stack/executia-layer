@@ -66,28 +66,18 @@ if (Array.isArray(manifest.protected_structure)) {
   }
 }
 
-if (manifest.publication_metadata) {
-  const meta = manifest.publication_metadata;
-  if (meta.mount && !home.includes(meta.mount)) {
-    fail("publication metadata mount missing from homepage");
+if (manifest.end_of_document) {
+  const terminal = manifest.end_of_document;
+  if (!home.includes(terminal.section_label)) {
+    fail("End of Document section label missing");
   }
-  if (meta.footer_class && !envJs.includes(meta.footer_class)) {
-    fail(`publication metadata footer class missing: ${meta.footer_class}`);
+  if (terminal.registry_class && !home.includes(terminal.registry_class)) {
+    fail(`end of document registry drift — missing: ${terminal.registry_class}`);
   }
-  for (const field of meta.fields || []) {
-    if (!envJs.includes(`<h4>${field.label}</h4>`)) {
-      fail(`publication metadata label drift — missing: ${field.label}`);
-    }
-    if (field.label === "Document") {
-      if (!envJs.includes("Execution Governance Standard")) {
-        fail(`publication metadata value drift — missing: ${field.value}`);
-      }
-    } else if (!envJs.includes(field.value)) {
-      fail(`publication metadata value drift — missing: ${field.value}`);
-    }
-  }
-  if (!home.includes("ex-standard-publication-end")) {
-    fail("publication metadata must mount inside publication envelope");
+  for (const field of terminal.fields || []) {
+    if (!home.includes(field.label)) fail(`End of Document label drift — missing: ${field.label}`);
+    if (!home.includes(field.value)) fail(`End of Document value drift — missing: ${field.value}`);
+    if (!standardJs.includes(field.value)) fail(`End of Document JS drift — missing: ${field.value}`);
   }
 }
 
