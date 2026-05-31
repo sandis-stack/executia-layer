@@ -73,8 +73,7 @@
       "@type": "DefinedTerm",
       name: "EXECUTIA",
       alternateName: "Execution Governance Standard",
-      description:
-        "EXECUTIA is execution governance infrastructure — the standard that requires validation, proof, and accountability before execution commits.",
+      description: "Execution Governance Standard",
       termCode: "EXECUTIA-STANDARD-V1"
     };
     const script = global.document.createElement("script");

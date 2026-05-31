@@ -20,8 +20,8 @@ const pages = [
   {
     label: "homepage",
     file: "public/index.html",
-    requireVisibleH1: true,
-    requireSrOnlyH1: false
+    requireVisibleH1: false,
+    requireSrOnlyH1: true
   },
   {
     label: "demonstration",

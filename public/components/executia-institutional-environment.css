@@ -2002,6 +2002,17 @@ body.ex-standard-homepage .ex-standard-publication-document .ex-standard-hero {
   border-bottom: var(--ex-pub-border);
 }
 
+body.ex-standard-homepage .ex-standard-hero .ex-publication-identity-registry {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+body.ex-standard-homepage .ex-standard-hero .ex-publication-identity-registry .ex-standard-authority-item:first-child {
+  border-top: var(--ex-pub-border);
+}
+
 body.ex-standard-homepage .ex-standard-publication-end {
   padding: var(--ex-ds-s16, 16px) 0 0;
   margin: 0;

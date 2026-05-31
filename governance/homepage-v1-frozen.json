@@ -113,10 +113,12 @@
     ]
   },
   "hero": [
+    "Document",
     "The Execution Governance Standard",
-    "EXECUTIA is execution governance infrastructure — the standard that requires validation, proof, and accountability before execution commits.",
-    "Most systems execute first. Governance comes after.",
-    "EXECUTIA prevents this."
+    "Classification",
+    "Execution Governance Standard",
+    "Status",
+    "Published"
   ],
   "standard_definition": [
     "Today",

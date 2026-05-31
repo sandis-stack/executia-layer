@@ -87,7 +87,11 @@ check("homepage", home, [
   "ex-standard-action-row",
   "ex-env-footer-flow",
   "data-ex-env-header",
-  "Publication Navigation"
+  "Publication Navigation",
+  "ex-standard-hero-statement",
+  "ex-standard-headline",
+  "EXECUTIA is execution governance infrastructure",
+  "the standard that requires validation"
 ]);
 
 check("demonstration", demoPage, [
