@@ -1683,7 +1683,7 @@ if (!proofHtml.includes("data-ex-env-proof-intro")) {
 }
 
 const requestPilotHtml = readFileSync(join(__test_dir, "..", "public/request-pilot/index.html"), "utf8");
-if (!requestPilotHtml.includes("Administrative Annex") || !requestPilotHtml.includes("Administrative Request Fields")) {
+if (!requestPilotHtml.includes("Annex Identifier") || !requestPilotHtml.includes("Administrative Request Fields")) {
   throw new Error("Request pilot must present administrative annex publication structure");
 }
 if (requestPilotHtml.includes("<form") || requestPilotHtml.includes("<button")) {

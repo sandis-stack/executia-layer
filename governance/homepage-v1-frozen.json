@@ -30,7 +30,7 @@
     { "id": "exStandardHero", "label": "Hero" },
     { "id": "exStandardStructure", "label": "EXECUTIA Standard" },
     { "id": "exStandardLayers", "label": "Standard Layers" },
-    { "id": "exStandardAuthority", "label": "Standard Authority" },
+    { "id": "exStandardAuthority", "label": "Publication Identity" },
     { "id": "exStandardToday", "label": "Today" },
     { "id": "exStandardWhatChanges", "label": "What Changes" },
     { "id": "exStandardWhyMatters", "label": "Why It Matters" },
@@ -100,10 +100,10 @@
     { "id": "request", "label": "Request Pilot", "href": "/request-pilot/" }
   ],
   "standard_authority": {
-    "section_label": "Standard Authority",
+    "section_label": "Publication Identity",
     "fields": [
-      { "label": "EXECUTIA STANDARD", "value": "The Execution Governance Standard" },
-      { "label": "Version", "value": "EXECUTIA-STANDARD-V1" },
+      { "label": "Document", "value": "The Execution Governance Standard" },
+      { "label": "Standard", "value": "EXECUTIA-STANDARD-V1" },
       { "label": "Status", "value": "Published" },
       {
         "label": "Purpose",

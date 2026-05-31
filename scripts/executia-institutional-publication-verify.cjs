@@ -102,8 +102,8 @@ if (!envJs.includes("resolvePublicationSurface")) {
 }
 
 for (const doc of [
-  "Execution Governance Standard",
-  "Evidence Annex A · Execution Control Map",
+  "The Execution Governance Standard",
+  "Execution Control Map",
   "Pilot Request Publication"
 ]) {
   if (!envJs.includes(doc)) fail(`publication metadata document missing: ${doc}`);

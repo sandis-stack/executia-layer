@@ -35,12 +35,18 @@ const css = read("public/components/executia-institutional-environment.css");
 const envJs = read("public/components/executia-institutional-environment.js");
 
 const PUBLICATION_SEQUENCE = [
-  "<h4>Standard</h4>",
+  "<h4>Document</h4>",
   "<p>The Execution Governance Standard</p>",
-  "<h4>Evidence Annex</h4>",
-  "<p>Annex A · Execution Control Map</p>",
-  "<h4>Administrative Annex</h4>",
-  "<p>Annex B · Pilot Request Publication</p>"
+  "<h4>Standard</h4>",
+  "<p>EXECUTIA-STANDARD-V1</p>",
+  "<h4>Annex Identifier</h4>",
+  "<p>Annex A</p>",
+  "<h4>Document</h4>",
+  "<p>Execution Control Map</p>",
+  "<h4>Annex Identifier</h4>",
+  "<p>Annex B</p>",
+  "<h4>Document</h4>",
+  "<p>Pilot Request Publication</p>"
 ];
 
 const FOOTER_LABELS = ["Standard", "Status", "Published", "Authority", "EXECUTIA CTO", "Document"];
@@ -126,7 +132,7 @@ for (const label of FOOTER_LABELS) {
   if (!envJs.includes(label)) fail(`footer metadata language missing: ${label}`);
 }
 
-if (!envJs.includes("Evidence Annex A · Execution Control Map")) {
+if (!envJs.includes("Execution Control Map")) {
   fail("demonstration footer document label missing from institutional environment");
 }
 

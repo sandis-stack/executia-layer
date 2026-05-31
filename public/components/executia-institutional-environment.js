@@ -277,7 +277,7 @@
       return { document: "Execution Governance Standard" };
     }
     if (pageId === "demonstration" && document.body.classList.contains("ex-institutional-publication")) {
-      return { document: "Evidence Annex A · Execution Control Map" };
+      return { document: "Execution Control Map" };
     }
     if (pageId === "request" && document.body.classList.contains("ex-institutional-publication")) {
       return { document: "Pilot Request Publication" };
