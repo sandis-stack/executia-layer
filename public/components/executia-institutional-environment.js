@@ -251,13 +251,15 @@
       (item) => `<a href="${esc(item.href)}">${esc(item.label)}</a>`
     ).join("");
     const isHomepage = pageId === "homepage";
+    const isStandardPublicationHomepage =
+      isHomepage && document.body.classList.contains("ex-standard-homepage");
     const footerPrimary = isHomepage
       ? "EXECUTIA-STANDARD-V1 · Published · EXECUTIA CTO"
       : AI_CLARITY.FOOTER_TRUST;
     const footerMeta = isHomepage
       ? "The Execution Governance Standard"
       : `${AI_CLARITY.INFRASTRUCTURE} · ${AI_CLARITY.DETERMINISTIC} · ${AI_CLARITY.INTEGRITY} · ${AI_CLARITY.REPLAY} · ${AI_CLARITY.TRUTH} · ${AI_CLARITY.CANONICAL}`;
-    if (isHomepage) {
+    if (isStandardPublicationHomepage) {
       return `
       <footer class="ex-env-footer ex-standard-registry ex-standard-publication-footer" role="contentinfo">
         <div class="ex-standard-authority-item ex-standard-registry-row">

@@ -1667,6 +1667,21 @@ body.ex-standard-homepage #exStandardAuthority .ex-standard-authority-item p {
   color: var(--ex-ds-graphite, #4d6178);
 }
 
+body.ex-standard-homepage #exStandardWhyMatters .ex-standard-authority {
+  border: none;
+  background: transparent;
+}
+
+body.ex-standard-homepage #exStandardWhyMatters .ex-standard-authority-item {
+  grid-template-columns: var(--ex-pub-label-col, 6.5rem) 1fr;
+  padding: var(--ex-pub-row-pad);
+  border-bottom: var(--ex-pub-border);
+}
+
+body.ex-standard-homepage #exStandardWhyMatters .ex-standard-authority-item:last-child {
+  border-bottom: none;
+}
+
 body.ex-standard-homepage .ex-arch-infra-layer:nth-child(1)::before {
   content: "L1";
 }
@@ -2064,6 +2079,19 @@ body.ex-standard-homepage .ex-standard-registry-row--indexed::before {
   font-weight: 500;
   letter-spacing: 0.08em;
   color: var(--ex-ds-muted, #7a8da3);
+}
+
+body.ex-standard-homepage .ex-standard-registry-row--indexed:hover,
+body.ex-standard-homepage .ex-standard-registry-row--indexed:focus {
+  color: var(--ex-ds-graphite, #4d6178);
+  text-decoration: none;
+  background: transparent;
+  outline: none;
+}
+
+body.ex-standard-homepage .ex-standard-publication-footer nav,
+body.ex-standard-homepage .ex-standard-publication-footer .ex-env-footer-flow {
+  display: none !important;
 }
 
 body.ex-standard-homepage #exStandardWhyMatters .ex-standard-authority-item h4 {

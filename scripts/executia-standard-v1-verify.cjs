@@ -79,7 +79,12 @@ check("homepage", home, [
   "Generate EXECUTIA Assessment",
   "/assessment/",
   "executia-execution-demo.js",
-  "exDemoSectorCards"
+  "exDemoSectorCards",
+  "Request Pilot",
+  "See How It Works",
+  "Open Demonstration",
+  "ex-standard-action-row",
+  "ex-env-footer-flow"
 ]);
 
 check("demonstration", demoPage, [
