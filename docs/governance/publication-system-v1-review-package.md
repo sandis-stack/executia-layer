@@ -62,6 +62,19 @@ node scripts/executia-institutional-publication-verify.cjs
 node scripts/executia-standard-v1-verify.cjs
 ```
 
+## Production release
+
+**Status:** `PRODUCTION_RELEASED` · **Deployed:** 2026-05-31  
+**URL:** https://execution.executia.io
+
+| Surface | Path | Status |
+|---------|------|--------|
+| Standard | `/` | 200 |
+| Evidence Annex | `/demonstration/` | 200 |
+| Administrative Annex | `/request-pilot/` | 200 |
+
+**Tag:** `publication-system-v1`
+
 ## Next
 
 Government review. No structural changes permitted.

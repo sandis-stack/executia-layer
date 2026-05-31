@@ -57,9 +57,17 @@ for (const file of manifest.frozen_surfaces) {
   if (!fs.existsSync(path.join(root, file))) fail(`missing frozen surface: ${file}`);
 }
 
+if (manifest.deployment_status !== "PRODUCTION_RELEASED") {
+  fail("publication system deployment status must be PRODUCTION_RELEASED");
+}
+
 for (const phase of manifest.validation_phases) {
   if (phase.id === "government_review") {
     if (phase.status !== "PENDING") fail("government review must be PENDING");
+    continue;
+  }
+  if (phase.id === "production_deployment") {
+    if (phase.status !== "COMPLETE") fail("production deployment must be COMPLETE");
     continue;
   }
   if (phase.status !== "COMPLETE") fail(`validation phase incomplete: ${phase.id}`);

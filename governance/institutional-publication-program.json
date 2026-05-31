@@ -2,6 +2,9 @@
   "authority": "EXECUTIA_INSTITUTIONAL_PUBLICATION_PROGRAM",
   "status": "LOCKED",
   "review_status": "READY_FOR_GOVERNMENT_REVIEW",
+  "deployment_status": "PRODUCTION_RELEASED",
+  "deployment_url": "https://execution.executia.io",
+  "deployed_at": "2026-05-31",
   "freeze_status": "ACTIVE",
   "cto_verdict": "ACCEPTED",
   "program_status": "REVIEW_PHASE",
@@ -54,7 +57,8 @@
     { "order": "05", "id": "accessibility_validation", "status": "COMPLETE" },
     { "order": "06", "id": "final_review_package", "status": "COMPLETE" },
     { "order": "07", "id": "cto_final_visual_review", "status": "COMPLETE" },
-    { "order": "08", "id": "government_review", "status": "PENDING" }
+    { "order": "08", "id": "production_deployment", "status": "COMPLETE" },
+    { "order": "09", "id": "government_review", "status": "PENDING" }
   ],
   "workstreams": [
     {
@@ -105,8 +109,15 @@
       "constraint": "CTO conditional approval — no visual defects found"
     },
     {
-      "id": "government_review",
+      "id": "production_deployment",
       "order": 8,
+      "status": "COMPLETE",
+      "url": "https://execution.executia.io",
+      "constraint": "Homepage, Demonstration, Request Pilot — all 200"
+    },
+    {
+      "id": "government_review",
+      "order": 9,
       "status": "PENDING",
       "constraint": "Government review phase — no structural changes"
     }

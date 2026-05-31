@@ -3,6 +3,10 @@
   "status": "LOCKED",
   "freeze_status": "ACTIVE",
   "review_status": "READY_FOR_GOVERNMENT_REVIEW",
+  "deployment_status": "PRODUCTION_RELEASED",
+  "deployment_url": "https://execution.executia.io",
+  "deployment_id": "dpl_AobaVzf4aoGoUWpZh7j16qu3xHpo",
+  "deployed_at": "2026-05-31",
   "cto_verdict": "ACCEPTED",
   "program_status": "REVIEW_PHASE",
   "structural_phase": "COMPLETE",
@@ -104,6 +108,7 @@
     { "id": "accessibility_validation", "status": "COMPLETE" },
     { "id": "final_review_package", "status": "COMPLETE" },
     { "id": "cto_final_visual_review", "status": "COMPLETE" },
+    { "id": "production_deployment", "status": "COMPLETE" },
     { "id": "government_review", "status": "PENDING" }
   ],
   "verification": [
