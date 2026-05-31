@@ -1,0 +1,1661 @@
+/* EXECUTIA Institutional Demonstration */
+
+body.ex-assessment-demo {
+  margin: 0;
+  background: #f4f6f9;
+  color: #1c3554;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ex-inst-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+/* ── HERO (compact) ── */
+.ex-inst-hero {
+  text-align: center;
+  padding: 20px 0 22px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.ex-inst-hero-kicker {
+  margin: 0 0 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-inst-hero-line {
+  margin: 0 0 4px;
+  font-size: clamp(17px, 3vw, 20px);
+  font-weight: 500;
+  line-height: 1.35;
+  color: #4d6178;
+}
+
+.ex-inst-hero-line--emphasis {
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #1c3554;
+}
+
+.ex-inst-hero-subline {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #7a8da3;
+}
+
+.ex-inst-hero-cta {
+  display: inline-block;
+  padding: 10px 24px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #1c3554;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ex-inst-hero-cta:hover {
+  background: #152a42;
+}
+
+/* ── SECTION LABELS ── */
+.ex-inst-label {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-inst-block {
+  margin-bottom: 28px;
+}
+
+.ex-inst-block[hidden] {
+  display: none !important;
+}
+
+/* ── SELECTION CARDS ── */
+.ex-inst-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.ex-inst-card {
+  min-height: 72px;
+  padding: 16px 14px;
+  border: 1px solid rgba(28, 53, 84, 0.1);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  box-shadow: 0 1px 3px rgba(28, 53, 84, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.ex-inst-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c3554;
+  line-height: 1.2;
+}
+
+.ex-inst-card-hint {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #9aa8b8;
+}
+
+.ex-inst-card:hover {
+  border-color: rgba(28, 53, 84, 0.25);
+  box-shadow: 0 6px 20px rgba(28, 53, 84, 0.08);
+}
+
+.ex-inst-card.is-selected {
+  border-color: #1c3554;
+  background: rgba(28, 53, 84, 0.03);
+  box-shadow: 0 0 0 1px #1c3554;
+}
+
+.ex-inst-card--operation {
+  min-height: 56px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── INSTITUTIONAL ARCHITECTURE (Execution Control Map) ── */
+.ex-inst-control-map-stage {
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ex-inst-control-map-part {
+  margin-bottom: 32px;
+}
+
+.ex-inst-control-map-part:last-child {
+  margin-bottom: 0;
+}
+
+.ex-inst-sublabel {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #7a8da3;
+}
+
+.ex-inst-arch-block {
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ex-inst-current-exec,
+.ex-inst-governance {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ex-exec-chain--institutional {
+  max-width: 320px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.ex-inst-section-statement {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+  color: #1c3554;
+}
+
+.ex-inst-gap-list {
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.ex-inst-gap-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #1c3554;
+}
+
+.ex-inst-architecture-message {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(28, 53, 84, 0.1);
+  text-align: center;
+}
+
+.ex-inst-architecture-message p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1c3554;
+}
+
+.ex-inst-architecture-label {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ── CONTROL GAP STAGE (legacy map container) ── */
+.ex-inst-map-dominant {
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.ex-inst-why-statement {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #4d6178;
+  text-align: center;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ex-why-matters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.ex-why-matters-item h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c3554;
+}
+
+.ex-why-matters-item p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #4d6178;
+}
+
+.ex-exec-stage {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  color: #1c3554;
+  background: #fafbfc;
+  border: 1px solid rgba(28, 53, 84, 0.12);
+  border-radius: 8px;
+}
+
+.ex-proof-grid--compare {
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  min-height: 280px;
+}
+
+.ex-flow-stack {
+  display: flex;
+  flex-direction: column;
+  max-width: 240px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.ex-flow-stage {
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.ex-flow-stage--today {
+  color: #1c3554;
+  background: #fafbfc;
+  border: 1px solid rgba(28, 53, 84, 0.12);
+}
+
+.ex-flow-stage--executia {
+  color: #fff;
+  background: rgba(31, 122, 69, 0.92);
+  border: 1px solid rgba(31, 122, 69, 0.95);
+}
+
+.ex-flow-connector {
+  text-align: center;
+  font-size: 18px;
+  line-height: 1;
+  padding: 6px 0;
+  color: rgba(28, 53, 84, 0.35);
+}
+
+.ex-proof-col--executia .ex-flow-connector {
+  color: rgba(31, 122, 69, 0.55);
+}
+
+.ex-exec-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ex-exec-chain--current {
+  gap: 0;
+}
+
+.ex-exec-connector {
+  text-align: center;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px 0;
+  color: rgba(28, 53, 84, 0.35);
+}
+
+.ex-exec-break {
+  margin: 4px 0;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+  color: #4d6178;
+  background: rgba(28, 53, 84, 0.04);
+  border: 1px solid rgba(28, 53, 84, 0.12);
+  border-radius: 8px;
+}
+
+.ex-exec-break-label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-exec-chain--current .ex-exec-stage {
+  margin-bottom: 0;
+}
+
+.ex-gov-infra {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ex-gov-infra-layers-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 4px;
+  background: rgba(31, 122, 69, 0.06);
+  border: 1px solid rgba(31, 122, 69, 0.22);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ex-gov-infra-layer {
+  padding: 12px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #fff;
+  background: rgba(31, 122, 69, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ex-gov-infra-layer:last-child {
+  border-bottom: none;
+}
+
+.ex-gov-infra-message {
+  margin: 0;
+  padding: 14px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  color: #1c3554;
+  background: rgba(28, 53, 84, 0.04);
+  border: 1px solid rgba(28, 53, 84, 0.1);
+  border-radius: 10px;
+}
+
+.ex-gov-infra-exec {
+  margin-top: 4px;
+}
+
+.ex-proof-center-detail {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ex-proof-center h3 {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #1c3554;
+}
+
+.ex-map-contrast {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(28, 53, 84, 0.12);
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.ex-map-contrast p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1c3554;
+}
+
+.ex-map-contrast-label {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.ex-proof-map--dominant .ex-arch-map-grid {
+  min-height: 360px;
+}
+
+.ex-inst-control-gap-stage .ex-arch-map-grid {
+  min-height: 440px;
+}
+
+/* ── EXECUTIA EFFECT (Section 6) ── */
+.ex-inst-effect-outcomes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ex-inst-effect-outcomes li {
+  margin-bottom: 10px;
+  padding-left: 22px;
+  position: relative;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #1c3554;
+}
+
+.ex-inst-effect-outcomes li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #1f7a45;
+  font-weight: 700;
+}
+.ex-inst-demonstration {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin-bottom: 28px;
+  box-shadow: none;
+}
+
+.ex-inst-map-stage {
+  background: #fff;
+  border: 1px solid rgba(28, 53, 84, 0.1);
+  border-radius: 16px;
+  padding: 28px 24px 32px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(28, 53, 84, 0.1);
+  min-height: 480px;
+}
+
+.ex-inst-demonstration-support {
+  padding: 0 4px;
+}
+
+.ex-inst-support-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.ex-arch-map-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+  min-height: 420px;
+}
+
+.ex-proof-map-heading {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #1c3554;
+}
+
+.ex-proof-operation {
+  margin: 0 0 20px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  color: #1c3554;
+}
+
+.ex-proof-col h3 {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #1c3554;
+}
+
+.ex-proof-flow {
+  display: flex;
+  flex-direction: column;
+}
+
+.ex-proof-node {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  color: #1c3554;
+  background: #fafbfc;
+  border: 1px solid rgba(28, 53, 84, 0.12);
+  border-radius: 8px;
+}
+
+.ex-proof-node--executia {
+  background: #fff;
+  border-color: rgba(31, 122, 69, 0.18);
+  color: #1a5c34;
+}
+
+.ex-proof-break {
+  margin: 4px 0;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.06);
+  border: 1px solid rgba(192, 57, 43, 0.22);
+  border-radius: 8px;
+}
+
+.ex-proof-break-icon {
+  margin-right: 4px;
+}
+
+.ex-proof-connector {
+  text-align: center;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px 0;
+  color: rgba(28, 53, 84, 0.35);
+}
+
+.ex-proof-flow--executia .ex-proof-connector {
+  color: rgba(31, 122, 69, 0.45);
+}
+
+.ex-proof-governance {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ex-gov-layer--gate {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #fff;
+  border-radius: 8px;
+  background: rgba(31, 122, 69, 0.88);
+  border: 1px solid rgba(31, 122, 69, 0.95);
+}
+
+.ex-proof-footnote {
+  margin: 12px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+  color: #4d6178;
+}
+
+.ex-proof-center {
+  display: flex;
+  flex-direction: column;
+}
+
+.ex-proof-center-card {
+  flex: 1;
+}
+
+.ex-proof-center-block h4 {
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.ex-proof-center-line {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  color: #fff;
+}
+
+.ex-executive-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.ex-executive-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.ex-what-changes-grid--three {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.ex-what-changes-col h4 {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-what-changes-col--executia h4 {
+  color: #1a5c34;
+}
+
+.ex-what-changes-col .ex-inst-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #1c3554;
+}
+
+.ex-what-changes-col--executia .ex-inst-list li {
+  color: #1a5c34;
+}
+
+.ex-inst-card-grid--sector-large {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.ex-inst-card--sector-large {
+  min-height: 88px;
+  font-size: 16px;
+}
+
+.ex-inst-request-demo {
+  text-align: left;
+  padding-bottom: 48px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ex-inst-request-heading {
+  margin: 0 0 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #7a8da3;
+}
+
+.ex-inst-request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ex-inst-request-status {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+  color: #1a5c34;
+}
+
+.ex-inst-assessment-intro {
+  max-width: 640px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+
+.ex-inst-assessment-title {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1c3554;
+}
+
+.ex-inst-assessment-lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4d6178;
+}
+
+.ex-inst-assessment-lead a {
+  color: #1c3554;
+  font-weight: 600;
+}
+
+.ex-proof-col-heading {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.ex-proof-center .ex-arch-gap-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.ex-proof-center .ex-arch-gap-list li {
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ex-inst-architecture-message--map {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(28, 53, 84, 0.12);
+}
+
+.ex-executive-impact-card {
+  padding: 20px 18px;
+  background: #fff;
+  border: 1px solid rgba(28, 53, 84, 0.1);
+  border-radius: 12px;
+}
+
+.ex-executive-impact-card h4 {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-executive-impact-card--executia h4 {
+  color: #1a5c34;
+}
+
+.ex-executive-impact-card .ex-inst-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.ex-executive-impact-card .ex-inst-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #1c3554;
+}
+
+.ex-executive-impact-card--executia .ex-inst-list li {
+  color: #1a5c34;
+}
+
+.ex-vm-col h3 {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #1c3554;
+}
+
+.ex-vm-sub {
+  margin: -8px 0 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #7a8da3;
+}
+
+.ex-vm-msg {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+  color: #4d6178;
+}
+
+.ex-existing-exec {
+  margin-bottom: 20px;
+}
+
+.ex-exec-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ex-exec-block {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  color: #1c3554;
+  background: #fafbfc;
+  border: 1px solid rgba(28, 53, 84, 0.12);
+  border-radius: 8px;
+}
+
+.ex-exec-block--exec-first {
+  background: #fff;
+}
+
+.ex-exec-block--control-end {
+  border-color: rgba(192, 57, 43, 0.28);
+  background: rgba(192, 57, 43, 0.04);
+}
+
+.ex-exec-block--underlay {
+  background: rgba(250, 251, 252, 0.92);
+}
+
+.ex-exec-blocks--today .ex-exec-block:nth-child(4) {
+  margin-bottom: 6px;
+}
+
+.ex-overlay-stack {
+  position: relative;
+  min-height: 220px;
+  margin-bottom: 12px;
+}
+
+.ex-exec-blocks--underlay {
+  position: relative;
+  z-index: 1;
+}
+
+.ex-gov-layers {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 6px;
+  padding: 4px 0;
+  pointer-events: none;
+}
+
+.ex-gov-layer {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #fff;
+  border-radius: 8px;
+  background: rgba(31, 122, 69, 0.88);
+  border: 1px solid rgba(31, 122, 69, 0.95);
+  box-shadow: 0 2px 8px rgba(31, 122, 69, 0.18);
+}
+
+.ex-gov-layer:nth-child(1) {
+  background: rgba(26, 107, 60, 0.9);
+}
+
+.ex-gov-layer:nth-child(2) {
+  background: rgba(31, 122, 69, 0.9);
+}
+
+.ex-gov-layer:nth-child(3) {
+  background: rgba(34, 139, 74, 0.9);
+}
+
+.ex-gov-layer:nth-child(4) {
+  background: rgba(20, 90, 50, 0.92);
+}
+
+.ex-vm-outcomes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ex-vm-outcomes li {
+  margin-bottom: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #4d6178;
+}
+
+.ex-vm-outcomes--neg .ex-vm-mark {
+  color: #c0392b;
+}
+
+.ex-vm-outcomes--pos .ex-vm-mark {
+  color: #1f7a45;
+}
+
+.ex-vm-mark {
+  font-weight: 700;
+}
+
+.ex-vm-coverage-card {
+  flex: 1;
+}
+
+.ex-vm-line {
+  margin: 0 0 4px;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.ex-vm-zone-label {
+  margin: 0 0 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #7a8da3;
+}
+
+/* Left — current execution flow (operation only) */
+.ex-arch-exec-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px 0;
+}
+
+.ex-arch-exec-node {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  color: #1c3554;
+  background: #fafbfc;
+  border: 1px solid rgba(28, 53, 84, 0.12);
+  border-radius: 8px;
+}
+
+.ex-arch-connector {
+  text-align: center;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px 0;
+  color: rgba(28, 53, 84, 0.35);
+}
+
+/* Center — control gap (dominant) */
+.ex-arch-col--center {
+  display: flex;
+  flex-direction: column;
+}
+
+.ex-arch-gap-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 24px 22px;
+  background: #1c3554;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(28, 53, 84, 0.22);
+}
+
+.ex-arch-gap-block h4 {
+  margin: 0 0 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.ex-arch-gap-pct {
+  margin: 0 0 4px;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.ex-arch-gap-pct--current {
+  color: #9aa8b8;
+}
+
+.ex-arch-gap-pct--executia {
+  color: #6dd99a;
+}
+
+.ex-arch-gap-tagline {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.ex-arch-gap-list {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.ex-arch-gap-list--executia {
+  color: rgba(109, 217, 154, 0.92);
+}
+
+.ex-arch-gap-list li {
+  margin-bottom: 4px;
+}
+
+.ex-arch-gap-divider {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
+  padding: 14px 0;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Right — control architecture layers */
+.ex-arch-control-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ex-arch-infra-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid rgba(31, 122, 69, 0.28);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(31, 122, 69, 0.04);
+}
+
+.ex-arch-infra-layer {
+  padding: 14px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(180deg, #228b4a 0%, #1a6b3c 100%);
+}
+
+.ex-arch-infra-layer:nth-child(1) {
+  background: linear-gradient(180deg, #1a6b3c 0%, #145a32 100%);
+}
+
+.ex-arch-infra-layer:nth-child(3) {
+  background: linear-gradient(180deg, #1f7a45 0%, #1a6b3c 100%);
+}
+
+.ex-arch-infra-layer:nth-child(5) {
+  background: linear-gradient(180deg, #228b4a 0%, #1f7a45 100%);
+}
+
+.ex-arch-infra-layer:nth-child(7) {
+  background: linear-gradient(180deg, #145a32 0%, #0f4528 100%);
+}
+
+.ex-arch-infra-rule {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.ex-arch-pass-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #1f7a45;
+}
+
+.ex-arch-pass-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.ex-arch-pass-flow .ex-arch-connector {
+  color: rgba(31, 122, 69, 0.45);
+}
+
+.ex-arch-pass-node {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #1a5c34;
+  background: rgba(31, 122, 69, 0.08);
+  border: 1px solid rgba(31, 122, 69, 0.2);
+  border-radius: 6px;
+}
+
+.ex-arch-pass-footnote {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+  color: #4d6178;
+}
+
+.ex-map-context {
+  margin: 0 0 16px;
+  font-size: 12px;
+  text-align: center;
+  color: #7a8da3;
+}
+
+/* Institutional statement */
+.ex-inst-statement {
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: center;
+  color: #1c3554;
+  background: rgba(28, 53, 84, 0.03);
+  border-radius: 10px;
+  border-left: 3px solid #1c3554;
+}
+
+/* Lists */
+.ex-inst-list-block {
+  margin-bottom: 24px;
+}
+
+.ex-inst-list-block h3 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-inst-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.ex-inst-list li {
+  margin-bottom: 8px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4d6178;
+}
+
+/* Org panel (after demo) */
+.ex-inst-org {
+  background: #fff;
+  border: 1px solid rgba(28, 53, 84, 0.08);
+  border-radius: 14px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+}
+
+.ex-inst-org h2 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1c3554;
+}
+
+.ex-inst-field {
+  margin-bottom: 16px;
+}
+
+.ex-inst-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-inst-field input {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 15px;
+  border: 1px solid rgba(28, 53, 84, 0.14);
+  border-radius: 8px;
+  font-family: inherit;
+  color: #1c3554;
+}
+
+.ex-inst-field input[readonly] {
+  background: rgba(28, 53, 84, 0.04);
+  color: #4d6178;
+}
+
+.ex-inst-field textarea {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 15px;
+  border: 1px solid rgba(28, 53, 84, 0.14);
+  border-radius: 8px;
+  font-family: inherit;
+  color: #1c3554;
+  resize: vertical;
+}
+
+.ex-org-confirmed-badge {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #1f7a45;
+  font-weight: 500;
+}
+
+/* Generate + Executive */
+.ex-inst-generate-btn {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #1c3554;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ex-inst-generate-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ex-inst-generate-btn[hidden] {
+  display: none !important;
+}
+
+.ex-inst-generating {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #4d6178;
+}
+
+.ex-inst-generating[hidden] {
+  display: none !important;
+}
+
+.ex-inst-executive {
+  background: #fff;
+  border: 1px solid rgba(28, 53, 84, 0.08);
+  border-radius: 14px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+}
+
+.ex-inst-executive h2 {
+  margin: 0 0 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-inst-exec-block {
+  margin-bottom: 22px;
+}
+
+.ex-inst-exec-block:last-child {
+  margin-bottom: 0;
+}
+
+.ex-inst-exec-block h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-inst-exec-block p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #4d6178;
+}
+
+.ex-inst-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.ex-inst-export-btn,
+.ex-inst-pilot-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ex-inst-export-btn {
+  color: #fff;
+  background: #1c3554;
+  border: none;
+}
+
+.ex-inst-pilot-btn {
+  color: #1c3554;
+  background: #fff;
+  border: 1px solid rgba(28, 53, 84, 0.18);
+}
+
+.ex-inst-export-btn[hidden],
+.ex-inst-pilot-btn[hidden] {
+  display: none !important;
+}
+
+/* Autocomplete */
+.ex-inst-shell .ex-intake-autocomplete {
+  position: relative;
+}
+
+.ex-inst-shell .ex-intake-autocomplete-list {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid rgba(28, 53, 84, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(28, 53, 84, 0.12);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.ex-inst-shell .ex-intake-autocomplete-list li {
+  padding: 9px 13px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ex-inst-shell .ex-intake-autocomplete-list li:hover,
+.ex-inst-shell .ex-intake-autocomplete-list li[aria-selected="true"] {
+  background: rgba(28, 53, 84, 0.06);
+}
+
+@media (max-width: 820px) {
+  .ex-arch-map-grid,
+  .ex-proof-grid--compare {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    min-height: 0;
+  }
+
+  .ex-why-matters {
+    grid-template-columns: 1fr;
+  }
+
+  .ex-proof-center {
+    order: 1;
+  }
+
+  .ex-proof-col--execution {
+    order: 2;
+  }
+
+  .ex-proof-col--governance {
+    order: 3;
+  }
+
+  .ex-what-changes-grid--three {
+    grid-template-columns: 1fr;
+  }
+
+  .ex-inst-card-grid--sector-large {
+    grid-template-columns: 1fr;
+  }
+
+  .ex-inst-support-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .ex-inst-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ex-inst-hero {
+    padding: 16px 0 18px;
+  }
+
+  .ex-inst-map-stage {
+    padding: 20px 14px 24px;
+    min-height: 0;
+  }
+}
+
+/* Homepage — pilot projects (convince surface only) */
+.ex-home-pilot-lead {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #4d6178;
+}
+
+.ex-home-pilot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.ex-home-pilot-card {
+  padding: 18px 16px;
+  background: #fff;
+  border: 1px solid rgba(28, 53, 84, 0.1);
+  border-radius: 12px;
+}
+
+.ex-home-pilot-card h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c3554;
+}
+
+.ex-home-pilot-card p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #4d6178;
+}
+
+.ex-home-pilot-org {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a8da3;
+}
+
+.ex-home-pilot-risk {
+  margin-bottom: 0;
+  font-size: 12px;
+  color: #1a5c34;
+}
+
+.ex-home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.ex-inst-hero-cta--secondary {
+  color: #1c3554;
+  background: #fff;
+  border: 1px solid rgba(28, 53, 84, 0.18);
+}
+
+.ex-inst-hero-cta--secondary:hover {
+  background: #fafbfc;
+}
+
+a.ex-inst-hero-cta--secondary {
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .ex-home-pilot-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* EXECUTIA Standard v1 — request-pilot shared primitives (homepage styles in institutional-environment.css) */
+.ex-standard-shell {
+  max-width: 720px;
+}
+
+.ex-standard-hero {
+  text-align: center;
+  padding: var(--ex-ds-s24, 24px) 0 var(--ex-ds-s40, 40px);
+}
+
+.ex-standard-brand {
+  margin: 0 0 var(--ex-ds-s8, 8px);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ex-ds-muted, #7a8da3);
+}
+
+.ex-standard-headline {
+  margin: 0 0 var(--ex-ds-s24, 24px);
+  font-size: clamp(36px, 5.5vw, 44px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-standard-hero-statement p {
+  margin: 0 0 var(--ex-ds-s16, 16px);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ex-ds-graphite, #4d6178);
+}
+
+.ex-standard-hero-emphasis {
+  margin-top: var(--ex-ds-s24, 24px);
+  font-weight: 600;
+  color: var(--ex-ds-blue, #1c3554);
+}
+
+.ex-standard-block {
+  margin-bottom: 0;
+}
+
+.ex-standard-model {
+  max-width: none;
+  margin: 0;
+}
+
+.ex-standard-footnote {
+  margin: var(--ex-ds-s16, 16px) 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: left;
+  color: var(--ex-ds-graphite, #4d6178);
+}
+
+.ex-standard-exec-node {
+  text-align: left;
+}
+
+.ex-standard-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ex-ds-s16, 16px);
+  justify-content: flex-start;
+  padding: var(--ex-ds-s40, 40px) 0 var(--ex-ds-s16, 16px);
+}

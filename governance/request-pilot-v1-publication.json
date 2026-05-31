@@ -31,29 +31,29 @@
     { "id": "exPilotHeroSection", "label": "Document" },
     { "id": "exPilotScopeSection", "label": "Administrative Scope" },
     { "id": "exPilotOutcomeSection", "label": "Administrative Outcome" },
-    { "id": "exPilotRequestSection", "label": "Administrative Request Fields" },
+    { "id": "exPilotRequestSection", "label": "Administrative Review Records" },
     { "id": "exPilotPublicationSequence", "label": "Publication Sequence" },
     { "id": "exPilotPublicationIdentity", "label": "Publication Identity" },
     { "id": "exPilotDocumentState", "label": "Document State" }
   ],
   "administrative_scope": [
-    "Process selection",
-    "Governance audit",
-    "Gap identification",
-    "Pilot implementation"
+    { "label": "Process Selection", "value": "Institutional Pilot Evaluation" },
+    { "label": "Governance Audit", "value": "Execution Governance Review" },
+    { "label": "Gap Identification", "value": "Governance Gap Assessment" },
+    { "label": "Pilot Implementation", "value": "Implementation Assessment" }
   ],
   "administrative_outcome": [
-    "Reduced execution risk",
-    "Execution governance visibility",
-    "Pilot case study"
+    { "label": "Reduced Execution Risk", "value": "Assessment Outcome" },
+    { "label": "Execution Governance Visibility", "value": "Governance Outcome" },
+    { "label": "Pilot Case Study", "value": "Review Outcome" }
   ],
-  "administrative_fields": [
-    { "label": "Name", "value": "Contact field" },
-    { "label": "Organization", "value": "Institution field" },
-    { "label": "Position", "value": "Role field" },
-    { "label": "Email", "value": "Contact channel" },
-    { "label": "Process To Evaluate", "value": "Subject field" },
-    { "label": "Message", "value": "Administrative note field" }
+  "administrative_review_records": [
+    { "label": "Institutional Contact", "value": "Contact Review Record" },
+    { "label": "Institution", "value": "Institution Review Record" },
+    { "label": "Authority Role", "value": "Role Review Record" },
+    { "label": "Official Channel", "value": "Channel Review Record" },
+    { "label": "Process Evaluation", "value": "Evaluation Review Record" },
+    { "label": "Review Documentation", "value": "Documentation Record" }
   ],
   "review_allowed": [
     "typo_corrections",

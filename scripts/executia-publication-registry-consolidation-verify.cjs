@@ -43,18 +43,19 @@ const identity = extractSection(home, "exStandardAuthority");
 if (!identity) fail("homepage missing exStandardAuthority publication identity section");
 
 for (const forbidden of ["Purpose", "Defined for", "Defined For", "Document State"]) {
-  if (identity.includes(`<h4>${forbidden}</h4>`)) {
+  if (identity.includes(`<span class="ex-publication-registry-label">${forbidden}</span>`)) {
     fail(`publication identity must not contain: ${forbidden}`);
   }
 }
 
-const documentLabelCount = countMatches(home, /<h4>Document<\/h4>/g);
+const documentLabelCount = countMatches(home, /<span class="ex-publication-registry-label">Document<\/span>/g);
 if (documentLabelCount !== 1) {
   fail(`Document metadata must appear exactly once on homepage (found ${documentLabelCount})`);
 }
 
 const REQUIRED_IDENTITY = [
   { label: "Document Status", value: "Published" },
+  { label: "Publication Date", value: "2026-05-31" },
   { label: "Revision", value: "V1" },
   { label: "Authority", value: "EXECUTIA CTO" },
   { label: "Release", value: "EXECUTIA-STANDARD-V1" }
@@ -62,14 +63,14 @@ const REQUIRED_IDENTITY = [
 
 for (const item of REQUIRED_IDENTITY) {
   const pattern = new RegExp(
-    `<h4>${item.label}</h4>\\s*<p>${item.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`
+    `<span class="ex-publication-registry-label">${item.label}</span>\\s*<p>${item.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`
   );
   if (!pattern.test(identity)) fail(`publication identity missing registry pair: ${item.label} → ${item.value}`);
 }
 
 const terminal = extractSection(home, "exStandardDocumentState");
 if (!terminal) fail("homepage missing exStandardDocumentState terminal section");
-if (!/<h4>Document State<\/h4>\s*<p>FINAL<\/p>/.test(terminal)) {
+if (!/<span class="ex-publication-registry-label">Document State<\/span>\s*<p>FINAL<\/p>/.test(terminal)) {
   fail("document state missing registry pair: Document State → FINAL");
 }
 

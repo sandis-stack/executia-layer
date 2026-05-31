@@ -187,7 +187,7 @@ check("request-pilot", pilot, [
   "Administrative Annex",
   "Administrative Scope",
   "Administrative Outcome",
-  "Administrative Request Fields",
+  "Administrative Review Records",
   "Publication Sequence",
   "Publication Identity",
   "ex-publication-document-open",

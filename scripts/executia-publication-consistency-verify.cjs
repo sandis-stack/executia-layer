@@ -55,7 +55,8 @@ const PUBLICATION_IDENTITY = extractRegistry(home, "ex-publication-identity-regi
 
 const PUB_TOKENS = [
   "--ex-pub-body: 13px",
-  "--ex-pub-label: 7px",
+  "--ex-pub-label: 8px",
+  "--ex-pub-label-color: #576674",
   "--ex-pub-line: 1.31",
   "--ex-pub-border:",
   "--ex-pub-row-pad: 4px 11px",

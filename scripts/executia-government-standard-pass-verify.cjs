@@ -9,6 +9,7 @@ const fs = require("fs");
 const root = path.join(__dirname, "..");
 const home = fs.readFileSync(path.join(root, "public/index.html"), "utf8");
 const css = fs.readFileSync(path.join(root, "public/components/executia-institutional-environment.css"), "utf8");
+const REG_LABEL = '<span class="ex-publication-registry-label">';
 
 let failed = 0;
 
@@ -35,9 +36,9 @@ const FORBIDDEN = [
   "content: \"L2\"",
   "content: \"L3\"",
   "content: \"L4\"",
-  "<h4>Government</h4>",
+  '<span class="ex-publication-registry-label">Government</span>',
   "<p>Government</p>",
-  "<h4>Investors</h4>",
+  '<span class="ex-publication-registry-label">Investors</span>',
   "<p>Investors</p>",
   "exStandardEndOfDocument",
   "End of Document",
@@ -50,14 +51,19 @@ for (const phrase of FORBIDDEN) {
 }
 
 if (css.includes('content: "EXECUTIA™"')) fail("publication CSS must not render EXECUTIA trademark mark");
-if (!css.includes('content: "EXECUTIA"')) fail("publication brand must render EXECUTIA without trademark mark");
+if (css.includes("ex-publication-document-open::before") && !css.includes("ex-publication-document-open::before {\n  content: none")) {
+  const openBefore = css.match(/ex-publication-document-open::before[\s\S]*?\}/g) || [];
+  for (const block of openBefore) {
+    if (block.includes('content: "EXECUTIA"')) fail("publication document open must not render EXECUTIA branding block");
+  }
+}
 
 if (!home.includes("Governance Precedes Execution")) {
   fail("homepage missing standard principle: Governance Precedes Execution");
 }
 
-if (!home.includes("<h4>Classification</h4>\n            <p>Governance Standard</p>") &&
-    !/<h4>Classification<\/h4>\s*<p>Governance Standard<\/p>/.test(home)) {
+if (!home.includes(`${REG_LABEL}Classification</span>`) &&
+    !/<span class="ex-publication-registry-label">Classification<\/span>\s*<p>Governance Standard<\/p>/.test(home)) {
   fail("homepage missing classification: Governance Standard");
 }
 
@@ -70,36 +76,37 @@ for (const row of [
   { index: "04", label: "Commitment" },
   { index: "05", label: "Execution" }
 ]) {
-  const pattern = new RegExp(`<h4>${row.index}</h4>\\s*<p>${row.label}</p>`);
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.index}</span>\\s*<p>${row.label}</p>`);
   if (!pattern.test(doctrine)) fail(`execution order missing registry row: ${row.index} ${row.label}`);
 }
 
 const layers = extractSection(home, "exStandardLayers");
 for (const layer of ["Validation Layer", "Control Layer", "Proof Layer", "Committed Layer"]) {
-  const pattern = new RegExp(`<h4>${layer}</h4>\\s*<p>${layer}</p>`);
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${layer}</span>\\s*<p>${layer}</p>`);
   if (!pattern.test(layers)) fail(`standard layers missing registry row: ${layer}`);
 }
 if (layers.includes("ex-arch-infra-stack")) fail("standard layers must not use engineering stack notation");
 
 const applicability = extractSection(home, "exStandardApplicability");
 for (const item of ["Public Administration", "Enterprise", "Regulated Capital", "Governed Systems"]) {
-  const pattern = new RegExp(`<h4>${item}</h4>\\s*<p>${item}</p>`);
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${item}</span>\\s*<p>${item}</p>`);
   if (!pattern.test(applicability)) fail(`standard applicability missing registry row: ${item}`);
 }
 
 const identity = extractSection(home, "exStandardAuthority");
 for (const row of [
   { label: "Document Status", value: "Published" },
+  { label: "Publication Date", value: "2026-05-31" },
   { label: "Revision", value: "V1" },
   { label: "Authority", value: "EXECUTIA CTO" },
   { label: "Release", value: "EXECUTIA-STANDARD-V1" }
 ]) {
-  const pattern = new RegExp(`<h4>${row.label}</h4>\\s*<p>${row.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`);
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.label}</span>\\s*<p>${row.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`);
   if (!pattern.test(identity)) fail(`publication identity missing registry row: ${row.label} → ${row.value}`);
 }
 
 const terminal = extractSection(home, "exStandardDocumentState");
-if (!/<h4>Document State<\/h4>\s*<p>FINAL<\/p>/.test(terminal)) {
+if (!/<span class="ex-publication-registry-label">Document State<\/span>\s*<p>FINAL<\/p>/.test(terminal)) {
   fail("document state missing registry row: Document State → FINAL");
 }
 

@@ -63,8 +63,8 @@ if (!pilot.includes("Document")) fail("request pilot must label Document");
 if (!pilot.includes("Administrative Annex")) fail("request pilot must label Administrative Annex classification");
 if (!pilot.includes("Administrative Scope")) fail("request pilot must label Administrative Scope");
 if (!pilot.includes("Administrative Outcome")) fail("request pilot must label Administrative Outcome");
-if (!pilot.includes("Administrative Request Fields")) {
-  fail("request pilot must label Administrative Request Fields");
+if (!pilot.includes("Administrative Review Records")) {
+  fail("request pilot must label Administrative Review Records");
 }
 if (!pilot.includes("Publication Sequence")) fail("request pilot must include publication sequence metadata");
 if (pilot.includes("Publication Navigation")) {
@@ -84,15 +84,18 @@ if (pilotJs.includes("<button") || pilotJs.includes("<form") || pilotJs.includes
 }
 
 for (const item of manifest.administrative_scope) {
-  if (!pilotJs.includes(item)) fail(`administrative scope missing in UX: ${item}`);
+  if (!pilotJs.includes(item.label)) fail(`administrative scope missing in UX: ${item.label}`);
+  if (!pilotJs.includes(item.value)) fail(`administrative scope record missing in UX: ${item.value}`);
 }
 
 for (const item of manifest.administrative_outcome) {
-  if (!pilotJs.includes(item)) fail(`administrative outcome missing in UX: ${item}`);
+  if (!pilotJs.includes(item.label)) fail(`administrative outcome missing in UX: ${item.label}`);
+  if (!pilotJs.includes(item.value)) fail(`administrative outcome record missing in UX: ${item.value}`);
 }
 
-for (const field of manifest.administrative_fields) {
-  if (!pilotJs.includes(field.label)) fail(`administrative field missing in UX: ${field.label}`);
+for (const field of manifest.administrative_review_records) {
+  if (!pilotJs.includes(field.label)) fail(`administrative review record missing in UX: ${field.label}`);
+  if (!pilotJs.includes(field.value)) fail(`administrative review value missing in UX: ${field.value}`);
 }
 
 let last = -1;

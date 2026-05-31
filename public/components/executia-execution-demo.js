@@ -145,7 +145,7 @@
 
   function renderEvidenceRegistryRow(label, value) {
     return `<div class="ex-standard-authority-item ex-standard-registry-row ex-publication-registry-row">
-      <h4>${escapeHtml(label)}</h4>
+      <span class="ex-publication-registry-label">${escapeHtml(label)}</span>
       <p>${escapeHtml(value)}</p>
     </div>`;
   }

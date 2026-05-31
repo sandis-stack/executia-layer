@@ -52,6 +52,7 @@ const IDENTITY_PAGES = [
 
 const REQUIRED_IDENTITY = [
   { label: "Document Status", value: "Published", pages: IDENTITY_PAGES.map((p) => p.rel) },
+  { label: "Publication Date", value: "2026-05-31", pages: IDENTITY_PAGES.map((p) => p.rel) },
   { label: "Revision", value: "V1", pages: IDENTITY_PAGES.map((p) => p.rel) },
   { label: "Release", value: "EXECUTIA-STANDARD-V1", pages: IDENTITY_PAGES.map((p) => p.rel) },
   { label: "Document State", value: "FINAL", pages: IDENTITY_PAGES.map((p) => p.rel) },
@@ -77,7 +78,7 @@ const FORBIDDEN_MARKETING = [
 
 function hasRegistryPair(html, label, value) {
   const pattern = new RegExp(
-    `<h4>${label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</h4>\\s*<p>${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`
+    `<span class="ex-publication-registry-label">${label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>\\s*<p>${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`
   );
   return pattern.test(html);
 }

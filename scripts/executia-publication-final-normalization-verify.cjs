@@ -64,7 +64,7 @@ if (!home.includes("Publication Sequence")) fail("homepage missing Publication S
 
 const APPLICABILITY = ["Public Administration", "Enterprise", "Regulated Capital", "Governed Systems"];
 for (const item of APPLICABILITY) {
-  const pattern = new RegExp(`<h4>${item}</h4>\\s*<p>${item}</p>`);
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${item}</span>\\s*<p>${item}</p>`);
   if (!pattern.test(applicability)) fail(`standard applicability missing registry row: ${item}`);
 }
 
@@ -74,7 +74,7 @@ const SEQUENCE = [
   { index: "03", label: "Administrative Annex" }
 ];
 for (const row of SEQUENCE) {
-  const pattern = new RegExp(`<h4>${row.index}</h4>\\s*<p>${row.label}</p>`);
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.index}</span>\\s*<p>${row.label}</p>`);
   if (!pattern.test(sequence)) fail(`publication sequence missing registry row: ${row.index} ${row.label}`);
 }
 

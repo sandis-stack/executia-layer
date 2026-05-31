@@ -42,7 +42,7 @@ for (const forbidden of [
 }
 
 if (!doctrine.includes("Standard Principle")) fail("standard doctrine missing Standard Principle section label");
-if (!/<h4>Principle<\/h4>\s*<p>Governance Precedes Execution<\/p>/.test(doctrine)) {
+if (!/<span class="ex-publication-registry-label">Principle<\/span>\s*<p>Governance Precedes Execution<\/p>/.test(doctrine)) {
   fail("standard doctrine missing registry pair: Principle → Governance Precedes Execution");
 }
 
@@ -55,7 +55,7 @@ for (const row of [
   { index: "04", label: "Commitment" },
   { index: "05", label: "Execution" }
 ]) {
-  const pattern = new RegExp(`<h4>${row.index}</h4>\\s*<p>${row.label}</p>`);
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.index}</span>\\s*<p>${row.label}</p>`);
   if (!pattern.test(doctrine)) fail(`execution order missing registry row: ${row.index} ${row.label}`);
 }
 

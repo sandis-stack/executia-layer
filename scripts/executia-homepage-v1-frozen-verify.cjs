@@ -89,7 +89,7 @@ if (manifest.publication_sequence) {
     fail(`publication sequence registry drift — missing: ${sequence.registry_class}`);
   }
   for (const row of sequence.rows || []) {
-    if (!home.includes(`<h4>${row.index}</h4>`)) fail(`publication sequence index drift — missing: ${row.index}`);
+    if (!home.includes(`<span class="ex-publication-registry-label">${row.index}</span>`)) fail(`publication sequence index drift — missing: ${row.index}`);
     if (!home.includes(row.label)) fail(`publication sequence label drift — missing: ${row.label}`);
     if (!standardJs.includes(row.label)) fail(`publication sequence JS drift — missing: ${row.label}`);
   }

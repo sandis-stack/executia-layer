@@ -33,10 +33,10 @@ function checkPublicationSurface(label, html, options) {
     fail(`[${label}] missing publication body class`);
   }
   if (options?.bodyClasses?.includes("ex-standard-homepage")) {
-    if (!html.includes('id="exStandardDocumentState"') || !html.includes("<h4>Document State</h4>")) {
+    if (!html.includes('id="exStandardDocumentState"') || !html.includes('<span class="ex-publication-registry-label">Document State</span>')) {
       fail(`[${label}] document must terminate with Document State FINAL`);
     }
-  } else if (!html.includes("ex-standard-block--terminal") || !html.includes("<h4>Document State</h4>")) {
+  } else if (!html.includes("ex-standard-block--terminal") || !html.includes('<span class="ex-publication-registry-label">Document State</span>')) {
     fail(`[${label}] document must terminate with Document State FINAL`);
   }
   if (html.includes("ex-inst-hero-cta")) fail(`[${label}] exceeds homepage authority — hero CTA present`);

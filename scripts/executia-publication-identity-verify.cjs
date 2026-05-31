@@ -77,7 +77,7 @@ for (const rel of PUBLICATION_PAGES) {
 }
 
 function hasRegistryPair(html, label, value) {
-  const pattern = new RegExp(`<h4>${label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</h4>\\s*<p>${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`);
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>\\s*<p>${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`);
   return pattern.test(html);
 }
 

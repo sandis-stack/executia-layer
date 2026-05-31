@@ -40,7 +40,7 @@ const REQUIRED_DOCUMENT = [
 
 for (const item of REQUIRED_DOCUMENT) {
   const pattern = new RegExp(
-    `<h4>${item.label}</h4>\\s*<p>${item.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`
+    `<span class="ex-publication-registry-label">${item.label}</span>\\s*<p>${item.value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</p>`
   );
   if (!pattern.test(documentOpen)) fail(`homepage document missing registry pair: ${item.label} → ${item.value}`);
 }

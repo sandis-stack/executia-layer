@@ -26,7 +26,7 @@
   function renderEvidenceRecord(container, label, value) {
     const row = global.document.createElement("div");
     row.className = "ex-standard-authority-item ex-standard-registry-row ex-publication-registry-row ex-demo-evidence-record";
-    row.innerHTML = `<h4>${escapeHtml(label)}</h4><p>${escapeHtml(value)}</p>`;
+    row.innerHTML = `<span class="ex-publication-registry-label">${escapeHtml(label)}</span><p>${escapeHtml(value)}</p>`;
     container.appendChild(row);
   }
 

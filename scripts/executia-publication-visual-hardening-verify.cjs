@@ -47,18 +47,20 @@ for (const forbidden of [
 
 if (home.includes("ex-standard-hero")) fail("visual hardening must not use hero styling class");
 
+const REG_LABEL = '<span class="ex-publication-registry-label">';
+
 if (!home.includes("EXECUTIA Governance Standard")) fail("homepage missing document title EXECUTIA Governance Standard");
-if (!/<h4>Document<\/h4>\s*<p>EXECUTIA Governance Standard<\/p>/.test(home)) {
+if (!new RegExp(`${REG_LABEL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}Document</span>\\s*<p>EXECUTIA Governance Standard</p>`).test(home)) {
   fail("document field must be EXECUTIA Governance Standard");
 }
 
 const identity = extractSection(home, "exStandardAuthority");
-if (identity.includes("<h4>Document State</h4>")) {
+if (identity.includes(`${REG_LABEL}Document State</span>`)) {
   fail("Document State must not appear inside Publication Identity");
 }
 
 const terminal = extractSection(home, "exStandardDocumentState");
-if (!/<h4>Document State<\/h4>\s*<p>FINAL<\/p>/.test(terminal)) {
+if (!new RegExp(`${REG_LABEL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}Document State</span>\\s*<p>FINAL</p>`).test(terminal)) {
   fail("terminal section missing registry pair: Document State → FINAL");
 }
 

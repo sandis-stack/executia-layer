@@ -1199,9 +1199,9 @@ body.ex-standard-homepage {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   --ex-pub-body: 13px;
-  --ex-pub-label: 7px;
+  --ex-pub-label: 8px;
   --ex-pub-label-weight: 400;
-  --ex-pub-label-color: rgba(122, 141, 163, 0.64);
+  --ex-pub-label-color: #576674;
   --ex-pub-value-color: #1a2d42;
   --ex-pub-line: 1.31;
   --ex-pub-border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
@@ -1488,7 +1488,8 @@ body.ex-standard-homepage .ex-standard-authority-item p {
   color: var(--ex-pub-value-color, #1a2d42);
 }
 
-body.ex-standard-homepage .ex-inst-label {
+body.ex-standard-homepage .ex-inst-label,
+body.ex-standard-homepage h2.ex-inst-label {
   margin: 0 0 6px;
   font-size: var(--ex-pub-label, 7px);
   font-weight: var(--ex-pub-label-weight, 400);
@@ -2539,9 +2540,9 @@ body.ex-request-pilot-page.ex-institutional-publication {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   --ex-pub-body: 13px;
-  --ex-pub-label: 7px;
+  --ex-pub-label: 8px;
   --ex-pub-label-weight: 400;
-  --ex-pub-label-color: rgba(122, 141, 163, 0.64);
+  --ex-pub-label-color: #576674;
   --ex-pub-value-color: #1a2d42;
   --ex-pub-line: 1.31;
   --ex-pub-border: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
@@ -2596,7 +2597,9 @@ body.ex-request-pilot-page.ex-institutional-publication .ex-standard-publication
 }
 
 body.ex-demonstration-page.ex-institutional-publication .ex-inst-label,
-body.ex-request-pilot-page.ex-institutional-publication .ex-inst-label {
+body.ex-demonstration-page.ex-institutional-publication h2.ex-inst-label,
+body.ex-request-pilot-page.ex-institutional-publication .ex-inst-label,
+body.ex-request-pilot-page.ex-institutional-publication h2.ex-inst-label {
   margin: 0 0 6px;
   font-size: var(--ex-pub-label, 7px);
   font-weight: var(--ex-pub-label-weight, 400);
@@ -2797,6 +2800,30 @@ body.ex-request-pilot-page.ex-institutional-publication nav.ex-env-flow {
 
 body.ex-demonstration-page.ex-institutional-publication .ex-demo-registry-row {
   display: none !important;
+}
+
+/* Publication registry labels — not heading elements */
+body.ex-standard-homepage .ex-standard-authority-item .ex-publication-registry-label,
+body.ex-demonstration-page.ex-institutional-publication .ex-standard-authority-item .ex-publication-registry-label,
+body.ex-request-pilot-page.ex-institutional-publication .ex-standard-authority-item .ex-publication-registry-label {
+  display: block;
+  margin: 0;
+  font-size: var(--ex-pub-label, 8px);
+  font-weight: var(--ex-pub-label-weight, 400);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ex-pub-label-color, #576674);
+}
+
+body.ex-standard-homepage .ex-publication-sequence-registry .ex-publication-registry-label,
+body.ex-standard-homepage .ex-publication-execution-order-registry .ex-publication-registry-label,
+body.ex-demonstration-page.ex-institutional-publication .ex-publication-sequence-registry .ex-publication-registry-label,
+body.ex-request-pilot-page.ex-institutional-publication .ex-publication-sequence-registry .ex-publication-registry-label {
+  letter-spacing: 0.06em;
+}
+
+h2.ex-inst-label {
+  line-height: 1.31;
 }
 
 /* Publication System v1 — accessibility */

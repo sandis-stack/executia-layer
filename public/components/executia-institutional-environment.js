@@ -668,9 +668,48 @@
     if (document.body.classList.contains("ex-standard-homepage")) return;
     if (document.getElementById("ex-env-jsonld")) return;
     const pageId = resolvePageId();
-    const isPublicProduct = PUBLIC_PRODUCT_FLOW.some((item) => item.id === pageId);
     const isHomepage = pageId === "homepage";
     const isEntry = isHomepage;
+
+    if (
+      document.body.classList.contains("ex-institutional-publication") &&
+      (pageId === "demonstration" || pageId === "request")
+    ) {
+      const annexPayload =
+        pageId === "demonstration"
+          ? {
+              "@context": "https://schema.org",
+              "@type": "TechArticle",
+              headline: "Execution Control Map",
+              name: "Execution Control Map",
+              description: "Evidence Annex · EXECUTIA-STANDARD-V1 · Published",
+              datePublished: "2026-05-31",
+              isPartOf: {
+                "@type": "DefinedTerm",
+                name: "EXECUTIA Governance Standard",
+                termCode: "EXECUTIA-STANDARD-V1"
+              }
+            }
+          : {
+              "@context": "https://schema.org",
+              "@type": "Report",
+              name: "Pilot Request Publication",
+              description: "Administrative Annex · EXECUTIA-STANDARD-V1 · Published",
+              datePublished: "2026-05-31",
+              isPartOf: {
+                "@type": "DefinedTerm",
+                name: "EXECUTIA Governance Standard",
+                termCode: "EXECUTIA-STANDARD-V1"
+              }
+            };
+      const script = document.createElement("script");
+      script.id = "ex-env-jsonld";
+      script.type = "application/ld+json";
+      script.textContent = JSON.stringify(annexPayload);
+      document.head.appendChild(script);
+      return;
+    }
+
     const payload = isEntry
       ? {
           "@context": "https://schema.org",

@@ -64,7 +64,7 @@ const PUBLICATION_IDENTITY = extractRegistry(home, "ex-publication-identity-regi
 const TERMINAL_ROW = normalize(
   `<div class="ex-standard-authority ex-standard-registry ex-publication-terminal-registry">
           <div class="ex-standard-authority-item ex-standard-registry-row">
-            <h4>Document State</h4>
+            <span class="ex-publication-registry-label">Document State</span>
             <p>FINAL</p>
           </div>
         </div>`
@@ -72,7 +72,8 @@ const TERMINAL_ROW = normalize(
 
 const REQUIRED_TOKENS = [
   "--ex-pub-body: 13px",
-  "--ex-pub-label: 7px",
+  "--ex-pub-label: 8px",
+  "--ex-pub-label-color: #576674",
   "--ex-pub-label-weight: 400",
   "--ex-pub-label-color:",
   "--ex-pub-value-color: #1a2d42",

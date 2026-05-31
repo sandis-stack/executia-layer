@@ -141,6 +141,7 @@
     "node scripts/executia-government-standard-pass-verify.cjs",
     "node scripts/executia-publication-visual-hardening-verify.cjs",
     "node scripts/publication-system-consistency-v2-verify.cjs",
+    "node scripts/executia-publication-readiness-verify.cjs",
     "node scripts/executia-homepage-v1-frozen-verify.cjs",
     "node scripts/executia-demonstration-v1-publication-verify.cjs",
     "node scripts/executia-request-pilot-v1-publication-verify.cjs",
