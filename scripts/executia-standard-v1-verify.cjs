@@ -51,7 +51,6 @@ function check(label, html, required, forbidden) {
 check("homepage", home, [
   "The Execution Governance Standard",
   "EXECUTIA prevents this",
-  "See How It Works",
   "exStandardAuthority",
   "exStandardStructure",
   "exStandardLayers",
@@ -66,8 +65,10 @@ check("homepage", home, [
   "Governance first. Execution commits only after",
   "What Changes",
   "Why It Matters",
-  "Open Demonstration",
-  "Request Pilot",
+  "Evaluate the EXECUTIA Standard",
+  "Review execution governance applicability",
+  "Request pilot evaluation",
+  "Execution Governance Standard",
   "executia-standard-homepage.js"
 ], [
   "exDemoControlMap",

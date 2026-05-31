@@ -260,8 +260,22 @@
     if (isHomepage) {
       return `
       <footer class="ex-env-footer ex-standard-registry ex-standard-publication-footer" role="contentinfo">
-        <div class="ex-env-footer-primary ex-standard-registry-row">${esc(footerPrimary)}</div>
-        <p class="ex-env-footer-meta ex-standard-registry-row">${esc(footerMeta)}</p>
+        <div class="ex-standard-authority-item ex-standard-registry-row">
+          <h4>Standard</h4>
+          <p>EXECUTIA-STANDARD-V1</p>
+        </div>
+        <div class="ex-standard-authority-item ex-standard-registry-row">
+          <h4>Status</h4>
+          <p>Published</p>
+        </div>
+        <div class="ex-standard-authority-item ex-standard-registry-row">
+          <h4>Authority</h4>
+          <p>EXECUTIA CTO</p>
+        </div>
+        <div class="ex-standard-authority-item ex-standard-registry-row">
+          <h4>Document</h4>
+          <p>Execution Governance Standard</p>
+        </div>
       </footer>
     `;
     }
