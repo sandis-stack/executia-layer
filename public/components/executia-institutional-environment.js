@@ -848,7 +848,7 @@
     if (!isPublicationSurface(pageId)) {
       mountHeader(pageId);
     }
-    if (!(pageId === "homepage" && document.body.classList.contains("ex-standard-homepage"))) {
+    if (!isPublicationSurface(pageId)) {
       mountFooter(pageId);
     }
     if (!isPublicationSurface(pageId)) {

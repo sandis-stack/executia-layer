@@ -58,8 +58,9 @@ if (pilot.includes("data-ex-env-header")) {
   fail("request pilot must not mount website header");
 }
 
-if (!pilot.includes("Annex Identifier")) fail("request pilot must label Annex Identifier");
+if (!pilot.includes("Classification")) fail("request pilot must label Classification");
 if (!pilot.includes("Document")) fail("request pilot must label Document");
+if (!pilot.includes("Administrative Annex")) fail("request pilot must label Administrative Annex classification");
 if (!pilot.includes("Administrative Scope")) fail("request pilot must label Administrative Scope");
 if (!pilot.includes("Administrative Outcome")) fail("request pilot must label Administrative Outcome");
 if (!pilot.includes("Administrative Request Fields")) {

@@ -138,17 +138,21 @@ check("homepage", home, [
 
 check("demonstration", demoPage, [
   "exDemoControlMap",
-  "Annex Identifier",
   "Document",
   "Execution Control Map",
+  "Classification",
+  "Evidence Annex",
   "Evidence Scenarios",
   "Evidence Sectors",
   "Publication Sequence",
-  "ex-publication-header",
+  "Publication Identity",
+  "ex-publication-document-open",
   "exDemoScenarioRecords",
   "ex-standard-publication-document",
   "ex-institutional-publication",
-  "ex-standard-publication-end",
+  "exDemoDocumentState",
+  "Document State",
+  "FINAL",
   "EXECUTIA-STANDARD-V1"
 ], [
   "exPilotRequestForm",
@@ -177,20 +181,23 @@ check("demonstration", demoPage, [
 ]);
 
 check("request-pilot", pilot, [
-  "Annex Identifier",
   "Document",
   "Pilot Request Publication",
+  "Classification",
+  "Administrative Annex",
   "Administrative Scope",
   "Administrative Outcome",
   "Administrative Request Fields",
   "Publication Sequence",
-  "Execution Control Map",
-  "ex-publication-header",
+  "Publication Identity",
+  "ex-publication-document-open",
   "exPilotScopeRecords",
   "exPilotFieldRecords",
   "ex-standard-publication-document",
   "ex-institutional-publication",
-  "ex-standard-publication-end",
+  "exPilotDocumentState",
+  "Document State",
+  "FINAL",
   "EXECUTIA-STANDARD-V1"
 ], [
   "exPilotRequestForm",

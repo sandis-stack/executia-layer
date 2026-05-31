@@ -19,33 +19,61 @@ function read(rel) {
   return fs.readFileSync(path.join(root, rel), "utf8");
 }
 
+function normalize(html) {
+  return html.replace(/\s+/g, " ").trim();
+}
+
+function extractRegistry(html, className) {
+  const marker = `<div class="ex-standard-authority ex-standard-registry ${className}">`;
+  const start = html.indexOf(marker);
+  if (start < 0) return "";
+  let depth = 1;
+  let pos = start + marker.length;
+  while (depth > 0 && pos < html.length) {
+    const nextOpen = html.indexOf("<div", pos);
+    const nextClose = html.indexOf("</div>", pos);
+    if (nextClose < 0) break;
+    if (nextOpen >= 0 && nextOpen < nextClose) {
+      depth += 1;
+      pos = nextOpen + 4;
+    } else {
+      depth -= 1;
+      pos = nextClose + 6;
+    }
+  }
+  return normalize(html.slice(start, pos));
+}
+
 const PUBLICATION_PAGES = [
   "public/index.html",
   "public/demonstration/index.html",
   "public/request-pilot/index.html"
 ];
 
+const home = read("public/index.html");
+const demo = read("public/demonstration/index.html");
+const pilot = read("public/request-pilot/index.html");
 const envJs = read("public/components/executia-institutional-environment.js");
 
 const REQUIRED = [
-  { label: "Annex Identifier", value: "Annex A", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
-  { label: "Document", value: "Execution Control Map", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
-  { label: "Annex Identifier", value: "Annex B", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
-  { label: "Document", value: "Pilot Request Publication", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] },
   { label: "Document", value: "EXECUTIA Governance Standard", pages: ["public/index.html"] },
-  { label: "Document", value: "The Execution Governance Standard", pages: ["public/demonstration/index.html", "public/request-pilot/index.html"] }
+  { label: "Document", value: "Execution Control Map", pages: ["public/demonstration/index.html"] },
+  { label: "Document", value: "Pilot Request Publication", pages: ["public/request-pilot/index.html"] },
+  { label: "Classification", value: "Governance Standard", pages: ["public/index.html"] },
+  { label: "Classification", value: "Evidence Annex", pages: ["public/demonstration/index.html"] },
+  { label: "Classification", value: "Administrative Annex", pages: ["public/request-pilot/index.html"] },
+  { label: "Document Status", value: "Published", pages: PUBLICATION_PAGES },
+  { label: "Revision", value: "V1", pages: PUBLICATION_PAGES },
+  { label: "Authority", value: "EXECUTIA CTO", pages: PUBLICATION_PAGES },
+  { label: "Release", value: "EXECUTIA-STANDARD-V1", pages: PUBLICATION_PAGES },
+  { label: "Document State", value: "FINAL", pages: PUBLICATION_PAGES }
 ];
 
 for (const rel of PUBLICATION_PAGES) {
   const html = read(rel);
-
-  if (html.includes("B · ")) fail(`${rel} must not contain combined annex identity: B ·`);
-  if (html.includes("A · Execution")) fail(`${rel} must not contain combined annex identity: A · Execution`);
-  if (html.includes("Annex A ·")) fail(`${rel} must not combine annex identifier with document title`);
-  if (html.includes("Annex B ·")) fail(`${rel} must not combine annex identifier with document title`);
-  if (/<h4>Annex<\/h4>/.test(html)) fail(`${rel} must use Annex Identifier label, not Annex`);
-  if (/<h4>Evidence Annex<\/h4>/.test(html)) fail(`${rel} must not use section title Evidence Annex in registry rows`);
-  if (/<h4>Administrative Annex<\/h4>/.test(html)) fail(`${rel} must not use section title Administrative Annex in registry rows`);
+  if (html.includes("Purpose")) fail(`${rel} must not expose Purpose metadata`);
+  if (html.includes("Defined for")) fail(`${rel} must not expose Defined for metadata`);
+  if (html.includes("The Execution Governance Standard")) fail(`${rel} must not use legacy standard title`);
 }
 
 function hasRegistryPair(html, label, value) {
@@ -62,20 +90,19 @@ for (const item of REQUIRED) {
   }
 }
 
+const identityHome = extractRegistry(home, "ex-publication-identity-registry");
+for (const page of [demo, pilot]) {
+  if (extractRegistry(page, "ex-publication-identity-registry") !== identityHome) {
+    fail("publication identity registry must match Standard across all pages");
+  }
+}
+
 if (!envJs.includes('document: "Execution Control Map"')) {
   fail("demonstration footer document must be Execution Control Map");
 }
 
 if (!envJs.includes('document: "Pilot Request Publication"')) {
   fail("request pilot footer document must be Pilot Request Publication");
-}
-
-if (!envJs.includes('document: "Execution Governance Standard"')) {
-  fail("standard publication resolver document label missing from institutional environment");
-}
-
-if (envJs.includes("Evidence Annex A ·")) {
-  fail("institutional environment must not combine annex identifier with document title");
 }
 
 if (failed) process.exit(1);

@@ -36,8 +36,8 @@ function checkPublicationSurface(label, html, options) {
     if (!html.includes('id="exStandardDocumentState"') || !html.includes("<h4>Document State</h4>")) {
       fail(`[${label}] document must terminate with Document State FINAL`);
     }
-  } else if (!html.includes("ex-standard-publication-end")) {
-    fail(`[${label}] publication metadata must mount inside envelope`);
+  } else if (!html.includes("ex-standard-block--terminal") || !html.includes("<h4>Document State</h4>")) {
+    fail(`[${label}] document must terminate with Document State FINAL`);
   }
   if (html.includes("ex-inst-hero-cta")) fail(`[${label}] exceeds homepage authority — hero CTA present`);
   if (html.includes("ex-env-footer-flow")) fail(`[${label}] exceeds homepage authority — website footer navigation present`);

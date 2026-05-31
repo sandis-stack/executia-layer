@@ -28,12 +28,13 @@
     "metadata_document": "Pilot Request Publication"
   },
   "protected_structure": [
-    { "id": "exPilotHeroSection", "label": "Administrative Annex Header" },
-    { "id": "exPilotPublicationSequence", "label": "Publication Sequence" },
+    { "id": "exPilotHeroSection", "label": "Document" },
     { "id": "exPilotScopeSection", "label": "Administrative Scope" },
     { "id": "exPilotOutcomeSection", "label": "Administrative Outcome" },
     { "id": "exPilotRequestSection", "label": "Administrative Request Fields" },
-    { "mount": "data-ex-env-footer", "label": "Publication Metadata" }
+    { "id": "exPilotPublicationSequence", "label": "Publication Sequence" },
+    { "id": "exPilotPublicationIdentity", "label": "Publication Identity" },
+    { "id": "exPilotDocumentState", "label": "Document State" }
   ],
   "administrative_scope": [
     "Process selection",

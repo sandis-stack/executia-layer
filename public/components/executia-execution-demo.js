@@ -144,7 +144,7 @@
   }
 
   function renderEvidenceRegistryRow(label, value) {
-    return `<div class="ex-standard-authority-item ex-standard-registry-row">
+    return `<div class="ex-standard-authority-item ex-standard-registry-row ex-publication-registry-row">
       <h4>${escapeHtml(label)}</h4>
       <p>${escapeHtml(value)}</p>
     </div>`;
@@ -152,19 +152,17 @@
 
   function renderEvidenceAnnexHtml(demo) {
     if (!demo) return "";
-    const layerRows = GOVERNANCE_LAYERS.map((layer, index) =>
-      renderEvidenceRegistryRow(`L${index + 1}`, layer)
+    const layerRows = GOVERNANCE_LAYERS.map((layer) =>
+      renderEvidenceRegistryRow(layer, layer)
     ).join("");
     const chainSummary = EXECUTION_CHAIN.join(" → ");
-    return `<div class="ex-standard-registry ex-demo-evidence-map" aria-label="Execution control map evidence">
-      ${renderEvidenceRegistryRow("Sector", demo.sector)}
+    return `${renderEvidenceRegistryRow("Sector", demo.sector)}
       ${renderEvidenceRegistryRow("Scenario", demo.operation)}
       ${layerRows}
       ${renderEvidenceRegistryRow("Chain", chainSummary)}
       ${renderEvidenceRegistryRow("Today", TODAY_STATEMENT)}
       ${renderEvidenceRegistryRow("EXECUTIA", `${EXECUTIA_STATEMENT} ${EXECUTIA_RULE}`)}
-      ${renderEvidenceRegistryRow("Model", "Current systems: Execution → Control · EXECUTIA: Governance → Execution")}
-    </div>`;
+      ${renderEvidenceRegistryRow("Model", "Current systems: Execution → Control · EXECUTIA: Governance → Execution")}`;
   }
 
   function renderInstitutionalControlMapHtml(demo) {

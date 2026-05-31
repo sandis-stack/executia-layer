@@ -30,11 +30,13 @@
     "renderer": "renderEvidenceAnnexHtml"
   },
   "protected_structure": [
-    { "id": "exDemoHeroSection", "label": "Evidence Annex Header" },
+    { "id": "exDemoHeroSection", "label": "Document" },
     { "id": "exDemoControlMapSection", "label": "Control Map Evidence" },
-    { "id": "exDemoSectorSection", "label": "Sector Reference" },
-    { "id": "exDemoScenarioSection", "label": "Scenario Reference" },
-    { "mount": "data-ex-env-footer", "label": "Publication Metadata" }
+    { "id": "exDemoSectorSection", "label": "Evidence Sectors" },
+    { "id": "exDemoScenarioSection", "label": "Evidence Scenarios" },
+    { "id": "exDemoPublicationSequence", "label": "Publication Sequence" },
+    { "id": "exDemoPublicationIdentity", "label": "Publication Identity" },
+    { "id": "exDemoDocumentState", "label": "Document State" }
   ],
   "review_allowed": [
     "typo_corrections",
