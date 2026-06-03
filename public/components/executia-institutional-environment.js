@@ -18,32 +18,6 @@
   );
   const CANONICAL_PUBLIC_BRAND_SUBLINE = "EXECUTION GOVERNANCE INFRASTRUCTURE";
 
-  /** Institutional funnel — execution.executia.io product path (Task 37). */
-  const INSTITUTIONAL_FUNNEL_STEPS = Object.freeze([
-    { id: "homepage", step: 1, shortLabel: "HOME", contextLabel: "HOME", href: "/" },
-    {
-      id: "execution",
-      step: 2,
-      shortLabel: "VALIDATE EXECUTION",
-      contextLabel: "VALIDATE EXECUTION",
-      href: "/execution-test/"
-    },
-    {
-      id: "proof",
-      step: 3,
-      shortLabel: "PROOF",
-      contextLabel: "EXECUTION PROOF",
-      href: "/public-proof/"
-    },
-    {
-      id: "request",
-      step: 4,
-      shortLabel: "PILOT",
-      contextLabel: "INSTITUTIONAL PILOT",
-      href: "/request-pilot/"
-    }
-  ]);
-
   /** ENTRY layer navigation — executia.io only (separate header render path). */
   const ENTRY_PUBLIC_NAV = Object.freeze([
     { id: "entry", label: "ENTRY", href: "/" },
@@ -257,10 +231,6 @@
     return CANONICAL_PUBLIC_HEADER_PAGE_IDS.has(pageId);
   }
 
-  function resolveFunnelStep(pageId) {
-    return INSTITUTIONAL_FUNNEL_STEPS.find((step) => step.id === pageId) || null;
-  }
-
   function resolvePublicLayer() {
     const host = String(global.location?.hostname || "").toLowerCase();
     if (host === "executia.io" || host === "www.executia.io") return "entry";
@@ -382,28 +352,6 @@
         <div class="ex-env-footer-brand-row">${brand}</div>
         <nav class="ex-env-footer-flow" aria-label="Navigation">${links}</nav>
       </footer>
-    `;
-  }
-
-  function renderFunnelBar(pageId) {
-    const current = resolveFunnelStep(pageId);
-    if (!current) return "";
-    const contextLabel = `STEP ${current.step} OF 4 — ${current.contextLabel}`;
-    const strip = INSTITUTIONAL_FUNNEL_STEPS.map((step, index) => {
-      const state =
-        step.id === pageId ? " is-active" : step.step < current.step ? " is-done" : "";
-      const aria = step.id === pageId ? ' aria-current="step"' : "";
-      const sep =
-        index < INSTITUTIONAL_FUNNEL_STEPS.length - 1
-          ? '<span class="ex-env-funnel-sep" aria-hidden="true">→</span>'
-          : "";
-      return `<li class="ex-env-funnel-step${state}"><a href="${esc(step.href)}"${aria}>${esc(step.shortLabel)}</a></li>${sep}`;
-    }).join("");
-    return `
-      <div class="ex-env-funnel" role="navigation" aria-label="Institutional funnel progress">
-        <p class="ex-env-funnel-context">${esc(contextLabel)}</p>
-        <ol class="ex-env-funnel-strip">${strip}</ol>
-      </div>
     `;
   }
 
@@ -958,14 +906,7 @@
     if (!parent) return;
     parent.insertBefore(band, headerMount);
     band.appendChild(headerMount);
-    let funnelMount = document.querySelector("[data-ex-env-funnel]");
-    if (funnelMount && funnelMount.parentNode !== band) {
-      band.appendChild(funnelMount);
-    } else if (!funnelMount) {
-      funnelMount = document.createElement("div");
-      funnelMount.setAttribute("data-ex-env-funnel", "");
-      band.appendChild(funnelMount);
-    }
+    document.querySelectorAll("[data-ex-env-funnel]").forEach((node) => node.remove());
   }
 
   function mountHeader(pageId) {
@@ -985,18 +926,6 @@
     );
     if (legacy) legacy.outerHTML = html;
     else document.body.insertAdjacentHTML("afterbegin", html);
-  }
-
-  function mountFunnelBar(pageId) {
-    const html = renderFunnelBar(pageId);
-    if (!html) return;
-    const mount = document.querySelector("[data-ex-env-funnel]");
-    if (mount) {
-      mount.outerHTML = html;
-      return;
-    }
-    const header = document.querySelector(".ex-env-header[role='banner']");
-    if (header) header.insertAdjacentHTML("afterend", html);
   }
 
   function mountFooter(pageId) {
@@ -1069,9 +998,6 @@
       }
       mountHeader(pageId);
     }
-    if (usesInstitutionalFunnel(pageId) && isExecutionPublicLayer()) {
-      mountFunnelBar(pageId);
-    }
     if (
       (usesInstitutionalFunnel(pageId) && isExecutionPublicLayer()) ||
       !isPublicationSurface(pageId)
@@ -1106,7 +1032,6 @@
     FLOW,
     PUBLIC_PRODUCT_FLOW,
     CANONICAL_PUBLIC_NAV,
-    INSTITUTIONAL_FUNNEL_STEPS,
     ENTRY_PUBLIC_NAV,
     ENTRY_LAYER_ORIGIN,
     FOOTER_LINKS,
@@ -1124,10 +1049,8 @@
     renderEntryHeader,
     renderFooter,
     renderCanonicalPublicFooter,
-    renderFunnelBar,
     syncChromeScrollPadding,
     usesInstitutionalFunnel,
-    resolveFunnelStep,
     renderHomeHero,
     renderEntryHeroShort,
     renderEntryOperationalExposure,

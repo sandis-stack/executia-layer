@@ -1,0 +1,457 @@
+{
+  "pass": true,
+  "navSimplifyAudit": "PASS",
+  "mode": "local",
+  "base": "http://127.0.0.1:3797",
+  "checks": [
+    {
+      "id": "home",
+      "noFunnelOk": true,
+      "noStepLabelsOk": true,
+      "navActiveOk": true,
+      "headerNavOk": true,
+      "footerNavOk": true,
+      "brandOk": true,
+      "sublineOk": true,
+      "chromeCompactOk": true,
+      "scrollPaddingOk": true,
+      "scrollAnchorOk": true,
+      "audit": true
+    },
+    {
+      "id": "execution-test",
+      "noFunnelOk": true,
+      "noStepLabelsOk": true,
+      "navActiveOk": true,
+      "headerNavOk": true,
+      "footerNavOk": true,
+      "brandOk": true,
+      "sublineOk": true,
+      "chromeCompactOk": true,
+      "scrollPaddingOk": true,
+      "scrollAnchorOk": true,
+      "audit": true
+    },
+    {
+      "id": "public-proof",
+      "noFunnelOk": true,
+      "noStepLabelsOk": true,
+      "navActiveOk": true,
+      "headerNavOk": true,
+      "footerNavOk": true,
+      "brandOk": true,
+      "sublineOk": true,
+      "chromeCompactOk": true,
+      "scrollPaddingOk": true,
+      "scrollAnchorOk": true,
+      "audit": true
+    },
+    {
+      "id": "request-pilot",
+      "noFunnelOk": true,
+      "noStepLabelsOk": true,
+      "navActiveOk": true,
+      "headerNavOk": true,
+      "footerNavOk": true,
+      "brandOk": true,
+      "sublineOk": true,
+      "chromeCompactOk": true,
+      "scrollPaddingOk": true,
+      "scrollAnchorOk": true,
+      "audit": true
+    }
+  ],
+  "routes": {
+    "home": {
+      "url": "http://127.0.0.1:3797/",
+      "funnelCount": 0,
+      "funnelMountCount": 0,
+      "stepLabelsInBody": false,
+      "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerNavLinkCount": 4,
+      "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "brandHref": "https://executia.io/",
+      "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+      "navActive": true,
+      "layout": {
+        "ok": true,
+        "headerBottom": 52,
+        "chromeBottom": 52,
+        "chromeHeight": 52,
+        "contentTop": 52,
+        "contentClearOfChrome": true,
+        "scrollPaddingTop": 52,
+        "scrollPaddingMatchesChrome": true,
+        "hasChromeBand": true,
+        "hasFunnel": false
+      },
+      "scrollCheck": {
+        "ok": true,
+        "targetTop": 52,
+        "bandBottom": 52
+      },
+      "audit": true,
+      "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/home-above-fold.png",
+      "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/home-header-only-crop.png"
+    },
+    "execution-test": {
+      "url": "http://127.0.0.1:3797/execution-test/",
+      "funnelCount": 0,
+      "funnelMountCount": 0,
+      "stepLabelsInBody": false,
+      "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerNavLinkCount": 4,
+      "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "brandHref": "https://executia.io/",
+      "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+      "navActive": true,
+      "layout": {
+        "ok": true,
+        "headerBottom": 47.4375,
+        "chromeBottom": 47.4375,
+        "chromeHeight": 47.4375,
+        "contentTop": 47.4375,
+        "contentClearOfChrome": true,
+        "scrollPaddingTop": 48,
+        "scrollPaddingMatchesChrome": true,
+        "hasChromeBand": true,
+        "hasFunnel": false
+      },
+      "scrollCheck": {
+        "ok": true,
+        "targetTop": 48.4375,
+        "bandBottom": 47.4375
+      },
+      "audit": true,
+      "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/execution-test-above-fold.png",
+      "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/execution-test-header-only-crop.png"
+    },
+    "public-proof": {
+      "url": "http://127.0.0.1:3797/public-proof/",
+      "funnelCount": 0,
+      "funnelMountCount": 0,
+      "stepLabelsInBody": false,
+      "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerNavLinkCount": 4,
+      "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "brandHref": "https://executia.io/",
+      "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+      "navActive": true,
+      "layout": {
+        "ok": true,
+        "headerBottom": 47.4375,
+        "chromeBottom": 47.4375,
+        "chromeHeight": 47.4375,
+        "contentTop": 47.4375,
+        "contentClearOfChrome": true,
+        "scrollPaddingTop": 48,
+        "scrollPaddingMatchesChrome": true,
+        "hasChromeBand": true,
+        "hasFunnel": false
+      },
+      "scrollCheck": {
+        "ok": true,
+        "targetTop": 48.4375,
+        "bandBottom": 47.4375
+      },
+      "audit": true,
+      "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/public-proof-above-fold.png",
+      "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/public-proof-header-only-crop.png"
+    },
+    "request-pilot": {
+      "url": "http://127.0.0.1:3797/request-pilot/",
+      "funnelCount": 0,
+      "funnelMountCount": 0,
+      "stepLabelsInBody": false,
+      "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerNavLinkCount": 4,
+      "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "brandHref": "https://executia.io/",
+      "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+      "navActive": true,
+      "layout": {
+        "ok": true,
+        "headerBottom": 52,
+        "chromeBottom": 52,
+        "chromeHeight": 52,
+        "contentTop": 52,
+        "contentClearOfChrome": true,
+        "scrollPaddingTop": 52,
+        "scrollPaddingMatchesChrome": true,
+        "hasChromeBand": true,
+        "hasFunnel": false
+      },
+      "scrollCheck": {
+        "ok": true,
+        "targetTop": 80,
+        "bandBottom": 52
+      },
+      "audit": true,
+      "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/request-pilot-above-fold.png",
+      "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/request-pilot-header-only-crop.png"
+    }
+  },
+  "viewportResults": {
+    "desktop": {
+      "home": {
+        "url": "http://127.0.0.1:3797/",
+        "funnelCount": 0,
+        "funnelMountCount": 0,
+        "stepLabelsInBody": false,
+        "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "headerNavLinkCount": 4,
+        "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+        "navActive": true,
+        "layout": {
+          "ok": true,
+          "headerBottom": 52,
+          "chromeBottom": 52,
+          "chromeHeight": 52,
+          "contentTop": 52,
+          "contentClearOfChrome": true,
+          "scrollPaddingTop": 52,
+          "scrollPaddingMatchesChrome": true,
+          "hasChromeBand": true,
+          "hasFunnel": false
+        },
+        "scrollCheck": {
+          "ok": true,
+          "targetTop": 52,
+          "bandBottom": 52
+        },
+        "audit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/home-above-fold.png",
+        "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/home-header-only-crop.png"
+      },
+      "execution-test": {
+        "url": "http://127.0.0.1:3797/execution-test/",
+        "funnelCount": 0,
+        "funnelMountCount": 0,
+        "stepLabelsInBody": false,
+        "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "headerNavLinkCount": 4,
+        "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+        "navActive": true,
+        "layout": {
+          "ok": true,
+          "headerBottom": 47.4375,
+          "chromeBottom": 47.4375,
+          "chromeHeight": 47.4375,
+          "contentTop": 47.4375,
+          "contentClearOfChrome": true,
+          "scrollPaddingTop": 48,
+          "scrollPaddingMatchesChrome": true,
+          "hasChromeBand": true,
+          "hasFunnel": false
+        },
+        "scrollCheck": {
+          "ok": true,
+          "targetTop": 48.4375,
+          "bandBottom": 47.4375
+        },
+        "audit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/execution-test-above-fold.png",
+        "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/execution-test-header-only-crop.png"
+      },
+      "public-proof": {
+        "url": "http://127.0.0.1:3797/public-proof/",
+        "funnelCount": 0,
+        "funnelMountCount": 0,
+        "stepLabelsInBody": false,
+        "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "headerNavLinkCount": 4,
+        "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+        "navActive": true,
+        "layout": {
+          "ok": true,
+          "headerBottom": 47.4375,
+          "chromeBottom": 47.4375,
+          "chromeHeight": 47.4375,
+          "contentTop": 47.4375,
+          "contentClearOfChrome": true,
+          "scrollPaddingTop": 48,
+          "scrollPaddingMatchesChrome": true,
+          "hasChromeBand": true,
+          "hasFunnel": false
+        },
+        "scrollCheck": {
+          "ok": true,
+          "targetTop": 48.4375,
+          "bandBottom": 47.4375
+        },
+        "audit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/public-proof-above-fold.png",
+        "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/public-proof-header-only-crop.png"
+      },
+      "request-pilot": {
+        "url": "http://127.0.0.1:3797/request-pilot/",
+        "funnelCount": 0,
+        "funnelMountCount": 0,
+        "stepLabelsInBody": false,
+        "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "headerNavLinkCount": 4,
+        "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+        "navActive": true,
+        "layout": {
+          "ok": true,
+          "headerBottom": 52,
+          "chromeBottom": 52,
+          "chromeHeight": 52,
+          "contentTop": 52,
+          "contentClearOfChrome": true,
+          "scrollPaddingTop": 52,
+          "scrollPaddingMatchesChrome": true,
+          "hasChromeBand": true,
+          "hasFunnel": false
+        },
+        "scrollCheck": {
+          "ok": true,
+          "targetTop": 80,
+          "bandBottom": 52
+        },
+        "audit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/request-pilot-above-fold.png",
+        "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/request-pilot-header-only-crop.png"
+      }
+    },
+    "mobile": {
+      "home": {
+        "url": "http://127.0.0.1:3797/",
+        "funnelCount": 0,
+        "funnelMountCount": 0,
+        "stepLabelsInBody": false,
+        "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "headerNavLinkCount": 4,
+        "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+        "navActive": true,
+        "layout": {
+          "ok": true,
+          "headerBottom": 79.9375,
+          "chromeBottom": 79.9375,
+          "chromeHeight": 79.9375,
+          "contentTop": 79.9375,
+          "contentClearOfChrome": true,
+          "scrollPaddingTop": 80,
+          "scrollPaddingMatchesChrome": true,
+          "hasChromeBand": true,
+          "hasFunnel": false
+        },
+        "scrollCheck": {
+          "ok": true,
+          "targetTop": 79.9375,
+          "bandBottom": 79.9375
+        },
+        "audit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/home-above-fold.png",
+        "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/home-header-only-crop.png"
+      },
+      "execution-test": {
+        "url": "http://127.0.0.1:3797/execution-test/",
+        "funnelCount": 0,
+        "funnelMountCount": 0,
+        "stepLabelsInBody": false,
+        "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "headerNavLinkCount": 4,
+        "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+        "navActive": true,
+        "layout": {
+          "ok": true,
+          "headerBottom": 79.9375,
+          "chromeBottom": 79.9375,
+          "chromeHeight": 79.9375,
+          "contentTop": 79.9375,
+          "contentClearOfChrome": true,
+          "scrollPaddingTop": 80,
+          "scrollPaddingMatchesChrome": true,
+          "hasChromeBand": true,
+          "hasFunnel": false
+        },
+        "scrollCheck": {
+          "ok": true,
+          "targetTop": 79.9375,
+          "bandBottom": 79.9375
+        },
+        "audit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/execution-test-above-fold.png",
+        "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/execution-test-header-only-crop.png"
+      },
+      "public-proof": {
+        "url": "http://127.0.0.1:3797/public-proof/",
+        "funnelCount": 0,
+        "funnelMountCount": 0,
+        "stepLabelsInBody": false,
+        "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "headerNavLinkCount": 4,
+        "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+        "navActive": true,
+        "layout": {
+          "ok": true,
+          "headerBottom": 79.9375,
+          "chromeBottom": 79.9375,
+          "chromeHeight": 79.9375,
+          "contentTop": 79.9375,
+          "contentClearOfChrome": true,
+          "scrollPaddingTop": 80,
+          "scrollPaddingMatchesChrome": true,
+          "hasChromeBand": true,
+          "hasFunnel": false
+        },
+        "scrollCheck": {
+          "ok": true,
+          "targetTop": 79.9375,
+          "bandBottom": 79.9375
+        },
+        "audit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/public-proof-above-fold.png",
+        "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/public-proof-header-only-crop.png"
+      },
+      "request-pilot": {
+        "url": "http://127.0.0.1:3797/request-pilot/",
+        "funnelCount": 0,
+        "funnelMountCount": 0,
+        "stepLabelsInBody": false,
+        "headerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "headerNavLinkCount": 4,
+        "footerNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "brandSubline": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+        "navActive": true,
+        "layout": {
+          "ok": true,
+          "headerBottom": 75.34375,
+          "chromeBottom": 75.34375,
+          "chromeHeight": 75.34375,
+          "contentTop": 75.34375,
+          "contentClearOfChrome": true,
+          "scrollPaddingTop": 76,
+          "scrollPaddingMatchesChrome": true,
+          "hasChromeBand": true,
+          "hasFunnel": false
+        },
+        "scrollCheck": {
+          "ok": true,
+          "targetTop": 76.34375,
+          "bandBottom": 75.34375
+        },
+        "audit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/request-pilot-above-fold.png",
+        "headerOnlyPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify/request-pilot-header-only-crop.png"
+      }
+    }
+  },
+  "screenshotsDir": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-40-nav-simplify"
+}

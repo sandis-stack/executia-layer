@@ -152,68 +152,7 @@ body.ex-institutional-env:is(
   border-bottom-color: var(--ex-ds-blue, #1c3554);
 }
 
-/* —— Institutional funnel (Task 37) —— */
-.ex-env-funnel {
-  margin: 0 auto;
-  max-width: 1180px;
-  padding: var(--ex-ds-s16, 16px) var(--ex-ds-s24, 24px) var(--ex-ds-s24, 24px);
-  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
-}
-
-.ex-env-funnel-context {
-  margin: 0 0 var(--ex-ds-s8, 8px);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ex-ds-blue, #1c3554);
-}
-
-.ex-env-funnel-strip {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--ex-ds-s8, 8px) var(--ex-ds-s4, 4px);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.ex-env-funnel-step a {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--ex-ds-muted, #7a8da3);
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-
-.ex-env-funnel-step.is-done a {
-  color: var(--ex-ds-graphite, #4d6178);
-  border-color: var(--ex-ds-fade, rgba(28, 53, 84, 0.08));
-  background: var(--ex-ds-wash, #eef2f6);
-}
-
-.ex-env-funnel-step.is-active a {
-  color: var(--ex-ds-blue, #1c3554);
-  border-color: var(--ex-ds-blue, #1c3554);
-  background: #fff;
-  box-shadow: var(--ex-inst-shadow, 0 8px 22px rgba(15, 53, 93, 0.045));
-}
-
-.ex-env-funnel-sep {
-  font-size: 10px;
-  color: var(--ex-ds-muted, #7a8da3);
-  letter-spacing: 0.06em;
-  user-select: none;
-}
-
-/* —— Task 38/39: sticky chrome band + compact funnel —— */
+/* —— Task 38/40: sticky chrome band (header only) —— */
 .ex-env-chrome-band {
   position: sticky;
   top: 0;
@@ -230,7 +169,7 @@ html:has(
     [data-ex-env-page="request"]
   ):has(.ex-env-chrome-band)
 ) {
-  --ex-env-chrome-scroll-padding: 108px;
+  --ex-env-chrome-scroll-padding: 56px;
   scroll-padding-top: var(--ex-env-chrome-scroll-padding);
 }
 
@@ -293,70 +232,6 @@ body.ex-institutional-env:is(
   [data-ex-env-page="execution"],
   [data-ex-env-page="proof"],
   [data-ex-env-page="request"]
-) .ex-env-chrome-band .ex-env-funnel {
-  margin: 0 auto;
-  max-width: 1180px;
-  padding: 4px var(--ex-ds-s24, 24px) var(--ex-ds-s8, 8px);
-  border-bottom: 1px solid var(--ex-ds-fade, rgba(28, 53, 84, 0.06));
-}
-
-body.ex-institutional-env:is(
-  [data-ex-env-page="homepage"],
-  [data-ex-env-page="execution"],
-  [data-ex-env-page="proof"],
-  [data-ex-env-page="request"]
-) .ex-env-chrome-band .ex-env-funnel-context {
-  margin: 0 0 3px;
-  font-size: 9px;
-  line-height: 1.3;
-}
-
-body.ex-institutional-env:is(
-  [data-ex-env-page="homepage"],
-  [data-ex-env-page="execution"],
-  [data-ex-env-page="proof"],
-  [data-ex-env-page="request"]
-) .ex-env-chrome-band .ex-env-funnel-strip {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  gap: var(--ex-ds-s4, 4px) 2px;
-}
-
-body.ex-institutional-env:is(
-  [data-ex-env-page="homepage"],
-  [data-ex-env-page="execution"],
-  [data-ex-env-page="proof"],
-  [data-ex-env-page="request"]
-) .ex-env-chrome-band .ex-env-funnel-strip::-webkit-scrollbar {
-  display: none;
-}
-
-body.ex-institutional-env:is(
-  [data-ex-env-page="homepage"],
-  [data-ex-env-page="execution"],
-  [data-ex-env-page="proof"],
-  [data-ex-env-page="request"]
-) .ex-env-chrome-band .ex-env-funnel-step a {
-  padding: 3px 7px;
-  font-size: 9px;
-}
-
-body.ex-institutional-env:is(
-  [data-ex-env-page="homepage"],
-  [data-ex-env-page="execution"],
-  [data-ex-env-page="proof"],
-  [data-ex-env-page="request"]
-) .ex-env-chrome-band .ex-env-funnel-sep {
-  font-size: 8px;
-}
-
-body.ex-institutional-env:is(
-  [data-ex-env-page="homepage"],
-  [data-ex-env-page="execution"],
-  [data-ex-env-page="proof"],
-  [data-ex-env-page="request"]
 ):has(.ex-env-chrome-band) .shell,
 body.ex-institutional-env:is(
   [data-ex-env-page="homepage"],
@@ -389,23 +264,6 @@ body.ex-institutional-env:is(
 
 .ex-env-footer-brand:hover {
   color: var(--ex-ds-ink, #1a2d42);
-}
-
-body.ex-request-pilot-page .ex-pilot-funnel-step {
-  margin: 0 0 var(--ex-ds-s8, 8px);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ex-ds-blue, #1c3554);
-}
-
-body.ex-request-pilot-page .ex-pilot-funnel-lead {
-  margin: var(--ex-ds-s8, 8px) 0 var(--ex-ds-s16, 16px);
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--ex-ds-graphite, #4d6178);
-  max-width: 40rem;
 }
 
 /* —— Homepage canonical hero —— */

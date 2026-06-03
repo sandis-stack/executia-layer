@@ -2,9 +2,9 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-06-03T05:54:03.140Z
+**Generated:** 2026-06-03T07:54:46.283Z
 **Branch:** main
-**Commit:** 829b152e9f76c5948a87c71a5ddb7532ff5bc786
+**Commit:** 7647a1a87eef0cc86edcae1c977f7019fa6cbe20
 
 ## Stability score
 
@@ -39,7 +39,7 @@ Deductions from 100 (overall):
 
 ## Architecture delta
 
-Baseline: `2026-06-03T05:23:15.422Z`
+Baseline: `2026-06-03T07:38:02.496Z`
 
 - New nodes: 0
 - Removed nodes: 0
