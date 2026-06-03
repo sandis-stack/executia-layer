@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>EXECUTIA — Public Proof Receipt</title>
+  <title>EXECUTIA — Public Execution Proof</title>
   <style>
     :root{
       --bg:#f6f8fb;
@@ -536,6 +536,138 @@
       line-height:1.6;
       margin-top:30px;
     }
+
+    body.ex-proof-demonstration [data-ex-env-proof-intro]{
+      display:none;
+    }
+
+    body.ex-proof-demonstration [data-ex-env-proof-examples]{
+      display:none;
+    }
+
+    .proof-demo-hero{
+      padding:48px 0 28px;
+    }
+
+    .proof-demo-hero h1{
+      margin:0;
+      font-size:clamp(36px,4vw,56px);
+      line-height:1.02;
+      letter-spacing:-.04em;
+      color:var(--blue);
+      text-transform:uppercase;
+    }
+
+    .proof-demo-hero .proof-demo-subtitle{
+      margin:18px 0 0;
+      max-width:720px;
+      font-size:18px;
+      line-height:1.65;
+      color:var(--muted);
+    }
+
+    .proof-demo-sections{
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+      margin-top:8px;
+    }
+
+    .proof-demo-section h2{
+      margin:0 0 16px;
+      font-size:13px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--blue);
+    }
+
+    .proof-governance-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+
+    .proof-governance-list li{
+      font-size:14px;
+      line-height:1.55;
+      color:#294055;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#f7fafd;
+    }
+
+    .proof-chain-vertical{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:0;
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+
+    .proof-chain-vertical li{
+      font-size:14px;
+      font-weight:700;
+      color:var(--blue);
+      padding:10px 0;
+    }
+
+    .proof-chain-vertical .proof-chain-arrow{
+      display:block;
+      font-size:18px;
+      line-height:1;
+      color:var(--muted);
+      padding:2px 0 6px;
+      font-weight:400;
+    }
+
+    .proof-evidence-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .proof-evidence-item{
+      padding:14px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:14px;
+      font-weight:700;
+      color:#334155;
+    }
+
+    .proof-result-band{
+      margin-top:4px;
+      border-radius:24px;
+      padding:26px;
+      background:linear-gradient(135deg,#1E3A5F,#294c78);
+      color:#fff;
+    }
+
+    .proof-result-band h2{
+      margin:0;
+      font-size:22px;
+      letter-spacing:-.02em;
+      color:#fff;
+      text-transform:none;
+    }
+
+    .proof-result-band p{
+      margin:12px 0 0;
+      max-width:760px;
+      font-size:16px;
+      line-height:1.65;
+      color:rgba(255,255,255,.86);
+    }
+
+    .proof-demo-cta{
+      margin-top:8px;
+    }
     footer{
       margin-top:44px;
       border-top:1px solid var(--line);
@@ -572,7 +704,9 @@
 <body class="ex-institutional-env" data-ex-env-page="proof">
   <div data-ex-env-header></div>
   <main class="shell">
+    <div data-ex-env-proof-intro></div>
     <div id="app"></div>
+    <div data-ex-env-proof-examples></div>
   </main>
   <div data-ex-env-footer></div>
 
@@ -596,21 +730,85 @@
       return text ? text.slice(0, 28) + "..." : "—";
     }
 
+    function renderDemonstration(){
+      document.body.classList.add("ex-proof-demonstration");
+      document.getElementById("app").innerHTML = `
+        <section class="proof-demo-hero" aria-label="Public execution proof">
+          <h1>PUBLIC EXECUTION PROOF</h1>
+          <p class="proof-demo-subtitle">Example execution proof generated from a validated execution review.</p>
+        </section>
+
+        <div class="proof-demo-sections">
+          <section class="panel proof-demo-section" aria-labelledby="proof-exec-summary">
+            <h2 id="proof-exec-summary">EXECUTION SUMMARY</h2>
+            <div class="row"><span>Outcome</span><span>Supplier Selection and Payment Approval</span></div>
+            <div class="row"><span>Domain</span><span>Public Procurement</span></div>
+            <div class="row"><span>Risk Level</span><span>Medium</span></div>
+            <div class="row"><span>Status</span><span>Validated</span></div>
+            <div class="row"><span>Proof Status</span><span>Generated</span></div>
+          </section>
+
+          <section class="panel proof-demo-section" aria-labelledby="proof-governance-result">
+            <h2 id="proof-governance-result">GOVERNANCE RESULT</h2>
+            <ul class="proof-governance-list">
+              <li>✓ Constraints Evaluated</li>
+              <li>✓ Registry Verification Completed</li>
+              <li>✓ Approval Chain Validated</li>
+              <li>✓ Payment Controls Verified</li>
+              <li>✓ Evidence Chain Recorded</li>
+            </ul>
+          </section>
+
+          <section class="panel proof-demo-section" aria-labelledby="proof-chain">
+            <h2 id="proof-chain">PROOF CHAIN</h2>
+            <ol class="proof-chain-vertical" aria-label="Proof chain sequence">
+              <li>Outcome Defined</li>
+              <li class="proof-chain-arrow" aria-hidden="true">↓</li>
+              <li>Governance Checked</li>
+              <li class="proof-chain-arrow" aria-hidden="true">↓</li>
+              <li>Execution Validated</li>
+              <li class="proof-chain-arrow" aria-hidden="true">↓</li>
+              <li>Proof Generated</li>
+              <li class="proof-chain-arrow" aria-hidden="true">↓</li>
+              <li>Evidence Available</li>
+            </ol>
+          </section>
+
+          <section class="panel proof-demo-section" aria-labelledby="proof-evidence-records">
+            <h2 id="proof-evidence-records">EVIDENCE RECORDS</h2>
+            <div class="proof-evidence-list">
+              <div class="proof-evidence-item">Decision Record</div>
+              <div class="proof-evidence-item">Validation Record</div>
+              <div class="proof-evidence-item">Registry Verification</div>
+              <div class="proof-evidence-item">Approval Record</div>
+              <div class="proof-evidence-item">Audit Evidence</div>
+            </div>
+          </section>
+
+          <section class="proof-result-band proof-demo-section" aria-labelledby="proof-executia-result">
+            <h2 id="proof-executia-result">EXECUTIA RESULT</h2>
+            <p>Execution converted into replayable evidence before commitment.</p>
+          </section>
+
+          <section class="proof-demo-cta" aria-label="Proof actions">
+            <div class="actions">
+              <a class="btn primary" href="/execution-test/">RUN VALIDATION</a>
+              <a class="btn soft" href="/request-pilot/">REQUEST PILOT</a>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
     async function loadProof(){
       const reviewId = getReviewId();
 
       if(!reviewId){
-        document.getElementById("app").innerHTML = `
-          <div class="missing">
-            <strong style="color:#1E3A5F">Review ID is missing.</strong><br>
-            Add a review_id to the URL or generate a new execution proof from the Execution Test flow.
-            <div class="actions">
-              <a class="btn primary" href="/execution-test/">Run Execution Test</a>
-            </div>
-          </div>
-        `;
+        renderDemonstration();
         return;
       }
+
+      document.body.classList.remove("ex-proof-demonstration");
 
       document.getElementById("app").innerHTML = `
         <div class="missing">
@@ -860,5 +1058,6 @@
   </script>
   <script src="/components/executia-institutional-surfaces.js"></script>
   <script src="/components/executia-institutional-environment.js"></script>
+  <script src="/components/executia-pilot-readiness.js"></script>
 </body>
 </html>

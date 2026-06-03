@@ -1,0 +1,24 @@
+{
+  "pass": true,
+  "local": {
+    "url": "http://127.0.0.1:3559/public-proof/",
+    "bodyText": "EXECUTIA™\nEXECUTION GOVERNANCE INFRASTRUCTURE\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT\nPUBLIC EXECUTION PROOF\n\nExample execution proof generated from a validated execution review.\n\nEXECUTION SUMMARY\nOUTCOME\nSupplier Selection and Payment Approval\nDOMAIN\nPublic Procurement\nRISK LEVEL\nMedium\nSTATUS\nValidated\nPROOF STATUS\nGenerated\nGOVERNANCE RESULT\n✓ Constraints Evaluated\n✓ Registry Verification Completed\n✓ Approval Chain Validated\n✓ Payment Controls Verified\n✓ Evidence Chain Recorded\nPROOF CHAIN\nOutcome Defined\n↓\nGovernance Checked\n↓\nExecution Validated\n↓\nProof Generated\n↓\nEvidence Available\nEVIDENCE RECORDS\nDecision Record\nValidation Record\nRegistry Verification\nApproval Record\nAudit Evidence\nEXECUTIA RESULT\n\nExecution converted into replayable evidence before commitment.\n\nRUN VALIDATION\nREQUEST PILOT\nExecution authority · governance continuity · institutional trust · canonical infrastructure\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT\n\nExecution Governance Infrastructure · Deterministic Execution · Execution Integrity · Replay-Safe Verification · Execution-Time Truth · Canonical Governance",
+    "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+    "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-36-public-proof/local-public-proof-above-fold.png",
+    "headerPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-36-public-proof/local-public-proof-header-crop.png",
+    "proofNavActive": true
+  },
+  "checks": {
+    "sectionOk": true,
+    "forbiddenFound": [],
+    "navOk": true,
+    "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+    "ctaValidation": 1,
+    "ctaPilot": 1,
+    "proofNavActive": true
+  },
+  "screenshots": {
+    "aboveFold": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-36-public-proof/local-public-proof-above-fold.png",
+    "header": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-36-public-proof/local-public-proof-header-crop.png"
+  }
+}
