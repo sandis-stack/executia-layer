@@ -933,6 +933,19 @@
     }
   }
 
+  function syncChromeScrollPadding(pageId) {
+    if (!usesInstitutionalFunnel(pageId) || !isExecutionPublicLayer()) return;
+    const band = document.querySelector(".ex-env-chrome-band");
+    if (!band) return;
+    const height = Math.ceil(band.getBoundingClientRect().height);
+    if (height > 0) {
+      document.documentElement.style.setProperty(
+        "--ex-env-chrome-scroll-padding",
+        `${height}px`
+      );
+    }
+  }
+
   function ensureChromeBand(pageId) {
     if (!usesInstitutionalFunnel(pageId) || !isExecutionPublicLayer()) return;
     if (document.querySelector(".ex-env-chrome-band")) return;
@@ -1072,8 +1085,22 @@
       mountProofIntro();
       mountOnboardingSteps();
     }
+    syncChromeScrollPadding(pageId);
     document.dispatchEvent(new CustomEvent("executia:institutional-env:refresh"));
   }
+
+  let chromeScrollResizeTimer;
+  window.addEventListener("resize", () => {
+    if (!document.body.classList.contains("ex-institutional-env")) return;
+    clearTimeout(chromeScrollResizeTimer);
+    chromeScrollResizeTimer = setTimeout(
+      () => syncChromeScrollPadding(resolvePageId()),
+      150
+    );
+  });
+  document.addEventListener("executia:institutional-env:refresh", () => {
+    syncChromeScrollPadding(resolvePageId());
+  });
 
   global.EXECUTIA_INSTITUTIONAL_ENV = Object.freeze({
     FLOW,
@@ -1098,6 +1125,7 @@
     renderFooter,
     renderCanonicalPublicFooter,
     renderFunnelBar,
+    syncChromeScrollPadding,
     usesInstitutionalFunnel,
     resolveFunnelStep,
     renderHomeHero,

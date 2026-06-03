@@ -12,7 +12,7 @@ body.ex-homepage-engine .ex-inst-shell {
 }
 
 body.ex-homepage-engine[data-ex-env-page="homepage"] .ex-inst-shell {
-  padding-top: var(--ex-ds-s12, 12px);
+  padding-top: var(--ex-ds-s8, 8px);
 }
 
 body.ex-homepage-engine .ex-home-section {
