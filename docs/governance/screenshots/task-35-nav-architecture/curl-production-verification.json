@@ -1,0 +1,11 @@
+{
+  "verifiedAt": "2026-06-03",
+  "deployUrl": "https://execution.executia.io",
+  "routes": {
+    "/": { "status": 200, "url": "https://execution.executia.io/" },
+    "/execution-test/": { "status": 200, "url": "https://execution.executia.io/execution-test/" },
+    "/public-proof/": { "status": 200, "url": "https://execution.executia.io/public-proof/" },
+    "/request-pilot/": { "status": 200, "url": "https://execution.executia.io/request-pilot/" },
+    "entry": { "status": 200, "url": "https://executia.io/" }
+  }
+}

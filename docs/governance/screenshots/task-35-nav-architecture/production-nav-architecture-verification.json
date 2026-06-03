@@ -1,0 +1,57 @@
+{
+  "pass": true,
+  "entryLayerOrigin": "https://executia.io/",
+  "execution": {
+    "navOk": true,
+    "brandOk": true,
+    "forbiddenFound": [],
+    "routes": {
+      "execution-home": {
+        "url": "https://execution.executia.io/",
+        "brandHref": "https://executia.io/",
+        "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/execution-home-above-fold.png",
+        "headerPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/execution-home-header-crop.png",
+        "headerCropHash": "ca676eadf5c83c8a"
+      },
+      "execution-test": {
+        "url": "https://execution.executia.io/execution-test/",
+        "brandHref": "https://executia.io/",
+        "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/execution-test-above-fold.png",
+        "headerPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/execution-test-header-crop.png",
+        "headerCropHash": "74f126f585370334"
+      },
+      "public-proof": {
+        "url": "https://execution.executia.io/public-proof/",
+        "brandHref": "https://executia.io/",
+        "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/public-proof-above-fold.png",
+        "headerPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/public-proof-header-crop.png",
+        "headerCropHash": "2151df7d09e3b53f"
+      },
+      "request-pilot": {
+        "url": "https://execution.executia.io/request-pilot/",
+        "brandHref": "https://executia.io/",
+        "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/request-pilot-above-fold.png",
+        "headerPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/request-pilot-header-crop.png",
+        "headerCropHash": "226ccbfdda062e60"
+      }
+    }
+  },
+  "entry": {
+    "navOk": true,
+    "brandOk": true,
+    "sublineOk": true,
+    "ctaOk": true,
+    "forbiddenFound": [],
+    "url": "https://executia.io/",
+    "brandHref": "/",
+    "brandSub": "EXECUTION STANDARD",
+    "navText": "ENTRY GLOBAL INSTITUTIONAL",
+    "ctaText": "Enter Execution Test ↗",
+    "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/entry-home-above-fold.png",
+    "headerPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-35-nav-architecture/entry-home-header-crop.png"
+  }
+}
