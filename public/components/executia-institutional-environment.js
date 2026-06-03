@@ -2,17 +2,30 @@
  * EXECUTIA Institutional Environment — final sovereign public shell.
  */
 (function (global) {
-  /** Canonical public navigation (primary header standard). */
+  /** ENTRY layer origin — brand on execution.executia.io always returns here. */
+  const ENTRY_LAYER_ORIGIN = "https://executia.io/";
+  const EXECUTION_TEST_URL = "https://execution.executia.io/execution-test/";
+
+  /** Canonical public navigation — execution.executia.io only. */
   const CANONICAL_PUBLIC_NAV = Object.freeze([
     { id: "homepage", label: "HOME", href: "/" },
-    { id: "execution", label: "EXECUTION", href: "/execution-test/" },
+    { id: "execution", label: "VALIDATE EXECUTION", href: "/execution-test/" },
     { id: "proof", label: "PROOF", href: "/public-proof/" },
-    { id: "request", label: "REQUEST PILOT", href: "/request-pilot/" }
+    { id: "request", label: "PILOT", href: "/request-pilot/" }
   ]);
   const CANONICAL_PUBLIC_HEADER_PAGE_IDS = new Set(
     CANONICAL_PUBLIC_NAV.map((item) => item.id)
   );
   const CANONICAL_PUBLIC_BRAND_SUBLINE = "Execution Governance Infrastructure";
+
+  /** ENTRY layer navigation — executia.io only (separate header render path). */
+  const ENTRY_PUBLIC_NAV = Object.freeze([
+    { id: "entry", label: "ENTRY", href: "/" },
+    { id: "global", label: "GLOBAL", href: "/global" },
+    { id: "institutional", label: "INSTITUTIONAL", href: "/institutional" }
+  ]);
+  const ENTRY_BRAND_SUBLINE = "EXECUTION STANDARD";
+  const ENTRY_HEADER_CTA_LABEL = "Enter Execution Test ↗";
   const FLOW = CANONICAL_PUBLIC_NAV;
   const PUBLIC_PRODUCT_FLOW = CANONICAL_PUBLIC_NAV;
 
@@ -214,7 +227,22 @@
     return CANONICAL_PUBLIC_HEADER_PAGE_IDS.has(pageId);
   }
 
-  function renderHeader(pageId) {
+  function resolvePublicLayer() {
+    const host = String(global.location?.hostname || "").toLowerCase();
+    if (host === "executia.io" || host === "www.executia.io") return "entry";
+    if (host === "execution.executia.io") return "execution";
+    return "execution";
+  }
+
+  function isExecutionPublicLayer() {
+    return resolvePublicLayer() === "execution";
+  }
+
+  function isEntryPublicLayer() {
+    return resolvePublicLayer() === "entry";
+  }
+
+  function renderInstitutionalHeader(pageId) {
     const flow = CANONICAL_PUBLIC_NAV.map((item) => {
       const active = item.id === pageId ? " is-active" : "";
       return `<a href="${esc(item.href)}" class="${active.trim()}"${active ? ' aria-current="page"' : ""}>${esc(item.label)}</a>`;
@@ -228,22 +256,50 @@
           ? "Internal evaluation"
           : CANONICAL_PUBLIC_BRAND_SUBLINE;
 
-    const isStandardHomepage =
-      pageId === "homepage" && document.body.classList.contains("ex-standard-homepage");
-    const isPublicationDemonstration =
-      pageId === "demonstration" && document.body.classList.contains("ex-institutional-publication");
     const brandInner = `<strong>${esc(AI_CLARITY.PRODUCT)}™</strong><span>${esc(brandSub)}</span>`;
-    const brand =
-      isStandardHomepage || isPublicationDemonstration
-        ? `<span class="ex-env-brand">${brandInner}</span>`
-        : `<a class="ex-env-brand" href="/">${brandInner}</a>`;
+    const brand = `<a class="ex-env-brand" href="${esc(ENTRY_LAYER_ORIGIN)}" aria-label="EXECUTIA entry">${brandInner}</a>`;
 
     return `
-      <div class="ex-env-header" role="banner">
+      <div class="ex-env-header ex-env-header--institutional" role="banner">
         ${brand}
-        <nav class="ex-env-flow" aria-label="Primary navigation">${flow}</nav>
+        <nav class="ex-env-flow ex-env-flow-institutional" aria-label="Primary navigation">${flow}</nav>
       </div>
     `;
+  }
+
+  function resolveEntryNavActiveId(pageId) {
+    const path = normalizePath(global.location?.pathname || "");
+    if (path.startsWith("/global")) return "global";
+    if (path.startsWith("/institutional")) return "institutional";
+    if (pageId === "entry" || pageId === "homepage") return "entry";
+    return "entry";
+  }
+
+  function renderEntryHeader(pageId) {
+    const activeNavId = resolveEntryNavActiveId(pageId);
+    const flow = ENTRY_PUBLIC_NAV.map((item) => {
+      const active = item.id === activeNavId ? " is-active" : "";
+      return `<a href="${esc(item.href)}" class="${active.trim()}"${active ? ' aria-current="page"' : ""}>${esc(item.label)}</a>`;
+    }).join("");
+
+    const brandInner = `<strong>${esc(AI_CLARITY.PRODUCT)}™</strong><span>${esc(ENTRY_BRAND_SUBLINE)}</span>`;
+    const brand = `<a class="ex-env-brand ex-env-brand--entry" href="${esc(ENTRY_LAYER_ORIGIN)}" aria-label="EXECUTIA entry">${brandInner}</a>`;
+    const cta = `<a class="ex-env-header-cta" href="${esc(EXECUTION_TEST_URL)}">${esc(ENTRY_HEADER_CTA_LABEL)}</a>`;
+
+    return `
+      <div class="ex-env-header ex-env-header--entry" role="banner">
+        ${brand}
+        <nav class="ex-env-flow ex-env-flow-entry" aria-label="Primary navigation">${flow}</nav>
+        ${cta}
+      </div>
+    `;
+  }
+
+  function renderHeader(pageId) {
+    if (isEntryPublicLayer()) {
+      return renderEntryHeader(pageId);
+    }
+    return renderInstitutionalHeader(pageId);
   }
 
   function renderPublicationMetadataFooter(documentLabel) {
@@ -283,9 +339,10 @@
   }
 
   function renderFooter(pageId) {
-    const links = CANONICAL_PUBLIC_NAV.map(
-      (item) => `<a href="${esc(item.href)}">${esc(item.label)}</a>`
-    ).join("");
+    const navItems = isEntryPublicLayer() ? ENTRY_PUBLIC_NAV : CANONICAL_PUBLIC_NAV;
+    const links = navItems
+      .map((item) => `<a href="${esc(item.href)}">${esc(item.label)}</a>`)
+      .join("");
     const isHomepage = pageId === "homepage";
     const publicationSurface = resolvePublicationSurface(pageId);
     const footerPrimary = isHomepage
@@ -905,14 +962,22 @@
   global.EXECUTIA_INSTITUTIONAL_ENV = Object.freeze({
     FLOW,
     PUBLIC_PRODUCT_FLOW,
+    CANONICAL_PUBLIC_NAV,
+    ENTRY_PUBLIC_NAV,
+    ENTRY_LAYER_ORIGIN,
     FOOTER_LINKS,
     AI_CLARITY,
     ENTRY_SEMANTICS,
+    resolvePublicLayer,
+    isExecutionPublicLayer,
+    isEntryPublicLayer,
     DEMO_FLOW,
     mount,
     mountAiMeta,
     mountDemoFlowLadder,
     renderHeader,
+    renderInstitutionalHeader,
+    renderEntryHeader,
     renderFooter,
     renderHomeHero,
     renderEntryHeroShort,

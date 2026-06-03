@@ -1,0 +1,52 @@
+{
+  "pass": true,
+  "entryLayerOrigin": "https://executia.io/",
+  "entrySiteNote": "executia.io is served from a separate Vercel deployment (not this repo). ENTRY header path is defensive when hostname is executia.io.",
+  "institutionalNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+  "entryNav": "ENTRY GLOBAL INSTITUTIONAL",
+  "execution": {
+    "navOk": true,
+    "brandOk": true,
+    "identicalStructure": true,
+    "forbiddenFound": [],
+    "routes": {
+      "execution-home": {
+        "pageId": "homepage",
+        "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "headerNormalized": "<div class=\"ex-env-header ex-env-header--institutional\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow ex-env-flow-institutional\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav> </div>",
+        "headerHtml": "<div class=\"ex-env-header ex-env-header--institutional\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow ex-env-flow-institutional\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"is-active\" aria-current=\"page\">HOME</a><a href=\"/execution-test/\" class=\"\">VALIDATE EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">PILOT</a></nav>\n      </div>"
+      },
+      "execution-test": {
+        "pageId": "execution",
+        "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "headerNormalized": "<div class=\"ex-env-header ex-env-header--institutional\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow ex-env-flow-institutional\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav> </div>",
+        "headerHtml": "<div class=\"ex-env-header ex-env-header--institutional\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow ex-env-flow-institutional\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"is-active\" aria-current=\"page\">VALIDATE EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">PILOT</a></nav>\n      </div>"
+      },
+      "public-proof": {
+        "pageId": "proof",
+        "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "headerNormalized": "<div class=\"ex-env-header ex-env-header--institutional\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow ex-env-flow-institutional\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav> </div>",
+        "headerHtml": "<div class=\"ex-env-header ex-env-header--institutional\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow ex-env-flow-institutional\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">VALIDATE EXECUTION</a><a href=\"/public-proof/\" class=\"is-active\" aria-current=\"page\">PROOF</a><a href=\"/request-pilot/\" class=\"\">PILOT</a></nav>\n      </div>"
+      },
+      "request-pilot": {
+        "pageId": "request",
+        "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+        "brandHref": "https://executia.io/",
+        "headerNormalized": "<div class=\"ex-env-header ex-env-header--institutional\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow ex-env-flow-institutional\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav> </div>",
+        "headerHtml": "<div class=\"ex-env-header ex-env-header--institutional\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow ex-env-flow-institutional\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">VALIDATE EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"is-active\" aria-current=\"page\">PILOT</a></nav>\n      </div>"
+      }
+    }
+  },
+  "entry": {
+    "navOk": true,
+    "brandOk": true,
+    "ctaOk": true,
+    "forbiddenFound": [],
+    "navText": "ENTRY GLOBAL INSTITUTIONAL",
+    "brandHref": "https://executia.io/",
+    "headerHtml": "<div class=\"ex-env-header ex-env-header--entry\" role=\"banner\">\n        <a class=\"ex-env-brand ex-env-brand--entry\" href=\"https://executia.io/\" aria-label=\"EXECUTIA entry\"><strong>EXECUTIA™</strong><span>EXECUTION STANDARD</span></a>\n        <nav class=\"ex-env-flow ex-env-flow-entry\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"is-active\" aria-current=\"page\">ENTRY</a><a href=\"/global\" class=\"\">GLOBAL</a><a href=\"/institutional\" class=\"\">INSTITUTIONAL</a></nav>\n        <a class=\"ex-env-header-cta\" href=\"https://execution.executia.io/execution-test/\">Enter Execution Test ↗</a>\n      </div>"
+  }
+}
