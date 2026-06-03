@@ -28,34 +28,32 @@
   },
   "protected_structure": [
     { "id": "exStandardHero", "label": "Document" },
-    { "id": "exStandardStructure", "label": "Standard Doctrine" },
-    { "id": "exStandardLayers", "label": "Standard Layers" },
-    { "id": "exStandardApplicability", "label": "Standard Applicability" },
-    { "id": "exStandardPublicationSequence", "label": "Publication Sequence" },
+    { "id": "exStandardStructure", "label": "Execution Standard Structure" },
+    { "id": "exStandardPublicationChain", "label": "Publication Chain" },
     { "id": "exStandardAuthority", "label": "Publication Identity" },
     { "id": "exStandardDocumentState", "label": "Document State" }
   ],
   "section_order": [
     "exStandardHero",
     "exStandardStructure",
-    "exStandardLayers",
-    "exStandardApplicability",
-    "exStandardPublicationSequence",
+    "exStandardPublicationChain",
     "exStandardAuthority",
     "exStandardDocumentState"
   ],
-  "standard_applicability": {
-    "section_label": "Standard Applicability",
-    "registry_class": "ex-publication-applicability-registry",
-    "items": [
-      "Public Administration",
-      "Enterprise",
-      "Regulated Capital",
-      "Governed Systems"
+  "standard_structure": {
+    "section_label": "Execution Standard Structure",
+    "registry_class": "ex-publication-structure-registry",
+    "rows": [
+      { "index": "01", "label": "Governance" },
+      { "index": "02", "label": "Validation" },
+      { "index": "03", "label": "Control" },
+      { "index": "04", "label": "Proof" },
+      { "index": "05", "label": "Commitment" },
+      { "index": "06", "label": "Execution" }
     ]
   },
-  "publication_sequence": {
-    "section_label": "Publication Sequence",
+  "standard_publication_chain": {
+    "section_label": "Publication Chain",
     "registry_class": "ex-publication-sequence-registry",
     "rows": [
       { "index": "01", "label": "Standard" },
@@ -115,27 +113,24 @@
   },
   "hero": [
     "Document",
-    "EXECUTIA Governance Standard",
+    "EXECUTIA Standard",
     "Classification",
-    "Governance Standard",
+    "Execution Standard",
     "Status",
     "Published"
   ],
   "standard_definition": [
-    "Standard Principle",
-    "Principle",
-    "Governance Precedes Execution",
-    "Execution Order",
+    "Execution Standard Structure",
+    "Governance",
     "Validation",
     "Control",
     "Proof",
     "Commitment",
     "Execution",
-    "Standard Layers",
-    "Validation Layer",
-    "Control Layer",
-    "Proof Layer",
-    "Committed Layer"
+    "Publication Chain",
+    "Standard",
+    "Evidence Annex",
+    "Administrative Annex"
   ],
   "forbidden_on_homepage": [
     "exDemoControlMap",
@@ -154,6 +149,8 @@
     "ex-standard-hero",
     "ex-standard-headline",
     "The Governance Standard",
+    "Governance Standard",
+    "EXECUTIA Governance Standard",
     "data-ex-env-footer",
     "ex-standard-publication-footer",
     "EXECUTIA™",
@@ -178,6 +175,19 @@
     "exStandardCta",
     "Purpose",
     "Defined for",
-    "ex-arch-infra-stack"
+    "ex-arch-infra-stack",
+    "Standard Principle",
+    "Governance Precedes Execution",
+    "Execution Order",
+    "Standard Layers",
+    "Validation Layer",
+    "Control Layer",
+    "Proof Layer",
+    "Committed Layer",
+    "Standard Applicability",
+    "Public Administration",
+    "Regulated Capital",
+    "Governed Systems",
+    "Publication Sequence"
   ]
 }

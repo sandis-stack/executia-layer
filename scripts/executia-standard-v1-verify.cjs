@@ -49,13 +49,11 @@ function check(label, html, required, forbidden) {
 }
 
 check("homepage", home, [
-  "EXECUTIA Governance Standard",
-  "Governance Standard",
+  "EXECUTIA Standard",
+  "Execution Standard",
   "exStandardAuthority",
   "exStandardStructure",
-  "exStandardLayers",
-  "exStandardApplicability",
-  "exStandardPublicationSequence",
+  "exStandardPublicationChain",
   "EXECUTIA-STANDARD-V1",
   "Publication Identity",
   "Document Status",
@@ -66,17 +64,10 @@ check("homepage", home, [
   "exStandardDocumentState",
   "ex-publication-document-open",
   "ex-publication-document-registry",
-  "Standard Layers",
-  "Standard Principle",
-  "Governance Precedes Execution",
-  "Execution Order",
-  "Validation Layer",
-  "Committed Layer",
-  "Standard Applicability",
-  "Publication Sequence",
-  "Public Administration",
-  "Regulated Capital",
-  "Governed Systems",
+  "Execution Standard Structure",
+  "Publication Chain",
+  "Governance",
+  "Commitment",
   "Evidence Annex",
   "Administrative Annex",
   "executia-standard-homepage.js",
@@ -127,13 +118,26 @@ check("homepage", home, [
   "<h4>Version</h4>",
   "EXECUTIA™",
   "Execution Governance Standard",
+  "Governance Standard",
+  "EXECUTIA Governance Standard",
   "Governance First",
   "Governed AI",
   "Investors",
   "exStandardEndOfDocument",
   "ex-arch-infra-stack",
   "ex-standard-hero",
-  "The Governance Standard"
+  "The Governance Standard",
+  "Standard Principle",
+  "Governance Precedes Execution",
+  "Execution Order",
+  "Standard Layers",
+  "Validation Layer",
+  "Committed Layer",
+  "Standard Applicability",
+  "Publication Sequence",
+  "Public Administration",
+  "Regulated Capital",
+  "Governed Systems"
 ]);
 
 check("demonstration", demoPage, [
@@ -228,8 +232,13 @@ check("request-pilot", pilot, [
   "ex-inst-generate-btn"
 ]);
 
-if (!standardJs.includes("STANDARD_APPLICABILITY")) {
-  console.error("FAIL: homepage must export STANDARD_APPLICABILITY");
+if (!standardJs.includes("EXECUTION_STANDARD_STRUCTURE")) {
+  console.error("FAIL: homepage must export EXECUTION_STANDARD_STRUCTURE");
+  failed += 1;
+}
+
+if (!standardJs.includes("PUBLICATION_CHAIN")) {
+  console.error("FAIL: homepage must export PUBLICATION_CHAIN");
   failed += 1;
 }
 
@@ -238,23 +247,13 @@ if (!standardJs.includes("PUBLICATION_IDENTITY")) {
   failed += 1;
 }
 
-if (!standardJs.includes("EXECUTION_ORDER")) {
-  console.error("FAIL: homepage must export EXECUTION_ORDER");
-  failed += 1;
-}
-
 if (!standardJs.includes("DOCUMENT_STATE")) {
   console.error("FAIL: homepage must export DOCUMENT_STATE");
   failed += 1;
 }
 
-if (!standardJs.includes("STANDARD_LAYERS")) {
-  console.error("FAIL: homepage must export STANDARD_LAYERS");
-  failed += 1;
-}
-
-if (!standardJs.includes("Governed Systems")) {
-  console.error("FAIL: homepage standard applicability must include Governed Systems");
+if (!standardJs.includes("Governance")) {
+  console.error("FAIL: homepage standard structure must include Governance");
   failed += 1;
 }
 
@@ -271,9 +270,7 @@ if (!map.includes("Validation Layer")) {
 const order = [
   "exStandardHero",
   "exStandardStructure",
-  "exStandardLayers",
-  "exStandardApplicability",
-  "exStandardPublicationSequence",
+  "exStandardPublicationChain",
   "exStandardAuthority",
   "exStandardDocumentState"
 ];

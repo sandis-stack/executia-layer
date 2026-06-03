@@ -29,7 +29,8 @@ function extractSection(html, sectionId) {
 
 const FORBIDDEN = [
   "EXECUTIA™",
-  "Execution Governance Standard",
+  "Governance Standard",
+  "EXECUTIA Governance Standard",
   "Governance First",
   "Governed AI",
   "content: \"L1\"",
@@ -43,7 +44,18 @@ const FORBIDDEN = [
   "exStandardEndOfDocument",
   "End of Document",
   "ex-standard-hero",
-  "The Governance Standard"
+  "The Governance Standard",
+  "Standard Principle",
+  "Governance Precedes Execution",
+  "Execution Order",
+  "Standard Layers",
+  "Standard Applicability",
+  "Publication Sequence",
+  "Validation Layer",
+  "Committed Layer",
+  "Public Administration",
+  "Regulated Capital",
+  "Governed Systems"
 ];
 
 for (const phrase of FORBIDDEN) {
@@ -58,39 +70,34 @@ if (css.includes("ex-publication-document-open::before") && !css.includes("ex-pu
   }
 }
 
-if (!home.includes("Governance Precedes Execution")) {
-  fail("homepage missing standard principle: Governance Precedes Execution");
-}
-
 if (!home.includes(`${REG_LABEL}Classification</span>`) &&
-    !/<span class="ex-publication-registry-label">Classification<\/span>\s*<p>Governance Standard<\/p>/.test(home)) {
-  fail("homepage missing classification: Governance Standard");
+    !/<span class="ex-publication-registry-label">Classification<\/span>\s*<p>Execution Standard<\/p>/.test(home)) {
+  fail("homepage missing classification: Execution Standard");
 }
 
-const doctrine = extractSection(home, "exStandardStructure");
-if (!doctrine.includes("Execution Order")) fail("homepage missing Execution Order section label");
+const structure = extractSection(home, "exStandardStructure");
+if (!structure.includes("Execution Standard Structure")) fail("homepage missing Execution Standard Structure section label");
 for (const row of [
-  { index: "01", label: "Validation" },
-  { index: "02", label: "Control" },
-  { index: "03", label: "Proof" },
-  { index: "04", label: "Commitment" },
-  { index: "05", label: "Execution" }
+  { index: "01", label: "Governance" },
+  { index: "02", label: "Validation" },
+  { index: "03", label: "Control" },
+  { index: "04", label: "Proof" },
+  { index: "05", label: "Commitment" },
+  { index: "06", label: "Execution" }
 ]) {
   const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.index}</span>\\s*<p>${row.label}</p>`);
-  if (!pattern.test(doctrine)) fail(`execution order missing registry row: ${row.index} ${row.label}`);
+  if (!pattern.test(structure)) fail(`standard structure missing registry row: ${row.index} ${row.label}`);
 }
 
-const layers = extractSection(home, "exStandardLayers");
-for (const layer of ["Validation Layer", "Control Layer", "Proof Layer", "Committed Layer"]) {
-  const pattern = new RegExp(`<span class="ex-publication-registry-label">${layer}</span>\\s*<p>${layer}</p>`);
-  if (!pattern.test(layers)) fail(`standard layers missing registry row: ${layer}`);
-}
-if (layers.includes("ex-arch-infra-stack")) fail("standard layers must not use engineering stack notation");
-
-const applicability = extractSection(home, "exStandardApplicability");
-for (const item of ["Public Administration", "Enterprise", "Regulated Capital", "Governed Systems"]) {
-  const pattern = new RegExp(`<span class="ex-publication-registry-label">${item}</span>\\s*<p>${item}</p>`);
-  if (!pattern.test(applicability)) fail(`standard applicability missing registry row: ${item}`);
+const chain = extractSection(home, "exStandardPublicationChain");
+if (!chain.includes("Publication Chain")) fail("homepage missing Publication Chain section label");
+for (const row of [
+  { index: "01", label: "Standard" },
+  { index: "02", label: "Evidence Annex" },
+  { index: "03", label: "Administrative Annex" }
+]) {
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.index}</span>\\s*<p>${row.label}</p>`);
+  if (!pattern.test(chain)) fail(`standard publication chain missing registry row: ${row.index} ${row.label}`);
 }
 
 const identity = extractSection(home, "exStandardAuthority");
@@ -110,14 +117,12 @@ if (!/<span class="ex-publication-registry-label">Document State<\/span>\s*<p>FI
   fail("document state missing registry row: Document State → FINAL");
 }
 
-if (!home.includes("EXECUTIA Governance Standard")) fail("homepage missing document title EXECUTIA Governance Standard");
+if (!home.includes("EXECUTIA Standard")) fail("homepage missing document title EXECUTIA Standard");
 
 const ORDER = [
   "exStandardHero",
   "exStandardStructure",
-  "exStandardLayers",
-  "exStandardApplicability",
-  "exStandardPublicationSequence",
+  "exStandardPublicationChain",
   "exStandardAuthority",
   "exStandardDocumentState"
 ];

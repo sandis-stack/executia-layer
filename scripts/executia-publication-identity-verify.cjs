@@ -56,10 +56,10 @@ const pilot = read("public/request-pilot/index.html");
 const envJs = read("public/components/executia-institutional-environment.js");
 
 const REQUIRED = [
-  { label: "Document", value: "EXECUTIA Governance Standard", pages: ["public/index.html"] },
+  { label: "Document", value: "EXECUTIA Standard", pages: ["public/index.html"] },
   { label: "Document", value: "Execution Control Map", pages: ["public/demonstration/index.html"] },
   { label: "Document", value: "Pilot Request Publication", pages: ["public/request-pilot/index.html"] },
-  { label: "Classification", value: "Governance Standard", pages: ["public/index.html"] },
+  { label: "Classification", value: "Execution Standard", pages: ["public/index.html"] },
   { label: "Classification", value: "Evidence Annex", pages: ["public/demonstration/index.html"] },
   { label: "Classification", value: "Administrative Annex", pages: ["public/request-pilot/index.html"] },
   { label: "Document Status", value: "Published", pages: PUBLICATION_PAGES },
@@ -74,6 +74,8 @@ for (const rel of PUBLICATION_PAGES) {
   if (html.includes("Purpose")) fail(`${rel} must not expose Purpose metadata`);
   if (html.includes("Defined for")) fail(`${rel} must not expose Defined for metadata`);
   if (html.includes("The Execution Governance Standard")) fail(`${rel} must not use legacy standard title`);
+  if (html.includes("Governance Standard")) fail(`${rel} must not use Governance Standard wording`);
+  if (html.includes("EXECUTIA Governance Standard")) fail(`${rel} must not use EXECUTIA Governance Standard wording`);
 }
 
 function hasRegistryPair(html, label, value) {

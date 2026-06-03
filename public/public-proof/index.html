@@ -566,39 +566,15 @@
       footer{flex-direction:column}
     }
   </style>
+  <link rel="stylesheet" href="/components/executia-design-system.css" />
+  <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
 </head>
-<body>
-  <div class="shell">
-    <header>
-      <a class="brand" href="https://executia.io">
-        <strong>EXECUTIA™</strong>
-        <span>Execution Control Standard</span>
-      </a>
-
-      <nav class="system-layer" aria-label="System layers">
-        <a href="https://executia.io">Entry</a>
-        <a href="/execution-test/">Execution Test</a>
-        <a href="/dashboard">Engine</a>
-      </nav>
-
-      <nav class="nav" aria-label="Proof actions">
-        <a class="active" href="/public-proof/">Proof</a>
-        <a href="/regulator/">Regulator</a>
-        <a class="primary" href="/request-pilot/">Request Pilot</a>
-      </nav>
-    </header>
-
+<body class="ex-institutional-env" data-ex-env-page="proof">
+  <div data-ex-env-header></div>
+  <main class="shell">
     <div id="app"></div>
-
-    <footer>
-      <div>EXECUTIA™ — Public Execution Proof Infrastructure.</div>
-      <div>
-        <a href="/execution-test/">Execution Test</a> ·
-        <a href="/proof-explorer/">Proof Explorer</a> ·
-        <a href="/regulator/">Regulator</a>
-      </div>
-    </footer>
-  </div>
+  </main>
+  <div data-ex-env-footer></div>
 
   <script>
     function esc(value){
@@ -882,5 +858,7 @@
 
     loadProof();
   </script>
+  <script src="/components/executia-institutional-surfaces.js"></script>
+  <script src="/components/executia-institutional-environment.js"></script>
 </body>
 </html>

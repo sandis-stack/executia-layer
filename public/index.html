@@ -3,202 +3,117 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>EXECUTIA — EXECUTIA Governance Standard</title>
-  <meta name="description" content="EXECUTIA Governance Standard · EXECUTIA-STANDARD-V1 · Published" />
-  <meta name="keywords" content="governance standard, EXECUTIA, government, enterprise" />
+  <title>EXECUTIA — Execution governance standard</title>
+  <meta name="description" content="EXECUTIA validates decisions, approvals, payments, and operational commitments before execution risk materializes." />
   <link rel="stylesheet" href="/components/executia-design-system.css" />
   <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
-  <script type="application/ld+json" id="ex-standard-jsonld">
-  {
-    "@context": "https://schema.org",
-    "@type": "DefinedTerm",
-    "name": "EXECUTIA",
-    "alternateName": "EXECUTIA Governance Standard",
-    "description": "Governance Standard",
-    "termCode": "EXECUTIA-STANDARD-V1"
-  }
-  </script>
+  <link rel="stylesheet" href="/components/executia-homepage-engine.css" />
   <script src="/components/executia-institutional-surfaces.js"></script>
-  <script src="/components/executia-standard-homepage.js"></script>
   <script src="/components/executia-institutional-environment.js"></script>
 </head>
-<body class="ex-institutional-env ex-standard-homepage ex-institutional-publication" data-ex-env-page="homepage">
-  <main class="ex-inst-shell ex-standard-shell" id="main-content">
+<body class="ex-institutional-env ex-homepage-engine" data-ex-env-page="homepage">
+  <div data-ex-env-header></div>
 
-    <article class="ex-standard-publication-document" aria-label="EXECUTIA Standard Publication">
+  <main class="ex-inst-shell" id="main-content">
 
-      <!-- DOCUMENT -->
-      <section class="ex-inst-block ex-standard-block ex-publication-document-open" id="exStandardHero" aria-label="Document">
-        <h1 class="ex-publication-sr-only">EXECUTIA Governance Standard</h1>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-document-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Document</span>
-            <p>EXECUTIA Governance Standard</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Classification</span>
-            <p>Governance Standard</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Status</span>
-            <p>Published</p>
-          </div>
+    <!-- 1. Hero -->
+    <section class="ex-home-section ex-home-hero ex-card" id="exHomeHero" aria-labelledby="exHomeHeroHeadline">
+      <p class="ex-home-kicker">What EXECUTIA is</p>
+      <h1 class="ex-home-headline" id="exHomeHeroHeadline">Prevent execution failures before they occur.</h1>
+      <p class="ex-home-lead">EXECUTIA is an execution-governance standard that validates decisions, approvals, payments and operational commitments before risk materializes.</p>
+      <p class="ex-home-emphasis">Designed for governments, regulators, infrastructure operators and enterprise decision-makers.</p>
+      <ul class="ex-home-flow-list" aria-label="Trust markers">
+        <li>Validation before commitment</li>
+        <li>Execution proof generated automatically</li>
+        <li>Replayable decision record</li>
+        <li>Audit-ready evidence chain</li>
+      </ul>
+      <div class="ex-home-actions">
+        <a class="ex-home-cta-primary" href="/request-pilot/">Request Institutional Pilot</a>
+        <a class="ex-home-cta-secondary" href="/public-proof/">View Proof</a>
+      </div>
+    </section>
+
+    <!-- 2. Problem -->
+    <section class="ex-home-section ex-card ex-home-cost-of-failure" id="exHomeProblem" aria-labelledby="exHomeProblemLabel">
+      <p class="ex-home-kicker">Problem</p>
+      <h2 class="ex-inst-label" id="exHomeProblemLabel">Commitments outrun governance.</h2>
+      <ul class="ex-home-problem-outcomes">
+        <li>Commitments are made before readiness is verified.</li>
+        <li>Controls are applied after execution occurs.</li>
+        <li>Evidence is reconstructed after incidents.</li>
+        <li>Audit discovers problems after consequences materialize.</li>
+      </ul>
+    </section>
+
+    <!-- 3. Model -->
+    <section class="ex-home-section ex-card ex-home-difference-section" id="exHomeModel" aria-labelledby="exHomeModelLabel">
+      <p class="ex-home-kicker">Model</p>
+      <h2 class="ex-inst-label" id="exHomeModelLabel">How EXECUTIA changes execution</h2>
+      <div class="ex-home-contrast">
+        <div class="ex-home-contrast-block ex-card">
+          <h3>Current Systems</h3>
+          <p>Execution</p>
+          <p>↓</p>
+          <p>Incident</p>
+          <p>↓</p>
+          <p>Audit</p>
         </div>
-      </section>
-
-      <!-- STANDARD PRINCIPLE -->
-      <section class="ex-inst-block ex-standard-block ex-standard-doctrine-block" id="exStandardStructure" aria-label="Standard doctrine">
-        <h2 class="ex-inst-label" id="exStandardPrincipleLabel">Standard Principle</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-doctrine-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Principle</span>
-            <p>Governance Precedes Execution</p>
-          </div>
+        <div class="ex-home-contrast-block ex-card">
+          <h3>EXECUTIA</h3>
+          <p>Governance</p>
+          <p>↓</p>
+          <p>Validation</p>
+          <p>↓</p>
+          <p>Execution</p>
+          <p>↓</p>
+          <p>Proof</p>
         </div>
-        <h2 class="ex-inst-label" id="exStandardExecutionOrderLabel">Execution Order</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-sequence-registry ex-publication-execution-order-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">01</span>
-            <p>Validation</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">02</span>
-            <p>Control</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">03</span>
-            <p>Proof</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">04</span>
-            <p>Commitment</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">05</span>
-            <p>Execution</p>
-          </div>
-        </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- STANDARD LAYERS -->
-      <section class="ex-inst-block ex-standard-block" id="exStandardLayers" aria-labelledby="exStandardLayersLabel">
-        <h2 class="ex-inst-label" id="exStandardLayersLabel">Standard Layers</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-layers-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Validation Layer</span>
-            <p>Validation Layer</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Control Layer</span>
-            <p>Control Layer</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Proof Layer</span>
-            <p>Proof Layer</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Committed Layer</span>
-            <p>Committed Layer</p>
-          </div>
-        </div>
-      </section>
+    <!-- 4. Proof -->
+    <section class="ex-home-section ex-card ex-home-what-you-receive" id="exHomeProof" aria-labelledby="exHomeProofLabel">
+      <p class="ex-home-kicker">Proof</p>
+      <h2 class="ex-inst-label" id="exHomeProofLabel">Execution becomes evidence.</h2>
+      <ul class="ex-home-flow-list">
+        <li>Decision trace recorded</li>
+        <li>Validation record generated</li>
+        <li>Registry proof created</li>
+        <li>Audit evidence available immediately</li>
+        <li>Replayable governance history</li>
+      </ul>
+    </section>
 
-      <!-- STANDARD APPLICABILITY -->
-      <section class="ex-inst-block ex-standard-block" id="exStandardApplicability" aria-labelledby="exStandardApplicabilityLabel">
-        <h2 class="ex-inst-label" id="exStandardApplicabilityLabel">Standard Applicability</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-applicability-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Public Administration</span>
-            <p>Public Administration</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Enterprise</span>
-            <p>Enterprise</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Regulated Capital</span>
-            <p>Regulated Capital</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Governed Systems</span>
-            <p>Governed Systems</p>
-          </div>
-        </div>
-      </section>
+    <!-- 5. Audience -->
+    <section class="ex-home-section ex-card" id="exHomeAudience" aria-labelledby="exHomeAudienceLabel">
+      <p class="ex-home-kicker">Audience</p>
+      <h2 class="ex-inst-label" id="exHomeAudienceLabel">Who uses EXECUTIA</h2>
+      <ul class="ex-home-flow-list ex-home-audience-list">
+        <li>Governments</li>
+        <li>Regulators</li>
+        <li>Infrastructure Operators</li>
+        <li>Enterprise</li>
+      </ul>
+    </section>
 
-      <!-- PUBLICATION SEQUENCE -->
-      <section class="ex-inst-block ex-standard-block" id="exStandardPublicationSequence" aria-labelledby="exStandardPublicationSequenceLabel">
-        <h2 class="ex-inst-label" id="exStandardPublicationSequenceLabel">Publication Sequence</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-sequence-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">01</span>
-            <p>Standard</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">02</span>
-            <p>Evidence Annex</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">03</span>
-            <p>Administrative Annex</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- PUBLICATION IDENTITY -->
-      <section class="ex-inst-block ex-standard-block ex-standard-block--reference" id="exStandardAuthority" aria-labelledby="exStandardAuthorityLabel">
-        <h2 class="ex-inst-label" id="exStandardAuthorityLabel">Publication Identity</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-identity-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Document Status</span>
-            <p>Published</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Publication Date</span>
-            <p>2026-05-31</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Revision</span>
-            <p>V1</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Authority</span>
-            <p>EXECUTIA CTO</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Release</span>
-            <p>EXECUTIA-STANDARD-V1</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- DOCUMENT STATE -->
-      <section class="ex-inst-block ex-standard-block ex-standard-block--terminal" id="exStandardDocumentState" aria-label="Document state">
-        <div class="ex-standard-authority ex-standard-registry ex-publication-terminal-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Document State</span>
-            <p>FINAL</p>
-          </div>
-        </div>
-      </section>
-
-    </article>
+    <!-- 6. Pilot -->
+    <section class="ex-home-section ex-card ex-home-pilot-cta" id="exHomePilot" aria-labelledby="exHomePilotLabel">
+      <p class="ex-home-kicker">Pilot</p>
+      <h2 class="ex-inst-label" id="exHomePilotLabel">Run a 2–6 week institutional pilot.</h2>
+      <ul class="ex-home-flow-list">
+        <li>Validate one real workflow.</li>
+        <li>Measure prevented failures.</li>
+        <li>Generate proof artifacts.</li>
+        <li>Deliver pilot report and rollout recommendation.</li>
+      </ul>
+      <div class="ex-home-actions ex-home-actions--pilot">
+        <a class="ex-home-cta-primary" href="/request-pilot/">Request Institutional Pilot</a>
+      </div>
+    </section>
 
   </main>
 
-  <script>
-    (function bootStandardHomepage() {
-      function initPage() {
-        window.EXECUTIA_INSTITUTIONAL_ENVIRONMENT?.mount();
-        window.EXECUTIA_STANDARD_HOMEPAGE?.init();
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initPage);
-      } else {
-        initPage();
-      }
-    })();
-  </script>
+  <div data-ex-env-footer></div>
 </body>
 </html>

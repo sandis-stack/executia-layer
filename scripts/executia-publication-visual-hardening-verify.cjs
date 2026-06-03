@@ -40,6 +40,9 @@ for (const forbidden of [
   "ex-standard-headline",
   "ex-standard-hero-statement",
   "The Governance Standard",
+  "Governance Standard",
+  "EXECUTIA Governance Standard",
+  "Execution Governance Standard",
   "ex-standard-brand"
 ]) {
   if (home.includes(forbidden)) fail(`visual hardening forbidden surface residue: ${forbidden}`);
@@ -49,9 +52,9 @@ if (home.includes("ex-standard-hero")) fail("visual hardening must not use hero 
 
 const REG_LABEL = '<span class="ex-publication-registry-label">';
 
-if (!home.includes("EXECUTIA Governance Standard")) fail("homepage missing document title EXECUTIA Governance Standard");
-if (!new RegExp(`${REG_LABEL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}Document</span>\\s*<p>EXECUTIA Governance Standard</p>`).test(home)) {
-  fail("document field must be EXECUTIA Governance Standard");
+if (!home.includes("EXECUTIA Standard")) fail("homepage missing document title EXECUTIA Standard");
+if (!new RegExp(`${REG_LABEL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}Document</span>\\s*<p>EXECUTIA Standard</p>`).test(home)) {
+  fail("document field must be EXECUTIA Standard");
 }
 
 const identity = extractSection(home, "exStandardAuthority");
@@ -69,17 +72,15 @@ if (!css.includes("--ex-pub-label-color")) fail("visual hardening label tokens m
 if (!css.includes("--ex-pub-value-color")) fail("visual hardening value tokens missing");
 if (!css.includes("--ex-pub-index-col")) fail("visual hardening sequence registry tokens missing");
 
-const sequence = extractSection(home, "exStandardPublicationSequence");
-const doctrine = extractSection(home, "exStandardStructure");
-if (!sequence.includes("ex-publication-sequence-registry")) fail("publication sequence must use sequence registry");
-if (!doctrine.includes("ex-publication-execution-order-registry")) fail("execution order must use sequence registry family");
+const chain = extractSection(home, "exStandardPublicationChain");
+const structure = extractSection(home, "exStandardStructure");
+if (!chain.includes("ex-publication-sequence-registry")) fail("standard publication chain must use sequence registry");
+if (!structure.includes("ex-publication-structure-registry")) fail("standard structure must use structure registry family");
 
 const ORDER = [
   "exStandardHero",
   "exStandardStructure",
-  "exStandardLayers",
-  "exStandardApplicability",
-  "exStandardPublicationSequence",
+  "exStandardPublicationChain",
   "exStandardAuthority",
   "exStandardDocumentState"
 ];

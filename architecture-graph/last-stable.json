@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-25T12:32:34.408Z",
-  "branch": "phase-3b3-ledger-polish",
-  "commit": "e537acda05bae923508e60fa99196e3870f34f43",
+  "generated_at": "2026-05-31T16:55:26.642Z",
+  "branch": "main",
+  "commit": "6d1ac37b60943e5dc5935415a3d9137767b0e0b8",
   "nodes": [
     {
       "id": "endpoint:audit/verify",
@@ -748,6 +748,38 @@
       "classification": "governance_layer"
     },
     {
+      "id": "cursor:.cursor/rules/homepage-v1-frozen.mdc",
+      "type": "governance",
+      "file": ".cursor/rules/homepage-v1-frozen.mdc",
+      "label": ".cursor/rules/homepage-v1-frozen.mdc",
+      "canonical": false,
+      "classification": "governance_layer"
+    },
+    {
+      "id": "cursor:.cursor/rules/institutional-publication-phase.mdc",
+      "type": "governance",
+      "file": ".cursor/rules/institutional-publication-phase.mdc",
+      "label": ".cursor/rules/institutional-publication-phase.mdc",
+      "canonical": false,
+      "classification": "governance_layer"
+    },
+    {
+      "id": "cursor:.cursor/rules/publication-system-v1-frozen.mdc",
+      "type": "governance",
+      "file": ".cursor/rules/publication-system-v1-frozen.mdc",
+      "label": ".cursor/rules/publication-system-v1-frozen.mdc",
+      "canonical": false,
+      "classification": "governance_layer"
+    },
+    {
+      "id": "cursor:.cursor/rules/request-pilot-v1-frozen.mdc",
+      "type": "governance",
+      "file": ".cursor/rules/request-pilot-v1-frozen.mdc",
+      "label": ".cursor/rules/request-pilot-v1-frozen.mdc",
+      "canonical": false,
+      "classification": "governance_layer"
+    },
+    {
       "id": "cursor:.cursor/rules/security-rules.mdc",
       "type": "governance",
       "file": ".cursor/rules/security-rules.mdc",
@@ -980,6 +1012,14 @@
       "classification": "architecture_memory"
     },
     {
+      "id": "cursor:.cursor/context/homepage-v1-authority.md",
+      "type": "context",
+      "file": ".cursor/context/homepage-v1-authority.md",
+      "label": ".cursor/context/homepage-v1-authority.md",
+      "canonical": false,
+      "classification": "architecture_memory"
+    },
+    {
       "id": "cursor:.cursor/context/institutional-completion.md",
       "type": "context",
       "file": ".cursor/context/institutional-completion.md",
@@ -1000,6 +1040,14 @@
       "type": "context",
       "file": ".cursor/context/institutional-product-completion.md",
       "label": ".cursor/context/institutional-product-completion.md",
+      "canonical": false,
+      "classification": "architecture_memory"
+    },
+    {
+      "id": "cursor:.cursor/context/institutional-publication-program.md",
+      "type": "context",
+      "file": ".cursor/context/institutional-publication-program.md",
+      "label": ".cursor/context/institutional-publication-program.md",
       "canonical": false,
       "classification": "architecture_memory"
     },
@@ -1040,6 +1088,14 @@
       "type": "context",
       "file": ".cursor/context/protected-files.md",
       "label": ".cursor/context/protected-files.md",
+      "canonical": false,
+      "classification": "architecture_memory"
+    },
+    {
+      "id": "cursor:.cursor/context/publication-system-v1-review-package.md",
+      "type": "context",
+      "file": ".cursor/context/publication-system-v1-review-package.md",
+      "label": ".cursor/context/publication-system-v1-review-package.md",
       "canonical": false,
       "classification": "architecture_memory"
     },
@@ -1252,6 +1308,26 @@
       "relation": "ai_governance"
     },
     {
+      "from": "cursor:.cursor/rules/homepage-v1-frozen.mdc",
+      "to": "governance:phase-3b5",
+      "relation": "ai_governance"
+    },
+    {
+      "from": "cursor:.cursor/rules/institutional-publication-phase.mdc",
+      "to": "governance:phase-3b5",
+      "relation": "ai_governance"
+    },
+    {
+      "from": "cursor:.cursor/rules/publication-system-v1-frozen.mdc",
+      "to": "governance:phase-3b5",
+      "relation": "ai_governance"
+    },
+    {
+      "from": "cursor:.cursor/rules/request-pilot-v1-frozen.mdc",
+      "to": "governance:phase-3b5",
+      "relation": "ai_governance"
+    },
+    {
       "from": "cursor:.cursor/rules/security-rules.mdc",
       "to": "governance:phase-3b5",
       "relation": "ai_governance"
@@ -1397,6 +1473,11 @@
       "relation": "memory"
     },
     {
+      "from": "cursor:.cursor/context/homepage-v1-authority.md",
+      "to": "context:architecture-graph",
+      "relation": "memory"
+    },
+    {
       "from": "cursor:.cursor/context/institutional-completion.md",
       "to": "context:architecture-graph",
       "relation": "memory"
@@ -1408,6 +1489,11 @@
     },
     {
       "from": "cursor:.cursor/context/institutional-product-completion.md",
+      "to": "context:architecture-graph",
+      "relation": "memory"
+    },
+    {
+      "from": "cursor:.cursor/context/institutional-publication-program.md",
       "to": "context:architecture-graph",
       "relation": "memory"
     },
@@ -1433,6 +1519,11 @@
     },
     {
       "from": "cursor:.cursor/context/protected-files.md",
+      "to": "context:architecture-graph",
+      "relation": "memory"
+    },
+    {
+      "from": "cursor:.cursor/context/publication-system-v1-review-package.md",
       "to": "context:architecture-graph",
       "relation": "memory"
     },
@@ -1551,8 +1642,8 @@
       }
     ],
     "summary_counts": {
-      "total_nodes": 137,
-      "total_edges": 75,
+      "total_nodes": 144,
+      "total_edges": 82,
       "api_endpoints": 72,
       "orphan_candidates": 0,
       "shadow_flow_candidates": 1,
@@ -1574,8 +1665,8 @@
         "legacy_projection": 4,
         "local_tooling": 1,
         "unknown": 0,
-        "governance_layer": 15,
-        "architecture_memory": 40,
+        "governance_layer": 19,
+        "architecture_memory": 43,
         "ui_console": 0,
         "engineering_console": 2
       }

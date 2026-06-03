@@ -1,0 +1,30 @@
+{
+  "local-home": {
+    "url": "http://127.0.0.1:3456/",
+    "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+    "brandText": "EXECUTIA™ Execution governance standard",
+    "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"is-active\" aria-current=\"page\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>",
+    "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"ACTIVE\" >HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav> </div>"
+  },
+  "local-execution-test": {
+    "url": "http://127.0.0.1:3456/execution-test/",
+    "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+    "brandText": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"is-active\" aria-current=\"page\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>",
+    "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"ACTIVE\" >EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav> </div>"
+  },
+  "local-public-proof": {
+    "url": "http://127.0.0.1:3456/public-proof/",
+    "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+    "brandText": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"is-active\" aria-current=\"page\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>",
+    "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"ACTIVE\" >PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav> </div>"
+  },
+  "local-request-pilot": {
+    "url": "http://127.0.0.1:3456/request-pilot/",
+    "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+    "brandText": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"is-active\" aria-current=\"page\">REQUEST PILOT</a></nav>\n      </div>",
+    "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"ACTIVE\" >REQUEST PILOT</a></nav> </div>"
+  }
+}

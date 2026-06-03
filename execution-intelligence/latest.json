@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-05-25T13:12:40.676Z",
-  "branch": "phase-3b3-ledger-polish",
-  "commit": "e537acda05bae923508e60fa99196e3870f34f43",
+  "generated_at": "2026-06-02T17:14:04.741Z",
+  "branch": "main",
+  "commit": "6d1ac37b60943e5dc5935415a3d9137767b0e0b8",
   "inputs": {
     "architecture_graph": true,
     "engineering_ledger_latest": true,
-    "git_files_changed": 20,
+    "git_files_changed": 1690,
     "architecture_graph_report": true,
     "protected_files_config": ".cursor/context/protected-files.md"
   },
   "stability": {
-    "overall_score": 95,
+    "overall_score": 94,
     "architecture_score": 95,
-    "governance_score": 74,
+    "governance_score": 66,
     "replay_score": 100,
     "verification_score": 100,
     "endpoint_consistency_score": 100,
     "deductions": {
       "orphans": 0,
       "shadows": 1,
-      "protected": 1,
+      "protected": 2,
       "governance_warnings": 3,
       "missing_canonical_edges": 0,
       "classified_endpoints": 72,
@@ -28,8 +28,8 @@
     }
   },
   "risk": {
-    "overall": "HIGH",
-    "canonical_risk": "LOW",
+    "overall": "CANONICAL",
+    "canonical_risk": "CANONICAL",
     "replay_risk": "LOW",
     "governance_risk": "HIGH",
     "architecture_risk": "MEDIUM",
@@ -45,7 +45,7 @@
     "removed_orphans": [],
     "new_shadow_flows": [],
     "removed_shadow_flows": [],
-    "baseline": "2026-05-25T12:32:34.408Z"
+    "baseline": "2026-05-31T16:55:26.642Z"
   },
   "deploy_intelligence": {
     "protected_files_touched": [
@@ -54,16 +54,18 @@
         "patterns": [
           "scripts/test-runner.js"
         ]
+      },
+      {
+        "file": "vercel.json",
+        "patterns": [
+          "vercel.json"
+        ]
       }
     ],
     "canonical_authority_affected": [],
     "replay_layer_affected": [],
     "public_verify_affected": [],
-    "governance_layer_affected": [
-      ".cursor/rules/change-governance.mdc",
-      "scripts/phase-3b8-architecture-graph.js",
-      ".cursor/rules/executia-hard-governance.mdc"
-    ]
+    "governance_layer_affected": []
   },
   "findings": [
     {
@@ -72,12 +74,13 @@
       "message": "1 shadow flow reference(s) in codebase"
     },
     {
-      "level": "HIGH",
+      "level": "CANONICAL",
       "code": "PROTECTED_TOUCH",
-      "message": "1 protected file(s) modified in working tree"
+      "message": "2 protected file(s) modified in working tree"
     }
   ],
   "recommendations": [
+    "Run full institutional verification: npm test, ledger/audit vector tests, production audit/verify curl.",
     "Obtain explicit approval for protected file modifications before deploy."
   ],
   "deploy_readiness": "REVIEW_REQUIRED",

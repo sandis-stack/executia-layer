@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>EXECUTIA — Pilot Request Publication</title>
-  <meta name="description" content="Pilot Request Publication · Administrative Annex · EXECUTIA-STANDARD-V1 · Published" />
+  <title>EXECUTIA — Request Institutional Pilot</title>
+  <meta name="description" content="Request an institutional pilot · qualification · organization onboarding · EXECUTIA" />
   <link rel="stylesheet" href="/components/executia-design-system.css" />
   <link rel="stylesheet" href="/components/executia-institutional-environment.css" />
   <script src="/components/executia-institutional-surfaces.js"></script>
@@ -12,99 +12,120 @@
   <script src="/components/executia-institutional-environment.js"></script>
 </head>
 <body class="ex-institutional-env ex-request-pilot-page ex-institutional-publication" data-ex-env-page="request">
+  <div data-ex-env-header></div>
   <main class="ex-inst-shell ex-standard-shell" id="main-content">
 
-    <article class="ex-standard-publication-document" aria-label="Administrative Annex Publication">
+    <article class="ex-standard-publication-document ex-pilot-purpose-document" aria-label="Institutional pilot request">
 
-      <!-- DOCUMENT -->
-      <section class="ex-inst-block ex-standard-block ex-publication-document-open" id="exPilotHeroSection" aria-label="Document">
-        <h1 class="ex-publication-sr-only">Pilot Request Publication</h1>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-document-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Document</span>
-            <p>Pilot Request Publication</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Classification</span>
-            <p>Administrative Annex</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Status</span>
-            <p>Published</p>
-          </div>
-        </div>
+      <!-- PRIMARY ONBOARDING — viewport purpose (Task 28) -->
+      <section class="ex-inst-block ex-standard-block ex-pilot-onboarding-primary" id="exPilotOnboardingPrimary" aria-labelledby="exPilotOnboardingTitle">
+        <h1 class="ex-pilot-onboarding-title" id="exPilotOnboardingTitle">Request Institutional Pilot</h1>
+        <p class="ex-pilot-onboarding-purpose">Institutional pilot request, qualification review, and organization onboarding for governed execution evaluation.</p>
+        <div class="ex-standard-authority ex-standard-registry ex-pilot-onboarding-registry" id="exPilotOnboardingRecords" aria-label="Pilot onboarding summary"></div>
       </section>
 
-      <section class="ex-inst-block ex-standard-block" id="exPilotScopeSection" aria-labelledby="exPilotScopeLabel">
-        <h2 class="ex-inst-label" id="exPilotScopeLabel">Administrative Scope</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-admin-registry" id="exPilotScopeRecords"></div>
-      </section>
+      <details class="ex-pilot-doc-record" id="exPilotDocRecord">
+        <summary class="ex-pilot-doc-record-summary">Administrative annex document record</summary>
+        <section class="ex-inst-block ex-standard-block ex-publication-document-open ex-pilot-publication-record" id="exPilotHeroSection" aria-label="Document">
+          <h2 class="ex-publication-sr-only">Pilot Request Publication</h2>
+          <div class="ex-standard-authority ex-standard-registry ex-publication-document-registry">
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Document</span>
+              <p>Pilot Request Publication</p>
+            </div>
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Classification</span>
+              <p>Administrative Annex</p>
+            </div>
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Status</span>
+              <p>Published</p>
+            </div>
+          </div>
+        </section>
+      </details>
 
-      <section class="ex-inst-block ex-standard-block" id="exPilotOutcomeSection" aria-labelledby="exPilotOutcomeLabel">
-        <h2 class="ex-inst-label" id="exPilotOutcomeLabel">Administrative Outcome</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-admin-registry" id="exPilotOutcomeRecords"></div>
-      </section>
+      <details class="ex-pilot-admin-annex" id="exPilotAdminAnnex">
+        <summary class="ex-pilot-admin-annex-summary">Pilot qualification, onboarding records, and administrative review</summary>
 
-      <section class="ex-inst-block ex-standard-block" id="exPilotRequestSection" aria-labelledby="exPilotRequestLabel">
-        <h2 class="ex-inst-label" id="exPilotRequestLabel">Administrative Review Records</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-admin-registry" id="exPilotFieldRecords"></div>
-      </section>
+        <section class="ex-inst-block ex-standard-block ex-pilot-admin-onboarding" id="exPilotScopeSection" aria-labelledby="exPilotScopeLabel">
+          <h2 class="ex-inst-label" id="exPilotScopeLabel">Administrative Scope</h2>
+          <p class="ex-pilot-section-lead" id="exPilotScopeLead">Pilot qualification: governed processes selected for institutional evaluation.</p>
+          <div class="ex-standard-authority ex-standard-registry ex-publication-admin-registry" id="exPilotScopeRecords"></div>
+        </section>
 
-      <!-- PUBLICATION SEQUENCE -->
-      <section class="ex-inst-block ex-standard-block" id="exPilotPublicationSequence" aria-labelledby="exPilotPublicationSequenceLabel">
-        <h2 class="ex-inst-label" id="exPilotPublicationSequenceLabel">Publication Sequence</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-sequence-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">01</span>
-            <p>Standard</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">02</span>
-            <p>Evidence Annex</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">03</span>
-            <p>Administrative Annex</p>
-          </div>
-        </div>
-      </section>
+        <section class="ex-inst-block ex-standard-block ex-pilot-admin-onboarding" id="exPilotOutcomeSection" aria-labelledby="exPilotOutcomeLabel">
+          <h2 class="ex-inst-label" id="exPilotOutcomeLabel">Administrative Outcome</h2>
+          <p class="ex-pilot-section-lead" id="exPilotOutcomeLead">Organization onboarding: recorded outcomes after pilot governance review.</p>
+          <div class="ex-standard-authority ex-standard-registry ex-publication-admin-registry" id="exPilotOutcomeRecords"></div>
+        </section>
 
-      <!-- PUBLICATION IDENTITY -->
-      <section class="ex-inst-block ex-standard-block ex-standard-block--reference" id="exPilotPublicationIdentity" aria-labelledby="exPilotPublicationIdentityLabel">
-        <h2 class="ex-inst-label" id="exPilotPublicationIdentityLabel">Publication Identity</h2>
-        <div class="ex-standard-authority ex-standard-registry ex-publication-identity-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Document Status</span>
-            <p>Published</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Publication Date</span>
-            <p>2026-05-31</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Revision</span>
-            <p>V1</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Authority</span>
-            <p>EXECUTIA CTO</p>
-          </div>
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Release</span>
-            <p>EXECUTIA-STANDARD-V1</p>
-          </div>
-        </div>
-      </section>
+        <section class="ex-inst-block ex-standard-block ex-pilot-admin-onboarding" id="exPilotRequestSection" aria-labelledby="exPilotRequestLabel">
+          <h2 class="ex-inst-label" id="exPilotRequestLabel">Administrative Review Records</h2>
+          <p class="ex-pilot-section-lead" id="exPilotRequestLead">Pilot request: institutional contact and review records required for intake.</p>
+          <div class="ex-standard-authority ex-standard-registry ex-publication-admin-registry" id="exPilotFieldRecords"></div>
+        </section>
+      </details>
 
-      <!-- DOCUMENT STATE -->
-      <section class="ex-inst-block ex-standard-block ex-standard-block--terminal" id="exPilotDocumentState" aria-label="Document state">
-        <div class="ex-standard-authority ex-standard-registry ex-publication-terminal-registry">
-          <div class="ex-standard-authority-item ex-standard-registry-row">
-            <span class="ex-publication-registry-label">Document State</span>
-            <p>FINAL</p>
+      <details class="ex-pilot-publication-annex" id="exPilotPublicationAnnex">
+        <summary class="ex-pilot-publication-annex-summary">Publication metadata and administrative annex record</summary>
+
+        <!-- PUBLICATION SEQUENCE -->
+        <section class="ex-inst-block ex-standard-block" id="exPilotPublicationSequence" aria-labelledby="exPilotPublicationSequenceLabel">
+          <h2 class="ex-inst-label" id="exPilotPublicationSequenceLabel">Publication Sequence</h2>
+          <div class="ex-standard-authority ex-standard-registry ex-publication-sequence-registry">
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">01</span>
+              <p>Standard</p>
+            </div>
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">02</span>
+              <p>Evidence Annex</p>
+            </div>
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">03</span>
+              <p>Administrative Annex</p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <!-- PUBLICATION IDENTITY -->
+        <section class="ex-inst-block ex-standard-block ex-standard-block--reference" id="exPilotPublicationIdentity" aria-labelledby="exPilotPublicationIdentityLabel">
+          <h2 class="ex-inst-label" id="exPilotPublicationIdentityLabel">Publication Identity</h2>
+          <div class="ex-standard-authority ex-standard-registry ex-publication-identity-registry">
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Document Status</span>
+              <p>Published</p>
+            </div>
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Publication Date</span>
+              <p>2026-05-31</p>
+            </div>
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Revision</span>
+              <p>V1</p>
+            </div>
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Authority</span>
+              <p>EXECUTIA CTO</p>
+            </div>
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Release</span>
+              <p>EXECUTIA-STANDARD-V1</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- DOCUMENT STATE -->
+        <section class="ex-inst-block ex-standard-block ex-standard-block--terminal" id="exPilotDocumentState" aria-label="Document state">
+          <div class="ex-standard-authority ex-standard-registry ex-publication-terminal-registry">
+            <div class="ex-standard-authority-item ex-standard-registry-row">
+              <span class="ex-publication-registry-label">Document State</span>
+              <p>FINAL</p>
+            </div>
+          </div>
+        </section>
+      </details>
 
     </article>
 
@@ -113,7 +134,6 @@
   <script>
     (function bootRequestPilot() {
       function initPage() {
-        window.EXECUTIA_INSTITUTIONAL_ENVIRONMENT?.mount();
         window.EXECUTIA_REQUEST_PILOT_UX?.init();
       }
 

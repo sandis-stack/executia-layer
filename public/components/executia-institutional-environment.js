@@ -2,20 +2,19 @@
  * EXECUTIA Institutional Environment — final sovereign public shell.
  */
 (function (global) {
-  /** Primary navigation only — inevitable operational flow. */
-  const FLOW = Object.freeze([
-    { id: "execution", label: "Execution", href: "/execution-test/" },
-    { id: "governance", label: "Governance", href: "/execution-demo.html" },
-    { id: "proof", label: "Proof", href: "/public-proof/" },
-    { id: "request", label: "Request", href: "/request-pilot/" }
+  /** Canonical public navigation (primary header standard). */
+  const CANONICAL_PUBLIC_NAV = Object.freeze([
+    { id: "homepage", label: "HOME", href: "/" },
+    { id: "execution", label: "EXECUTION", href: "/execution-test/" },
+    { id: "proof", label: "PROOF", href: "/public-proof/" },
+    { id: "request", label: "REQUEST PILOT", href: "/request-pilot/" }
   ]);
-
-  /** Public product surfaces — why, how, contact. Assessment is internal (not listed). */
-  const PUBLIC_PRODUCT_FLOW = Object.freeze([
-    { id: "homepage", label: "Home", href: "/" },
-    { id: "demonstration", label: "Demonstration", href: "/demonstration/" },
-    { id: "request", label: "Request Pilot", href: "/request-pilot/" }
-  ]);
+  const CANONICAL_PUBLIC_HEADER_PAGE_IDS = new Set(
+    CANONICAL_PUBLIC_NAV.map((item) => item.id)
+  );
+  const CANONICAL_PUBLIC_BRAND_SUBLINE = "Execution Governance Infrastructure";
+  const FLOW = CANONICAL_PUBLIC_NAV;
+  const PUBLIC_PRODUCT_FLOW = CANONICAL_PUBLIC_NAV;
 
   const FOOTER_LINKS = FLOW.map((f) => [f.label, f.href]);
 
@@ -211,35 +210,33 @@
       .replace(/>/g, "&gt;");
   }
 
+  function usesCanonicalPublicHeader(pageId) {
+    return CANONICAL_PUBLIC_HEADER_PAGE_IDS.has(pageId);
+  }
+
   function renderHeader(pageId) {
-    const isPublicProduct = ["homepage", "demonstration", "request", "assessment"].includes(pageId);
-    const navSource = isPublicProduct ? PUBLIC_PRODUCT_FLOW : FLOW;
-    const flow = navSource.map((item) => {
+    const flow = CANONICAL_PUBLIC_NAV.map((item) => {
       const active = item.id === pageId ? " is-active" : "";
       return `<a href="${esc(item.href)}" class="${active.trim()}"${active ? ' aria-current="page"' : ""}>${esc(item.label)}</a>`;
     }).join("");
 
-    const brandSub =
-      pageId === "homepage"
-        ? "Execution governance standard"
-        : pageId === "demonstration"
-          ? "How EXECUTIA works"
-          : pageId === "request"
-            ? "Start institutional discussion"
-            : pageId === "assessment"
-              ? "Internal evaluation"
-              : AI_CLARITY.INFRASTRUCTURE;
+    const brandSub = usesCanonicalPublicHeader(pageId)
+      ? CANONICAL_PUBLIC_BRAND_SUBLINE
+      : pageId === "demonstration"
+        ? "How EXECUTIA works"
+        : pageId === "assessment"
+          ? "Internal evaluation"
+          : CANONICAL_PUBLIC_BRAND_SUBLINE;
 
     const isStandardHomepage =
       pageId === "homepage" && document.body.classList.contains("ex-standard-homepage");
     const isPublicationDemonstration =
       pageId === "demonstration" && document.body.classList.contains("ex-institutional-publication");
-    const isPublicationRequestPilot =
-      pageId === "request" && document.body.classList.contains("ex-institutional-publication");
     const brandInner = `<strong>${esc(AI_CLARITY.PRODUCT)}™</strong><span>${esc(brandSub)}</span>`;
-    const brand = isStandardHomepage || isPublicationDemonstration || isPublicationRequestPilot
-      ? `<span class="ex-env-brand">${brandInner}</span>`
-      : `<a class="ex-env-brand" href="/">${brandInner}</a>`;
+    const brand =
+      isStandardHomepage || isPublicationDemonstration
+        ? `<span class="ex-env-brand">${brandInner}</span>`
+        : `<a class="ex-env-brand" href="/">${brandInner}</a>`;
 
     return `
       <div class="ex-env-header" role="banner">
@@ -273,8 +270,8 @@
   }
 
   function resolvePublicationSurface(pageId) {
-    if (pageId === "homepage" && document.body.classList.contains("ex-standard-homepage")) {
-      return { document: "Execution Governance Standard" };
+    if (pageId === "homepage" && document.body.classList.contains("ex-institutional-publication")) {
+      return { document: "EXECUTIA Standard" };
     }
     if (pageId === "demonstration" && document.body.classList.contains("ex-institutional-publication")) {
       return { document: "Execution Control Map" };
@@ -286,8 +283,7 @@
   }
 
   function renderFooter(pageId) {
-    const isPublicProduct = ["homepage", "demonstration", "request", "assessment"].includes(pageId);
-    const links = (isPublicProduct ? PUBLIC_PRODUCT_FLOW : FLOW).map(
+    const links = CANONICAL_PUBLIC_NAV.map(
       (item) => `<a href="${esc(item.href)}">${esc(item.label)}</a>`
     ).join("");
     const isHomepage = pageId === "homepage";
@@ -296,7 +292,7 @@
       ? "EXECUTIA-STANDARD-V1 · Published · EXECUTIA CTO"
       : AI_CLARITY.FOOTER_TRUST;
     const footerMeta = isHomepage
-      ? "The Execution Governance Standard"
+      ? "EXECUTIA Standard"
       : `${AI_CLARITY.INFRASTRUCTURE} · ${AI_CLARITY.DETERMINISTIC} · ${AI_CLARITY.INTEGRITY} · ${AI_CLARITY.REPLAY} · ${AI_CLARITY.TRUTH} · ${AI_CLARITY.CANONICAL}`;
     if (publicationSurface) {
       return renderPublicationMetadataFooter(publicationSurface.document);
@@ -686,7 +682,7 @@
               datePublished: "2026-05-31",
               isPartOf: {
                 "@type": "DefinedTerm",
-                name: "EXECUTIA Governance Standard",
+                name: "EXECUTIA Standard",
                 termCode: "EXECUTIA-STANDARD-V1"
               }
             }
@@ -698,7 +694,7 @@
               datePublished: "2026-05-31",
               isPartOf: {
                 "@type": "DefinedTerm",
-                name: "EXECUTIA Governance Standard",
+                name: "EXECUTIA Standard",
                 termCode: "EXECUTIA-STANDARD-V1"
               }
             };
@@ -815,10 +811,16 @@
       mount.outerHTML = html;
       return;
     }
+    const existing = document.querySelector(".ex-env-header[role='banner']");
+    if (existing) {
+      existing.outerHTML = html;
+      return;
+    }
     const legacy = document.querySelector(
       ".shell > header, main.shell > header, .reg-shell > header, body > .shell > header"
     );
     if (legacy) legacy.outerHTML = html;
+    else document.body.insertAdjacentHTML("afterbegin", html);
   }
 
   function mountFooter(pageId) {
@@ -864,7 +866,7 @@
   }
 
   function isPublicationSurface(pageId) {
-    if (pageId === "homepage" && document.body.classList.contains("ex-standard-homepage")) {
+    if (pageId === "homepage" && document.body.classList.contains("ex-institutional-publication")) {
       return true;
     }
     return (
@@ -884,7 +886,7 @@
       document.body.classList.add("ex-env-entry");
     }
     mountAiMeta();
-    if (!isPublicationSurface(pageId)) {
+    if (usesCanonicalPublicHeader(pageId) || !isPublicationSurface(pageId)) {
       mountHeader(pageId);
     }
     if (!isPublicationSurface(pageId)) {

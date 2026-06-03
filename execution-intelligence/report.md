@@ -2,17 +2,17 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-05-25T13:12:40.676Z
-**Branch:** phase-3b3-ledger-polish
-**Commit:** e537acda05bae923508e60fa99196e3870f34f43
+**Generated:** 2026-06-02T17:14:04.741Z
+**Branch:** main
+**Commit:** 6d1ac37b60943e5dc5935415a3d9137767b0e0b8
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 95 |
+| Overall | 94 |
 | Architecture | 95 |
-| Governance | 74 |
+| Governance | 66 |
 | Replay | 100 |
 | Verification | 100 |
 | Endpoint consistency | 100 |
@@ -20,7 +20,7 @@ Phase 3B9 — governed deploy intelligence (local tooling only).
 Deductions from 100 (overall):
 - Orphans: −0
 - Shadow flows: −1
-- Protected file touches: −1
+- Protected file touches: −2
 - Governance warnings: −3
 - Missing canonical edges: −0
 
@@ -28,8 +28,8 @@ Deductions from 100 (overall):
 
 | Dimension | Level |
 |-----------|-------|
-| Overall | **HIGH** |
-| Canonical | LOW |
+| Overall | **CANONICAL** |
+| Canonical | CANONICAL |
 | Replay | LOW |
 | Public verify | undefined |
 | Governance | HIGH |
@@ -39,7 +39,7 @@ Deductions from 100 (overall):
 
 ## Architecture delta
 
-Baseline: `2026-05-25T12:32:34.408Z`
+Baseline: `2026-05-31T16:55:26.642Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -60,16 +60,14 @@ _No replay layer files in current git diff._
 
 ## Governance impact
 
-Governance tooling / rules:
-- `.cursor/rules/change-governance.mdc`
-- `scripts/phase-3b8-architecture-graph.js`
-- `.cursor/rules/executia-hard-governance.mdc`
 
 Protected files:
 - `scripts/test-runner.js` (scripts/test-runner.js)
+- `vercel.json` (vercel.json)
 
 ## Recommendations
 
+- Run full institutional verification: npm test, ledger/audit vector tests, production audit/verify curl.
 - Obtain explicit approval for protected file modifications before deploy.
 
 ## Engineering Console Status
@@ -91,5 +89,5 @@ Protected files:
 
 ### Findings
 - [MEDIUM] SHADOW_FLOWS: 1 shadow flow reference(s) in codebase
-- [HIGH] PROTECTED_TOUCH: 1 protected file(s) modified in working tree
+- [CANONICAL] PROTECTED_TOUCH: 2 protected file(s) modified in working tree
 

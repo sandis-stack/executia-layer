@@ -26,7 +26,7 @@
   "publication_system": {
     "body_class": "ex-institutional-publication",
     "envelope": "ex-standard-publication-document",
-    "metadata_document": "Execution Governance Standard",
+    "metadata_document": "EXECUTIA Standard",
     "renderer": "renderEvidenceAnnexHtml"
   },
   "protected_structure": [

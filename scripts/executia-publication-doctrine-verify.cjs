@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-/** EXECUTIA Publication Doctrine — registry-only standard principle verification. */
+/** EXECUTIA Publication Structure — registry-only standard structure verification. */
 
 const path = require("path");
 const fs = require("fs");
@@ -16,8 +16,8 @@ function fail(msg) {
   failed += 1;
 }
 
-function extractDoctrineBlock(html) {
-  const start = html.indexOf('id="exStandardStructure"');
+function extractSection(html, sectionId) {
+  const start = html.indexOf(`id="${sectionId}"`);
   if (start < 0) return "";
   const sectionStart = html.lastIndexOf("<section", start);
   const sectionEnd = html.indexOf("</section>", start);
@@ -25,47 +25,43 @@ function extractDoctrineBlock(html) {
   return html.slice(sectionStart, sectionEnd + "</section>".length);
 }
 
-const doctrine = extractDoctrineBlock(home);
+const structure = extractSection(home, "exStandardStructure");
 
-if (!doctrine) fail("homepage missing exStandardStructure doctrine section");
+if (!structure) fail("homepage missing exStandardStructure section");
 
 for (const forbidden of [
   "The EXECUTIA Standard",
   "Governance first.",
   "Governance First",
-  "Execution commits only after",
+  "Governance Precedes Execution",
+  "Standard Principle",
+  "Execution Order",
+  "Standard Layers",
+  "Standard Applicability",
   "ex-standard-structure-statement",
-  "exStandardStructureLabel",
+  "exStandardPrincipleLabel",
   "<h4>↓</h4>"
 ]) {
-  if (home.includes(forbidden)) fail(`homepage must not contain slogan doctrine residue: ${forbidden}`);
+  if (home.includes(forbidden)) fail(`homepage must not contain explanatory doctrine residue: ${forbidden}`);
 }
 
-if (!doctrine.includes("Standard Principle")) fail("standard doctrine missing Standard Principle section label");
-if (!/<span class="ex-publication-registry-label">Principle<\/span>\s*<p>Governance Precedes Execution<\/p>/.test(doctrine)) {
-  fail("standard doctrine missing registry pair: Principle → Governance Precedes Execution");
-}
-
-if (!doctrine.includes("Execution Order")) fail("standard doctrine missing Execution Order section label");
+if (!structure.includes("Execution Standard Structure")) fail("execution standard structure missing section label");
 
 for (const row of [
-  { index: "01", label: "Validation" },
-  { index: "02", label: "Control" },
-  { index: "03", label: "Proof" },
-  { index: "04", label: "Commitment" },
-  { index: "05", label: "Execution" }
+  { index: "01", label: "Governance" },
+  { index: "02", label: "Validation" },
+  { index: "03", label: "Control" },
+  { index: "04", label: "Proof" },
+  { index: "05", label: "Commitment" },
+  { index: "06", label: "Execution" }
 ]) {
   const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.index}</span>\\s*<p>${row.label}</p>`);
-  if (!pattern.test(doctrine)) fail(`execution order missing registry row: ${row.index} ${row.label}`);
+  if (!pattern.test(structure)) fail(`standard structure missing registry row: ${row.index} ${row.label}`);
 }
 
-if (!doctrine.includes("ex-publication-doctrine-registry")) {
-  fail("standard doctrine must use publication doctrine registry styling");
-}
-
-if (!doctrine.includes("ex-publication-execution-order-registry")) {
-  fail("execution order must use publication execution order registry styling");
+if (!structure.includes("ex-publication-structure-registry")) {
+  fail("standard structure must use publication structure registry styling");
 }
 
 if (failed) process.exit(1);
-console.log("EXECUTIA publication doctrine verification passed.");
+console.log("EXECUTIA publication structure verification passed.");

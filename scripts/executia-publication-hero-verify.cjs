@@ -33,8 +33,8 @@ if (!documentOpen.includes("ex-publication-document-open")) {
 }
 
 const REQUIRED_DOCUMENT = [
-  { label: "Document", value: "EXECUTIA Governance Standard" },
-  { label: "Classification", value: "Governance Standard" },
+  { label: "Document", value: "EXECUTIA Standard" },
+  { label: "Classification", value: "Execution Standard" },
   { label: "Status", value: "Published" }
 ];
 
@@ -56,7 +56,10 @@ for (const forbidden of [
   "accountability",
   "infrastructure",
   "execution governance infrastructure",
-  "The Governance Standard"
+  "The Governance Standard",
+  "Governance Standard",
+  "EXECUTIA Governance Standard",
+  "Execution Governance Standard"
 ]) {
   if (home.includes(forbidden)) {
     fail(`homepage document contains forbidden brochure language: ${forbidden}`);

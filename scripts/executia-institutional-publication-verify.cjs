@@ -106,11 +106,15 @@ if (!envJs.includes("resolvePublicationSurface")) {
 }
 
 for (const doc of [
-  "The Execution Governance Standard",
+  "EXECUTIA Standard",
   "Execution Control Map",
   "Pilot Request Publication"
 ]) {
   if (!envJs.includes(doc)) fail(`publication metadata document missing: ${doc}`);
+}
+
+if (envJs.includes("Governance Standard")) {
+  fail("institutional environment must not contain Governance Standard wording");
 }
 
 if (failed) process.exit(1);

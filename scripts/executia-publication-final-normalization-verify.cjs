@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-/** EXECUTIA Publication Final Normalization — registry-only applicability and sequence verification. */
+/** EXECUTIA Publication Final Normalization — registry-only structure and chain verification. */
 
 const path = require("path");
 const fs = require("fs");
@@ -46,51 +46,61 @@ const FORBIDDEN = [
   "Regulated decisions need proof",
   "Leaders need one execution truth",
   "Capital requires provable governance",
-  "Autonomous systems must not act"
+  "Autonomous systems must not act",
+  "Standard Principle",
+  "Governance Precedes Execution",
+  "Standard Layers",
+  "Standard Applicability",
+  "Publication Sequence"
 ];
 
 for (const phrase of FORBIDDEN) {
   if (home.includes(phrase)) fail(`homepage must not contain persuasion residue: ${phrase}`);
 }
 
-const applicability = extractSection(home, "exStandardApplicability");
-const sequence = extractSection(home, "exStandardPublicationSequence");
+const structure = extractSection(home, "exStandardStructure");
+const chain = extractSection(home, "exStandardPublicationChain");
 
-if (!applicability) fail("homepage missing exStandardApplicability section");
-if (!sequence) fail("homepage missing exStandardPublicationSequence section");
+if (!structure) fail("homepage missing exStandardStructure section");
+if (!chain) fail("homepage missing exStandardPublicationChain section");
 
-if (!home.includes("Standard Applicability")) fail("homepage missing Standard Applicability section label");
-if (!home.includes("Publication Sequence")) fail("homepage missing Publication Sequence section label");
+if (!home.includes("Execution Standard Structure")) fail("homepage missing Execution Standard Structure section label");
+if (!home.includes("Publication Chain")) fail("homepage missing Publication Chain section label");
 
-const APPLICABILITY = ["Public Administration", "Enterprise", "Regulated Capital", "Governed Systems"];
-for (const item of APPLICABILITY) {
-  const pattern = new RegExp(`<span class="ex-publication-registry-label">${item}</span>\\s*<p>${item}</p>`);
-  if (!pattern.test(applicability)) fail(`standard applicability missing registry row: ${item}`);
+const STRUCTURE = [
+  { index: "01", label: "Governance" },
+  { index: "02", label: "Validation" },
+  { index: "03", label: "Control" },
+  { index: "04", label: "Proof" },
+  { index: "05", label: "Commitment" },
+  { index: "06", label: "Execution" }
+];
+for (const row of STRUCTURE) {
+  const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.index}</span>\\s*<p>${row.label}</p>`);
+  if (!pattern.test(structure)) fail(`standard structure missing registry row: ${row.index} ${row.label}`);
 }
 
-const SEQUENCE = [
+const CHAIN = [
   { index: "01", label: "Standard" },
   { index: "02", label: "Evidence Annex" },
   { index: "03", label: "Administrative Annex" }
 ];
-for (const row of SEQUENCE) {
+for (const row of CHAIN) {
   const pattern = new RegExp(`<span class="ex-publication-registry-label">${row.index}</span>\\s*<p>${row.label}</p>`);
-  if (!pattern.test(sequence)) fail(`publication sequence missing registry row: ${row.index} ${row.label}`);
+  if (!pattern.test(chain)) fail(`standard publication chain missing registry row: ${row.index} ${row.label}`);
 }
 
-if (!applicability.includes("ex-publication-applicability-registry")) {
-  fail("standard applicability must use publication applicability registry styling");
+if (!structure.includes("ex-publication-structure-registry")) {
+  fail("standard structure must use publication structure registry styling");
 }
-if (!sequence.includes("ex-publication-sequence-registry")) {
-  fail("publication sequence must use publication sequence registry styling");
+if (!chain.includes("ex-publication-sequence-registry")) {
+  fail("standard publication chain must use publication sequence registry styling");
 }
 
 const ORDER = [
   "exStandardHero",
   "exStandardStructure",
-  "exStandardLayers",
-  "exStandardApplicability",
-  "exStandardPublicationSequence",
+  "exStandardPublicationChain",
   "exStandardAuthority",
   "exStandardDocumentState"
 ];

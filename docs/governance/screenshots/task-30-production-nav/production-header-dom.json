@@ -1,0 +1,18 @@
+{
+  "https://execution.executia.io/": {
+    "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+    "headerSnippet": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"is-active\" aria-current=\"page\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>"
+  },
+  "https://execution.executia.io/execution-test/": {
+    "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+    "headerSnippet": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"is-active\" aria-current=\"page\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>"
+  },
+  "https://execution.executia.io/public-proof/": {
+    "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+    "headerSnippet": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"is-active\" aria-current=\"page\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>"
+  },
+  "https://execution.executia.io/request-pilot/": {
+    "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+    "headerSnippet": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution governance standard</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"is-active\" aria-current=\"page\">REQUEST PILOT</a></nav>\n      </div>"
+  }
+}

@@ -1623,8 +1623,7 @@ for (const publicPage of [
 
 for (const publicationPage of [
   "public/index.html",
-  "public/demonstration/index.html",
-  "public/request-pilot/index.html"
+  "public/demonstration/index.html"
 ]) {
   const html = readFileSync(join(__test_dir, "..", publicationPage), "utf8");
   if (!html.includes("ex-institutional-env") || !html.includes("ex-institutional-publication")) {
@@ -1683,14 +1682,20 @@ if (!proofHtml.includes("data-ex-env-proof-intro")) {
 }
 
 const requestPilotHtml = readFileSync(join(__test_dir, "..", "public/request-pilot/index.html"), "utf8");
-if (!requestPilotHtml.includes("Classification") || !requestPilotHtml.includes("Administrative Review Records")) {
-  throw new Error("Request pilot must present administrative annex publication structure");
+if (!requestPilotHtml.includes('id="organization"') || !requestPilotHtml.includes('id="problem"')) {
+  throw new Error("Request pilot must expose organization and problem fields");
 }
-if (requestPilotHtml.includes("<form") || requestPilotHtml.includes("<button")) {
-  throw new Error("Request pilot must not use lead-generation form UI");
+if (!requestPilotHtml.includes('id="contact"') || !requestPilotHtml.includes('id="email"')) {
+  throw new Error("Request pilot must expose contact and email fields");
 }
-if (requestPilotHtml.includes("executia-assessment-demo.css")) {
-  throw new Error("Request pilot must not load assessment demo stylesheet");
+if (!requestPilotHtml.includes("submitPilotRequest") || !requestPilotHtml.includes('class="submit"')) {
+  throw new Error("Request pilot must expose visible submit CTA with handler");
+}
+if (requestPilotHtml.includes("Administrative Review Records") || requestPilotHtml.includes("Publication Sequence")) {
+  throw new Error("Request pilot must not expose administrative publication registry language");
+}
+if (requestPilotHtml.includes("ex-institutional-publication")) {
+  throw new Error("Request pilot must not use publication annex envelope");
 }
 
 const finalRefinementFiles = [

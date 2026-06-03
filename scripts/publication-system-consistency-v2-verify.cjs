@@ -104,6 +104,8 @@ for (const page of [home, demo, pilot]) {
   if (page.includes("Purpose")) fail("publication surface must not expose Purpose metadata");
   if (page.includes("Defined for")) fail("publication surface must not expose Defined for metadata");
   if (page.includes("The Execution Governance Standard")) fail("publication surface must not use legacy standard title");
+  if (page.includes("Governance Standard")) fail("publication surface must not use Governance Standard wording");
+  if (page.includes("EXECUTIA Governance Standard")) fail("publication surface must not use EXECUTIA Governance Standard wording");
   if (page.includes("ex-standard-hero")) fail("publication surface must not use hero styling");
   if (page.includes("<button")) fail("publication surface must not expose button UI");
   if (page.includes("<form")) fail("publication surface must not expose form UI");

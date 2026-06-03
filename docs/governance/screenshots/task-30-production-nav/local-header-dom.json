@@ -1,0 +1,22 @@
+{
+  "local-home": {
+    "file": "/Users/sandis/Documents/executia-layer/public/index.html",
+    "navText": "",
+    "headerSnippet": "<div data-ex-env-header=\"\"></div>"
+  },
+  "local-execution-test": {
+    "file": "/Users/sandis/Documents/executia-layer/public/execution-test/index.html",
+    "navText": "",
+    "headerSnippet": "<div data-ex-env-header=\"\"></div>"
+  },
+  "local-public-proof": {
+    "file": "/Users/sandis/Documents/executia-layer/public/public-proof/index.html",
+    "navText": "",
+    "headerSnippet": "<div data-ex-env-header=\"\"></div>"
+  },
+  "local-request-pilot": {
+    "file": "/Users/sandis/Documents/executia-layer/public/request-pilot/index.html",
+    "navText": "",
+    "headerSnippet": "<div data-ex-env-header=\"\"></div>"
+  }
+}

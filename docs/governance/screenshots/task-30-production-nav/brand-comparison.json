@@ -1,0 +1,39 @@
+[
+  {
+    "route": "home",
+    "prodBrand": "EXECUTIA™ Execution governance standard",
+    "localBrand": "EXECUTIA™ Execution governance standard",
+    "brandMatch": true,
+    "headerCropHashMatch": true
+  },
+  {
+    "route": "execution-test",
+    "prodBrand": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "localBrand": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "brandMatch": true,
+    "headerCropHashMatch": true
+  },
+  {
+    "route": "public-proof",
+    "prodBrand": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "localBrand": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "brandMatch": true,
+    "headerCropHashMatch": true
+  },
+  {
+    "route": "request-pilot",
+    "prodBrand": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "localBrand": "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+    "brandMatch": true,
+    "headerCropHashMatch": true
+  },
+  {
+    "prodBrandUniqueCount": 2,
+    "prodBrands": [
+      "EXECUTIA™ Execution governance standard",
+      "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+      "EXECUTIA™ EXECUTION GOVERNANCE STANDARD",
+      "EXECUTIA™ EXECUTION GOVERNANCE STANDARD"
+    ]
+  }
+]

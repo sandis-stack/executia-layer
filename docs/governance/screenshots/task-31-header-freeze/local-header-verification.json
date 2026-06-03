@@ -1,0 +1,41 @@
+{
+  "pass": true,
+  "canonicalSubtitle": "EXECUTION GOVERNANCE INFRASTRUCTURE",
+  "subtitleOk": true,
+  "navOk": true,
+  "identicalStructure": true,
+  "routes": {
+    "local-home": {
+      "pageId": "homepage",
+      "bodyClass": "ex-institutional-env ex-homepage-engine",
+      "brandText": "EXECUTIA™ Execution Governance Infrastructure",
+      "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+      "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"is-active\" aria-current=\"page\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>",
+      "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">REQUEST PILOT</a></nav> </div>"
+    },
+    "local-execution-test": {
+      "pageId": "execution",
+      "bodyClass": "ex-institutional-env",
+      "brandText": "EXECUTIA™ Execution Governance Infrastructure",
+      "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+      "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"is-active\" aria-current=\"page\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>",
+      "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">REQUEST PILOT</a></nav> </div>"
+    },
+    "local-public-proof": {
+      "pageId": "proof",
+      "bodyClass": "ex-institutional-env",
+      "brandText": "EXECUTIA™ Execution Governance Infrastructure",
+      "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+      "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"is-active\" aria-current=\"page\">PROOF</a><a href=\"/request-pilot/\" class=\"\">REQUEST PILOT</a></nav>\n      </div>",
+      "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">REQUEST PILOT</a></nav> </div>"
+    },
+    "local-request-pilot": {
+      "pageId": "request",
+      "bodyClass": "ex-institutional-env ex-request-pilot-page ex-institutional-publication",
+      "brandText": "EXECUTIA™ Execution Governance Infrastructure",
+      "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+      "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"is-active\" aria-current=\"page\">REQUEST PILOT</a></nav>\n      </div>",
+      "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">REQUEST PILOT</a></nav> </div>"
+    }
+  }
+}

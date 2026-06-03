@@ -1,0 +1,47 @@
+{
+  "pass": false,
+  "canonicalBrand": "EXECUTIA™ EXECUTION GOVERNANCE INFRASTRUCTURE",
+  "canonicalNav": "HOME EXECUTION PROOF REQUEST PILOT",
+  "subtitleUnified": true,
+  "navUnified": true,
+  "identicalAboveFold": false,
+  "blockers": [
+    "Production / renders duplicate Primary navigation (double header) — mount() called twice before deploy fix",
+    "vercel --prod blocked in agent environment (auth.json EPERM / Response Error)"
+  ],
+  "routes": {
+    "https://execution.executia.io/": {
+      "brandText": "EXECUTIA™ Execution Governance Infrastructure",
+      "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+      "primaryNavCount": 2,
+      "duplicateHeader": true
+    },
+    "https://execution.executia.io/execution-test/": {
+      "brandText": "EXECUTIA™ Execution Governance Infrastructure",
+      "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+      "primaryNavCount": 1,
+      "duplicateHeader": false
+    },
+    "https://execution.executia.io/public-proof/": {
+      "brandText": "EXECUTIA™ Execution Governance Infrastructure",
+      "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+      "primaryNavCount": 1,
+      "duplicateHeader": false
+    },
+    "https://execution.executia.io/request-pilot/": {
+      "brandText": "EXECUTIA™ Execution Governance Infrastructure",
+      "navText": "HOME EXECUTION PROOF REQUEST PILOT",
+      "primaryNavCount": 1,
+      "duplicateHeader": false
+    }
+  },
+  "localVerify": {
+    "renderHeaderVm": "pass (scripts/task-31-header-verify.mjs)",
+    "localServedSingleHeader": "pass after mountHeader idempotency fix (http://127.0.0.1:3456/)"
+  },
+  "deploy": {
+    "attempted": true,
+    "status": "not_deployed",
+    "reason": "vercel CLI cannot write auth.json in sandbox; vercel --prod returned Response Error"
+  }
+}

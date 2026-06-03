@@ -4,9 +4,9 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 
 ## Generated at
 
-- **Timestamp:** 2026-05-25T13:12:40.555Z
-- **Branch:** phase-3b3-ledger-polish
-- **Commit:** e537acda05bae923508e60fa99196e3870f34f43
+- **Timestamp:** 2026-06-02T17:14:04.573Z
+- **Branch:** main
+- **Commit:** 6d1ac37b60943e5dc5935415a3d9137767b0e0b8
 
 ## Canonical authority
 
@@ -40,6 +40,10 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 - `.cursor/rules/deployment-rules.mdc` — .cursor/rules/deployment-rules.mdc (`cursor:.cursor/rules/deployment-rules.mdc`)
 - `.cursor/rules/executia-governance.mdc` — .cursor/rules/executia-governance.mdc (`cursor:.cursor/rules/executia-governance.mdc`)
 - `.cursor/rules/executia-hard-governance.mdc` — .cursor/rules/executia-hard-governance.mdc (`cursor:.cursor/rules/executia-hard-governance.mdc`)
+- `.cursor/rules/homepage-v1-frozen.mdc` — .cursor/rules/homepage-v1-frozen.mdc (`cursor:.cursor/rules/homepage-v1-frozen.mdc`)
+- `.cursor/rules/institutional-publication-phase.mdc` — .cursor/rules/institutional-publication-phase.mdc (`cursor:.cursor/rules/institutional-publication-phase.mdc`)
+- `.cursor/rules/publication-system-v1-frozen.mdc` — .cursor/rules/publication-system-v1-frozen.mdc (`cursor:.cursor/rules/publication-system-v1-frozen.mdc`)
+- `.cursor/rules/request-pilot-v1-frozen.mdc` — .cursor/rules/request-pilot-v1-frozen.mdc (`cursor:.cursor/rules/request-pilot-v1-frozen.mdc`)
 - `.cursor/rules/security-rules.mdc` — .cursor/rules/security-rules.mdc (`cursor:.cursor/rules/security-rules.mdc`)
 - `.cursor/rules/supabase-rules.mdc` — .cursor/rules/supabase-rules.mdc (`cursor:.cursor/rules/supabase-rules.mdc`)
 - `.cursor/rules/vendor-safety.mdc` — .cursor/rules/vendor-safety.mdc (`cursor:.cursor/rules/vendor-safety.mdc`)
@@ -101,18 +105,19 @@ _None mapped._
 - `.cursor/context/governance-modes.md` — .cursor/context/governance-modes.md (`cursor:.cursor/context/governance-modes.md`)
 - `.cursor/context/governance-surface-separation.md` — .cursor/context/governance-surface-separation.md (`cursor:.cursor/context/governance-surface-separation.md`)
 - `.cursor/context/hard-governance-rules.md` — .cursor/context/hard-governance-rules.md (`cursor:.cursor/context/hard-governance-rules.md`)
+- `.cursor/context/homepage-v1-authority.md` — .cursor/context/homepage-v1-authority.md (`cursor:.cursor/context/homepage-v1-authority.md`)
 - `.cursor/context/institutional-completion.md` — .cursor/context/institutional-completion.md (`cursor:.cursor/context/institutional-completion.md`)
 - `.cursor/context/institutional-multi-surface.md` — .cursor/context/institutional-multi-surface.md (`cursor:.cursor/context/institutional-multi-surface.md`)
 - `.cursor/context/institutional-product-completion.md` — .cursor/context/institutional-product-completion.md (`cursor:.cursor/context/institutional-product-completion.md`)
+- `.cursor/context/institutional-publication-program.md` — .cursor/context/institutional-publication-program.md (`cursor:.cursor/context/institutional-publication-program.md`)
 - `.cursor/context/institutional-ui.md` — .cursor/context/institutional-ui.md (`cursor:.cursor/context/institutional-ui.md`)
 - `.cursor/context/operational-shell.md` — .cursor/context/operational-shell.md (`cursor:.cursor/context/operational-shell.md`)
 - `.cursor/context/pilot-readiness.md` — .cursor/context/pilot-readiness.md (`cursor:.cursor/context/pilot-readiness.md`)
 - `.cursor/context/production.md` — .cursor/context/production.md (`cursor:.cursor/context/production.md`)
 - `.cursor/context/protected-files.md` — .cursor/context/protected-files.md (`cursor:.cursor/context/protected-files.md`)
+- `.cursor/context/publication-system-v1-review-package.md` — .cursor/context/publication-system-v1-review-package.md (`cursor:.cursor/context/publication-system-v1-review-package.md`)
 - `.cursor/context/real-execution-mechanics.md` — .cursor/context/real-execution-mechanics.md (`cursor:.cursor/context/real-execution-mechanics.md`)
-- `.cursor/context/security.md` — .cursor/context/security.md (`cursor:.cursor/context/security.md`)
-- `.cursor/context/ui-rules.md` — .cursor/context/ui-rules.md (`cursor:.cursor/context/ui-rules.md`)
-- `.cursor/context/vendor-operations.md` — .cursor/context/vendor-operations.md (`cursor:.cursor/context/vendor-operations.md`)
+- _…and 3 more_
 
 ## Local tooling
 
@@ -160,8 +165,8 @@ _All API endpoints classified._
 
 | Metric | Count |
 |--------|------:|
-| Total nodes | 137 |
-| Total edges | 75 |
+| Total nodes | 144 |
+| Total edges | 82 |
 | API endpoints | 72 |
 | Orphan candidates (reduced) | 0 |
 | Shadow flow candidates (reduced) | 1 |
@@ -182,8 +187,8 @@ _All API endpoints classified._
 | Layer: legacy_projection | 4 |
 | Layer: local_tooling | 1 |
 | Layer: unknown | 0 |
-| Layer: governance_layer | 15 |
-| Layer: architecture_memory | 40 |
+| Layer: governance_layer | 19 |
+| Layer: architecture_memory | 43 |
 | Layer: ui_console | 0 |
 | Layer: engineering_console | 2 |
 

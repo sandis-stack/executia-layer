@@ -77,9 +77,7 @@ if (!/<span class="ex-publication-registry-label">Document State<\/span>\s*<p>FI
 const ORDER = [
   "exStandardHero",
   "exStandardStructure",
-  "exStandardLayers",
-  "exStandardApplicability",
-  "exStandardPublicationSequence",
+  "exStandardPublicationChain",
   "exStandardAuthority",
   "exStandardDocumentState"
 ];

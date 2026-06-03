@@ -66,32 +66,33 @@ if (Array.isArray(manifest.protected_structure)) {
   }
 }
 
-if (manifest.standard_applicability) {
-  const applicability = manifest.standard_applicability;
-  if (!home.includes(applicability.section_label)) {
-    fail("Standard Applicability section label missing");
+if (manifest.standard_structure) {
+  const structure = manifest.standard_structure;
+  if (!home.includes(structure.section_label)) {
+    fail("Execution Standard Structure section label missing");
   }
-  if (applicability.registry_class && !home.includes(applicability.registry_class)) {
-    fail(`standard applicability registry drift — missing: ${applicability.registry_class}`);
+  if (structure.registry_class && !home.includes(structure.registry_class)) {
+    fail(`standard structure registry drift — missing: ${structure.registry_class}`);
   }
-  for (const item of applicability.items || []) {
-    if (!home.includes(item)) fail(`standard applicability drift — missing: ${item}`);
-    if (!standardJs.includes(item)) fail(`standard applicability JS drift — missing: ${item}`);
+  for (const row of structure.rows || []) {
+    if (!home.includes(`<span class="ex-publication-registry-label">${row.index}</span>`)) fail(`standard structure index drift — missing: ${row.index}`);
+    if (!home.includes(row.label)) fail(`standard structure label drift — missing: ${row.label}`);
+    if (!standardJs.includes(row.label)) fail(`standard structure JS drift — missing: ${row.label}`);
   }
 }
 
-if (manifest.publication_sequence) {
-  const sequence = manifest.publication_sequence;
-  if (!home.includes(sequence.section_label)) {
-    fail("Publication Sequence section label missing");
+if (manifest.standard_publication_chain) {
+  const chain = manifest.standard_publication_chain;
+  if (!home.includes(chain.section_label)) {
+    fail("Publication Chain section label missing");
   }
-  if (sequence.registry_class && !home.includes(sequence.registry_class)) {
-    fail(`publication sequence registry drift — missing: ${sequence.registry_class}`);
+  if (chain.registry_class && !home.includes(chain.registry_class)) {
+    fail(`standard publication chain registry drift — missing: ${chain.registry_class}`);
   }
-  for (const row of sequence.rows || []) {
-    if (!home.includes(`<span class="ex-publication-registry-label">${row.index}</span>`)) fail(`publication sequence index drift — missing: ${row.index}`);
-    if (!home.includes(row.label)) fail(`publication sequence label drift — missing: ${row.label}`);
-    if (!standardJs.includes(row.label)) fail(`publication sequence JS drift — missing: ${row.label}`);
+  for (const row of chain.rows || []) {
+    if (!home.includes(`<span class="ex-publication-registry-label">${row.index}</span>`)) fail(`publication chain index drift — missing: ${row.index}`);
+    if (!home.includes(row.label)) fail(`publication chain label drift — missing: ${row.label}`);
+    if (!standardJs.includes(row.label)) fail(`publication chain JS drift — missing: ${row.label}`);
   }
 }
 
