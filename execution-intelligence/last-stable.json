@@ -1,26 +1,26 @@
 {
-  "generated_at": "2026-05-31T19:38:31.445Z",
+  "generated_at": "2026-06-03T05:54:03.140Z",
   "branch": "main",
-  "commit": "6d1ac37b60943e5dc5935415a3d9137767b0e0b8",
+  "commit": "829b152e9f76c5948a87c71a5ddb7532ff5bc786",
   "inputs": {
     "architecture_graph": true,
     "engineering_ledger_latest": true,
-    "git_files_changed": 1642,
+    "git_files_changed": 30,
     "architecture_graph_report": true,
     "protected_files_config": ".cursor/context/protected-files.md"
   },
   "stability": {
-    "overall_score": 94,
+    "overall_score": 98,
     "architecture_score": 95,
-    "governance_score": 66,
+    "governance_score": 94,
     "replay_score": 100,
     "verification_score": 100,
     "endpoint_consistency_score": 100,
     "deductions": {
       "orphans": 0,
       "shadows": 1,
-      "protected": 2,
-      "governance_warnings": 3,
+      "protected": 0,
+      "governance_warnings": 1,
       "missing_canonical_edges": 0,
       "classified_endpoints": 72,
       "unknown_endpoints": 0,
@@ -28,10 +28,10 @@
     }
   },
   "risk": {
-    "overall": "CANONICAL",
-    "canonical_risk": "CANONICAL",
+    "overall": "MEDIUM",
+    "canonical_risk": "LOW",
     "replay_risk": "LOW",
-    "governance_risk": "HIGH",
+    "governance_risk": "LOW",
     "architecture_risk": "MEDIUM",
     "orphan_risk": "LOW",
     "mutation_risk": "LOW"
@@ -45,23 +45,10 @@
     "removed_orphans": [],
     "new_shadow_flows": [],
     "removed_shadow_flows": [],
-    "baseline": "2026-05-31T16:55:26.642Z"
+    "baseline": "2026-06-03T05:23:15.422Z"
   },
   "deploy_intelligence": {
-    "protected_files_touched": [
-      {
-        "file": "scripts/test-runner.js",
-        "patterns": [
-          "scripts/test-runner.js"
-        ]
-      },
-      {
-        "file": "vercel.json",
-        "patterns": [
-          "vercel.json"
-        ]
-      }
-    ],
+    "protected_files_touched": [],
     "canonical_authority_affected": [],
     "replay_layer_affected": [],
     "public_verify_affected": [],
@@ -72,18 +59,12 @@
       "level": "MEDIUM",
       "code": "SHADOW_FLOWS",
       "message": "1 shadow flow reference(s) in codebase"
-    },
-    {
-      "level": "CANONICAL",
-      "code": "PROTECTED_TOUCH",
-      "message": "2 protected file(s) modified in working tree"
     }
   ],
   "recommendations": [
-    "Run full institutional verification: npm test, ledger/audit vector tests, production audit/verify curl.",
-    "Obtain explicit approval for protected file modifications before deploy."
+    "Maintain engineering ledger and architecture graph snapshots each pre-deploy run."
   ],
-  "deploy_readiness": "REVIEW_REQUIRED",
+  "deploy_readiness": "CAUTION",
   "engineering_console_detected": true,
   "engineering_console_status": {
     "DETECTED": true,

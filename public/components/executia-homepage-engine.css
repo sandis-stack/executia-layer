@@ -11,6 +11,10 @@ body.ex-homepage-engine .ex-inst-shell {
   padding: 0 var(--ex-ds-s24, 24px) var(--ex-ds-s64, 64px);
 }
 
+body.ex-homepage-engine[data-ex-env-page="homepage"] .ex-inst-shell {
+  padding-top: var(--ex-ds-s12, 12px);
+}
+
 body.ex-homepage-engine .ex-home-section {
   margin-bottom: var(--ex-ds-s64, 64px);
 }

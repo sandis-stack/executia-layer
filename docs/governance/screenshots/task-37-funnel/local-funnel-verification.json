@@ -1,7 +1,7 @@
 {
   "pass": true,
   "mode": "local",
-  "base": "http://127.0.0.1:3553",
+  "base": "http://127.0.0.1:3741",
   "checks": [
     {
       "id": "home",
@@ -52,7 +52,7 @@
   "pilotOk": true,
   "routes": {
     "home": {
-      "url": "http://127.0.0.1:3553/",
+      "url": "http://127.0.0.1:3741/",
       "bodyText": "EXECUTIA™\nEXECUTION GOVERNANCE INFRASTRUCTURE\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT\n\nSTEP 1 OF 4 — HOME\n\nHOME\n→\nVALIDATE EXECUTION\n→\nPROOF\n→\nPILOT\n\nWhat EXECUTIA is\n\nPrevent execution failures before they occur.\n\nEXECUTIA is an execution-governance standard that validates decisions, approvals, payments and operational commitments before risk materializes.\n\nDesigned for governments, regulators, infrastructure operators and enterprise decision-makers.\n\nValidation before commitment\nExecution proof generated automatically\nReplayable decision record\nAudit-ready evidence chain\nREQUEST INSTITUTIONAL PILOT\nVIEW PROOF\n\nProblem\n\nCommitments outrun governance.\nCommitments are made before readiness is verified.\nControls are applied after execution occurs.\nEvidence is reconstructed after incidents.\nAudit discovers problems after consequences materialize.\n\nModel\n\nHow EXECUTIA changes execution\nCurrent Systems\n\nExecution\n\n↓\n\nIncident\n\n↓\n\nAudit\n\nEXECUTIA\n\nGovernance\n\n↓\n\nValidation\n\n↓\n\nExecution\n\n↓\n\nProof\n\nProof\n\nExecution becomes evidence.\nDecision trace recorded\nValidation record generated\nRegistry proof created\nAudit evidence available immediately\nReplayable governance history\n\nAudience\n\nWho uses EXECUTIA\nGovernments\nRegulators\nInfrastructure Operators\nEnterprise\n\nPilot\n\nRun a 2–6 week institutional pilot.\nValidate one real workflow.\nMeasure prevented failures.\nGenerate proof artifacts.\nDeliver pilot report and rollout recommendation.\nREQUEST INSTITUTIONAL PILOT\nEXECUTIA™\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT",
       "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
       "funnelContext": "STEP 1 OF 4 — HOME",
@@ -66,7 +66,7 @@
       "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-37-funnel/home-header-funnel-crop.png"
     },
     "execution-test": {
-      "url": "http://127.0.0.1:3553/execution-test/",
+      "url": "http://127.0.0.1:3741/execution-test/",
       "bodyText": "EXECUTIA™\nEXECUTION GOVERNANCE INFRASTRUCTURE\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT\n\nSTEP 2 OF 4 — VALIDATE EXECUTION\n\nHOME\n→\nVALIDATE EXECUTION\n→\nPROOF\n→\nPILOT\nPUBLIC EXECUTION TEST\nDefine the result. EXECUTIA controls the execution.\n\nTest how an outcome is transformed into governance checks, execution risk, proof structure and pilot readiness.\n\nSTART EXECUTION TEST\nVERIFY PROOF\nEXECUTION STATE\nSTANDBY\nGOVERNANCE MODE\nREADY\nPROOF CHAIN\nNOT MATERIALIZED\nREGISTRY\nCONNECTED\nExecution Flow\nLIVE STANDARD\n1\nOutcome Defined\nHuman sets the intended result.\nINPUT\n2\nGovernance Checked\nRules, constraints and risk are evaluated.\nCONTROL\n3\nExecution Proof Created\nDecision becomes verifiable evidence.\nPROOF\nRun Execution Test\n\nEnter a project, process or public/private execution case. EXECUTIA will classify execution risk and generate a proof-ready governance structure.\n\nEXECUTION DOMAIN\nPublic procurement\nFinance / payment / accounting\nInfrastructure project\nCompliance control\nBusiness operations\nDEFINED OUTCOME\nBUDGET / VALUE\nTIMELINE\nRULES / CONSTRAINTS\nRUN EXECUTIA ANALYSIS\nLOAD EXAMPLE\nGovernance Result\n\nNo execution test has been run yet.\n\n—\nSCORE\nEXECUTIA™\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT",
       "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
       "funnelContext": "STEP 2 OF 4 — VALIDATE EXECUTION",
@@ -80,7 +80,7 @@
       "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-37-funnel/execution-test-header-funnel-crop.png"
     },
     "public-proof": {
-      "url": "http://127.0.0.1:3553/public-proof/",
+      "url": "http://127.0.0.1:3741/public-proof/",
       "bodyText": "EXECUTIA™\nEXECUTION GOVERNANCE INFRASTRUCTURE\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT\n\nSTEP 3 OF 4 — EXECUTION PROOF\n\nHOME\n→\nVALIDATE EXECUTION\n→\nPROOF\n→\nPILOT\nPUBLIC EXECUTION PROOF\n\nExample execution proof generated from a validated execution review.\n\nEXECUTION SUMMARY\nOUTCOME\nSupplier Selection and Payment Approval\nDOMAIN\nPublic Procurement\nRISK LEVEL\nMedium\nSTATUS\nValidated\nPROOF STATUS\nGenerated\nGOVERNANCE RESULT\n✓ Constraints Evaluated\n✓ Registry Verification Completed\n✓ Approval Chain Validated\n✓ Payment Controls Verified\n✓ Evidence Chain Recorded\nPROOF CHAIN\nOutcome Defined\n↓\nGovernance Checked\n↓\nExecution Validated\n↓\nProof Generated\n↓\nEvidence Available\nEVIDENCE RECORDS\nDecision Record\nValidation Record\nRegistry Verification\nApproval Record\nAudit Evidence\nEXECUTIA RESULT\n\nExecution converted into replayable evidence before commitment.\n\nRUN VALIDATION\nREQUEST PILOT\nEXECUTIA™\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT",
       "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
       "funnelContext": "STEP 3 OF 4 — EXECUTION PROOF",
@@ -94,7 +94,7 @@
       "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-37-funnel/public-proof-header-funnel-crop.png"
     },
     "request-pilot": {
-      "url": "http://127.0.0.1:3553/request-pilot/",
+      "url": "http://127.0.0.1:3741/request-pilot/",
       "bodyText": "EXECUTIA™\nEXECUTION GOVERNANCE INFRASTRUCTURE\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT\n\nSTEP 4 OF 4 — INSTITUTIONAL PILOT\n\nHOME\n→\nVALIDATE EXECUTION\n→\nPROOF\n→\nPILOT\n\nSTEP 4 OF 4 — INSTITUTIONAL PILOT\n\nRequest Institutional Pilot\n\nFinal onboarding stage after validation and proof review.\n\nInstitutional pilot request, qualification review, and organization onboarding for governed execution evaluation.\n\nWHY REQUEST A PILOT\n\nTo evaluate EXECUTIA execution governance against your institution's process before broader adoption.\n\nWHO QUALIFIES\n\nPublic institutions, regulated operators, and authorities accountable for execution governance with a defined process to assess.\n\nINFORMATION REQUIRED\n\nInstitutional contact, institution identity, authority role, official channel, process evaluation scope, and supporting documentation.\n\nWHAT HAPPENS NEXT\n\nReview record established, governance assessment scheduled, pilot scope confirmed, implementation assessment outcome recorded.\n\nADMINISTRATIVE ANNEX DOCUMENT RECORD\nPILOT QUALIFICATION, ONBOARDING RECORDS, AND ADMINISTRATIVE REVIEW\nPUBLICATION METADATA AND ADMINISTRATIVE ANNEX RECORD\nEXECUTIA™\nHOME\nVALIDATE EXECUTION\nPROOF\nPILOT",
       "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
       "funnelContext": "STEP 4 OF 4 — INSTITUTIONAL PILOT",

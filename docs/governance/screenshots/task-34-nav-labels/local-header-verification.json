@@ -1,0 +1,38 @@
+{
+  "pass": true,
+  "canonicalNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+  "navOk": true,
+  "footerNavOk": true,
+  "identicalStructure": true,
+  "forbiddenFound": [],
+  "routes": {
+    "local-home": {
+      "pageId": "homepage",
+      "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "footerNavText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"is-active\" aria-current=\"page\">HOME</a><a href=\"/execution-test/\" class=\"\">VALIDATE EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">PILOT</a></nav>\n      </div>",
+      "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav> </div>"
+    },
+    "local-execution-test": {
+      "pageId": "execution",
+      "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "footerNavText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"is-active\" aria-current=\"page\">VALIDATE EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"\">PILOT</a></nav>\n      </div>",
+      "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav> </div>"
+    },
+    "local-public-proof": {
+      "pageId": "proof",
+      "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "footerNavText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">VALIDATE EXECUTION</a><a href=\"/public-proof/\" class=\"is-active\" aria-current=\"page\">PROOF</a><a href=\"/request-pilot/\" class=\"\">PILOT</a></nav>\n      </div>",
+      "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav> </div>"
+    },
+    "local-request-pilot": {
+      "pageId": "request",
+      "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "footerNavText": null,
+      "headerHtml": "<div class=\"ex-env-header\" role=\"banner\">\n        <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a>\n        <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\" class=\"\">HOME</a><a href=\"/execution-test/\" class=\"\">VALIDATE EXECUTION</a><a href=\"/public-proof/\" class=\"\">PROOF</a><a href=\"/request-pilot/\" class=\"is-active\" aria-current=\"page\">PILOT</a></nav>\n      </div>",
+      "headerNormalized": "<div class=\"ex-env-header\" role=\"banner\"> <a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav> </div>"
+    }
+  }
+}

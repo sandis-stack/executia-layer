@@ -2,17 +2,17 @@
 
 Phase 3B9 — governed deploy intelligence (local tooling only).
 
-**Generated:** 2026-06-02T17:14:04.741Z
+**Generated:** 2026-06-03T05:54:03.140Z
 **Branch:** main
-**Commit:** 6d1ac37b60943e5dc5935415a3d9137767b0e0b8
+**Commit:** 829b152e9f76c5948a87c71a5ddb7532ff5bc786
 
 ## Stability score
 
 | Metric | Score |
 |--------|------:|
-| Overall | 94 |
+| Overall | 98 |
 | Architecture | 95 |
-| Governance | 66 |
+| Governance | 94 |
 | Replay | 100 |
 | Verification | 100 |
 | Endpoint consistency | 100 |
@@ -20,26 +20,26 @@ Phase 3B9 — governed deploy intelligence (local tooling only).
 Deductions from 100 (overall):
 - Orphans: −0
 - Shadow flows: −1
-- Protected file touches: −2
-- Governance warnings: −3
+- Protected file touches: −0
+- Governance warnings: −1
 - Missing canonical edges: −0
 
 ## Risk summary
 
 | Dimension | Level |
 |-----------|-------|
-| Overall | **CANONICAL** |
-| Canonical | CANONICAL |
+| Overall | **MEDIUM** |
+| Canonical | LOW |
 | Replay | LOW |
 | Public verify | undefined |
-| Governance | HIGH |
+| Governance | LOW |
 | Architecture | MEDIUM |
 | Orphan | LOW |
 | Mutation | LOW |
 
 ## Architecture delta
 
-Baseline: `2026-05-31T16:55:26.642Z`
+Baseline: `2026-06-03T05:23:15.422Z`
 
 - New nodes: 0
 - Removed nodes: 0
@@ -60,15 +60,11 @@ _No replay layer files in current git diff._
 
 ## Governance impact
 
-
-Protected files:
-- `scripts/test-runner.js` (scripts/test-runner.js)
-- `vercel.json` (vercel.json)
+_No governance or protected paths in current git diff._
 
 ## Recommendations
 
-- Run full institutional verification: npm test, ledger/audit vector tests, production audit/verify curl.
-- Obtain explicit approval for protected file modifications before deploy.
+- Maintain engineering ledger and architecture graph snapshots each pre-deploy run.
 
 ## Engineering Console Status
 
@@ -85,9 +81,8 @@ Protected files:
 
 ## Deploy readiness
 
-**Status:** REVIEW_REQUIRED
+**Status:** CAUTION
 
 ### Findings
 - [MEDIUM] SHADOW_FLOWS: 1 shadow flow reference(s) in codebase
-- [CANONICAL] PROTECTED_TOUCH: 2 protected file(s) modified in working tree
 

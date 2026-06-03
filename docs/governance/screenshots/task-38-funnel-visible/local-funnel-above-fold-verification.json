@@ -1,0 +1,298 @@
+{
+  "pass": true,
+  "comprehensionAudit": "PASS",
+  "viewportTopPx": 800,
+  "mode": "local",
+  "base": "http://127.0.0.1:3728",
+  "checks": [
+    {
+      "id": "home",
+      "funnelContextOk": true,
+      "funnelActiveOk": true,
+      "brandOk": true,
+      "aboveFoldDesktopOk": true,
+      "aboveFoldMobileOk": true,
+      "chromeBandOk": true,
+      "comprehensionAudit": true
+    },
+    {
+      "id": "execution-test",
+      "funnelContextOk": true,
+      "funnelActiveOk": true,
+      "brandOk": true,
+      "aboveFoldDesktopOk": true,
+      "aboveFoldMobileOk": true,
+      "chromeBandOk": true,
+      "comprehensionAudit": true
+    },
+    {
+      "id": "public-proof",
+      "funnelContextOk": true,
+      "funnelActiveOk": true,
+      "brandOk": true,
+      "aboveFoldDesktopOk": true,
+      "aboveFoldMobileOk": true,
+      "chromeBandOk": true,
+      "comprehensionAudit": true
+    },
+    {
+      "id": "request-pilot",
+      "funnelContextOk": true,
+      "funnelActiveOk": true,
+      "brandOk": true,
+      "aboveFoldDesktopOk": true,
+      "aboveFoldMobileOk": true,
+      "chromeBandOk": true,
+      "comprehensionAudit": true
+    }
+  ],
+  "routes": {
+    "home": {
+      "url": "http://127.0.0.1:3728/",
+      "funnelContext": "STEP 1 OF 4 — HOME",
+      "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+      "brandHref": "https://executia.io/",
+      "funnelActive": true,
+      "layout": {
+        "ok": true,
+        "funnelTop": 64,
+        "funnelBottom": 133.34375,
+        "stripBottom": 120.34375,
+        "contextBottom": 85.5,
+        "headerBottom": 64,
+        "hasChromeBand": true,
+        "scrollY": 0
+      },
+      "comprehensionAudit": true,
+      "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/home-above-fold.png",
+      "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/home-header-funnel-crop.png"
+    },
+    "execution-test": {
+      "url": "http://127.0.0.1:3728/execution-test/",
+      "funnelContext": "STEP 2 OF 4 — VALIDATE EXECUTION",
+      "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+      "brandHref": "https://executia.io/",
+      "funnelActive": true,
+      "layout": {
+        "ok": true,
+        "funnelTop": 54.78125,
+        "funnelBottom": 124.125,
+        "stripBottom": 111.125,
+        "contextBottom": 76.28125,
+        "headerBottom": 54.78125,
+        "hasChromeBand": true,
+        "scrollY": 0
+      },
+      "comprehensionAudit": true,
+      "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/execution-test-above-fold.png",
+      "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/execution-test-header-funnel-crop.png"
+    },
+    "public-proof": {
+      "url": "http://127.0.0.1:3728/public-proof/",
+      "funnelContext": "STEP 3 OF 4 — EXECUTION PROOF",
+      "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+      "brandHref": "https://executia.io/",
+      "funnelActive": true,
+      "layout": {
+        "ok": true,
+        "funnelTop": 54.78125,
+        "funnelBottom": 124.125,
+        "stripBottom": 111.125,
+        "contextBottom": 76.28125,
+        "headerBottom": 54.78125,
+        "hasChromeBand": true,
+        "scrollY": 0
+      },
+      "comprehensionAudit": true,
+      "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/public-proof-above-fold.png",
+      "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/public-proof-header-funnel-crop.png"
+    },
+    "request-pilot": {
+      "url": "http://127.0.0.1:3728/request-pilot/",
+      "funnelContext": "STEP 4 OF 4 — INSTITUTIONAL PILOT",
+      "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+      "brandHref": "https://executia.io/",
+      "funnelActive": true,
+      "layout": {
+        "ok": true,
+        "funnelTop": 64,
+        "funnelBottom": 129.546875,
+        "stripBottom": 116.546875,
+        "contextBottom": 85.5,
+        "headerBottom": 64,
+        "hasChromeBand": true,
+        "scrollY": 0
+      },
+      "comprehensionAudit": true,
+      "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/request-pilot-above-fold.png",
+      "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/request-pilot-header-funnel-crop.png"
+    }
+  },
+  "viewportResults": {
+    "desktop": {
+      "home": {
+        "url": "http://127.0.0.1:3728/",
+        "funnelContext": "STEP 1 OF 4 — HOME",
+        "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+        "brandHref": "https://executia.io/",
+        "funnelActive": true,
+        "layout": {
+          "ok": true,
+          "funnelTop": 64,
+          "funnelBottom": 133.34375,
+          "stripBottom": 120.34375,
+          "contextBottom": 85.5,
+          "headerBottom": 64,
+          "hasChromeBand": true,
+          "scrollY": 0
+        },
+        "comprehensionAudit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/home-above-fold.png",
+        "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/home-header-funnel-crop.png"
+      },
+      "execution-test": {
+        "url": "http://127.0.0.1:3728/execution-test/",
+        "funnelContext": "STEP 2 OF 4 — VALIDATE EXECUTION",
+        "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+        "brandHref": "https://executia.io/",
+        "funnelActive": true,
+        "layout": {
+          "ok": true,
+          "funnelTop": 54.78125,
+          "funnelBottom": 124.125,
+          "stripBottom": 111.125,
+          "contextBottom": 76.28125,
+          "headerBottom": 54.78125,
+          "hasChromeBand": true,
+          "scrollY": 0
+        },
+        "comprehensionAudit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/execution-test-above-fold.png",
+        "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/execution-test-header-funnel-crop.png"
+      },
+      "public-proof": {
+        "url": "http://127.0.0.1:3728/public-proof/",
+        "funnelContext": "STEP 3 OF 4 — EXECUTION PROOF",
+        "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+        "brandHref": "https://executia.io/",
+        "funnelActive": true,
+        "layout": {
+          "ok": true,
+          "funnelTop": 54.78125,
+          "funnelBottom": 124.125,
+          "stripBottom": 111.125,
+          "contextBottom": 76.28125,
+          "headerBottom": 54.78125,
+          "hasChromeBand": true,
+          "scrollY": 0
+        },
+        "comprehensionAudit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/public-proof-above-fold.png",
+        "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/public-proof-header-funnel-crop.png"
+      },
+      "request-pilot": {
+        "url": "http://127.0.0.1:3728/request-pilot/",
+        "funnelContext": "STEP 4 OF 4 — INSTITUTIONAL PILOT",
+        "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+        "brandHref": "https://executia.io/",
+        "funnelActive": true,
+        "layout": {
+          "ok": true,
+          "funnelTop": 64,
+          "funnelBottom": 129.546875,
+          "stripBottom": 116.546875,
+          "contextBottom": 85.5,
+          "headerBottom": 64,
+          "hasChromeBand": true,
+          "scrollY": 0
+        },
+        "comprehensionAudit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/request-pilot-above-fold.png",
+        "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/request-pilot-header-funnel-crop.png"
+      }
+    },
+    "mobile": {
+      "home": {
+        "url": "http://127.0.0.1:3728/",
+        "funnelContext": "STEP 1 OF 4 — HOME",
+        "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+        "brandHref": "https://executia.io/",
+        "funnelActive": true,
+        "layout": {
+          "ok": true,
+          "funnelTop": 93.28125,
+          "funnelBottom": 162.625,
+          "stripBottom": 149.625,
+          "contextBottom": 114.78125,
+          "headerBottom": 93.28125,
+          "hasChromeBand": true,
+          "scrollY": 0
+        },
+        "comprehensionAudit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/home-above-fold.png",
+        "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/home-header-funnel-crop.png"
+      },
+      "execution-test": {
+        "url": "http://127.0.0.1:3728/execution-test/",
+        "funnelContext": "STEP 2 OF 4 — VALIDATE EXECUTION",
+        "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+        "brandHref": "https://executia.io/",
+        "funnelActive": true,
+        "layout": {
+          "ok": true,
+          "funnelTop": 93.28125,
+          "funnelBottom": 162.625,
+          "stripBottom": 149.625,
+          "contextBottom": 114.78125,
+          "headerBottom": 93.28125,
+          "hasChromeBand": true,
+          "scrollY": 0
+        },
+        "comprehensionAudit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/execution-test-above-fold.png",
+        "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/execution-test-header-funnel-crop.png"
+      },
+      "public-proof": {
+        "url": "http://127.0.0.1:3728/public-proof/",
+        "funnelContext": "STEP 3 OF 4 — EXECUTION PROOF",
+        "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+        "brandHref": "https://executia.io/",
+        "funnelActive": true,
+        "layout": {
+          "ok": true,
+          "funnelTop": 93.28125,
+          "funnelBottom": 162.625,
+          "stripBottom": 149.625,
+          "contextBottom": 114.78125,
+          "headerBottom": 93.28125,
+          "hasChromeBand": true,
+          "scrollY": 0
+        },
+        "comprehensionAudit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/public-proof-above-fold.png",
+        "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/public-proof-header-funnel-crop.png"
+      },
+      "request-pilot": {
+        "url": "http://127.0.0.1:3728/request-pilot/",
+        "funnelContext": "STEP 4 OF 4 — INSTITUTIONAL PILOT",
+        "funnelStripText": "HOME → VALIDATE EXECUTION → PROOF → PILOT",
+        "brandHref": "https://executia.io/",
+        "funnelActive": true,
+        "layout": {
+          "ok": true,
+          "funnelTop": 88.484375,
+          "funnelBottom": 154.03125,
+          "stripBottom": 141.03125,
+          "contextBottom": 109.984375,
+          "headerBottom": 88.484375,
+          "hasChromeBand": true,
+          "scrollY": 0
+        },
+        "comprehensionAudit": true,
+        "aboveFoldPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/request-pilot-above-fold.png",
+        "headerFunnelPath": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible/request-pilot-header-funnel-crop.png"
+      }
+    }
+  },
+  "screenshotsDir": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-38-funnel-visible"
+}

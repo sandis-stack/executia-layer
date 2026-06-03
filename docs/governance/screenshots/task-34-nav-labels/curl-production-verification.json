@@ -1,0 +1,13 @@
+{
+  "pass": true,
+  "note": "Nav labels are JS-rendered via executia-institutional-environment.js mount(); curl confirms HTTP 200 on all routes. Nav label verification via Playwright in production-header-verification.json.",
+  "canonicalNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+  "deployUrl": "https://execution.executia.io",
+  "deploymentId": "dpl_H5LeMTJ8Kw44ikuWWYUGYqff6ug3",
+  "routes": {
+    "/": { "status": 200, "url": "https://execution.executia.io/" },
+    "/execution-test/": { "status": 200, "url": "https://execution.executia.io/execution-test/" },
+    "/public-proof/": { "status": 200, "url": "https://execution.executia.io/public-proof/" },
+    "/request-pilot/": { "status": 200, "url": "https://execution.executia.io/request-pilot/" }
+  }
+}

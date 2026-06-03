@@ -4,9 +4,9 @@ Phase 3B8-A — human-readable reduction (local tooling only).
 
 ## Generated at
 
-- **Timestamp:** 2026-06-02T17:14:04.573Z
+- **Timestamp:** 2026-06-03T05:54:02.918Z
 - **Branch:** main
-- **Commit:** 6d1ac37b60943e5dc5935415a3d9137767b0e0b8
+- **Commit:** 829b152e9f76c5948a87c71a5ddb7532ff5bc786
 
 ## Canonical authority
 

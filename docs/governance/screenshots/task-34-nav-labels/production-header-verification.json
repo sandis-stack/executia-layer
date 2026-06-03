@@ -1,0 +1,49 @@
+{
+  "pass": true,
+  "canonicalNav": "HOME VALIDATE EXECUTION PROOF PILOT",
+  "navOk": true,
+  "structureOk": true,
+  "forbiddenFound": [],
+  "navs": [
+    "HOME VALIDATE EXECUTION PROOF PILOT",
+    "HOME VALIDATE EXECUTION PROOF PILOT",
+    "HOME VALIDATE EXECUTION PROOF PILOT",
+    "HOME VALIDATE EXECUTION PROOF PILOT"
+  ],
+  "headerCropHashes": {
+    "production-home": "ca676eadf5c83c8a",
+    "production-execution-test": "74f126f585370334",
+    "production-public-proof": "2151df7d09e3b53f",
+    "production-request-pilot": "226ccbfdda062e60"
+  },
+  "routes": {
+    "production-home": {
+      "url": "https://execution.executia.io/",
+      "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerNormalized": "<div class=\"ex-env-header\"><a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav></div>",
+      "aboveFoldScreenshot": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-34-nav-labels/production-home-above-fold.png",
+      "headerCropScreenshot": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-34-nav-labels/production-home-header-crop.png"
+    },
+    "production-execution-test": {
+      "url": "https://execution.executia.io/execution-test/",
+      "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerNormalized": "<div class=\"ex-env-header\"><a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav></div>",
+      "aboveFoldScreenshot": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-34-nav-labels/production-execution-test-above-fold.png",
+      "headerCropScreenshot": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-34-nav-labels/production-execution-test-header-crop.png"
+    },
+    "production-public-proof": {
+      "url": "https://execution.executia.io/public-proof/",
+      "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerNormalized": "<div class=\"ex-env-header\"><a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav></div>",
+      "aboveFoldScreenshot": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-34-nav-labels/production-public-proof-above-fold.png",
+      "headerCropScreenshot": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-34-nav-labels/production-public-proof-header-crop.png"
+    },
+    "production-request-pilot": {
+      "url": "https://execution.executia.io/request-pilot/",
+      "navText": "HOME VALIDATE EXECUTION PROOF PILOT",
+      "headerNormalized": "<div class=\"ex-env-header\"><a class=\"ex-env-brand\" href=\"/\"><strong>EXECUTIA™</strong><span>Execution Governance Infrastructure</span></a> <nav class=\"ex-env-flow\" aria-label=\"Primary navigation\"><a href=\"/\">HOME</a><a href=\"/execution-test/\">VALIDATE EXECUTION</a><a href=\"/public-proof/\">PROOF</a><a href=\"/request-pilot/\">PILOT</a></nav></div>",
+      "aboveFoldScreenshot": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-34-nav-labels/production-request-pilot-above-fold.png",
+      "headerCropScreenshot": "/Users/sandis/Documents/executia-layer/docs/governance/screenshots/task-34-nav-labels/production-request-pilot-header-crop.png"
+    }
+  }
+}
